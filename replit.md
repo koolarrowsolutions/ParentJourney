@@ -28,21 +28,35 @@ The application follows a modern full-stack architecture with a clear separation
 - **Form Handling**: React Hook Form with Zod validation
 - **UI Components**: shadcn/ui component library built on Radix UI primitives
 - **Styling**: Tailwind CSS with CSS variables for theming
+- **Child Profile Management**: Comprehensive dialog system for managing multiple child profiles
 
 ### Backend Architecture
 - **Server**: Express.js with TypeScript
-- **Database ORM**: Drizzle ORM for type-safe database operations
+- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
 - **Validation**: Zod schemas shared between client and server
-- **Storage**: Abstracted storage interface with in-memory implementation (ready for database integration)
-- **API Design**: RESTful endpoints following conventional patterns
+- **Storage**: Database-backed storage with full CRUD operations
+- **API Design**: RESTful endpoints for journal entries and child profiles
+- **Developmental Insights**: Age-based parenting insights system
 
 ### Database Schema
-The application uses a single `journal_entries` table with the following fields:
+The application uses two main tables:
+
+**Child Profiles (`child_profiles`)**:
+- `id`: Primary key (UUID)
+- `name`: Child's name (required)
+- `date_of_birth`: Date of birth (required)
+- `gender`: Optional gender field ("male", "female", "other", or null)
+- `notes`: Optional notes about the child
+- `created_at`: Timestamp for profile creation
+
+**Journal Entries (`journal_entries`)**:
 - `id`: Primary key (UUID)
 - `title`: Optional entry title
 - `content`: Required entry content
-- `mood`: Optional mood tracking
+- `mood`: Optional mood tracking with emoji
+- `child_profile_id`: Foreign key to child_profiles (optional)
 - `ai_feedback`: Optional AI-generated feedback
+- `developmental_insight`: Age-specific developmental insights
 - `has_ai_feedback`: Flag indicating if AI feedback was requested/generated
 - `created_at`: Timestamp for entry creation
 
@@ -54,14 +68,26 @@ The application uses a single `journal_entries` table with the following fields:
    - Server creates entry and optionally generates AI feedback
    - Client updates UI with new entry and feedback
 
-2. **AI Feedback Generation**:
+2. **Child Profile Management**:
+   - Users can create, edit, and delete child profiles
+   - Each profile stores name, date of birth, gender (optional), and notes
+   - Age calculation from date of birth for developmental insights
+   - Child selection when creating journal entries
+
+3. **AI Feedback Generation**:
    - Uses OpenAI GPT-4o model for generating parenting insights
    - Structured prompt provides validation, suggestions, growth insights, and summary
    - JSON response format ensures consistent feedback structure
 
-3. **Data Retrieval**:
+4. **Developmental Insights**:
+   - Age-specific parenting insights based on child development research
+   - Automatically generated when a child profile is selected
+   - Covers all developmental stages from infancy to young adulthood
+
+5. **Data Retrieval**:
    - Client fetches journal entries with optional limit parameter
    - Server returns entries sorted by creation date (newest first)
+   - Child profiles linked to journal entries for context
    - Client caches responses using TanStack Query
 
 ## External Dependencies

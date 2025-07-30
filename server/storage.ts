@@ -1,7 +1,8 @@
-import { type JournalEntry, type InsertJournalEntry } from "@shared/schema";
+import { type JournalEntry, type InsertJournalEntry, type ChildProfile, type InsertChildProfile } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
+  // Journal entries
   getJournalEntry(id: string): Promise<JournalEntry | undefined>;
   getJournalEntries(limit?: number): Promise<JournalEntry[]>;
   createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry>;
@@ -11,13 +12,22 @@ export interface IStorage {
     weekEntries: number;
     longestStreak: number;
   }>;
+  
+  // Child profiles
+  getChildProfile(id: string): Promise<ChildProfile | undefined>;
+  getChildProfiles(): Promise<ChildProfile[]>;
+  createChildProfile(profile: InsertChildProfile): Promise<ChildProfile>;
+  updateChildProfile(id: string, updates: Partial<InsertChildProfile>): Promise<ChildProfile | undefined>;
+  deleteChildProfile(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
   private journalEntries: Map<string, JournalEntry>;
+  private childProfiles: Map<string, ChildProfile>;
 
   constructor() {
     this.journalEntries = new Map();
+    this.childProfiles = new Map();
   }
 
   async getJournalEntry(id: string): Promise<JournalEntry | undefined> {
@@ -37,7 +47,9 @@ export class MemStorage implements IStorage {
       ...insertEntry,
       title: insertEntry.title ?? null,
       mood: insertEntry.mood ?? null,
+      childProfileId: insertEntry.childProfileId ?? null,
       aiFeedback: insertEntry.aiFeedback ?? null,
+      developmentalInsight: insertEntry.developmentalInsight ?? null,
       hasAiFeedback: insertEntry.hasAiFeedback ?? "false",
       id,
       createdAt: new Date(),
@@ -108,6 +120,47 @@ export class MemStorage implements IStorage {
       weekEntries,
       longestStreak,
     };
+  }
+
+  // Child profile methods
+  async getChildProfile(id: string): Promise<ChildProfile | undefined> {
+    return this.childProfiles.get(id);
+  }
+
+  async getChildProfiles(): Promise<ChildProfile[]> {
+    return Array.from(this.childProfiles.values())
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  }
+
+  async createChildProfile(insertProfile: InsertChildProfile): Promise<ChildProfile> {
+    const id = randomUUID();
+    const profile: ChildProfile = {
+      ...insertProfile,
+      gender: insertProfile.gender ?? null,
+      notes: insertProfile.notes ?? null,
+      id,
+      createdAt: new Date(),
+    };
+    
+    this.childProfiles.set(id, profile);
+    return profile;
+  }
+
+  async updateChildProfile(id: string, updates: Partial<InsertChildProfile>): Promise<ChildProfile | undefined> {
+    const existing = this.childProfiles.get(id);
+    if (!existing) return undefined;
+
+    const updated: ChildProfile = {
+      ...existing,
+      ...updates,
+    };
+
+    this.childProfiles.set(id, updated);
+    return updated;
+  }
+
+  async deleteChildProfile(id: string): Promise<boolean> {
+    return this.childProfiles.delete(id);
   }
 }
 

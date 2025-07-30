@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { journalEntryWithAiSchema, type JournalEntryWithAi } from "@shared/schema";
-import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star } from "lucide-react";
+import { journalEntryWithAiSchema, type JournalEntryWithAi, type ChildProfile } from "@shared/schema";
+import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap } from "lucide-react";
+import { ChildProfilesDialog } from "./child-profiles-dialog";
 
 const MOODS = [
   { emoji: "😊", label: "Happy", value: "😊" },
@@ -23,6 +25,31 @@ const MOODS = [
 
 interface AiFeedbackDisplayProps {
   feedback: string;
+}
+
+interface DevelopmentalInsightDisplayProps {
+  insight: string;
+  childName?: string;
+}
+
+function DevelopmentalInsightDisplay({ insight, childName }: DevelopmentalInsightDisplayProps) {
+  return (
+    <div className="mt-4 p-6 bg-gradient-accent rounded-lg border border-accent/20">
+      <div className="flex items-start">
+        <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+          <GraduationCap className="text-white h-5 w-5" />
+        </div>
+        <div className="flex-1">
+          <h4 className="font-semibold text-neutral-800 mb-2">
+            🎯 Developmental Insight {childName && `for ${childName}`}
+          </h4>
+          <div className="text-neutral-700 leading-relaxed">
+            {insight}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
@@ -76,11 +103,22 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
 
 export function JournalForm() {
   const [selectedMood, setSelectedMood] = useState<string>("");
+  const [selectedChildId, setSelectedChildId] = useState<string>("");
   const [isSubmittingWithAI, setIsSubmittingWithAI] = useState(false);
   const [aiFeedback, setAiFeedback] = useState<string>("");
+  const [developmentalInsight, setDevelopmentalInsight] = useState<string>("");
   const [showAiFeedback, setShowAiFeedback] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const { data: childProfiles } = useQuery<ChildProfile[]>({
+    queryKey: ["/api/child-profiles"],
+    queryFn: async () => {
+      const response = await fetch("/api/child-profiles");
+      if (!response.ok) throw new Error("Failed to fetch profiles");
+      return response.json();
+    },
+  });
 
   const form = useForm<JournalEntryWithAi>({
     resolver: zodResolver(journalEntryWithAiSchema),
@@ -88,8 +126,10 @@ export function JournalForm() {
       title: "",
       content: "",
       mood: "",
+      childProfileId: "",
       hasAiFeedback: "false",
       aiFeedback: null,
+      developmentalInsight: null,
       requestAiFeedback: false,
     },
   });
@@ -106,23 +146,27 @@ export function JournalForm() {
       if (data.aiFeedback) {
         setAiFeedback(data.aiFeedback);
         setShowAiFeedback(true);
-        toast({
-          title: "Entry Saved!",
-          description: "Your journal entry has been saved with AI feedback.",
-        });
-      } else {
-        toast({
-          title: "Entry Saved!",
-          description: "Your journal entry has been saved successfully.",
-        });
       }
+      
+      if (data.developmentalInsight) {
+        setDevelopmentalInsight(data.developmentalInsight);
+      }
+      
+      toast({
+        title: "Entry Saved! 📝",
+        description: data.aiFeedback 
+          ? "Your journal entry has been saved with AI feedback and insights."
+          : "Your journal entry has been saved successfully.",
+      });
       
       // Reset form
       form.reset();
       setSelectedMood("");
+      setSelectedChildId("");
       setIsSubmittingWithAI(false);
       setShowAiFeedback(false);
       setAiFeedback("");
+      setDevelopmentalInsight("");
     },
     onError: (error) => {
       console.error("Failed to save entry:", error);
@@ -139,6 +183,7 @@ export function JournalForm() {
     const submissionData = {
       ...data,
       mood: selectedMood || null,
+      childProfileId: selectedChildId && selectedChildId !== "none" ? selectedChildId : null,
       requestAiFeedback,
     };
     
@@ -247,6 +292,39 @@ The more detail you share, the better AI feedback you'll receive! 🤖"
               </div>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-3">
+                👶 Writing about a specific child? <span className="text-neutral-400">(optional)</span>
+              </label>
+              <div className="flex gap-3">
+                <Select onValueChange={setSelectedChildId} value={selectedChildId}>
+                  <SelectTrigger className="flex-1 border-neutral-200 focus:ring-2 focus:ring-primary">
+                    <SelectValue placeholder="Choose a child profile..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No specific child</SelectItem>
+                    {childProfiles?.map((profile) => (
+                      <SelectItem key={profile.id} value={profile.id}>
+                        👶 {profile.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <ChildProfilesDialog
+                  trigger={
+                    <Button variant="outline" type="button" className="px-3">
+                      <Users className="h-4 w-4" />
+                    </Button>
+                  }
+                />
+              </div>
+              {selectedChildId && (
+                <p className="text-xs text-neutral-500 mt-2">
+                  💡 Selecting a child will provide age-appropriate developmental insights!
+                </p>
+              )}
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 type="button"
@@ -282,6 +360,13 @@ The more detail you share, the better AI feedback you'll receive! 🤖"
               <span className="text-neutral-600">🤖 Getting AI insights for your entry... This usually takes just a few seconds!</span>
             </div>
           </div>
+        )}
+
+        {developmentalInsight && (
+          <DevelopmentalInsightDisplay 
+            insight={developmentalInsight} 
+            childName={childProfiles?.find(p => p.id === selectedChildId)?.name}
+          />
         )}
 
         {showAiFeedback && aiFeedback && (

@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { History, ArrowRight, Bot, PenTool } from "lucide-react";
-import type { JournalEntry } from "@shared/schema";
+import { History, ArrowRight, Bot, PenTool, Baby, GraduationCap } from "lucide-react";
+import type { JournalEntry, ChildProfile } from "@shared/schema";
 
 export function RecentEntries() {
   const { data: entries, isLoading } = useQuery<JournalEntry[]>({
@@ -11,6 +11,15 @@ export function RecentEntries() {
     queryFn: async () => {
       const response = await fetch("/api/journal-entries?limit=5");
       if (!response.ok) throw new Error("Failed to fetch entries");
+      return response.json();
+    },
+  });
+
+  const { data: childProfiles } = useQuery<ChildProfile[]>({
+    queryKey: ["/api/child-profiles"],
+    queryFn: async () => {
+      const response = await fetch("/api/child-profiles");
+      if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },
   });
@@ -80,17 +89,29 @@ export function RecentEntries() {
                   {truncateText(entry.content, 120)}
                 </p>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center text-xs text-neutral-500">
+                  <div className="flex items-center gap-3 text-xs text-neutral-500">
+                    {entry.childProfileId && (
+                      <div className="flex items-center">
+                        <Baby className="mr-1 h-3 w-3" />
+                        <span>{childProfiles?.find(p => p.id === entry.childProfileId)?.name}</span>
+                      </div>
+                    )}
+                    {entry.developmentalInsight && (
+                      <div className="flex items-center">
+                        <GraduationCap className="mr-1 h-3 w-3" />
+                        <span>Developmental insight</span>
+                      </div>
+                    )}
                     {entry.hasAiFeedback === "true" ? (
-                      <>
+                      <div className="flex items-center">
                         <Bot className="mr-1 h-3 w-3" />
-                        <span>AI feedback received</span>
-                      </>
+                        <span>AI feedback</span>
+                      </div>
                     ) : (
-                      <>
+                      <div className="flex items-center">
                         <PenTool className="mr-1 h-3 w-3" />
                         <span>Entry only</span>
-                      </>
+                      </div>
                     )}
                   </div>
                   <Button variant="link" className="text-primary hover:text-primary/80 text-sm p-0">

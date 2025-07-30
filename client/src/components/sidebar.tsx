@@ -9,8 +9,10 @@ import {
   Download, 
   CalendarX, 
   Heart,
-  GraduationCap
+  GraduationCap,
+  Users
 } from "lucide-react";
+import { ChildProfilesDialog } from "./child-profiles-dialog";
 
 interface JournalStats {
   totalEntries: number;
@@ -38,6 +40,20 @@ export function Sidebar() {
             ⚡ Quick Actions
           </h3>
           <div className="space-y-3">
+            <ChildProfilesDialog
+              trigger={
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"
+                >
+                  <Users className="text-primary mr-3 h-5 w-5" />
+                  <div className="text-left">
+                    <div className="font-medium text-neutral-800">👶 My Children</div>
+                    <div className="text-xs text-neutral-500">Manage child profiles</div>
+                  </div>
+                </Button>
+              }
+            />
             <Button 
               variant="outline" 
               className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"

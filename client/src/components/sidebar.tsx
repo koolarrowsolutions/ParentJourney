@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { MoodAnalytics } from "./mood-analytics";
+import { DailyReflection } from "./daily-reflection";
 
 interface JournalStats {
   totalEntries: number;
@@ -25,6 +26,7 @@ interface JournalStats {
 
 export function Sidebar() {
   const [showMoodAnalytics, setShowMoodAnalytics] = useState(false);
+  const [showDailyReflection, setShowDailyReflection] = useState(false);
   
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
@@ -69,6 +71,7 @@ export function Sidebar() {
             <Button 
               variant="outline" 
               className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"
+              onClick={() => setShowDailyReflection(!showDailyReflection)}
             >
               <Lightbulb className="text-accent mr-3 h-5 w-5" />
               <div className="text-left">
@@ -163,6 +166,11 @@ export function Sidebar() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Daily Reflection Section */}
+      {showDailyReflection && (
+        <DailyReflection />
+      )}
 
       {/* Mood Analytics Section */}
       {showMoodAnalytics && (

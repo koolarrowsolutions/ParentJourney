@@ -1,10 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { journalEntryWithAiSchema, insertChildProfileSchema } from "@shared/schema";
+import { insertJournalEntrySchema, journalEntryWithAiSchema, insertChildProfileSchema } from "@shared/schema";
 import { generateParentingFeedback } from "./services/openai";
 import { generateDevelopmentalInsight, calculateAgeInMonths } from "./services/developmental-insights";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get journal entries
@@ -113,6 +113,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(analytics);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch mood analytics" });
+    }
+  });
+
+  // Update journal entry
+  app.patch("/api/journal-entries/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = insertJournalEntrySchema.partial().parse(req.body);
+      
+      const updatedEntry = await storage.updateJournalEntry(id, updateData);
+      if (!updatedEntry) {
+        return res.status(404).json({ message: "Journal entry not found" });
+      }
+      
+      res.json(updatedEntry);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update journal entry" });
+    }
+  });
+
+  // Delete journal entry
+  app.delete("/api/journal-entries/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteJournalEntry(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Journal entry not found" });
+      }
+      
+      res.json({ message: "Journal entry deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete journal entry" });
     }
   });
 

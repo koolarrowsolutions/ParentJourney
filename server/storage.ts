@@ -7,6 +7,7 @@ export interface IStorage {
   getJournalEntries(limit?: number, search?: string): Promise<JournalEntry[]>;
   createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry>;
   updateJournalEntry(id: string, updates: Partial<InsertJournalEntry>): Promise<JournalEntry | undefined>;
+  deleteJournalEntry(id: string): Promise<boolean>;
   getJournalStats(): Promise<{
     totalEntries: number;
     weekEntries: number;
@@ -90,6 +91,10 @@ export class MemStorage implements IStorage {
 
     this.journalEntries.set(id, updated);
     return updated;
+  }
+
+  async deleteJournalEntry(id: string): Promise<boolean> {
+    return this.journalEntries.delete(id);
   }
 
   async getJournalStats(): Promise<{

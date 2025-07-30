@@ -3,8 +3,11 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { History, ArrowRight, Bot, PenTool, Baby, GraduationCap } from "lucide-react";
+import { History, ArrowRight, Bot, PenTool, Baby, GraduationCap, Edit2, Trash2, MoreHorizontal } from "lucide-react";
 import { SearchBar } from "@/components/search-bar";
+import { EditEntryDialog } from "@/components/edit-entry-dialog";
+import { DeleteEntryDialog } from "@/components/delete-entry-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
 
 export function RecentEntries() {
@@ -141,9 +144,41 @@ export function RecentEntries() {
                         </div>
                       )}
                     </div>
-                    <Button variant="link" className="text-primary hover:text-primary/80 text-sm p-0">
-                      Read more
-                    </Button>
+                    
+                    {/* Entry Actions */}
+                    <div className="flex items-center space-x-2">
+                      <Button variant="link" className="text-primary hover:text-primary/80 text-sm p-0">
+                        Read more
+                      </Button>
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <EditEntryDialog 
+                            entry={entry}
+                            trigger={
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <Edit2 className="mr-2 h-4 w-4" />
+                                Edit Entry
+                              </DropdownMenuItem>
+                            }
+                          />
+                          <DeleteEntryDialog 
+                            entry={entry}
+                            trigger={
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete Entry
+                              </DropdownMenuItem>
+                            }
+                          />
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
               ))}

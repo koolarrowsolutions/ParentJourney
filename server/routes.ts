@@ -106,6 +106,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get mood analytics
+  app.get("/api/mood-analytics", async (req, res) => {
+    try {
+      const analytics = await storage.getMoodAnalytics();
+      res.json(analytics);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch mood analytics" });
+    }
+  });
+
   // Child profile routes
   app.get("/api/child-profiles", async (req, res) => {
     try {

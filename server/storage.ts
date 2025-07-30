@@ -12,6 +12,12 @@ export interface IStorage {
     weekEntries: number;
     longestStreak: number;
   }>;
+  getMoodAnalytics(): Promise<{
+    moodDistribution: { mood: string; count: number; percentage: number }[];
+    moodTrends: { date: string; mood: string; count: number }[];
+    weeklyMoodAverage: number;
+    moodStreak: { currentMood: string | null; streakDays: number };
+  }>;
   
   // Child profiles
   getChildProfile(id: string): Promise<ChildProfile | undefined>;
@@ -133,6 +139,112 @@ export class MemStorage implements IStorage {
       totalEntries,
       weekEntries,
       longestStreak,
+    };
+  }
+
+  async getMoodAnalytics(): Promise<{
+    moodDistribution: { mood: string; count: number; percentage: number }[];
+    moodTrends: { date: string; mood: string; count: number }[];
+    weeklyMoodAverage: number;
+    moodStreak: { currentMood: string | null; streakDays: number };
+  }> {
+    const entries = Array.from(this.journalEntries.values());
+    const entriesWithMood = entries.filter(entry => entry.mood);
+    
+    if (entriesWithMood.length === 0) {
+      return {
+        moodDistribution: [],
+        moodTrends: [],
+        weeklyMoodAverage: 0,
+        moodStreak: { currentMood: null, streakDays: 0 },
+      };
+    }
+
+    // Mood distribution
+    const moodCounts = new Map<string, number>();
+    entriesWithMood.forEach(entry => {
+      const mood = entry.mood!;
+      moodCounts.set(mood, (moodCounts.get(mood) || 0) + 1);
+    });
+
+    const moodDistribution = Array.from(moodCounts.entries()).map(([mood, count]) => ({
+      mood,
+      count,
+      percentage: Math.round((count / entriesWithMood.length) * 100),
+    }));
+
+    // Mood trends (last 30 days)
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const recentEntries = entriesWithMood.filter(entry => 
+      new Date(entry.createdAt) >= thirtyDaysAgo
+    );
+
+    const trendMap = new Map<string, Map<string, number>>();
+    recentEntries.forEach(entry => {
+      const dateKey = new Date(entry.createdAt).toISOString().split('T')[0];
+      const mood = entry.mood!;
+      
+      if (!trendMap.has(dateKey)) {
+        trendMap.set(dateKey, new Map());
+      }
+      const dayMoods = trendMap.get(dateKey)!;
+      dayMoods.set(mood, (dayMoods.get(mood) || 0) + 1);
+    });
+
+    const moodTrends: { date: string; mood: string; count: number }[] = [];
+    trendMap.forEach((moods, date) => {
+      moods.forEach((count, mood) => {
+        moodTrends.push({ date, mood, count });
+      });
+    });
+
+    // Weekly mood average (simplified - count positive vs negative moods)
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const weeklyEntries = entriesWithMood.filter(entry => 
+      new Date(entry.createdAt) >= weekAgo
+    );
+    
+    const positiveMoods = ['😊', '😄', '🥰', '😌', '🤗'];
+    const positiveCount = weeklyEntries.filter(entry => 
+      positiveMoods.includes(entry.mood!)
+    ).length;
+    
+    const weeklyMoodAverage = weeklyEntries.length > 0 
+      ? Math.round((positiveCount / weeklyEntries.length) * 100)
+      : 0;
+
+    // Mood streak (consecutive days with same mood)
+    const sortedEntries = entriesWithMood
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    let currentMood = sortedEntries[0]?.mood || null;
+    let streakDays = 0;
+    
+    if (currentMood) {
+      const entriesByDate = new Map<string, string>();
+      sortedEntries.forEach(entry => {
+        const dateKey = new Date(entry.createdAt).toDateString();
+        if (!entriesByDate.has(dateKey)) {
+          entriesByDate.set(dateKey, entry.mood!);
+        }
+      });
+      
+      const dates = Array.from(entriesByDate.keys()).sort().reverse();
+      for (const date of dates) {
+        if (entriesByDate.get(date) === currentMood) {
+          streakDays++;
+        } else {
+          break;
+        }
+      }
+    }
+
+    return {
+      moodDistribution,
+      moodTrends,
+      weeklyMoodAverage,
+      moodStreak: { currentMood, streakDays },
     };
   }
 

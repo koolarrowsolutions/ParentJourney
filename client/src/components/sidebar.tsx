@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,9 +11,11 @@ import {
   CalendarX, 
   Heart,
   GraduationCap,
-  Users
+  Users,
+  BarChart3
 } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
+import { MoodAnalytics } from "./mood-analytics";
 
 interface JournalStats {
   totalEntries: number;
@@ -21,6 +24,8 @@ interface JournalStats {
 }
 
 export function Sidebar() {
+  const [showMoodAnalytics, setShowMoodAnalytics] = useState(false);
+  
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
     queryFn: async () => {
@@ -74,11 +79,12 @@ export function Sidebar() {
             <Button 
               variant="outline" 
               className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"
+              onClick={() => setShowMoodAnalytics(!showMoodAnalytics)}
             >
-              <TrendingUp className="text-secondary mr-3 h-5 w-5" />
+              <BarChart3 className="text-secondary mr-3 h-5 w-5" />
               <div className="text-left">
-                <div className="font-medium text-neutral-800">📊 View Progress</div>
-                <div className="text-xs text-neutral-500">See your journey</div>
+                <div className="font-medium text-neutral-800">📊 Mood Analytics</div>
+                <div className="text-xs text-neutral-500">View your emotional patterns</div>
               </div>
             </Button>
             <Button 
@@ -157,6 +163,28 @@ export function Sidebar() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Mood Analytics Section */}
+      {showMoodAnalytics && (
+        <Card className="shadow-sm border border-neutral-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-neutral-800 flex items-center">
+                <BarChart3 className="text-primary mr-2 h-5 w-5" />
+                📊 Mood Analytics
+              </h3>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowMoodAnalytics(false)}
+              >
+                Hide
+              </Button>
+            </div>
+            <MoodAnalytics />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

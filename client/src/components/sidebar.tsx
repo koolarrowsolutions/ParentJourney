@@ -31,25 +31,32 @@ export function Sidebar() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Quick Actions */}
       <Card className="shadow-sm border border-neutral-200">
-        <CardContent className="p-6">
-          <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
-            <Bolt className="text-primary mr-2 h-5 w-5" />
-            ⚡ Quick Actions
+        <CardContent className="p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-neutral-800 mb-3 sm:mb-4 flex items-center">
+            <Bolt className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">⚡ Quick Actions</span>
+            <span className="sm:hidden">⚡ Actions</span>
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <ChildProfilesDialog
               trigger={
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"
+                  className="w-full justify-start p-2 sm:p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"
                 >
-                  <Users className="text-primary mr-3 h-5 w-5" />
-                  <div className="text-left">
-                    <div className="font-medium text-neutral-800">👶 My Children</div>
-                    <div className="text-xs text-neutral-500">Manage profiles & traits</div>
+                  <Users className="text-primary mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                  <div className="text-left min-w-0 flex-1">
+                    <div className="font-medium text-neutral-800 text-sm sm:text-base truncate">
+                      <span className="hidden sm:inline">👶 My Children</span>
+                      <span className="sm:hidden">👶 Children</span>
+                    </div>
+                    <div className="text-xs text-neutral-500 truncate">
+                      <span className="hidden sm:inline">Manage profiles & traits</span>
+                      <span className="sm:hidden">Manage profiles</span>
+                    </div>
                   </div>
                 </Button>
               }

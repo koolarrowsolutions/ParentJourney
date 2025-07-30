@@ -206,13 +206,14 @@ export function JournalForm() {
 
   return (
     <Card className="shadow-sm border border-neutral-200">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold text-neutral-800 flex items-center">
-            <PenTool className="text-primary mr-2 h-5 w-5" />
-            📝 New Journal Entry
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h3 className="text-lg sm:text-xl font-semibold text-neutral-800 flex items-center">
+            <PenTool className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">📝 New Journal Entry</span>
+            <span className="sm:hidden">📝 Entry</span>
           </h3>
-          <div className="text-sm text-neutral-500">Today, {currentDate}</div>
+          <div className="text-xs sm:text-sm text-neutral-500 hidden sm:block">Today, {currentDate}</div>
         </div>
 
         <Form {...form}>
@@ -223,12 +224,12 @@ export function JournalForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-neutral-700">
-                    📚 Entry Title <span className="text-neutral-400">(optional)</span>
+                    📚 Entry Title <span className="text-neutral-400 hidden sm:inline">(optional)</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="💡 e.g., Teaching patience today, Bedtime struggles, Proud parent moment..."
-                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="💡 e.g., Teaching patience today..."
+                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base"
                       {...field}
                       value={field.value ?? ""}
                     />
@@ -248,7 +249,8 @@ export function JournalForm() {
                   </FormLabel>
                   <FormControl>
                     <Textarea
-                      rows={8}
+                      rows={6}
+
                       placeholder="✨ Share your thoughts, challenges, victories, or anything about your parenting journey today! 
 
 💭 Here are some ideas to get you started:
@@ -258,7 +260,7 @@ export function JournalForm() {
 • What are you proud of?
 
 The more detail you share, the better AI feedback you'll receive! 🤖"
-                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-sm sm:text-base"
                       {...field}
                     />
                   </FormControl>

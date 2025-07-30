@@ -39,11 +39,12 @@ export function RecentEntries() {
 
   return (
     <Card className="shadow-sm border border-neutral-200">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold text-neutral-800 flex items-center">
-            <History className="text-primary mr-2 h-5 w-5" />
-            📖 Recent Entries
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h3 className="text-lg sm:text-xl font-semibold text-neutral-800 flex items-center">
+            <History className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">📖 Recent Entries</span>
+            <span className="sm:hidden">📖 Recent</span>
           </h3>
           <Button variant="link" className="text-primary hover:text-primary/80 text-sm font-medium p-0">
             View All <ArrowRight className="ml-1 h-4 w-4" />
@@ -74,10 +75,10 @@ export function RecentEntries() {
             entries.map((entry) => (
               <div 
                 key={entry.id} 
-                className="border border-neutral-200 rounded-lg p-4 hover:shadow-sm transition-all cursor-pointer"
+                className="border border-neutral-200 rounded-lg p-3 sm:p-4 hover:shadow-sm transition-all cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-medium text-neutral-800">
+                  <h4 className="font-medium text-neutral-800 text-sm sm:text-base truncate">
                     {entry.title || "Untitled Entry"}
                   </h4>
                   <div className="flex items-center text-sm text-neutral-500">

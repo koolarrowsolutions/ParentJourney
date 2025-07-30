@@ -11,7 +11,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/journal-entries", async (req, res) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
-      const entries = await storage.getJournalEntries(limit);
+      const search = req.query.search as string;
+      const entries = await storage.getJournalEntries(limit, search);
       res.json(entries);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch journal entries" });

@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 export interface IStorage {
   // Journal entries
   getJournalEntry(id: string): Promise<JournalEntry | undefined>;
-  getJournalEntries(limit?: number): Promise<JournalEntry[]>;
+  getJournalEntries(limit?: number, search?: string): Promise<JournalEntry[]>;
   createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry>;
   updateJournalEntry(id: string, updates: Partial<InsertJournalEntry>): Promise<JournalEntry | undefined>;
   getJournalStats(): Promise<{
@@ -34,9 +34,23 @@ export class MemStorage implements IStorage {
     return this.journalEntries.get(id);
   }
 
-  async getJournalEntries(limit = 10): Promise<JournalEntry[]> {
-    const entries = Array.from(this.journalEntries.values())
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  async getJournalEntries(limit = 10, search?: string): Promise<JournalEntry[]> {
+    let entries = Array.from(this.journalEntries.values());
+    
+    // Apply search filter if provided
+    if (search && search.trim()) {
+      const searchTerm = search.toLowerCase().trim();
+      entries = entries.filter(entry => {
+        const titleMatch = entry.title?.toLowerCase().includes(searchTerm) || false;
+        const contentMatch = entry.content.toLowerCase().includes(searchTerm);
+        const moodMatch = entry.mood?.toLowerCase().includes(searchTerm) || false;
+        
+        return titleMatch || contentMatch || moodMatch;
+      });
+    }
+    
+    // Sort by creation date (newest first)
+    entries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     
     return entries.slice(0, limit);
   }

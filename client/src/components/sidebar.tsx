@@ -49,7 +49,7 @@ export function Sidebar() {
                   <Users className="text-primary mr-3 h-5 w-5" />
                   <div className="text-left">
                     <div className="font-medium text-neutral-800">👶 My Children</div>
-                    <div className="text-xs text-neutral-500">Manage child profiles</div>
+                    <div className="text-xs text-neutral-500">Manage profiles & traits</div>
                   </div>
                 </Button>
               }

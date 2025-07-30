@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { insertChildProfileSchema, type InsertChildProfile, type ChildProfile } from "@shared/schema";
 import { PERSONALITY_TRAITS, getTraitsByAge, getTraitByKey, type PersonalityTrait } from "@shared/personality-traits";
 import { Users, Plus, Edit, Trash2, Baby, Calendar, User, Sparkles } from "lucide-react";
+import { UpdateTraitsDialog } from "./update-traits-dialog";
 
 interface ChildProfileDialogProps {
   trigger?: React.ReactNode;
@@ -37,6 +39,15 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
       personalityTraits: editProfile?.personalityTraits || [],
     },
   });
+
+  // Update selectedTraits when editProfile changes (for editing different profiles)
+  React.useEffect(() => {
+    if (editProfile?.personalityTraits) {
+      setSelectedTraits(editProfile.personalityTraits);
+    } else {
+      setSelectedTraits([]);
+    }
+  }, [editProfile]);
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertChildProfile) => {
@@ -247,6 +258,11 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
           </FormLabel>
           <p className="text-xs text-neutral-500 mb-4">
             Choose traits that best describe your child's personality. This helps provide more personalized parenting insights.
+            {editProfile && (
+              <span className="block mt-1 text-amber-600">
+                💡 Update traits as your child grows and develops - personality can evolve over time!
+              </span>
+            )}
           </p>
           
           <div className="space-y-4">
@@ -486,10 +502,19 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
                           )}
                         </div>
                         <div className="flex gap-2 ml-4">
+                          <UpdateTraitsDialog
+                            profile={profile}
+                            trigger={
+                              <Button variant="outline" size="sm" title="Update personality traits">
+                                <Sparkles className="h-3 w-3" />
+                              </Button>
+                            }
+                          />
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => setSelectedProfile(profile)}
+                            title="Edit profile details"
                           >
                             <Edit className="h-3 w-3" />
                           </Button>
@@ -498,6 +523,7 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
                             size="sm"
                             onClick={() => deleteMutation.mutate(profile.id)}
                             disabled={deleteMutation.isPending}
+                            title="Delete profile"
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>

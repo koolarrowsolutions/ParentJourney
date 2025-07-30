@@ -74,6 +74,7 @@ The application uses two main tables:
    - Each profile stores name, date of birth, gender (optional), notes, and personality traits
    - Age calculation from date of birth for developmental insights
    - Personality trait selection (up to 7) with age-appropriate traits shown
+   - Separate trait update dialog for easy periodic updates as children grow
    - Child selection when creating journal entries
 
 3. **AI Feedback Generation**:

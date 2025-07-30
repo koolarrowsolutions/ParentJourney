@@ -48,7 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const childProfile = await storage.getChildProfile(entryData.childProfileId);
           if (childProfile) {
             const ageInMonths = calculateAgeInMonths(new Date(childProfile.dateOfBirth));
-            developmentalInsight = generateDevelopmentalInsight(ageInMonths);
+            developmentalInsight = generateDevelopmentalInsight(ageInMonths, childProfile.personalityTraits || []);
           }
         } catch (error) {
           console.error("Failed to generate developmental insight:", error);

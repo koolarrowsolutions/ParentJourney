@@ -47,6 +47,7 @@ The application uses two main tables:
 - `date_of_birth`: Date of birth (required)
 - `gender`: Optional gender field ("male", "female", "other", or null)
 - `notes`: Optional notes about the child
+- `personality_traits`: Array of selected personality trait keys (up to 7)
 - `created_at`: Timestamp for profile creation
 
 **Journal Entries (`journal_entries`)**:
@@ -70,8 +71,9 @@ The application uses two main tables:
 
 2. **Child Profile Management**:
    - Users can create, edit, and delete child profiles
-   - Each profile stores name, date of birth, gender (optional), and notes
+   - Each profile stores name, date of birth, gender (optional), notes, and personality traits
    - Age calculation from date of birth for developmental insights
+   - Personality trait selection (up to 7) with age-appropriate traits shown
    - Child selection when creating journal entries
 
 3. **AI Feedback Generation**:
@@ -83,6 +85,7 @@ The application uses two main tables:
    - Age-specific parenting insights based on child development research
    - Automatically generated when a child profile is selected
    - Covers all developmental stages from infancy to young adulthood
+   - Personalized based on selected personality traits for the child
 
 5. **Data Retrieval**:
    - Client fetches journal entries with optional limit parameter

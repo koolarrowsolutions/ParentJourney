@@ -138,6 +138,7 @@ export class MemStorage implements IStorage {
       ...insertProfile,
       gender: insertProfile.gender ?? null,
       notes: insertProfile.notes ?? null,
+      personalityTraits: insertProfile.personalityTraits ?? [],
       id,
       createdAt: new Date(),
     };

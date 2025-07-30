@@ -9,10 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { insertChildProfileSchema, type InsertChildProfile, type ChildProfile } from "@shared/schema";
-import { Users, Plus, Edit, Trash2, Baby, Calendar, User } from "lucide-react";
+import { PERSONALITY_TRAITS, getTraitsByAge, getTraitByKey, type PersonalityTrait } from "@shared/personality-traits";
+import { Users, Plus, Edit, Trash2, Baby, Calendar, User, Sparkles } from "lucide-react";
 
 interface ChildProfileDialogProps {
   trigger?: React.ReactNode;
@@ -23,6 +25,7 @@ interface ChildProfileDialogProps {
 function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfile; onSuccess: () => void }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [selectedTraits, setSelectedTraits] = useState<string[]>(editProfile?.personalityTraits || []);
 
   const form = useForm<InsertChildProfile>({
     resolver: zodResolver(insertChildProfileSchema),
@@ -31,6 +34,7 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
       dateOfBirth: editProfile?.dateOfBirth || "",
       gender: editProfile?.gender || "",
       notes: editProfile?.notes || "",
+      personalityTraits: editProfile?.personalityTraits || [],
     },
   });
 
@@ -79,11 +83,46 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
   });
 
   const onSubmit = (data: InsertChildProfile) => {
+    const submissionData = {
+      ...data,
+      personalityTraits: selectedTraits,
+    };
+    
     if (editProfile) {
-      updateMutation.mutate(data);
+      updateMutation.mutate(submissionData);
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(submissionData);
     }
+  };
+
+  const toggleTrait = (traitKey: string) => {
+    setSelectedTraits(prev => {
+      if (prev.includes(traitKey)) {
+        return prev.filter(key => key !== traitKey);
+      } else if (prev.length < 7) {
+        return [...prev, traitKey];
+      } else {
+        toast({
+          title: "Maximum Traits Selected",
+          description: "You can select up to 7 personality traits that best describe your child.",
+          variant: "destructive",
+        });
+        return prev;
+      }
+    });
+  };
+
+  const getRelevantTraits = (): PersonalityTrait[] => {
+    const dateOfBirth = form.watch('dateOfBirth');
+    if (!dateOfBirth) return PERSONALITY_TRAITS;
+    
+    const today = new Date();
+    const birth = new Date(dateOfBirth);
+    let months = (today.getFullYear() - birth.getFullYear()) * 12;
+    months += today.getMonth() - birth.getMonth();
+    if (today.getDate() < birth.getDate()) months--;
+    
+    return getTraitsByAge(Math.max(0, months));
   };
 
   const calculateAge = (dateOfBirth: string) => {
@@ -201,6 +240,74 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
             </FormItem>
           )}
         />
+
+        <div>
+          <FormLabel className="text-sm font-medium text-neutral-700 mb-3 block">
+            ✨ Personality Traits <span className="text-neutral-400">(select up to 7)</span>
+          </FormLabel>
+          <p className="text-xs text-neutral-500 mb-4">
+            Choose traits that best describe your child's personality. This helps provide more personalized parenting insights.
+          </p>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-neutral-600">
+                Selected: {selectedTraits.length}/7
+              </span>
+              {selectedTraits.length > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedTraits([])}
+                >
+                  Clear All
+                </Button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border border-neutral-200 rounded-lg">
+              {getRelevantTraits().map((trait) => (
+                <button
+                  key={trait.key}
+                  type="button"
+                  onClick={() => toggleTrait(trait.key)}
+                  className={`p-3 rounded-lg border text-left text-sm transition-all hover:border-primary/50 ${
+                    selectedTraits.includes(trait.key)
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-neutral-200 hover:bg-neutral-50"
+                  }`}
+                  title={trait.description}
+                >
+                  <div className="flex items-center mb-1">
+                    <span className="text-lg mr-2">{trait.emoji}</span>
+                    <span className="font-medium">{trait.label}</span>
+                  </div>
+                  <p className="text-xs text-neutral-500 line-clamp-2">
+                    {trait.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+            
+            {selectedTraits.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {selectedTraits.map((traitKey) => {
+                  const trait = getTraitByKey(traitKey);
+                  return trait ? (
+                    <Badge
+                      key={traitKey}
+                      variant="secondary"
+                      className="text-xs"
+                    >
+                      {trait.emoji} {trait.label}
+                    </Badge>
+                  ) : null;
+                })}
+              </div>
+            )}
+          </div>
+        </div>
 
         <div className="flex gap-3 pt-4">
           <Button
@@ -355,6 +462,27 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
                             <p className="text-sm text-neutral-600 mb-2 line-clamp-2">
                               {profile.notes}
                             </p>
+                          )}
+                          {profile.personalityTraits && profile.personalityTraits.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              {profile.personalityTraits.slice(0, 4).map((traitKey) => {
+                                const trait = getTraitByKey(traitKey);
+                                return trait ? (
+                                  <Badge
+                                    key={traitKey}
+                                    variant="outline"
+                                    className="text-xs"
+                                  >
+                                    {trait.emoji} {trait.label}
+                                  </Badge>
+                                ) : null;
+                              })}
+                              {profile.personalityTraits.length > 4 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{profile.personalityTraits.length - 4} more
+                                </Badge>
+                              )}
+                            </div>
                           )}
                         </div>
                         <div className="flex gap-2 ml-4">

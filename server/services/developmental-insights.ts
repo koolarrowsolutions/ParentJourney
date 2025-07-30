@@ -1,5 +1,25 @@
-// Developmental insights based on child's age
-export function generateDevelopmentalInsight(ageInMonths: number): string {
+import { getTraitByKey } from "@shared/personality-traits";
+
+// Developmental insights based on child's age and personality traits
+export function generateDevelopmentalInsight(ageInMonths: number, personalityTraits?: string[]): string {
+  const baseInsight = getBaseInsightByAge(ageInMonths);
+  
+  if (!personalityTraits || personalityTraits.length === 0) {
+    return baseInsight;
+  }
+  
+  const personalizedTips = generatePersonalizedTips(ageInMonths, personalityTraits);
+  
+  if (personalizedTips) {
+    return `${baseInsight}
+
+🎯 **Personalized for your child:** ${personalizedTips}`;
+  }
+  
+  return baseInsight;
+}
+
+function getBaseInsightByAge(ageInMonths: number): string {
   if (ageInMonths < 6) {
     return "🍼 During the first 6 months, babies need lots of comfort and routine. Crying is their primary way to communicate needs - hunger, tiredness, or wanting connection. Trust your instincts and respond with warmth.";
   }
@@ -64,6 +84,83 @@ export function calculateAgeInMonths(dateOfBirth: Date): number {
   }
   
   return Math.max(0, months);
+}
+
+function generatePersonalizedTips(ageInMonths: number, personalityTraits: string[]): string | null {
+  const tips: string[] = [];
+  
+  personalityTraits.forEach(traitKey => {
+    const trait = getTraitByKey(traitKey);
+    if (!trait) return;
+    
+    // Age-appropriate tips based on personality traits
+    if (ageInMonths < 24) { // 0-2 years
+      switch (traitKey) {
+        case "sensitive_soul":
+          tips.push("Use gentle voices and gradual transitions to help your sensitive little one feel secure.");
+          break;
+        case "energizer_bunny":
+          tips.push("Provide plenty of safe movement opportunities and sensory play for your active baby.");
+          break;
+        case "cautious_cat":
+          tips.push("Allow extra time for your cautious child to warm up to new people and situations.");
+          break;
+        case "sensory_sensitive":
+          tips.push("Create calm, quiet spaces and watch for overstimulation cues.");
+          break;
+      }
+    } else if (ageInMonths < 60) { // 2-5 years
+      switch (traitKey) {
+        case "strong_willed":
+          tips.push("Offer choices within boundaries to honor their determination while maintaining limits.");
+          break;
+        case "social_butterfly":
+          tips.push("Arrange playdates and social activities to feed their love of connection.");
+          break;
+        case "perfectionist":
+          tips.push("Celebrate effort over perfection and model how mistakes help us learn.");
+          break;
+        case "little_scientist":
+          tips.push("Encourage their curiosity with hands-on experiments and 'why' conversations.");
+          break;
+        case "creative_artist":
+          tips.push("Provide open-ended art supplies and celebrate their unique creative expression.");
+          break;
+        case "rule_follower":
+          tips.push("Use their love of structure by creating clear, consistent routines and expectations.");
+          break;
+        case "helper_heart":
+          tips.push("Give them age-appropriate ways to contribute and feel useful around the house.");
+          break;
+      }
+    } else { // 5+ years
+      switch (traitKey) {
+        case "people_pleaser":
+          tips.push("Help them understand it's okay to disappoint others sometimes and practice saying no.");
+          break;
+        case "independent_spirit":
+          tips.push("Support their autonomy while maintaining connection through regular check-ins.");
+          break;
+        case "class_clown":
+          tips.push("Channel their humor positively and teach them appropriate times and places for jokes.");
+          break;
+        case "natural_leader":
+          tips.push("Give them leadership opportunities and teach them how to include and inspire others.");
+          break;
+        case "bookworm":
+          tips.push("Encourage their love of learning while ensuring balance with physical activity and social time.");
+          break;
+        case "rebel_spirit":
+          tips.push("Involve them in rule-making and explain the 'why' behind important boundaries.");
+          break;
+      }
+    }
+  });
+  
+  if (tips.length === 0) return null;
+  
+  // Return up to 2 most relevant tips
+  return tips.slice(0, 2).join(" ");
 }
 
 export function formatAge(ageInMonths: number): string {

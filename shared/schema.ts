@@ -9,6 +9,7 @@ export const childProfiles = pgTable("child_profiles", {
   dateOfBirth: date("date_of_birth").notNull(),
   gender: text("gender"), // optional: "male", "female", "other", or null
   notes: text("notes"),
+  personalityTraits: text("personality_traits").array(), // array of selected personality trait keys
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

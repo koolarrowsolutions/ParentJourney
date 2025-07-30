@@ -207,13 +207,20 @@ export function JournalForm() {
   return (
     <Card className="shadow-sm border border-neutral-200">
       <CardContent className="p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h3 className="text-lg sm:text-xl font-semibold text-neutral-800 flex items-center">
-            <PenTool className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="hidden sm:inline">📝 New Journal Entry</span>
-            <span className="sm:hidden">📝 Entry</span>
-          </h3>
-          <div className="text-xs sm:text-sm text-neutral-500 hidden sm:block">Today, {currentDate}</div>
+        <div className="space-y-4 mb-4 sm:mb-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg sm:text-xl font-semibold text-neutral-800 flex items-center">
+              <PenTool className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden sm:inline">📝 New Journal Entry</span>
+              <span className="sm:hidden">📝 Entry</span>
+            </h3>
+            <div className="text-xs sm:text-sm text-neutral-500 hidden sm:block">Today, {currentDate}</div>
+          </div>
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <p className="text-xs text-amber-800">
+              <strong>💡 Free-form journaling:</strong> Write about anything on your mind! For guided prompts and structured reflection questions, try the "📱 Daily Reflection" feature in the sidebar.
+            </p>
+          </div>
         </div>
 
         <Form {...form}>

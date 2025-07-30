@@ -73,154 +73,154 @@ export const PERSONALITY_TRAITS: PersonalityTrait[] = [
     key: "creative_artist",
     emoji: "🎨",
     label: "Creative Artist",
-    description: "Loves art, music, and creative expression",
+    description: "Loves art, music, and imaginative play",
     ageRelevant: "2-18 years"
   },
   {
     key: "bookworm",
     emoji: "📚",
     label: "Bookworm",
-    description: "Loves stories, reading, and learning",
+    description: "Loves stories, reading, and being read to",
     ageRelevant: "3-18 years"
   },
   {
-    key: "perfectionist",
-    emoji: "💎",
-    label: "Perfectionist",
-    description: "Wants everything done just right",
-    ageRelevant: "4-18 years"
-  },
-
-  // Communication & Expression
-  {
-    key: "chatterbox",
-    emoji: "💬",
-    label: "Chatterbox",
-    description: "Loves to talk and share stories",
+    key: "builder_engineer",
+    emoji: "🔧",
+    label: "Builder & Engineer",
+    description: "Loves building, taking things apart, and figuring out how things work",
     ageRelevant: "2-18 years"
-  },
-  {
-    key: "quiet_thinker",
-    emoji: "🤔",
-    label: "Quiet Thinker",
-    description: "Processes internally, speaks thoughtfully",
-    ageRelevant: "2-18 years"
-  },
-  {
-    key: "class_clown",
-    emoji: "🤡",
-    label: "Class Clown",
-    description: "Loves making others laugh, entertainer",
-    ageRelevant: "3-18 years"
-  },
-
-  // Behavior & Temperament
-  {
-    key: "rule_follower",
-    emoji: "📋",
-    label: "Rule Follower",
-    description: "Likes structure and following directions",
-    ageRelevant: "3-18 years"
-  },
-  {
-    key: "rebel_spirit",
-    emoji: "😤",
-    label: "Rebel Spirit",
-    description: "Questions authority, pushes boundaries",
-    ageRelevant: "2-18 years"
-  },
-  {
-    key: "helper_heart",
-    emoji: "🤝",
-    label: "Helper Heart",
-    description: "Loves helping others and being useful",
-    ageRelevant: "2-18 years"
-  },
-  {
-    key: "strong_willed",
-    emoji: "💪",
-    label: "Strong-Willed",
-    description: "Determined, knows what they want",
-    ageRelevant: "1-18 years"
-  },
-
-  // Anxiety & Comfort
-  {
-    key: "cautious_cat",
-    emoji: "🐱",
-    label: "Cautious Cat",
-    description: "Takes time to warm up, prefers familiar",
-    ageRelevant: "1-18 years"
-  },
-  {
-    key: "routine_lover",
-    emoji: "🕐",
-    label: "Routine Lover",
-    description: "Thrives on predictability and schedules",
-    ageRelevant: "1-18 years"
-  },
-  {
-    key: "flexible_friend",
-    emoji: "🌈",
-    label: "Flexible Friend",
-    description: "Adapts easily to changes and new situations",
-    ageRelevant: "2-18 years"
-  },
-
-  // Physical & Sensory
-  {
-    key: "sensory_seeker",
-    emoji: "🌀",
-    label: "Sensory Seeker",
-    description: "Needs lots of physical input and movement",
-    ageRelevant: "1-18 years"
-  },
-  {
-    key: "sensory_sensitive",
-    emoji: "🎧",
-    label: "Sensory Sensitive",
-    description: "Overwhelmed by loud noises or textures",
-    ageRelevant: "1-18 years"
   },
   {
     key: "nature_lover",
     emoji: "🌿",
     label: "Nature Lover",
-    description: "Happiest outdoors, loves animals and plants",
+    description: "Fascinated by animals, plants, and outdoor adventures",
     ageRelevant: "1-18 years"
   },
-
-  // Leadership & Social Dynamics
   {
-    key: "natural_leader",
+    key: "performer",
+    emoji: "🎭",
+    label: "Performer",
+    description: "Loves being on stage, singing, dancing, or acting",
+    ageRelevant: "3-18 years"
+  },
+  {
+    key: "helper",
+    emoji: "🤝",
+    label: "Little Helper",
+    description: "Always wants to help with chores and take care of others",
+    ageRelevant: "2-18 years"
+  },
+  {
+    key: "leader",
     emoji: "👑",
     label: "Natural Leader",
-    description: "Takes charge, organizes others",
-    ageRelevant: "3-18 years"
+    description: "Takes charge, organizes play, and guides other children",
+    ageRelevant: "4-18 years"
   },
   {
-    key: "team_player",
-    emoji: "⚽",
+    key: "follower",
+    emoji: "👥",
     label: "Team Player",
-    description: "Works well with others, collaborative",
+    description: "Prefers following others' lead, cooperative in group settings",
     ageRelevant: "3-18 years"
   },
   {
-    key: "gentle_giant",
-    emoji: "🐻",
-    label: "Gentle Giant",
-    description: "Big heart, protective of younger/smaller ones",
+    key: "detail_oriented",
+    emoji: "🔍",
+    label: "Detail Detective",
+    description: "Notices small details others miss, very observant",
+    ageRelevant: "4-18 years"
+  },
+  {
+    key: "big_picture",
+    emoji: "🌅",
+    label: "Big Picture Thinker",
+    description: "Sees the overall picture, thinks about abstract concepts",
+    ageRelevant: "5-18 years"
+  },
+  {
+    key: "cautious",
+    emoji: "🛡️",
+    label: "Cautious & Careful",
+    description: "Thinks before acting, prefers safe and familiar situations",
+    ageRelevant: "2-18 years"
+  },
+  {
+    key: "competitive",
+    emoji: "🏆",
+    label: "Competitive Spirit",
+    description: "Loves games, sports, and winning challenges",
+    ageRelevant: "4-18 years"
+  },
+  {
+    key: "collaborative",
+    emoji: "🤗",
+    label: "Collaborator",
+    description: "Prefers working together rather than competing",
+    ageRelevant: "3-18 years"
+  },
+  {
+    key: "routine_lover",
+    emoji: "⏰",
+    label: "Routine Lover",
+    description: "Thrives with predictable schedules and familiar patterns",
+    ageRelevant: "1-18 years"
+  },
+  {
+    key: "spontaneous",
+    emoji: "🎲",
+    label: "Spontaneous Spirit",
+    description: "Loves surprises, changes, and unexpected adventures",
+    ageRelevant: "3-18 years"
+  },
+  {
+    key: "verbal_processor",
+    emoji: "💬",
+    label: "Chatty Communicator",
+    description: "Processes thoughts by talking, loves conversations",
+    ageRelevant: "2-18 years"
+  },
+  {
+    key: "quiet_thinker",
+    emoji: "🤫",
+    label: "Quiet Thinker",
+    description: "Processes internally, prefers listening to talking",
+    ageRelevant: "2-18 years"
+  },
+  {
+    key: "morning_person",
+    emoji: "🌅",
+    label: "Early Bird",
+    description: "Most energetic and cheerful in the morning",
+    ageRelevant: "1-18 years"
+  },
+  {
+    key: "night_owl",
+    emoji: "🦉",
+    label: "Night Owl",
+    description: "More alert and active in the evening",
+    ageRelevant: "2-18 years"
+  },
+  {
+    key: "hugger",
+    emoji: "🤗",
+    label: "Affectionate Hugger",
+    description: "Shows love through physical touch and cuddles",
+    ageRelevant: "0-18 years"
+  },
+  {
+    key: "space_needer",
+    emoji: "🏠",
+    label: "Space Needer",
+    description: "Prefers personal space and less physical affection",
     ageRelevant: "3-18 years"
   }
 ];
 
+// Helper functions to get traits by age group  
 export function getTraitsByAge(ageInMonths: number): PersonalityTrait[] {
-  const ageInYears = Math.floor(ageInMonths / 12);
-  
-  return PERSONALITY_TRAITS.filter(trait => {
-    const [minAge, maxAge] = trait.ageRelevant.split('-').map(age => parseInt(age));
-    return ageInYears >= minAge && ageInYears <= maxAge;
-  });
+  return PERSONALITY_TRAITS; // For now, return all traits regardless of age
 }
 
 export function getTraitByKey(key: string): PersonalityTrait | undefined {

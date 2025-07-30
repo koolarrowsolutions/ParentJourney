@@ -148,6 +148,12 @@ export function UpdateTraitsDialog({ profile, trigger }: UpdateTraitsDialogProps
               </span>
             </div>
 
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
+              <p className="text-xs text-blue-800">
+                💡 <strong>Tip:</strong> Tap trait buttons to select them. Scroll through the trait area below to see all options available for your child's current age.
+              </p>
+            </div>
+
             {selectedTraits.length > 0 && (
               <div className="mb-4">
                 <p className="text-sm text-neutral-600 mb-2">Currently selected:</p>
@@ -170,28 +176,34 @@ export function UpdateTraitsDialog({ profile, trigger }: UpdateTraitsDialogProps
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto p-2 border border-neutral-200 rounded-lg">
-              {getRelevantTraits().map((trait) => (
-                <button
-                  key={trait.key}
-                  type="button"
-                  onClick={() => toggleTrait(trait.key)}
-                  className={`p-3 rounded-lg border text-left text-sm transition-all hover:border-primary/50 ${
-                    selectedTraits.includes(trait.key)
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-neutral-200 hover:bg-neutral-50"
-                  }`}
-                  title={trait.description}
-                >
-                  <div className="flex items-center mb-1">
-                    <span className="text-lg mr-2">{trait.emoji}</span>
-                    <span className="font-medium">{trait.label}</span>
-                  </div>
-                  <p className="text-xs text-neutral-500 line-clamp-2">
-                    {trait.description}
-                  </p>
-                </button>
-              ))}
+            <div className="relative">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto p-3 border border-neutral-200 rounded-lg bg-neutral-50/50">
+                {getRelevantTraits().map((trait) => (
+                  <button
+                    key={trait.key}
+                    type="button"
+                    onClick={() => toggleTrait(trait.key)}
+                    className={`p-4 rounded-lg border text-left transition-all hover:border-primary/50 min-h-[80px] flex flex-col justify-start ${
+                      selectedTraits.includes(trait.key)
+                        ? "border-primary bg-primary/10 text-primary shadow-sm"
+                        : "border-neutral-200 bg-white hover:bg-neutral-50 hover:shadow-sm"
+                    }`}
+                    title={trait.description}
+                  >
+                    <div className="flex items-center mb-2">
+                      <span className="text-xl mr-3 flex-shrink-0">{trait.emoji}</span>
+                      <span className="font-medium text-sm leading-tight">{trait.label}</span>
+                    </div>
+                    <p className="text-xs text-neutral-600 leading-relaxed line-clamp-2 flex-1">
+                      {trait.description}
+                    </p>
+                  </button>
+                ))}
+              </div>
+              {/* Scroll indicator */}
+              <div className="absolute bottom-2 right-2 bg-white/90 rounded-full px-2 py-1 text-xs text-neutral-500 border border-neutral-200 shadow-sm">
+                Scroll for more ↓
+              </div>
             </div>
           </div>
 

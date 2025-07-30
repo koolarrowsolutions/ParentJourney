@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +29,8 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedTraits, setSelectedTraits] = useState<string[]>(editProfile?.personalityTraits || []);
+  const [scrollIndicatorOpacity, setScrollIndicatorOpacity] = useState(1);
+  const traitsScrollRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<InsertChildProfile>({
     resolver: zodResolver(insertChildProfileSchema),
@@ -49,6 +51,33 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
       setSelectedTraits([]);
     }
   }, [editProfile]);
+
+  // Handle scroll indicator fade
+  useEffect(() => {
+    const scrollContainer = traitsScrollRef.current;
+    if (!scrollContainer) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      const maxScroll = scrollHeight - clientHeight;
+      
+      if (maxScroll <= 0) {
+        setScrollIndicatorOpacity(0);
+        return;
+      }
+      
+      // Fade out based on scroll progress (fade completely after 20% scroll)
+      const scrollProgress = scrollTop / maxScroll;
+      const opacity = Math.max(0, 1 - (scrollProgress * 5)); // Multiplied by 5 to fade out faster
+      setScrollIndicatorOpacity(opacity);
+    };
+
+    // Initial check
+    handleScroll();
+    
+    scrollContainer.addEventListener('scroll', handleScroll);
+    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertChildProfile) => {
@@ -292,7 +321,10 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
             </div>
 
             <div className="relative">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-56 overflow-y-auto p-3 border border-neutral-200 rounded-lg bg-neutral-50/50">
+              <div 
+                ref={traitsScrollRef}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-56 overflow-y-auto p-3 border border-neutral-200 rounded-lg bg-neutral-50/50"
+              >
                 {getRelevantTraits().map((trait) => (
                   <button
                     key={trait.key}
@@ -315,8 +347,11 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
                   </button>
                 ))}
               </div>
-              {/* Scroll indicator */}
-              <div className="absolute bottom-2 right-2 bg-white/90 rounded-full px-2 py-1 text-xs text-neutral-500 border border-neutral-200 shadow-sm">
+              {/* Scroll indicator with fade effect */}
+              <div 
+                className="absolute bottom-2 right-2 bg-white/90 rounded-full px-2 py-1 text-xs text-neutral-500 border border-neutral-200 shadow-sm transition-opacity duration-300 pointer-events-none"
+                style={{ opacity: scrollIndicatorOpacity }}
+              >
                 Scroll for more ↓
               </div>
             </div>

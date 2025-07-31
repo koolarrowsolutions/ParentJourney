@@ -308,11 +308,18 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                               
                               {/* Main breathing circle - outer container */}
                               <div className="w-32 h-32 rounded-full border-4 border-sky-300 bg-gradient-to-br from-sky-50 via-blue-25 to-sky-50 flex items-center justify-center shadow-2xl relative overflow-hidden">
-                                {/* Inner expanding circle based on breath progress */}
+                                {/* Inner circle with phase-specific behavior */}
                                 <div 
-                                  className="absolute inset-0 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 transition-all duration-300 ease-out flex items-center justify-center"
+                                  className={`absolute inset-0 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 flex items-center justify-center transition-all duration-300 ease-out
+                                    ${breathingPhase === 'hold' ? 'animate-pulse' : ''}
+                                  `}
                                   style={{ 
-                                    transform: `scale(${0.1 + (progress / 100) * 0.9})`,
+                                    transform: `scale(${
+                                      breathingPhase === 'inhale' ? 0.1 + (progress / 100) * 0.9 :
+                                      breathingPhase === 'hold' ? 1.0 :
+                                      breathingPhase === 'exhale' ? 1.0 - (progress / 100) * 0.9 :
+                                      0.1 + (progress / 100) * 0.9
+                                    })`,
                                     opacity: progress > 5 ? 0.8 : 0.2
                                   }}
                                 >

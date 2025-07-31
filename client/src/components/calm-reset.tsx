@@ -195,41 +195,106 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     // Start background sound simulation
     if (selectedBackgroundSound !== 'none') {
       console.log(`🌊 Playing ${backgroundSounds[selectedBackgroundSound as keyof typeof backgroundSounds].description} in the background`);
-      // Note: Background sounds would require audio files to be hosted
-      // For now, we show which sound would be playing
+      
+      // Create a simple background audio simulation using Web Audio API
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Create gentle nature-like sounds
+        if (selectedBackgroundSound === 'ocean') {
+          oscillator.frequency.setValueAtTime(100, audioContext.currentTime);
+          oscillator.type = 'sine';
+        } else if (selectedBackgroundSound === 'rain') {
+          oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+          oscillator.type = 'sawtooth';
+        } else {
+          oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+          oscillator.type = 'triangle';
+        }
+        
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        oscillator.start();
+        
+        // Store reference to stop later
+        setBackgroundAudio(oscillator as any);
+      } catch (error) {
+        console.log('Background audio not available');
+      }
     }
+
+    // Ensure voices are loaded
+    const initVoices = () => {
+      return new Promise<SpeechSynthesisVoice[]>((resolve) => {
+        let voices = speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          resolve(voices);
+        } else {
+          speechSynthesis.onvoiceschanged = () => {
+            voices = speechSynthesis.getVoices();
+            resolve(voices);
+          };
+        }
+      });
+    };
 
     // Start reading content
     let currentIndex = 0;
-    const speakNext = () => {
-      if (currentIndex >= content.length) {
+    const speakNext = async () => {
+      if (currentIndex >= content.length || !isPlaying) {
         stopGuidedAudio();
         return;
       }
 
+      const voices = await initVoices();
       const utterance = new SpeechSynthesisUtterance(content[currentIndex]);
-      utterance.rate = 0.7; // Slower, calmer pace
-      utterance.pitch = 0.8; // Slightly lower pitch for calm effect
-      utterance.volume = 0.8;
       
-      // Try to use a more natural voice
-      const voices = speechSynthesis.getVoices();
+      // Enhanced voice settings for calm delivery
+      utterance.rate = 0.6; // Even slower for meditation
+      utterance.pitch = 0.7; // Lower pitch for calm effect
+      utterance.volume = 0.9;
+      
+      // Find the best available female voice
       const preferredVoice = voices.find(voice => 
-        (voice.name.includes('Google') && voice.lang.includes('en')) ||
-        (voice.name.includes('Microsoft') && voice.lang.includes('en')) ||
-        voice.name.includes('Alex') ||
-        voice.name.includes('Samantha') ||
-        (voice.lang.includes('en') && voice.name.toLowerCase().includes('female'))
-      );
+        voice.lang.startsWith('en') && (
+          voice.name.toLowerCase().includes('female') ||
+          voice.name.toLowerCase().includes('woman') ||
+          voice.name.includes('Zira') ||
+          voice.name.includes('Hazel') ||
+          voice.name.includes('Karen') ||
+          voice.name.includes('Moira') ||
+          voice.name.includes('Tessa') ||
+          voice.name.includes('Samantha') ||
+          voice.name.includes('Victoria') ||
+          voice.name.includes('Google UK English Female') ||
+          voice.name.includes('Microsoft Eva') ||
+          voice.name.includes('Microsoft Aria')
+        )
+      ) || voices.find(voice => voice.lang.startsWith('en') && voice.name.includes('Google'));
+      
       if (preferredVoice) {
         utterance.voice = preferredVoice;
+        console.log(`Using voice: ${preferredVoice.name}`);
       }
 
       utterance.onend = () => {
+        if (!isPlaying) return;
         currentIndex++;
         setTimeout(() => {
           if (isPlaying) speakNext();
-        }, 2000); // 2 second pause between statements
+        }, 1500); // 1.5 second pause between statements
+      };
+
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
+        currentIndex++;
+        setTimeout(() => {
+          if (isPlaying) speakNext();
+        }, 1000);
       };
 
       setCurrentAudio(utterance);
@@ -244,8 +309,16 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     speechSynthesis.cancel();
     
     if (backgroundAudio) {
-      backgroundAudio.pause();
-      backgroundAudio.currentTime = 0;
+      try {
+        if (backgroundAudio.stop) {
+          backgroundAudio.stop();
+        } else if (backgroundAudio.pause) {
+          backgroundAudio.pause();
+          backgroundAudio.currentTime = 0;
+        }
+      } catch (error) {
+        console.log('Background audio cleanup error:', error);
+      }
       setBackgroundAudio(null);
     }
     
@@ -497,9 +570,12 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                     {isPlaying && (
                       <div className="text-sm text-sky-600 flex items-center">
                         <div className="animate-pulse w-2 h-2 bg-sky-500 rounded-full mr-2"></div>
-                        Playing audio guidance...
+                        Speaking with calming voice...
                       </div>
                     )}
+                  </div>
+                  <div className="text-xs text-sky-600 bg-sky-50 p-2 rounded">
+                    💡 Tip: For best experience, ensure your browser allows audio and try different voices in your system settings.
                   </div>
                 </div>
               </Card>

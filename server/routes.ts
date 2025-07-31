@@ -344,6 +344,48 @@ Remember: You're supporting parents who are doing their best. Validate their eff
     }
   });
 
+  // OpenAI Text-to-Speech endpoint
+  app.post('/api/text-to-speech', async (req, res) => {
+    try {
+      const { text, voice = 'nova' } = req.body;
+      
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ error: 'OpenAI API key not configured' });
+      }
+
+      const response = await fetch('https://api.openai.com/v1/audio/speech', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'tts-1',
+          input: text,
+          voice: voice,
+          response_format: 'mp3'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.statusText}`);
+      }
+
+      const audioBuffer = await response.arrayBuffer();
+      
+      res.set({
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': audioBuffer.byteLength.toString(),
+      });
+      
+      res.send(Buffer.from(audioBuffer));
+      
+    } catch (error) {
+      console.error('Text-to-speech error:', error);
+      res.status(500).json({ error: 'Failed to generate speech' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

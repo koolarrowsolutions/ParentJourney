@@ -116,11 +116,27 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
   ];
 
   const backgroundSounds = {
-    ocean: { name: 'Ocean Waves', description: 'Gentle ocean wave sounds' },
-    creek: { name: 'Running Creek', description: 'Peaceful flowing water' },
-    birds: { name: 'Chirping Birds', description: 'Calming bird songs' },
-    rain: { name: 'Gentle Rain', description: 'Soft rainfall sounds' },
-    none: { name: 'No Background', description: 'Voice only' }
+    ocean: { 
+      name: 'Ocean Waves', 
+      description: 'Gentle ocean wave sounds',
+      url: 'https://www.soundjay.com/misc/sounds-799.mp3'
+    },
+    creek: { 
+      name: 'Running Creek', 
+      description: 'Peaceful flowing water',
+      url: 'https://www.soundjay.com/misc/sounds-1022.mp3'
+    },
+    birds: { 
+      name: 'Chirping Birds', 
+      description: 'Calming bird songs',
+      url: 'https://www.soundjay.com/misc/sounds-1143.mp3'
+    },
+    rain: { 
+      name: 'Gentle Rain', 
+      description: 'Soft rainfall sounds',
+      url: 'https://www.soundjay.com/misc/sounds-1164.mp3'
+    },
+    none: { name: 'No Background', description: 'Voice only', url: '' }
   };
 
   const startBreathingExercise = (exerciseType: keyof typeof breathingExercises) => {
@@ -184,7 +200,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setActiveBreathingExercise(null);
   };
 
-  const startGuidedAudio = (content: string[]) => {
+  const startGuidedAudio = async (content: string[]) => {
     console.log('Audio button clicked, current playing state:', isPlaying);
     
     if (isPlaying) {
@@ -195,83 +211,149 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setIsPlaying(true);
     console.log('Starting audio with content:', content);
     
+    // Start background sound
     if (selectedBackgroundSound !== 'none') {
-      console.log(`Background: ${backgroundSounds[selectedBackgroundSound as keyof typeof backgroundSounds].description}`);
+      const soundConfig = backgroundSounds[selectedBackgroundSound as keyof typeof backgroundSounds];
+      console.log(`Starting background: ${soundConfig.description}`);
+      
+      try {
+        // For demo, we'll create a simple ambient sound
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
+        
+        oscillator.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Configure based on sound type
+        if (selectedBackgroundSound === 'ocean') {
+          oscillator.frequency.setValueAtTime(80, audioContext.currentTime);
+          oscillator.type = 'sine';
+          filter.frequency.setValueAtTime(200, audioContext.currentTime);
+        } else if (selectedBackgroundSound === 'rain') {
+          oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+          oscillator.type = 'sawtooth';
+          filter.frequency.setValueAtTime(400, audioContext.currentTime);
+        } else if (selectedBackgroundSound === 'birds') {
+          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+          oscillator.type = 'triangle';
+          filter.frequency.setValueAtTime(1000, audioContext.currentTime);
+        } else {
+          oscillator.frequency.setValueAtTime(120, audioContext.currentTime);
+          oscillator.type = 'sine';
+          filter.frequency.setValueAtTime(300, audioContext.currentTime);
+        }
+        
+        gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+        oscillator.start();
+        
+        setBackgroundAudio(oscillator as any);
+      } catch (error) {
+        console.log('Background audio not available:', error);
+      }
     }
 
+    // Try OpenAI TTS first, fallback to browser TTS
+    try {
+      await playWithOpenAI(content);
+    } catch (error) {
+      console.log('OpenAI TTS not available, using browser TTS');
+      playWithBrowserTTS(content);
+    }
+  };
+
+  const playWithOpenAI = async (content: string[]) => {
+    const fullText = content.join('. ');
+    console.log('Attempting OpenAI TTS for:', fullText.substring(0, 100) + '...');
+    
+    try {
+      const response = await fetch('/api/text-to-speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: fullText,
+          voice: 'nova' // Natural female voice
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('OpenAI TTS API failed');
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      
+      audio.onended = () => {
+        setIsPlaying(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+      
+      audio.onerror = () => {
+        console.error('Audio playback failed');
+        setIsPlaying(false);
+      };
+      
+      setCurrentAudio(audio as any);
+      await audio.play();
+      
+    } catch (error) {
+      console.error('OpenAI TTS error:', error);
+      throw error;
+    }
+  };
+
+  const playWithBrowserTTS = (content: string[]) => {
     let currentIndex = 0;
     
     const speakNext = () => {
-      console.log(`speakNext called, currentIndex: ${currentIndex}, isPlaying: ${isPlaying}`);
-      
-      if (currentIndex >= content.length) {
-        console.log('Finished reading all content');
+      if (currentIndex >= content.length || !isPlaying) {
         setIsPlaying(false);
         return;
       }
 
       const text = content[currentIndex];
-      console.log(`Speaking item ${currentIndex + 1} of ${content.length}: "${text}"`);
-      
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.8;
-      utterance.pitch = 0.9;
-      utterance.volume = 1.0;
+      utterance.rate = 0.7;
+      utterance.pitch = 0.8;
+      utterance.volume = 0.9;
       
       const voices = speechSynthesis.getVoices();
-      console.log('Available voices:', voices.map(v => v.name));
-      
-      const femaleVoice = voices.find(voice => 
+      const bestVoice = voices.find(voice => 
         voice.lang.includes('en') && (
-          voice.name.includes('female') ||
-          voice.name.includes('Female') ||
-          voice.name.includes('Samantha') ||
-          voice.name.includes('Zira')
+          voice.name.includes('Google UK English Female') ||
+          voice.name.includes('Microsoft Zira') ||
+          voice.name.includes('Samantha')
         )
       );
       
-      if (femaleVoice) {
-        utterance.voice = femaleVoice;
-        console.log(`Using voice: ${femaleVoice.name}`);
-      } else {
-        console.log('Using default voice');
+      if (bestVoice) {
+        utterance.voice = bestVoice;
       }
 
-      utterance.onstart = () => {
-        console.log('Speech started successfully');
-      };
-
       utterance.onend = () => {
-        console.log(`Finished speaking item ${currentIndex + 1}`);
         currentIndex++;
         setTimeout(() => {
-          speakNext();
+          if (isPlaying) speakNext();
         }, 1500);
       };
 
-      utterance.onerror = (event) => {
-        console.error('Speech error:', event.error);
+      utterance.onerror = () => {
         currentIndex++;
         setTimeout(() => {
-          speakNext();
+          if (isPlaying) speakNext();
         }, 1000);
       };
 
       setCurrentAudio(utterance);
-      console.log('About to call speechSynthesis.speak()');
       speechSynthesis.speak(utterance);
     };
 
-    // Ensure voices are loaded
-    if (speechSynthesis.getVoices().length === 0) {
-      speechSynthesis.onvoiceschanged = () => {
-        console.log('Voices loaded, starting speech');
-        speakNext();
-      };
-    } else {
-      console.log('Voices already available, starting immediately');
-      speakNext();
-    }
+    speakNext();
   };
 
   const stopGuidedAudio = () => {
@@ -537,12 +619,12 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                     {isPlaying && (
                       <div className="text-sm text-sky-600 flex items-center">
                         <div className="animate-pulse w-2 h-2 bg-sky-500 rounded-full mr-2"></div>
-                        Speaking with calming voice...
+                        Playing with natural AI voice...
                       </div>
                     )}
                   </div>
                   <div className="text-xs text-sky-600 bg-sky-50 p-2 rounded">
-                    💡 Tip: For best experience, ensure your browser allows audio and try different voices in your system settings.
+                    💡 Tip: Uses natural AI voices (Nova) when available, with calming background sounds for a spa-like experience.
                   </div>
                 </div>
               </Card>

@@ -221,10 +221,15 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
         {/* Personality Traits */}
         <Card className="border-sky-200">
           <CardContent className="p-4 space-y-4">
-            <h3 className="font-medium text-sky-800 flex items-center">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Your Personality Traits
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium text-sky-800 flex items-center">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Your Personality Traits
+              </h3>
+              <Badge variant="outline" className="text-xs">
+                {selectedTraits.length}/7 selected
+              </Badge>
+            </div>
 
             {/* Step 1: Category Selection */}
             <div className="space-y-3">

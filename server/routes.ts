@@ -167,11 +167,28 @@ function setupOAuthRoutes(app: Express) {
   });
 
   // Check auth status
-  app.get('/auth/user', (req, res) => {
-    if (req.session.hasJustSignedUp) {
-      res.json({ hasJustSignedUp: true });
+  app.get('/auth/user', async (req, res) => {
+    if (req.session.userId) {
+      // User is authenticated, get their info
+      const user = await storage.getUserById(req.session.userId);
+      if (user) {
+        res.json({ 
+          success: true, 
+          user: { 
+            id: user.id, 
+            name: user.name, 
+            email: user.email 
+          },
+          hasJustSignedUp: req.session.hasJustSignedUp || false
+        });
+      } else {
+        // Session exists but user not found - clear session
+        req.session.destroy((err) => {
+          res.json({ success: false, user: null });
+        });
+      }
     } else {
-      res.status(401).json({ error: 'Not authenticated' });
+      res.json({ success: false, user: null });
     }
   });
 
@@ -247,6 +264,17 @@ function setupOAuthRoutes(app: Express) {
       console.error('Login error:', error);
       res.status(500).json({ error: 'Failed to log in' });
     }
+  });
+
+  // Logout route
+  app.post('/auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Logout error:', err);
+        return res.status(500).json({ error: 'Failed to log out' });
+      }
+      res.json({ success: true, message: 'Logged out successfully' });
+    });
   });
 }
 

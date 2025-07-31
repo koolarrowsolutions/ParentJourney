@@ -13,7 +13,7 @@ import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { OnboardingFlow } from "@/components/onboarding-flow";
 import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
-import { SocialLoginButtons } from "@/components/test-auth-buttons";
+
 import type { ChildProfile } from "@shared/schema";
 
 interface JournalStats {
@@ -209,8 +209,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       {/* Floating Parenting Chatbot */}
       <ParentingChatbot />
 
-      {/* Social Login Buttons */}
-      <SocialLoginButtons />
+
 
       {/* Onboarding Flow */}
       {shouldShowOnboarding && (

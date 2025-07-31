@@ -1,9 +1,14 @@
-import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus, MessageCircle } from "lucide-react";
+import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus, MessageCircle, LogOut } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AuthDialog } from "./auth-dialog";
+import { useAuth, useLogout } from "@/hooks/use-auth";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export function Header() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const logout = useLogout();
+
   return (
     <header className="bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-50 animate-pop-fade">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
@@ -87,21 +92,45 @@ export function Header() {
               </Link>
             </div>
             
-            {/* Unified Authentication Button */}
+            {/* Authentication Section */}
             <div className="flex items-center ml-4 border-l border-neutral-200 pl-4">
-              <AuthDialog 
-                mode="signup"
-                trigger={
-                  <Button 
-                    size="sm"
-                    className="bg-primary hover:bg-primary/90 text-white animate-pop-in relative"
-                  >
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Sign In / Join</span>
-                    <span className="sm:hidden">Sign In</span>
-                  </Button>
-                }
-              />
+              {isLoading ? (
+                <div className="h-8 w-20 bg-neutral-200 rounded animate-pulse"></div>
+              ) : isAuthenticated && user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="text-neutral-700 hover:text-primary transition-colors hover-scale button-press"
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">{user.name}</span>
+                      <span className="sm:hidden">Profile</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={logout} className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <AuthDialog 
+                  mode="signup"
+                  trigger={
+                    <Button 
+                      size="sm"
+                      className="bg-primary hover:bg-primary/90 text-white animate-pop-in relative hover-scale button-press"
+                    >
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Sign In / Join</span>
+                      <span className="sm:hidden">Sign In</span>
+                    </Button>
+                  }
+                />
+              )}
             </div>
           </div>
         </div>

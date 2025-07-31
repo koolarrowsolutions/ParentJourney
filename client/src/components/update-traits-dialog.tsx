@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { type ChildProfile, type InsertChildProfile } from "@shared/schema";
 import { PERSONALITY_TRAITS, getTraitsByAge, getTraitByKey, type PersonalityTrait } from "@shared/personality-traits";
-import { Sparkles, Calendar } from "lucide-react";
+import { Settings, Calendar } from "lucide-react";
 
 interface UpdateTraitsDialogProps {
   profile: ChildProfile;
@@ -112,7 +112,7 @@ export function UpdateTraitsDialog({ profile, trigger }: UpdateTraitsDialogProps
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="outline" size="sm" className="flex items-center">
-            <Sparkles className="mr-1 h-3 w-3" />
+            <Settings className="mr-1 h-3 w-3" />
             Update Traits
           </Button>
         )}
@@ -120,8 +120,8 @@ export function UpdateTraitsDialog({ profile, trigger }: UpdateTraitsDialogProps
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center text-xl">
-            <Sparkles className="mr-2 h-5 w-5 text-primary" />
-            ✨ Update {profile.name}'s Personality Traits
+            <Settings className="mr-2 h-5 w-5 text-primary" />
+            ⚙️ Update {profile.name}'s Personality Traits
           </DialogTitle>
           <div className="flex items-center text-sm text-neutral-600 mt-2">
             <Calendar className="mr-1 h-3 w-3" />

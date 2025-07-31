@@ -386,11 +386,11 @@
   }
 
   /* Stagger Animation Delays */
-  .stagger-1 { animation-delay: 0.1s; }
-  .stagger-2 { animation-delay: 0.2s; }
-  .stagger-3 { animation-delay: 0.3s; }
-  .stagger-4 { animation-delay: 0.4s; }
-  .stagger-5 { animation-delay: 0.5s; }
+  .stagger-1 { animation-delay: 0.1s; animation-fill-mode: both; opacity: 0; }
+  .stagger-2 { animation-delay: 0.2s; animation-fill-mode: both; opacity: 0; }
+  .stagger-3 { animation-delay: 0.3s; animation-fill-mode: both; opacity: 0; }
+  .stagger-4 { animation-delay: 0.4s; animation-fill-mode: both; opacity: 0; }
+  .stagger-5 { animation-delay: 0.5s; animation-fill-mode: both; opacity: 0; }
 }
 
 /* Custom utilities for neutral colors */

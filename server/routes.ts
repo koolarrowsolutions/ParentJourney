@@ -78,13 +78,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             childTraits
           );
           
-          aiFeedback = `**Validation:** ${feedback.validation}
+          aiFeedback = `**Encouragement:** ${feedback.encouragement}
 
-**Suggestion:** ${feedback.suggestion}
+**Insight:** ${feedback.insight}
 
-**Growth:** ${feedback.growth}
-
-**Summary:** ${feedback.summary}`;
+**Suggestion:** ${feedback.suggestion}`;
           hasAiFeedback = "true";
         } catch (aiError) {
           console.error("AI feedback generation failed:", aiError);

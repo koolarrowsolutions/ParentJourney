@@ -57,46 +57,76 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
   const sections = feedback.split('\n\n').filter(section => section.trim());
   
   return (
-    <div className="mt-6 p-6 bg-gradient-accent rounded-lg border border-accent/20">
-      <div className="flex items-start">
-        <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-          <Bot className="text-white h-5 w-5" />
-        </div>
-        <div className="flex-1">
-          <h4 className="font-semibold text-neutral-800 mb-2">AI Insights & Suggestions</h4>
-          <div className="text-neutral-700 leading-relaxed space-y-3">
-            {sections.map((section, index) => {
-              const [title, ...contentParts] = section.split(':');
-              const content = contentParts.join(':').trim();
-              
-              let icon;
-              if (title.includes('Validation')) {
-                icon = <Lightbulb className="text-accent mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
-              } else if (title.includes('Suggestion')) {
-                icon = <Heart className="text-secondary mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
-              } else if (title.includes('Growth')) {
-                icon = <Star className="text-primary mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
-              } else {
-                icon = <Bot className="text-accent mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
-              }
-              
-              return (
-                <div key={index} className="flex items-start">
-                  {icon}
-                  <span>
-                    {title.includes('*') ? (
-                      <>
-                        <strong>{title.replace(/\*\*/g, '')}:</strong> {content}
-                      </>
-                    ) : (
-                      section
-                    )}
-                  </span>
+    <div className="mt-6 space-y-4 animate-fade-in">
+      <div className="flex items-center gap-2 pb-2 border-b border-neutral-200">
+        <Bot className="h-5 w-5 text-primary" />
+        <h3 className="text-lg font-semibold text-neutral-800">
+          Your AI Parenting Coach
+        </h3>
+        <Badge variant="secondary" className="ml-auto text-xs">
+          Personalized Insights
+        </Badge>
+      </div>
+      
+      <div className="space-y-4">
+        {sections.map((section, index) => {
+          if (!section.includes(':')) return null;
+          
+          const [title, ...contentParts] = section.split(':');
+          const content = contentParts.join(':').trim();
+          
+          let icon, bgColor, borderColor, description;
+          if (title.includes('Encouragement')) {
+            icon = <Heart className="text-pink-600 mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
+            bgColor = "bg-pink-50";
+            borderColor = "border-l-pink-400";
+            description = "Emotional validation and support";
+          } else if (title.includes('Insight')) {
+            icon = <Lightbulb className="text-amber-600 mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
+            bgColor = "bg-amber-50";
+            borderColor = "border-l-amber-400";
+            description = "A fresh perspective on your situation";
+          } else if (title.includes('Suggestion')) {
+            icon = <Star className="text-blue-600 mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
+            bgColor = "bg-blue-50";
+            borderColor = "border-l-blue-400";
+            description = "Actionable parenting guidance";
+          } else {
+            icon = <Bot className="text-neutral-600 mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
+            bgColor = "bg-neutral-50";
+            borderColor = "border-l-neutral-400";
+            description = "AI guidance";
+          }
+          
+          return (
+            <div key={index} className={`p-4 ${bgColor} rounded-lg border-l-4 ${borderColor} hover-lift transition-all duration-200`}>
+              <div className="flex">
+                {icon}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-neutral-800">
+                      {title.replace(/\*\*/g, '').trim()}
+                    </h4>
+                    <span className="text-xs text-neutral-500">
+                      {description}
+                    </span>
+                  </div>
+                  <p className="text-neutral-700 leading-relaxed">
+                    {content}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      
+      <div className="mt-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
+        <p className="text-xs text-neutral-600 flex items-center">
+          <Bot className="h-3 w-3 mr-1" />
+          These insights are generated based on your entry and child's developmental stage. 
+          Remember, you know your child best.
+        </p>
       </div>
     </div>
   );
@@ -157,8 +187,10 @@ export function JournalForm() {
       toast({
         title: "Entry saved!",
         description: data.aiFeedback 
-          ? "AI insights have been generated for your entry."
-          : "Entry saved! AI insights coming soon...",
+          ? "Your AI parenting coach has provided insights below."
+          : requestAiFeedback 
+            ? "Generating AI coaching insights..." 
+            : "Your journal entry has been saved.",
       });
       
       // Reset form
@@ -173,10 +205,20 @@ export function JournalForm() {
     },
     onError: (error) => {
       console.error("Failed to save entry:", error);
+      
+      let errorMessage = "Failed to save your journal entry. Please try again.";
+      
+      // Check for specific AI-related errors
+      if (error.message?.includes('OpenAI API key not configured')) {
+        errorMessage = "Entry saved, but AI feedback unavailable. Please add your OpenAI API key to enable coaching insights.";
+      } else if (error.message?.includes('OpenAI API quota exceeded')) {
+        errorMessage = "Entry saved, but AI feedback unavailable due to quota limits. Please check your OpenAI usage.";
+      }
+      
       toast({
-        title: "Error",
-        description: "Failed to save your journal entry. Please try again.",
-        variant: "destructive",
+        title: error.message?.includes('OpenAI') ? "Entry Saved" : "Error",
+        description: errorMessage,
+        variant: error.message?.includes('OpenAI') ? "default" : "destructive",
       });
       setIsSubmittingWithAI(false);
     },
@@ -384,8 +426,11 @@ export function JournalForm() {
           <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
             <div className="flex items-center">
               <Loader2 className="animate-spin h-5 w-5 text-primary mr-3" />
-              <span className="text-neutral-700">Getting AI insights for your entry...</span>
+              <span className="text-neutral-700">Getting AI coaching insights...</span>
             </div>
+            <p className="text-xs text-neutral-500 mt-2">
+              This may take a few moments as your AI parenting coach analyzes your entry
+            </p>
           </div>
         )}
 

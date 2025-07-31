@@ -6,10 +6,9 @@ const openai = new OpenAI({
 });
 
 export interface AiFeedback {
-  validation: string;
+  encouragement: string;
+  insight: string;
   suggestion: string;
-  growth: string;
-  summary: string;
 }
 
 export async function generateParentingFeedback(
@@ -24,22 +23,14 @@ export async function generateParentingFeedback(
     ? `The child's personality traits include: ${childTraits.join(', ')}.` 
     : '';
 
-  const prompt = `You are a compassionate parenting coach and child development expert. A parent has shared their journal entry with you. Please provide supportive, practical feedback in JSON format.
+  const prompt = `You are a warm, emotionally intelligent parenting coach. Reflect on this journal entry: "${content}". ${ageContext ? `The child is ${Math.floor(childAge / 12)} years and ${childAge % 12} months old.` : ''} ${traitsContext}
 
-Journal Entry:
-Title: ${title || "No title"}
-Content: ${content}
-Mood: ${mood || "Not specified"}
-${ageContext}
-${traitsContext}
+Please provide a supportive response in JSON format with exactly these fields:
+- encouragement: Warm emotional validation and encouragement for the parent's feelings and experiences (2-3 sentences)
+- insight: A practical insight or gentle reframe about the situation that helps the parent see it differently (2-3 sentences)  
+- suggestion: One specific, actionable suggestion for future parenting behavior that's appropriate for the child's age (2-3 sentences)
 
-Please respond with a JSON object containing:
-- validation: A supportive message acknowledging their feelings and experience as a parent (2-3 sentences)
-- suggestion: One practical, actionable suggestion tailored to their specific situation and child's developmental stage (2-3 sentences)
-- growth: How this experience contributes to their growth as a parent, considering the child's age and traits if provided (2-3 sentences)
-- summary: A brief encouraging summary that reinforces their parenting journey (1-2 sentences)
-
-Keep the tone warm, non-judgmental, and encouraging. Focus on practical parenting advice based on child development principles. If age and traits are provided, tailor your advice to be developmentally appropriate.`;
+Keep your tone warm, empathetic, and non-judgmental. Focus on practical wisdom and emotional support.`;
 
   try {
     const response = await openai.chat.completions.create({
@@ -61,13 +52,23 @@ Keep the tone warm, non-judgmental, and encouraging. Focus on practical parentin
     const result = JSON.parse(response.choices[0].message.content || "{}");
     
     return {
-      validation: result.validation || "Your feelings and experiences as a parent are completely valid.",
-      suggestion: result.suggestion || "Consider taking small steps and being patient with yourself and your child.",
-      growth: result.growth || "Every challenge is an opportunity for growth in your parenting journey.",
-      summary: result.summary || "You're doing better than you think, and your awareness shows your dedication as a parent."
+      encouragement: result.encouragement || "Your feelings and experiences as a parent are completely valid. You're doing better than you think.",
+      insight: result.insight || "Every parenting challenge is an opportunity to learn and grow together with your child.",
+      suggestion: result.suggestion || "Consider taking small steps and being patient with yourself and your child."
     };
   } catch (error) {
     console.error("OpenAI API error:", error);
-    throw new Error("Failed to generate AI feedback: " + (error as Error).message);
+    
+    // Check if it's an API key issue
+    if (error.message?.includes('401') || error.message?.includes('authentication')) {
+      throw new Error("OpenAI API key not configured. Please add your OPENAI_API_KEY to enable AI feedback.");
+    }
+    
+    // Check if it's a rate limit or quota issue
+    if (error.message?.includes('429') || error.message?.includes('quota')) {
+      throw new Error("OpenAI API quota exceeded. Please check your usage limits.");
+    }
+    
+    throw new Error("Failed to generate AI feedback. Please try again later.");
   }
 }

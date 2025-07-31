@@ -106,7 +106,7 @@ export function Sidebar() {
       </Card>
 
       {/* Weekly Insights */}
-      <Card className="shadow-sm border border-neutral-200 hover-lift animate-slide-in-right stagger-2">
+      <Card className="shadow-sm border border-neutral-200 hover-lift animate-bounce-in stagger-2">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
             <CalendarX className="text-primary mr-2 h-5 w-5" />
@@ -120,7 +120,7 @@ export function Sidebar() {
               </>
             ) : (
               <>
-                <div className="p-3 bg-accent/10 rounded-lg border border-accent/20 hover-scale interactive-card animate-fade-in stagger-3">
+                <div className="p-3 bg-accent/10 rounded-lg border border-accent/20 hover-scale interactive-card animate-pop-in stagger-3">
                   <div className="flex items-center mb-2">
                     <TrendingUp className="text-accent mr-2 h-4 w-4 animate-gentle-bounce" />
                     <span className="font-medium text-neutral-800">Growth Pattern</span>
@@ -132,7 +132,7 @@ export function Sidebar() {
                     }
                   </p>
                 </div>
-                <div className="p-3 bg-secondary/10 rounded-lg border border-secondary/20 hover-scale interactive-card animate-fade-in stagger-4">
+                <div className="p-3 bg-secondary/10 rounded-lg border border-secondary/20 hover-scale interactive-card animate-pop-in stagger-4">
                   <div className="flex items-center mb-2">
                     <Heart className="text-secondary mr-2 h-4 w-4 animate-gentle-bounce" />
                     <span className="font-medium text-neutral-800">Streak Status</span>

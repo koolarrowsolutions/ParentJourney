@@ -31,7 +31,7 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
   return (
     <div className="grid grid-cols-3 gap-4">
       {/* Total Entries */}
-      <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-scale-in stagger-1">
+      <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-pop-in stagger-1">
         <div className="relative">
           <div className={`text-2xl font-bold text-primary transition-all duration-700 ${
             animateNumbers ? 'scale-110 animate-pulse-glow' : 'scale-100'
@@ -63,7 +63,7 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
       </div>
 
       {/* This Week */}
-      <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-scale-in stagger-2">
+      <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-bounce-in stagger-2">
         <div className="relative">
           <div className={`text-2xl font-bold text-primary transition-all duration-700 ${
             animateNumbers ? 'scale-110' : 'scale-100'
@@ -85,7 +85,7 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
               key={i}
               className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                 i < weekEntries 
-                  ? 'bg-primary animate-scale-in' 
+                  ? 'bg-primary animate-pop-in' 
                   : 'bg-neutral-300'
               }`}
               style={{ animationDelay: `${i * 100}ms` }}
@@ -95,7 +95,7 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
       </div>
 
       {/* Streak */}
-      <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-scale-in stagger-3">
+      <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-pop-fade stagger-3">
         <div className="relative">
           <div className={`text-2xl font-bold text-primary transition-all duration-700 ${
             animateNumbers ? 'scale-110' : 'scale-100'

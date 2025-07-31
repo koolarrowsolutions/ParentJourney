@@ -89,7 +89,7 @@ export default function Analytics({ triggerSignUpPrompt }: AnalyticsProps) {
           {!searchResults && (
             <div className="space-y-8">
               {/* AI Mood Trends Dashboard */}
-              <div className="animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
+              <div className="animate-pop-fade" style={{ animationDelay: '0.1s' }}>
                 <MoodTrendsDashboard 
                   selectedChildId={selectedChildId}
                   onChildChange={handleChildChange}
@@ -97,7 +97,7 @@ export default function Analytics({ triggerSignUpPrompt }: AnalyticsProps) {
               </div>
 
               {/* Emotion Trends Dashboard */}
-              <div className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
+              <div className="animate-bounce-in" style={{ animationDelay: '0.2s' }}>
                 <EmotionTrendsDashboard 
                   selectedChildId={selectedChildId}
                   onChildChange={handleChildChange}
@@ -107,12 +107,12 @@ export default function Analytics({ triggerSignUpPrompt }: AnalyticsProps) {
               {/* Analytics Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Weekly Reflection */}
-                <div className="animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
+                <div className="animate-pop-in" style={{ animationDelay: '0.3s' }}>
                   <WeeklyReflection />
                 </div>
 
                 {/* Mood Analytics */}
-                <div className="animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
+                <div className="animate-bounce-in" style={{ animationDelay: '0.4s' }}>
                   <MoodAnalytics />
                 </div>
               </div>

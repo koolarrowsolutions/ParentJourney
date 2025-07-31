@@ -5,7 +5,7 @@ import { AuthDialog } from "./auth-dialog";
 
 export function Header() {
   return (
-    <header className="bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-50 animate-slide-up">
+    <header className="bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-50 animate-pop-fade">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">

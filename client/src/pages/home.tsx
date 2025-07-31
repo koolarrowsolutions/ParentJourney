@@ -72,18 +72,18 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
-            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm animate-fade-in stagger-1">
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm animate-pop-fade stagger-1">
               <JournalForm triggerSignUpPrompt={triggerSignUpPrompt} />
             </div>
             
             {/* Child-specific entries overview */}
             {childProfiles && childProfiles.length > 0 && (
-              <div className="space-y-6 animate-fade-in stagger-2">
+              <div className="space-y-6 animate-bounce-in stagger-2">
                 <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
                   <h3 className="text-lg font-semibold text-neutral-800 mb-4">Your Children's Journey</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {childProfiles.map((child, index) => (
-                      <div key={child.id} className={`animate-fade-in stagger-${index + 3}`}>
+                      <div key={child.id} className={`animate-pop-in stagger-${index + 3}`}>
                         <ChildEntryOverview child={child} />
                       </div>
                     ))}
@@ -92,7 +92,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
               </div>
             )}
             
-            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 hover-lift animate-fade-in stagger-4">
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 hover-lift animate-pop-fade stagger-4">
               <h3 className="text-lg font-semibold text-neutral-800 mb-4">All Recent Entries</h3>
               <RecentEntries />
             </div>
@@ -100,7 +100,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm animate-slide-in-right stagger-3">
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm animate-bounce-in stagger-3">
               <Sidebar />
             </div>
           </div>

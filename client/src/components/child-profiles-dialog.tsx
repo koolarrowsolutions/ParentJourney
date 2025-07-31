@@ -17,6 +17,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { insertChildProfileSchema, type InsertChildProfile, type ChildProfile } from "@shared/schema";
 import { PERSONALITY_TRAITS, getTraitsByAge, getTraitByKey, type PersonalityTrait } from "@shared/personality-traits";
 import { Users, Plus, Edit, Trash2, Baby, Calendar, User, Sparkles } from "lucide-react";
+import { calculateDevelopmentalStage, formatAge, DEVELOPMENTAL_STAGES } from "@/utils/developmental-stages";
 import { UpdateTraitsDialog } from "./update-traits-dialog";
 
 interface ChildProfileDialogProps {
@@ -37,7 +38,9 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
     defaultValues: {
       name: editProfile?.name || "",
       dateOfBirth: editProfile?.dateOfBirth || "",
+      pronouns: editProfile?.pronouns || "",
       gender: editProfile?.gender || "",
+      developmentalStage: editProfile?.developmentalStage || "",
       notes: editProfile?.notes || "",
       personalityTraits: editProfile?.personalityTraits || [],
     },
@@ -237,25 +240,76 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
           )}
         />
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="pronouns"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium text-neutral-700">
+                  🗣️ Pronouns <span className="text-neutral-400">(optional)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="e.g., they/them, she/her, he/him" 
+                    className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent"
+                    {...field} 
+                    value={field.value || ""} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium text-neutral-700">
+                  ⚤ Gender <span className="text-neutral-400">(optional)</span>
+                </FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                  <FormControl>
+                    <SelectTrigger className="border-neutral-200 focus:ring-2 focus:ring-primary">
+                      <SelectValue placeholder="Select gender..." />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="male">👦 Boy</SelectItem>
+                    <SelectItem value="female">👧 Girl</SelectItem>
+                    <SelectItem value="other">🌈 Other</SelectItem>
+                    <SelectItem value="not_specified">Prefer not to say</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <FormField
           control={form.control}
-          name="gender"
+          name="developmentalStage"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-sm font-medium text-neutral-700">
-                ⚤ Gender <span className="text-neutral-400">(optional)</span>
+                🎯 Developmental Stage <span className="text-neutral-400">(auto-calculated)</span>
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
                 <FormControl>
                   <SelectTrigger className="border-neutral-200 focus:ring-2 focus:ring-primary">
-                    <SelectValue placeholder="Select gender..." />
+                    <SelectValue placeholder="Auto-calculate from age..." />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="male">👦 Boy</SelectItem>
-                  <SelectItem value="female">👧 Girl</SelectItem>
-                  <SelectItem value="other">🌈 Other</SelectItem>
-                  <SelectItem value="not_specified">Prefer not to say</SelectItem>
+                  <SelectItem value="">Auto-calculate from age</SelectItem>
+                  {DEVELOPMENTAL_STAGES.map((stage) => (
+                    <SelectItem key={stage.key} value={stage.key}>
+                      {stage.label} ({stage.ageRange})
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -531,8 +585,21 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
                           </div>
                           <div className="flex items-center text-sm text-neutral-600 mb-2">
                             <Calendar className="mr-1 h-3 w-3" />
-                            <span>{calculateAge(profile.dateOfBirth)}</span>
+                            <span>{formatAge(profile.dateOfBirth)}</span>
+                            {profile.pronouns && (
+                              <span className="ml-2 text-neutral-500">• {profile.pronouns}</span>
+                            )}
                           </div>
+                          {(() => {
+                            const stage = profile.developmentalStage 
+                              ? DEVELOPMENTAL_STAGES.find(s => s.key === profile.developmentalStage)
+                              : calculateDevelopmentalStage(profile.dateOfBirth);
+                            return stage ? (
+                              <div className="text-xs text-primary font-medium mb-2">
+                                {stage.label} ({stage.ageRange})
+                              </div>
+                            ) : null;
+                          })()}
                           {profile.notes && (
                             <p className="text-sm text-neutral-600 mb-2 line-clamp-2">
                               {profile.notes}

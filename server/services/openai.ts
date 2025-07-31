@@ -15,22 +15,31 @@ export interface AiFeedback {
 export async function generateParentingFeedback(
   title: string | null,
   content: string,
-  mood: string | null
+  mood: string | null,
+  childAge?: number,
+  childTraits?: string[]
 ): Promise<AiFeedback> {
+  const ageContext = childAge ? `The child is ${Math.floor(childAge / 12)} years and ${childAge % 12} months old.` : '';
+  const traitsContext = childTraits && childTraits.length > 0 
+    ? `The child's personality traits include: ${childTraits.join(', ')}.` 
+    : '';
+
   const prompt = `You are a compassionate parenting coach and child development expert. A parent has shared their journal entry with you. Please provide supportive, practical feedback in JSON format.
 
 Journal Entry:
 Title: ${title || "No title"}
 Content: ${content}
 Mood: ${mood || "Not specified"}
+${ageContext}
+${traitsContext}
 
 Please respond with a JSON object containing:
-- validation: A supportive message acknowledging their feelings and experience (2-3 sentences)
-- suggestion: One practical, actionable suggestion they can try (2-3 sentences)
-- growth: How this experience contributes to their growth as a parent (1-2 sentences)
-- summary: A brief encouraging summary (1-2 sentences)
+- validation: A supportive message acknowledging their feelings and experience as a parent (2-3 sentences)
+- suggestion: One practical, actionable suggestion tailored to their specific situation and child's developmental stage (2-3 sentences)
+- growth: How this experience contributes to their growth as a parent, considering the child's age and traits if provided (2-3 sentences)
+- summary: A brief encouraging summary that reinforces their parenting journey (1-2 sentences)
 
-Keep the tone warm, non-judgmental, and encouraging. Focus on practical parenting advice based on child development principles.`;
+Keep the tone warm, non-judgmental, and encouraging. Focus on practical parenting advice based on child development principles. If age and traits are provided, tailor your advice to be developmentally appropriate.`;
 
   try {
     const response = await openai.chat.completions.create({

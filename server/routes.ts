@@ -12,7 +12,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
       const search = req.query.search as string;
-      const entries = await storage.getJournalEntries(limit, search);
+      const childId = req.query.childId as string;
+      const entries = await storage.getJournalEntries(limit, search, childId);
       res.json(entries);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch journal entries" });
@@ -58,10 +59,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (requestAiFeedback) {
         try {
+          let childAge: number | undefined;
+          let childTraits: string[] | undefined;
+          
+          if (entryData.childProfileId) {
+            const childProfile = await storage.getChildProfile(entryData.childProfileId);
+            if (childProfile) {
+              childAge = calculateAgeInMonths(new Date(childProfile.dateOfBirth));
+              childTraits = childProfile.personalityTraits || [];
+            }
+          }
+          
           const feedback = await generateParentingFeedback(
             entryData.title ?? null,
             entryData.content,
-            entryData.mood ?? null
+            entryData.mood ?? null,
+            childAge,
+            childTraits
           );
           
           aiFeedback = `**Validation:** ${feedback.validation}

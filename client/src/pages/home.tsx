@@ -7,6 +7,8 @@ import { RecentEntries } from "@/components/recent-entries";
 import { Sidebar } from "@/components/sidebar";
 import { QuickTemplates } from "@/components/quick-templates";
 import { InteractiveProgress } from "@/components/interactive-progress";
+import { ChildEntryOverview } from "@/components/child-entry-overview";
+import type { ChildProfile } from "@shared/schema";
 
 interface JournalStats {
   totalEntries: number;
@@ -20,6 +22,15 @@ export default function Home() {
     queryFn: async () => {
       const response = await fetch("/api/journal-stats");
       if (!response.ok) throw new Error("Failed to fetch stats");
+      return response.json();
+    },
+  });
+
+  const { data: childProfiles } = useQuery<ChildProfile[]>({
+    queryKey: ["/api/child-profiles"],
+    queryFn: async () => {
+      const response = await fetch("/api/child-profiles");
+      if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },
   });
@@ -59,8 +70,24 @@ export default function Home() {
               <JournalForm />
             </div>
             
-            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 hover-lift animate-fade-in stagger-2">
-              <h3 className="text-lg font-semibold text-neutral-800 mb-4">Recent Entries</h3>
+            {/* Child-specific entries overview */}
+            {childProfiles && childProfiles.length > 0 && (
+              <div className="space-y-6 animate-fade-in stagger-2">
+                <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-neutral-800 mb-4">Your Children's Journey</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {childProfiles.map((child, index) => (
+                      <div key={child.id} className={`animate-fade-in stagger-${index + 3}`}>
+                        <ChildEntryOverview child={child} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 hover-lift animate-fade-in stagger-4">
+              <h3 className="text-lg font-semibold text-neutral-800 mb-4">All Recent Entries</h3>
               <RecentEntries />
             </div>
           </div>

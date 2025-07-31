@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 export interface IStorage {
   // Journal entries
   getJournalEntry(id: string): Promise<JournalEntry | undefined>;
-  getJournalEntries(limit?: number, search?: string): Promise<JournalEntry[]>;
+  getJournalEntries(limit?: number, search?: string, childId?: string): Promise<JournalEntry[]>;
   createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry>;
   updateJournalEntry(id: string, updates: Partial<InsertJournalEntry>): Promise<JournalEntry | undefined>;
   deleteJournalEntry(id: string): Promise<boolean>;
@@ -41,8 +41,13 @@ export class MemStorage implements IStorage {
     return this.journalEntries.get(id);
   }
 
-  async getJournalEntries(limit = 10, search?: string): Promise<JournalEntry[]> {
+  async getJournalEntries(limit = 10, search?: string, childId?: string): Promise<JournalEntry[]> {
     let entries = Array.from(this.journalEntries.values());
+    
+    // Apply child filter if provided
+    if (childId && childId.trim()) {
+      entries = entries.filter(entry => entry.childProfileId === childId);
+    }
     
     // Apply search filter if provided
     if (search && search.trim()) {
@@ -72,6 +77,7 @@ export class MemStorage implements IStorage {
       aiFeedback: insertEntry.aiFeedback ?? null,
       developmentalInsight: insertEntry.developmentalInsight ?? null,
       hasAiFeedback: insertEntry.hasAiFeedback ?? "false",
+      photos: insertEntry.photos ?? null,
       id,
       createdAt: new Date(),
     };
@@ -267,9 +273,11 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const profile: ChildProfile = {
       ...insertProfile,
+      pronouns: insertProfile.pronouns ?? null,
       gender: insertProfile.gender ?? null,
+      developmentalStage: insertProfile.developmentalStage ?? null,
       notes: insertProfile.notes ?? null,
-      personalityTraits: insertProfile.personalityTraits ?? [],
+      personalityTraits: insertProfile.personalityTraits ?? null,
       id,
       createdAt: new Date(),
     };

@@ -7,7 +7,9 @@ export const childProfiles = pgTable("child_profiles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
   dateOfBirth: date("date_of_birth").notNull(),
+  pronouns: text("pronouns"), // Added pronouns field
   gender: text("gender"), // optional: "male", "female", "other", or null
+  developmentalStage: text("developmental_stage"), // Added developmental stage
   notes: text("notes"),
   personalityTraits: text("personality_traits").array(), // array of selected personality trait keys
   createdAt: timestamp("created_at").defaultNow().notNull(),

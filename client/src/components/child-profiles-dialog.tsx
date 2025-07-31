@@ -32,6 +32,7 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
   const queryClient = useQueryClient();
   const [selectedTraits, setSelectedTraits] = useState<string[]>(editProfile?.personalityTraits || []);
   const [scrollIndicatorOpacity, setScrollIndicatorOpacity] = useState(1);
+  const [justCreatedChild, setJustCreatedChild] = useState<string | null>(null);
   const traitsScrollRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<InsertChildProfile>({
@@ -90,9 +91,11 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/child-profiles"] });
+      const childName = form.getValues().name;
+      setJustCreatedChild(childName);
       toast({
         title: "Profile Created! 👶",
-        description: "Your child's profile has been saved successfully.",
+        description: `${childName}'s profile has been saved successfully.`,
       });
       onSuccess();
     },
@@ -467,6 +470,36 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
             {editProfile ? "💾 Update Profile" : "➕ Add Child Profile"}
           </Button>
         </div>
+        
+        {/* Add Another Child Button - appears after successful creation */}
+        {!editProfile && justCreatedChild && (
+          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-800">
+                  Great! {justCreatedChild}'s profile was created successfully.
+                </p>
+                <p className="text-xs text-green-700 mt-1">
+                  Want to add another child?
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  form.reset();
+                  setSelectedTraits([]);
+                  setJustCreatedChild(null);
+                }}
+                className="border-green-300 text-green-700 hover:bg-green-100"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Another Child
+              </Button>
+            </div>
+          </div>
+        )}
       </form>
     </Form>
   );

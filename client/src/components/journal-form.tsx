@@ -104,7 +104,7 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
 
 export function JournalForm() {
   const [selectedMood, setSelectedMood] = useState<string>("");
-  const [selectedChildId, setSelectedChildId] = useState<string>("");
+  const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const [isSubmittingWithAI, setIsSubmittingWithAI] = useState(false);
   const [aiFeedback, setAiFeedback] = useState<string>("");
   const [developmentalInsight, setDevelopmentalInsight] = useState<string>("");
@@ -164,7 +164,7 @@ export function JournalForm() {
       // Reset form
       form.reset();
       setSelectedMood("");
-      setSelectedChildId("");
+      setSelectedChildIds([]);
       setIsSubmittingWithAI(false);
       setShowAiFeedback(false);
       setAiFeedback("");
@@ -186,7 +186,7 @@ export function JournalForm() {
     const submissionData = {
       ...data,
       mood: selectedMood || null,
-      childProfileId: selectedChildId && selectedChildId !== "none" ? selectedChildId : null,
+      childProfileId: selectedChildIds.length > 0 ? selectedChildIds[0] : null, // For now, use first selected child for compatibility
       requestAiFeedback,
       photos: photos.length > 0 ? photos : null,
     };
@@ -217,12 +217,30 @@ export function JournalForm() {
               <PenTool className="text-white h-5 w-5" />
             </div>
             <h3 className="text-xl font-semibold text-neutral-800">
-              New Journal Entry
+              How are you feeling today?
             </h3>
           </div>
-          <p className="text-neutral-600">
-            Share what's on your mind today.
+          <p className="text-neutral-600 mb-4">
+            Share your parenting moment and get personalized insights.
           </p>
+          
+          {/* Mood Selection - Moved to top */}
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {MOODS.map((mood) => (
+              <button
+                key={mood.value}
+                type="button"
+                onClick={() => setSelectedMood(mood.value)}
+                className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale animate-wiggle ${
+                  selectedMood === mood.value
+                    ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
+                    : "border-neutral-200 hover:border-primary hover:bg-primary/5"
+                }`}
+              >
+                {mood.emoji} {mood.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <Form {...form}>
@@ -272,59 +290,65 @@ export function JournalForm() {
               )}
             />
 
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-3">
-                How are you feeling today?
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {MOODS.map((mood) => (
-                  <button
-                    key={mood.value}
-                    type="button"
-                    onClick={() => setSelectedMood(mood.value)}
-                    className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale animate-wiggle ${
-                      selectedMood === mood.value
-                        ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
-                        : "border-neutral-200 hover:border-primary hover:bg-primary/5"
-                    }`}
-                  >
-                    {mood.emoji} {mood.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-3">
-                Writing about a specific child? <span className="text-neutral-400">(optional)</span>
+                Writing about specific children? <span className="text-neutral-400">(optional)</span>
               </label>
-              <div className="flex gap-3">
-                <Select onValueChange={setSelectedChildId} value={selectedChildId}>
-                  <SelectTrigger className="flex-1 border-neutral-200 focus:ring-2 focus:ring-primary">
-                    <SelectValue placeholder="Choose a child profile..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No specific child</SelectItem>
-                    {childProfiles?.map((profile) => (
-                      <SelectItem key={profile.id} value={profile.id}>
+              
+              {/* Multi-child selection */}
+              <div className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  {childProfiles?.map((profile) => {
+                    const isSelected = selectedChildIds.includes(profile.id);
+                    return (
+                      <button
+                        key={profile.id}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedChildIds(prev => prev.filter(id => id !== profile.id));
+                          } else {
+                            setSelectedChildIds(prev => [...prev, profile.id]);
+                          }
+                        }}
+                        className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale ${
+                          isSelected
+                            ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
+                            : "border-neutral-200 hover:border-primary hover:bg-primary/5"
+                        }`}
+                      >
                         {profile.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <ChildProfilesDialog
-                  trigger={
-                    <Button variant="outline" type="button" className="px-3">
-                      <Users className="h-4 w-4" />
-                    </Button>
-                  }
-                />
+                      </button>
+                    );
+                  })}
+                  
+                  <ChildProfilesDialog
+                    trigger={
+                      <Button variant="outline" type="button" className="px-3 py-2 text-sm hover-scale button-press">
+                        <Users className="h-4 w-4 mr-1" />
+                        Add Child
+                      </Button>
+                    }
+                  />
+                </div>
+                
+                {selectedChildIds.length > 0 && (
+                  <div className="flex items-center text-xs text-neutral-500">
+                    <Users className="h-3 w-3 mr-1" />
+                    Selected: {selectedChildIds.map(id => 
+                      childProfiles?.find(p => p.id === id)?.name
+                    ).join(', ')}
+                  </div>
+                )}
+                
+                {selectedChildIds.length > 0 && (
+                  <p className="text-xs text-neutral-500">
+                    Selecting children will provide age-appropriate developmental insights.
+                  </p>
+                )}
               </div>
-              {selectedChildId && (
-                <p className="text-xs text-neutral-500 mt-2">
-                  Selecting a child will provide age-appropriate developmental insights.
-                </p>
-              )}
             </div>
 
             {/* Photo Upload */}
@@ -376,7 +400,7 @@ export function JournalForm() {
         {developmentalInsight && (
           <DevelopmentalInsightDisplay 
             insight={developmentalInsight} 
-            childName={childProfiles?.find(p => p.id === selectedChildId)?.name}
+            childName={selectedChildIds.length > 0 ? childProfiles?.find(p => p.id === selectedChildIds[0])?.name : undefined}
           />
         )}
 

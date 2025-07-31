@@ -71,10 +71,12 @@ export class MemStorage implements IStorage {
   async createJournalEntry(insertEntry: InsertJournalEntry): Promise<JournalEntry> {
     const id = randomUUID();
     const entry: JournalEntry = {
-      ...insertEntry,
+      id,
       title: insertEntry.title ?? null,
+      content: insertEntry.content,
       mood: insertEntry.mood ?? null,
       aiAnalyzedMood: insertEntry.aiAnalyzedMood ?? null,
+      emotionTags: insertEntry.emotionTags ?? null,
       childProfileId: insertEntry.childProfileId ?? null,
       aiFeedback: insertEntry.aiFeedback ?? null,
       developmentalInsight: insertEntry.developmentalInsight ?? null,
@@ -82,7 +84,6 @@ export class MemStorage implements IStorage {
       photos: insertEntry.photos ?? null,
       isFavorite: insertEntry.isFavorite ?? "false",
       calmResetUsed: insertEntry.calmResetUsed ?? "false",
-      id,
       createdAt: new Date(),
     };
     

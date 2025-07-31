@@ -14,6 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { journalEntryWithAiSchema, type JournalEntryWithAi, type ChildProfile } from "@shared/schema";
 import { getRandomPrompt } from "@shared/prompts";
 import { getDailyGreeting } from "@shared/greetings";
+import { getSettings } from "@/utils/settings-storage";
 import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap, RefreshCw } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { PhotoUpload } from "./photo-upload";
@@ -159,6 +160,7 @@ export function JournalForm() {
   const [currentPrompt, setCurrentPrompt] = useState<string>(() => getRandomPrompt());
   const [dailyGreeting] = useState<string>(() => getDailyGreeting());
   const [isCalmResetOpen, setIsCalmResetOpen] = useState(false);
+  const [settings] = useState(() => getSettings());
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -299,6 +301,15 @@ export function JournalForm() {
           <p className="text-neutral-600 mb-4">
             {dailyGreeting}
           </p>
+          
+          {/* Parenting Focus Reminder */}
+          {settings.parentingFocus && (
+            <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
+              <p className="text-sm text-neutral-700">
+                <span className="font-medium">Your focus:</span> {settings.parentingFocus}
+              </p>
+            </div>
+          )}
           
           {/* Daily Prompt Inspiration */}
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">

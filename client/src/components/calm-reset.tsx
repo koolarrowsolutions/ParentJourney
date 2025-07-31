@@ -254,18 +254,18 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
               <div className="grid grid-cols-1 gap-4">
                 {Object.entries(breathingExercises).map(([key, exercise]) => (
                   <div key={key} className="space-y-3">
-                    <Card className="p-4 border-emerald-200">
+                    <Card className="p-4 border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50 hover:shadow-md transition-all duration-300">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-emerald-800">{exercise.name}</h4>
-                          <p className="text-sm text-emerald-600">{exercise.description}</p>
+                          <h4 className="font-medium text-sky-800">{exercise.name}</h4>
+                          <p className="text-sm text-sky-600">{exercise.description}</p>
                         </div>
                         <Button
                           onClick={() => startBreathingExercise(key as keyof typeof breathingExercises)}
                           disabled={isActive}
                           variant="outline"
                           size="sm"
-                          className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                          className="border-sky-300 text-sky-700 hover:bg-sky-100 shadow-sm transition-all duration-200"
                         >
                           <Play className="h-4 w-4 mr-1" />
                           Start
@@ -275,43 +275,67 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
                     {/* Animation appears below the specific exercise that was started */}
                     {isActive && activeBreathingExercise === key && (
-                      <Card className="p-6 border-2 border-emerald-300 bg-emerald-50 animate-pop-fade">
-                        <div className="text-center space-y-4">
+                      <Card className="p-8 border border-sky-200 bg-gradient-to-br from-sky-50 to-blue-50 shadow-lg animate-gentle-fade">
+                        <div className="text-center space-y-6">
                           <div className="flex items-center justify-center space-x-4">
-                            <Badge variant="outline" className="border-emerald-300 text-emerald-700">
+                            <Badge variant="outline" className="border-sky-300 text-sky-700 bg-white/50">
                               {exercise.name}
                             </Badge>
-                            <Badge variant="outline" className="border-emerald-300 text-emerald-700">
+                            <Badge variant="outline" className="border-sky-300 text-sky-700 bg-white/50">
                               Cycle {cycleCount + 1}/4
                             </Badge>
                           </div>
                           
-                          <div className="space-y-2">
-                            <h3 className="text-lg font-medium text-emerald-800 capitalize">
-                              {breathingPhase}
-                            </h3>
-                            <p className="text-emerald-700">
-                              {exercise.phases.find(p => p.name === breathingPhase)?.instruction}
-                            </p>
+                          {/* Breathing visualization circle */}
+                          <div className="flex flex-col items-center space-y-4">
+                            <div className={`
+                              w-24 h-24 rounded-full border-4 border-sky-300 bg-gradient-to-br from-sky-100 to-blue-100 
+                              flex items-center justify-center transition-all duration-1000 ease-in-out shadow-inner
+                              ${breathingPhase === 'inhale' ? 'scale-125 border-sky-400' : 
+                                breathingPhase === 'hold' ? 'scale-125 border-sky-500' : 
+                                'scale-75 border-sky-300'}
+                            `}>
+                              <div className={`
+                                w-12 h-12 rounded-full bg-gradient-to-br from-sky-200 to-blue-200 
+                                transition-all duration-1000 ease-in-out
+                                ${breathingPhase === 'inhale' ? 'scale-110' : 
+                                  breathingPhase === 'hold' ? 'scale-110' : 
+                                  'scale-50'}
+                              `}></div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <h3 className="text-xl font-light text-sky-800 capitalize tracking-wide">
+                                {breathingPhase}
+                              </h3>
+                              <p className="text-sky-700 text-sm max-w-xs leading-relaxed">
+                                {exercise.phases.find(p => p.name === breathingPhase)?.instruction}
+                              </p>
+                            </div>
                           </div>
 
-                          <div className="space-y-2">
-                            <Progress value={progress} className="h-3" />
-                            <div className="flex justify-center space-x-2">
+                          <div className="space-y-4">
+                            <div className="w-full bg-sky-100 rounded-full h-2 overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-sky-300 to-blue-400 rounded-full transition-all duration-300 ease-out"
+                                style={{ width: `${progress}%` }}
+                              ></div>
+                            </div>
+                            <div className="flex justify-center space-x-3">
                               <Button
                                 onClick={stopExercise}
                                 variant="outline"
                                 size="sm"
-                                className="border-emerald-300 text-emerald-700"
+                                className="border-sky-300 text-sky-700 hover:bg-sky-50 shadow-sm"
                               >
                                 <Pause className="h-4 w-4 mr-1" />
-                                Stop
+                                Pause
                               </Button>
                               <Button
                                 onClick={resetExercise}
                                 variant="outline"
                                 size="sm"
-                                className="border-emerald-300 text-emerald-700"
+                                className="border-sky-300 text-sky-700 hover:bg-sky-50 shadow-sm"
                               >
                                 <RotateCcw className="h-4 w-4 mr-1" />
                                 Reset

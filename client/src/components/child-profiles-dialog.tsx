@@ -211,11 +211,12 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
                     {...field}
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                    <VoiceInputButton
-                      onTranscript={(text) => {
+                    <VoiceInput
+                      onTranscription={(text: string) => {
                         const currentValue = field.value || '';
                         field.onChange(currentValue + (currentValue ? ' ' : '') + text);
                       }}
+                      isInline
                     />
                   </div>
                 </div>

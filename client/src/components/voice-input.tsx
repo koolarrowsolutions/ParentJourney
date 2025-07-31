@@ -1,16 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, Square } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface VoiceInputProps {
-  onTranscript: (text: string) => void;
-  disabled?: boolean;
+  onTranscription: (text: string) => void;
+  placeholder?: string;
+  isInline?: boolean; // For inline microphone in input fields
   className?: string;
 }
 
-// Compact version for inline use
-export function VoiceInputButton({ onTranscript, disabled = false }: VoiceInputProps) {
+export function VoiceInput({ onTranscription, placeholder = "Click to start voice input", isInline = false, className = "" }: VoiceInputProps) {
   const [isListening, setIsListening] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -18,153 +18,32 @@ export function VoiceInputButton({ onTranscript, disabled = false }: VoiceInputP
 
   useEffect(() => {
     // Check if speech recognition is supported
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       setIsSupported(true);
       recognitionRef.current = new SpeechRecognition();
-      
-      const recognition = recognitionRef.current;
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
 
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      
-      recognition.onerror = (event: any) => {
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        onTranscription(transcript);
         setIsListening(false);
-        if (event.error !== 'aborted') {
-          toast({
-            title: "Voice input error",
-            description: "Please check microphone permissions and try again.",
-            variant: "destructive",
-          });
-        }
       };
 
-      recognition.onresult = (event: any) => {
-        let finalTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          }
-        }
-        if (finalTranscript) {
-          onTranscript(finalTranscript);
-        }
-      };
-    }
-
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-    };
-  }, [onTranscript, toast]);
-
-  const toggleListening = () => {
-    if (!recognitionRef.current || disabled) return;
-
-    if (isListening) {
-      recognitionRef.current.stop();
-    } else {
-      try {
-        recognitionRef.current.start();
-        toast({
-          title: "Voice Input Active",
-          description: "Speak now. Your speech will be converted to text.",
-        });
-      } catch (error) {
-        toast({
-          title: "Voice Input Failed",
-          description: "Could not start voice input. Please try again.",
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
-  if (!isSupported) {
-    return null;
-  }
-
-  return (
-    <Button
-      type="button"
-      variant="ghost"
-      size="sm"
-      onClick={toggleListening}
-      disabled={disabled}
-      className={`h-8 w-8 p-0 ${isListening ? 'text-red-500 animate-pulse' : 'text-neutral-500 hover:text-primary'}`}
-      title={isListening ? "Stop voice input" : "Start voice input"}
-    >
-      {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-    </Button>
-  );
-}
-
-// Full version with label for forms
-export function VoiceInput({ onTranscript, disabled = false, className = "" }: VoiceInputProps) {
-  const [isListening, setIsListening] = useState(false);
-  const [isSupported, setIsSupported] = useState(false);
-  const recognitionRef = useRef<any>(null);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    
-    if (SpeechRecognition) {
-      setIsSupported(true);
-      recognitionRef.current = new SpeechRecognition();
-      
-      const recognition = recognitionRef.current;
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      
-      recognition.onerror = (event: any) => {
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
         setIsListening(false);
-        let errorMessage = "Voice input failed";
-        
-        switch (event.error) {
-          case 'no-speech':
-            errorMessage = "No speech detected. Please try again.";
-            break;
-          case 'audio-capture':
-            errorMessage = "Microphone not accessible. Please check permissions.";
-            break;
-          case 'not-allowed':
-            errorMessage = "Microphone permission denied. Please enable in browser settings.";
-            break;
-          case 'network':
-            errorMessage = "Network error. Please check your connection.";
-            break;
-        }
-        
         toast({
           title: "Voice Input Error",
-          description: errorMessage,
+          description: "There was an issue with voice recognition. Please try again.",
           variant: "destructive",
         });
       };
 
-      recognition.onresult = (event: any) => {
-        let finalTranscript = '';
-        
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript;
-          }
-        }
-        
-        if (finalTranscript) {
-          onTranscript(finalTranscript);
-        }
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
       };
     }
 
@@ -173,27 +52,28 @@ export function VoiceInput({ onTranscript, disabled = false, className = "" }: V
         recognitionRef.current.abort();
       }
     };
-  }, [onTranscript, toast]);
+  }, [onTranscription, toast]);
 
-  const toggleListening = () => {
-    if (!recognitionRef.current || disabled) return;
+  const startListening = () => {
+    if (!isSupported) {
+      toast({
+        title: "Not Supported",
+        description: "Voice input is not supported in your browser.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    if (isListening) {
+    if (recognitionRef.current && !isListening) {
+      setIsListening(true);
+      recognitionRef.current.start();
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current && isListening) {
       recognitionRef.current.stop();
-    } else {
-      try {
-        recognitionRef.current.start();
-        toast({
-          title: "Voice Input Active",
-          description: "Speak now. Your speech will be converted to text.",
-        });
-      } catch (error) {
-        toast({
-          title: "Voice Input Failed",
-          description: "Could not start voice input. Please try again.",
-          variant: "destructive",
-        });
-      }
+      setIsListening(false);
     }
   };
 
@@ -201,27 +81,55 @@ export function VoiceInput({ onTranscript, disabled = false, className = "" }: V
     return null;
   }
 
+  if (isInline) {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={`absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-primary/10 ${className}`}
+        onClick={isListening ? stopListening : startListening}
+        title={isListening ? "Stop voice input" : "Start voice input"}
+      >
+        {isListening ? (
+          <Square className="h-4 w-4 text-red-500 animate-pulse" />
+        ) : (
+          <Mic className="h-4 w-4 text-neutral-500 hover:text-primary" />
+        )}
+      </Button>
+    );
+  }
+
   return (
     <Button
       type="button"
-      variant={isListening ? "default" : "outline"}
-      size="sm"
-      onClick={toggleListening}
-      disabled={disabled}
-      className={`${className} ${isListening ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' : ''}`}
-      title={isListening ? "Stop voice input" : "Start voice input"}
+      variant={isListening ? "destructive" : "outline"}
+      onClick={isListening ? stopListening : startListening}
+      className={`flex items-center space-x-2 ${className}`}
+      disabled={!isSupported}
     >
       {isListening ? (
         <>
-          <MicOff className="h-4 w-4 mr-1" />
-          Listening...
+          <MicOff className="h-4 w-4" />
+          <span>Stop Recording</span>
         </>
       ) : (
         <>
-          <Mic className="h-4 w-4 mr-1" />
-          Voice
+          <Mic className="h-4 w-4" />
+          <span>Voice Input</span>
         </>
       )}
     </Button>
   );
+}
+
+// Legacy alias for backward compatibility
+export const VoiceInputButton = VoiceInput;
+
+// Add global type declarations
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
 }

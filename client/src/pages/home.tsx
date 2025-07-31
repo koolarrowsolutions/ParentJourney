@@ -11,7 +11,9 @@ import { QuickActionsGroup } from "@/components/quick-actions-group";
 import { getDailyGreeting } from "@shared/greetings";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
-import type { ChildProfile } from "@shared/schema";
+import { OnboardingFlow } from "@/components/onboarding-flow";
+import { useQuery as useParentQuery } from "@tanstack/react-query";
+import type { ChildProfile, ParentProfile } from "@shared/schema";
 
 interface JournalStats {
   totalEntries: number;
@@ -26,6 +28,7 @@ interface HomeProps {
 export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
 
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
@@ -44,6 +47,18 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       return response.json();
     },
   });
+
+  const { data: parentProfile } = useParentQuery<ParentProfile>({
+    queryKey: ["/api/parent-profile"],
+    queryFn: async () => {
+      const response = await fetch("/api/parent-profile");
+      if (!response.ok) throw new Error("Failed to fetch parent profile");
+      return response.json();
+    },
+  });
+
+  // Show onboarding if no parent profile exists
+  const shouldShowOnboarding = !parentProfile && !showOnboarding;
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -185,6 +200,18 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       
       {/* Floating Parenting Chatbot */}
       <ParentingChatbot />
+
+      {/* Onboarding Flow */}
+      {shouldShowOnboarding && (
+        <OnboardingFlow 
+          isOpen={true}
+          onComplete={() => {
+            setShowOnboarding(true);
+            window.location.reload(); // Refresh to load new profile data
+          }}
+          onClose={() => setShowOnboarding(true)}
+        />
+      )}
     </div>
   );
 }

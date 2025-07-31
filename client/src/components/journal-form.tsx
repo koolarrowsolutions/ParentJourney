@@ -20,7 +20,7 @@ import { getSettings } from "@/utils/settings-storage";
 import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap, RefreshCw, Camera, X } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { CalmReset } from "./calm-reset";
-import { VoiceInputButton, VoiceInput } from "./voice-input";
+import { VoiceInput } from "./voice-input";
 
 const MOODS = [
   { emoji: "😊", label: "Happy", value: "😊" },
@@ -362,15 +362,13 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
                         {...field}
                         value={field.value ?? ""}
                       />
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                        <VoiceInputButton
-                          onTranscript={(text) => {
-                            const currentValue = field.value || '';
-                            field.onChange(currentValue + (currentValue ? ' ' : '') + text);
-                          }}
-                          disabled={createEntryMutation.isPending}
-                        />
-                      </div>
+                      <VoiceInput 
+                        onTranscription={(text: string) => {
+                          const currentValue = field.value || '';
+                          field.onChange(currentValue + (currentValue ? ' ' : '') + text);
+                        }}
+                        isInline 
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -387,14 +385,7 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
                     <FormLabel className="text-sm font-medium text-neutral-700">
                       What's on your mind? <span className="text-red-400">*</span>
                     </FormLabel>
-                    <VoiceInput
-                      onTranscript={(text) => {
-                        const currentValue = field.value || '';
-                        field.onChange(currentValue + (currentValue ? ' ' : '') + text);
-                      }}
-                      disabled={createEntryMutation.isPending}
-                      className="mb-2"
-                    />
+
                   </div>
                   
                   {/* Writing Prompt Helper integrated into text area */}
@@ -424,12 +415,29 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
                   </div>
                   
                   <FormControl>
-                    <Textarea
-                      rows={5}
-                      placeholder="Share your thoughts, challenges, victories, or anything about your day as a parent..."
-                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none input-glow hover-scale"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Textarea
+                        rows={5}
+                        placeholder="Share your thoughts, challenges, victories, or anything about your day as a parent..."
+                        className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none input-glow hover-scale pr-12"
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          setContentLength(e.target.value.length);
+                        }}
+                      />
+                      <VoiceInput
+                        onTranscription={(text: string) => {
+                          const currentValue = field.value || '';
+                          const newValue = currentValue + (currentValue && !currentValue.endsWith(' ') ? ' ' : '') + text;
+                          field.onChange(newValue);
+                          setContentLength(newValue.length);
+                        }}
+                        isInline
+                        className="bottom-2"
+                      />
+                    </div>
                   </FormControl>
                   <div className="text-xs text-neutral-500 mt-1">
                     {contentLength} characters

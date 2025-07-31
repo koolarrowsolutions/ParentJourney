@@ -13,6 +13,7 @@ import Milestones from "@/pages/milestones";
 import Settings from "@/pages/settings";
 import ChildEntries from "@/pages/child-entries";
 import JournalHistory from "@/pages/journal-history";
+import { Community } from "@/pages/community";
 
 function AppRouter() {
   const {
@@ -34,6 +35,7 @@ function AppRouter() {
         <Route path="/settings" component={() => <Settings triggerSignUpPrompt={triggerSignUpPrompt} />} />
         <Route path="/child-entries" component={ChildEntries} />
         <Route path="/journal-history" component={() => <JournalHistory triggerSignUpPrompt={triggerSignUpPrompt} />} />
+        <Route path="/community" component={Community} />
         <Route component={NotFound} />
       </Switch>
       

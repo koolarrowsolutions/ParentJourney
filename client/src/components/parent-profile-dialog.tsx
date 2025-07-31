@@ -149,13 +149,13 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                   <FormItem>
                     <FormLabel>Your Name *</FormLabel>
                     <FormControl>
-                      <div className="flex gap-2">
-                        <Input {...field} placeholder="Enter your name" />
-                        <VoiceInputButton
-                          onTranscript={(transcript) => {
+                      <div className="relative">
+                        <Input {...field} placeholder="Enter your name" className="pr-12" />
+                        <VoiceInput
+                          onTranscription={(transcript: string) => {
                             field.onChange(transcript);
                           }}
-                          size="sm"
+                          isInline
                         />
                       </div>
                     </FormControl>

@@ -1,7 +1,15 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertJournalEntrySchema, journalEntryWithAiSchema, insertChildProfileSchema, insertParentProfileSchema } from "@shared/schema";
+import { 
+  insertJournalEntrySchema, 
+  journalEntryWithAiSchema, 
+  insertChildProfileSchema, 
+  insertParentProfileSchema, 
+  insertFamilySchema,
+  insertCommunityPostSchema,
+  insertCommunityCommentSchema
+} from "@shared/schema";
 import { generateParentingFeedback, analyzeMood } from "./services/openai";
 import { generateDevelopmentalInsight, calculateAgeInMonths } from "./services/developmental-insights";
 import { z, ZodError } from "zod";
@@ -253,6 +261,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting child profile:", error);
       res.status(500).json({ message: "Failed to delete child profile" });
+    }
+  });
+
+  // Family routes
+  app.post("/api/families", async (req, res) => {
+    try {
+      const validatedData = insertFamilySchema.parse(req.body);
+      const family = await storage.createFamily(validatedData);
+      res.status(201).json(family);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        console.error("Error creating family:", error);
+        res.status(500).json({ message: "Failed to create family" });
+      }
+    }
+  });
+
+  app.get("/api/families/:id", async (req, res) => {
+    try {
+      const family = await storage.getFamily(req.params.id);
+      if (!family) {
+        return res.status(404).json({ message: "Family not found" });
+      }
+      res.json(family);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch family" });
+    }
+  });
+
+  // Parent profile routes
+  app.get("/api/parent-profiles", async (req, res) => {
+    try {
+      const familyId = req.query.familyId as string;
+      const profiles = await storage.getParentProfiles(familyId);
+      res.json(profiles);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch parent profiles" });
+    }
+  });
+
+  app.post("/api/parent-profiles", async (req, res) => {
+    try {
+      const validatedData = insertParentProfileSchema.parse(req.body);
+      const profile = await storage.createParentProfile(validatedData);
+      res.status(201).json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        console.error("Error creating parent profile:", error);
+        res.status(500).json({ message: "Failed to create parent profile" });
+      }
+    }
+  });
+
+  // Community routes
+  app.get("/api/community/posts", async (req, res) => {
+    try {
+      const posts = await storage.getCommunityPosts();
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch community posts" });
+    }
+  });
+
+  app.post("/api/community/posts", async (req, res) => {
+    try {
+      const validatedData = insertCommunityPostSchema.parse(req.body);
+      const post = await storage.createCommunityPost(validatedData);
+      res.status(201).json(post);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        console.error("Error creating community post:", error);
+        res.status(500).json({ message: "Failed to create community post" });
+      }
+    }
+  });
+
+  app.get("/api/community/posts/:id/comments", async (req, res) => {
+    try {
+      const comments = await storage.getCommunityComments(req.params.id);
+      res.json(comments);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  app.post("/api/community/posts/:id/comments", async (req, res) => {
+    try {
+      const commentData = { ...req.body, postId: req.params.id };
+      const validatedData = insertCommunityCommentSchema.parse(commentData);
+      const comment = await storage.createCommunityComment(validatedData);
+      res.status(201).json(comment);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        console.error("Error creating comment:", error);
+        res.status(500).json({ message: "Failed to create comment" });
+      }
     }
   });
 

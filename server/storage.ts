@@ -1,4 +1,17 @@
-import { type JournalEntry, type InsertJournalEntry, type ChildProfile, type InsertChildProfile, type ParentProfile, type InsertParentProfile } from "@shared/schema";
+import { 
+  type JournalEntry, 
+  type InsertJournalEntry, 
+  type ChildProfile, 
+  type InsertChildProfile, 
+  type ParentProfile, 
+  type InsertParentProfile,
+  type Family,
+  type InsertFamily,
+  type CommunityPost,
+  type InsertCommunityPost,
+  type CommunityComment,
+  type InsertCommunityComment
+} from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -28,21 +41,38 @@ export interface IStorage {
   updateChildProfile(id: string, updates: Partial<InsertChildProfile>): Promise<ChildProfile | undefined>;
   deleteChildProfile(id: string): Promise<boolean>;
   
+  // Family management
+  createFamily(family: InsertFamily): Promise<Family>;
+  getFamily(id: string): Promise<Family | undefined>;
+  
   // Parent profiles
   getParentProfile(): Promise<ParentProfile | undefined>;
+  getParentProfiles(familyId?: string): Promise<ParentProfile[]>;
   createParentProfile(profile: InsertParentProfile): Promise<ParentProfile>;
   updateParentProfile(updates: Partial<InsertParentProfile>): Promise<ParentProfile | undefined>;
+  
+  // Community posts
+  getCommunityPosts(): Promise<CommunityPost[]>;
+  createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost>;
+  getCommunityComments(postId: string): Promise<CommunityComment[]>;
+  createCommunityComment(comment: InsertCommunityComment): Promise<CommunityComment>;
 }
 
 export class MemStorage implements IStorage {
   private journalEntries: Map<string, JournalEntry>;
   private childProfiles: Map<string, ChildProfile>;
-  private parentProfile: ParentProfile | undefined;
+  private parentProfiles: Map<string, ParentProfile>;
+  private families: Map<string, Family>;
+  private communityPosts: Map<string, CommunityPost>;
+  private communityComments: Map<string, CommunityComment>;
 
   constructor() {
     this.journalEntries = new Map();
     this.childProfiles = new Map();
-    this.parentProfile = undefined;
+    this.parentProfiles = new Map();
+    this.families = new Map();
+    this.communityPosts = new Map();
+    this.communityComments = new Map();
   }
 
   async getJournalEntry(id: string): Promise<JournalEntry | undefined> {
@@ -327,9 +357,33 @@ export class MemStorage implements IStorage {
     return this.childProfiles.delete(id);
   }
 
+  // Family management methods
+  async createFamily(family: InsertFamily): Promise<Family> {
+    const newFamily: Family = {
+      ...family,
+      id: randomUUID(),
+      createdAt: new Date(),
+    };
+    this.families.set(newFamily.id, newFamily);
+    return newFamily;
+  }
+
+  async getFamily(id: string): Promise<Family | undefined> {
+    return this.families.get(id);
+  }
+
   // Parent profile methods
   async getParentProfile(): Promise<ParentProfile | undefined> {
-    return this.parentProfile;
+    const profiles = Array.from(this.parentProfiles.values());
+    return profiles.find(p => p.relationship === "Primary") || profiles[0];
+  }
+
+  async getParentProfiles(familyId?: string): Promise<ParentProfile[]> {
+    const profiles = Array.from(this.parentProfiles.values());
+    if (familyId) {
+      return profiles.filter(p => p.familyId === familyId);
+    }
+    return profiles;
   }
 
   async createParentProfile(insertProfile: InsertParentProfile): Promise<ParentProfile> {
@@ -349,21 +403,55 @@ export class MemStorage implements IStorage {
       updatedAt: new Date(),
     };
     
-    this.parentProfile = profile;
+    this.parentProfiles.set(id, profile);
     return profile;
   }
 
   async updateParentProfile(updates: Partial<InsertParentProfile>): Promise<ParentProfile | undefined> {
-    if (!this.parentProfile) return undefined;
+    const primaryProfile = await this.getParentProfile();
+    if (!primaryProfile) return undefined;
 
     const updated: ParentProfile = {
-      ...this.parentProfile,
+      ...primaryProfile,
       ...updates,
       updatedAt: new Date(),
     };
 
-    this.parentProfile = updated;
+    this.parentProfiles.set(primaryProfile.id, updated);
     return updated;
+  }
+
+  // Community posts methods
+  async getCommunityPosts(): Promise<CommunityPost[]> {
+    const posts = Array.from(this.communityPosts.values());
+    return posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  async createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost> {
+    const newPost: CommunityPost = {
+      ...post,
+      id: randomUUID(),
+      likes: [],
+      createdAt: new Date(),
+    };
+    this.communityPosts.set(newPost.id, newPost);
+    return newPost;
+  }
+
+  async getCommunityComments(postId: string): Promise<CommunityComment[]> {
+    const comments = Array.from(this.communityComments.values());
+    return comments.filter(c => c.postId === postId)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  }
+
+  async createCommunityComment(comment: InsertCommunityComment): Promise<CommunityComment> {
+    const newComment: CommunityComment = {
+      ...comment,
+      id: randomUUID(),
+      createdAt: new Date(),
+    };
+    this.communityComments.set(newComment.id, newComment);
+    return newComment;
   }
 }
 

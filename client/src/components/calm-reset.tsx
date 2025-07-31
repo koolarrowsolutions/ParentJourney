@@ -246,10 +246,23 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
           filter.frequency.setValueAtTime(300, audioContext.currentTime);
         }
         
-        gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
-        oscillator.start();
+        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
         
-        setBackgroundAudio(oscillator as any);
+        // Add some variation to make it sound more natural
+        const lfo = audioContext.createOscillator();
+        const lfoGain = audioContext.createGain();
+        lfo.frequency.setValueAtTime(0.5, audioContext.currentTime);
+        lfo.type = 'sine';
+        lfoGain.gain.setValueAtTime(20, audioContext.currentTime);
+        
+        lfo.connect(lfoGain);
+        lfoGain.connect(oscillator.frequency);
+        
+        oscillator.start();
+        lfo.start();
+        
+        console.log('Background sound started successfully');
+        setBackgroundAudio({ oscillator, lfo, audioContext } as any);
       } catch (error) {
         console.log('Background audio not available:', error);
       }
@@ -289,16 +302,20 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       const audio = new Audio(audioUrl);
       
       audio.onended = () => {
+        console.log('OpenAI audio finished');
         setIsPlaying(false);
         URL.revokeObjectURL(audioUrl);
+        stopGuidedAudio();
       };
       
       audio.onerror = () => {
         console.error('Audio playback failed');
         setIsPlaying(false);
+        stopGuidedAudio();
       };
       
       setCurrentAudio(audio as any);
+      console.log('Starting OpenAI audio playback');
       await audio.play();
       
     } catch (error) {
@@ -361,18 +378,40 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setIsPlaying(false);
     speechSynthesis.cancel();
     
+    // Stop current audio (OpenAI TTS)
+    if (currentAudio) {
+      try {
+        if (currentAudio.pause) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+        if (typeof currentAudio.stop === 'function') {
+          currentAudio.stop();
+        }
+      } catch (error) {
+        console.log('Audio cleanup error:', error);
+      }
+      setCurrentAudio(null);
+    }
+    
+    // Stop background audio
     if (backgroundAudio) {
       try {
-        if (typeof backgroundAudio.stop === 'function') {
-          backgroundAudio.stop();
+        if (backgroundAudio.oscillator && typeof backgroundAudio.oscillator.stop === 'function') {
+          backgroundAudio.oscillator.stop();
         }
+        if (backgroundAudio.lfo && typeof backgroundAudio.lfo.stop === 'function') {
+          backgroundAudio.lfo.stop();
+        }
+        if (backgroundAudio.audioContext && typeof backgroundAudio.audioContext.close === 'function') {
+          backgroundAudio.audioContext.close();
+        }
+        console.log('Background audio stopped successfully');
       } catch (error) {
         console.log('Background audio cleanup error:', error);
       }
       setBackgroundAudio(null);
     }
-    
-    setCurrentAudio(null);
   };
 
   useEffect(() => {

@@ -23,7 +23,7 @@ export async function generateParentingFeedback(
     ? `The child's personality traits include: ${childTraits.join(', ')}.` 
     : '';
 
-  const prompt = `You are a warm, emotionally intelligent parenting coach. Reflect on this journal entry: "${content}". ${ageContext ? `The child is ${Math.floor(childAge / 12)} years and ${childAge % 12} months old.` : ''} ${traitsContext}
+  const prompt = `You are a warm, emotionally intelligent parenting coach. Reflect on this journal entry: "${content}". ${ageContext} ${traitsContext}
 
 Please provide a supportive response in JSON format with exactly these fields:
 - encouragement: Warm emotional validation and encouragement for the parent's feelings and experiences (2-3 sentences)
@@ -56,7 +56,7 @@ Keep your tone warm, empathetic, and non-judgmental. Focus on practical wisdom a
       insight: result.insight || "Every parenting challenge is an opportunity to learn and grow together with your child.",
       suggestion: result.suggestion || "Consider taking small steps and being patient with yourself and your child."
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("OpenAI API error:", error);
     
     // Check if it's an API key issue

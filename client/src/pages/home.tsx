@@ -70,13 +70,13 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <div className="bg-white rounded-2xl border border-primary/20 shadow-lg p-6 mb-6">
+          <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-2xl border border-primary/20 shadow-lg p-6 mb-6">
             <h2 className="text-2xl font-semibold text-neutral-800 mb-2">
               Welcome back to your parenting journey
             </h2>
@@ -132,7 +132,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         </div>
 
         {/* Feeling Overwhelmed Element */}
-        <div className="mb-6 p-4 bg-emerald-50 rounded-lg border border-emerald-200 animate-pop-fade">
+        <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-emerald-800 font-medium">
               Feeling overwhelmed today? Take a moment to center yourself.

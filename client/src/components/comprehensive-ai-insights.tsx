@@ -18,7 +18,8 @@ import {
   MessageSquare,
   CheckCircle,
   ArrowRight,
-  Loader2
+  Loader2,
+  X
 } from "lucide-react";
 import type { JournalEntry, ChildProfile, ParentProfile } from "@shared/schema";
 
@@ -156,8 +157,15 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
       {/* Analysis Dialog */}
       <Dialog open={!!selectedInsight} onOpenChange={() => setSelectedInsight(null)}>
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto relative">
+          <button
+            onClick={() => setSelectedInsight(null)}
+            className="absolute top-4 right-4 z-50 p-2 hover:bg-neutral-100 rounded-full transition-colors sticky"
+            aria-label="Close dialog"
+          >
+            <X className="h-4 w-4 text-neutral-500 hover:text-neutral-700" />
+          </button>
+          <DialogHeader className="pr-12">
             <DialogTitle className="flex items-center gap-2">
               <Brain className="h-5 w-5 text-primary" />
               {insights.find(i => i.id === selectedInsight)?.title}

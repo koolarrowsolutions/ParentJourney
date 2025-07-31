@@ -864,34 +864,38 @@ Remember: You're supporting parents who are doing their best. Validate their eff
 
     const prompts = {
       "parenting-progress": `
-        Analyze this parent's journey and provide comprehensive progress insights:
+        Analyze this parent's journey and provide comprehensive progress insights in JSON format:
         
         Parent Profile: ${JSON.stringify(parentProfile || {})}
         Journal Entries: ${contextData.entriesCount} total entries
         Recent Entries: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood, createdAt: e.createdAt })))}
         
-        Provide a detailed analysis with:
-        1. Progress Overview - Overall assessment of their parenting development
-        2. Strengths - 3-4 specific strengths identified from their entries and profile
-        3. Growth Areas - 3-4 areas where they could continue developing
-        4. Next Steps - Specific actionable recommendations for continued growth
+        Return JSON with exactly this structure:
+        {
+          "progressOverview": "Overall assessment of their parenting development (2-3 sentences)",
+          "strengths": ["strength 1", "strength 2", "strength 3"],
+          "growthAreas": ["area 1", "area 2", "area 3"],
+          "nextSteps": "Specific actionable recommendations (2-3 sentences)"
+        }
         
         Focus on their emotional intelligence, consistency, self-awareness, and parenting effectiveness.
         Be encouraging and specific, referencing patterns from their actual entries.
       `,
       
       "child-development": `
-        Analyze child development patterns based on available data:
+        Analyze child development patterns based on available data in JSON format:
         
         Children: ${JSON.stringify(contextData.childAges)}
         Parent Observations: ${contextData.entriesCount} journal entries
         Recent Child-Related Entries: ${JSON.stringify(contextData.recentEntries.filter(e => e.childProfileId).map(e => ({ content: e.content, childName: e.childProfileId })))}
         
-        Provide analysis covering:
-        1. Development Overview - General assessment of developmental progress
-        2. Milestones - Age-appropriate milestones being achieved or approached
-        3. Focus Areas - Developmental areas requiring attention or support
-        4. Recommendations - Specific activities and approaches to support development
+        Return JSON with exactly this structure:
+        {
+          "developmentOverview": "General assessment of developmental progress (2-3 sentences)",
+          "milestones": ["milestone 1", "milestone 2", "milestone 3"],
+          "focusAreas": ["focus area 1", "focus area 2"],
+          "recommendations": "Specific activities and approaches to support development (2-3 sentences)"
+        }
         
         Consider typical developmental stages and provide age-appropriate insights.
         Be supportive and informative, focusing on healthy development patterns.
@@ -914,15 +918,26 @@ Remember: You're supporting parents who are doing their best. Validate their eff
       `,
       
       "considerations": `
-        Suggest three important parenting concepts for reflection:
+        Suggest important parenting concepts for reflection in JSON format:
         
         Current Context: ${JSON.stringify(contextData)}
         Parent Profile: ${JSON.stringify(parentProfile || {})}
         
-        Provide 3 thoughtful considerations, each with:
-        1. Concept name and clear description
-        2. Why this concept matters for parenting effectiveness
-        3. How it specifically relates to their current parenting journey
+        Return JSON with exactly this structure:
+        {
+          "considerations": [
+            {
+              "concept": "Concept Name",
+              "description": "Clear description of the concept (1-2 sentences)",
+              "importance": "Why this concept matters for parenting effectiveness (1-2 sentences)"
+            },
+            {
+              "concept": "Concept Name 2", 
+              "description": "Clear description (1-2 sentences)",
+              "importance": "Why it matters (1-2 sentences)"
+            }
+          ]
+        }
         
         Focus on evidence-based parenting concepts that could enhance their family dynamics.
         Make suggestions thought-provoking and developmentally supportive.
@@ -935,13 +950,14 @@ Remember: You're supporting parents who are doing their best. Validate their eff
         messages: [
           {
             role: "system",
-            content: "You are an expert parenting coach providing comprehensive, personalized analysis. Be supportive, specific, and evidence-based. Return your response as JSON matching the expected format for the analysis type."
+            content: "You are an expert parenting coach providing comprehensive, personalized analysis. Be supportive, specific, and evidence-based. Always respond with valid JSON in the exact format requested. Do not include any markdown formatting, code blocks, or extra text outside the JSON structure."
           },
           {
             role: "user", 
             content: prompts[type as keyof typeof prompts]
           }
         ],
+        response_format: { type: "json_object" },
         temperature: 0.7,
         max_tokens: 1500
       });

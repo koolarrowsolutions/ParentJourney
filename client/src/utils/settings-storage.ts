@@ -3,6 +3,8 @@ export interface UserSettings {
   dailyReminder: boolean;
   weeklyProgress: boolean;
   reminderTime: string;
+  notificationEmail?: string;
+  notificationPhone?: string;
   
   // Personal goals
   parentingFocus: string;
@@ -20,6 +22,8 @@ const defaultSettings: UserSettings = {
   dailyReminder: false,
   weeklyProgress: false,
   reminderTime: '20:00',
+  notificationEmail: '',
+  notificationPhone: '',
   parentingFocus: '',
   darkMode: false,
 };

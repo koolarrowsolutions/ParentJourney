@@ -143,8 +143,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteChildProfile(id: string): Promise<boolean> {
-    const result = await db.delete(schema.childProfiles).where(eq(schema.childProfiles.id, id));
-    return (result.rowCount ?? 0) > 0;
+    try {
+      // First, update any journal entries that reference this child to remove the reference
+      await db.update(schema.journalEntries)
+        .set({ childProfileId: null })
+        .where(eq(schema.journalEntries.childProfileId, id));
+      
+      // Then delete the child profile
+      const result = await db.delete(schema.childProfiles).where(eq(schema.childProfiles.id, id));
+      return (result.rowCount ?? 0) > 0;
+    } catch (error) {
+      console.error('Error deleting child profile:', error);
+      throw error;
+    }
   }
 
   // Family management

@@ -386,18 +386,59 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
               </div>
 
               {settings.dailyReminder && (
-                <div className="space-y-2">
-                  <Label htmlFor="reminder-time" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    Reminder time
-                  </Label>
-                  <Input
-                    id="reminder-time"
-                    type="time"
-                    value={settings.reminderTime}
-                    onChange={(e) => updateSetting('reminderTime', e.target.value)}
-                    className="w-32 dark:bg-neutral-700 dark:border-neutral-600"
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="reminder-time" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      Reminder time
+                    </Label>
+                    <Input
+                      id="reminder-time"
+                      type="time"
+                      value={settings.reminderTime}
+                      onChange={(e) => updateSetting('reminderTime', e.target.value)}
+                      className="w-32 dark:bg-neutral-700 dark:border-neutral-600"
+                    />
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      Email & SMS Settings
+                    </Label>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-xs font-medium text-neutral-600 dark:text-neutral-300">Email Address for Reminders</Label>
+                        <Input
+                          type="email"
+                          placeholder="your-email@example.com"
+                          value={settings.notificationEmail || ""}
+                          onChange={(e) => updateSetting('notificationEmail', e.target.value)}
+                          className="mt-1 dark:bg-neutral-700 dark:border-neutral-600"
+                        />
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                          We'll send gentle reminders to help you maintain your journaling habit
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-xs font-medium text-neutral-600 dark:text-neutral-300">Phone Number for SMS (Optional)</Label>
+                        <Input
+                          type="tel"
+                          placeholder="+1 (555) 123-4567"
+                          value={settings.notificationPhone || ""}
+                          onChange={(e) => updateSetting('notificationPhone', e.target.value)}
+                          className="mt-1 dark:bg-neutral-700 dark:border-neutral-600"
+                        />
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                          Optional SMS reminders for important milestones and reflections
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </CardContent>

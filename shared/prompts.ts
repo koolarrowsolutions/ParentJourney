@@ -22,8 +22,7 @@ export const prompts = [
 ];
 
 export function getRandomPrompt(): string {
-  const randomIndex = Math.floor(Math.random() * prompts.length);
-  return prompts[randomIndex];
+  return prompts[Math.floor(Math.random() * prompts.length)];
 }
 
 export function getDailyPrompt(): string {

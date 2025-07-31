@@ -21,8 +21,7 @@ export const greetings = [
 ];
 
 export function getRandomGreeting(): string {
-  const randomIndex = Math.floor(Math.random() * greetings.length);
-  return greetings[randomIndex];
+  return greetings[Math.floor(Math.random() * greetings.length)];
 }
 
 export function getDailyGreeting(): string {

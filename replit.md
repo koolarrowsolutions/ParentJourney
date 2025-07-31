@@ -8,6 +8,11 @@ ParentJourney is a comprehensive full-stack web application designed as a digita
 
 Preferred communication style: Simple, everyday language.
 Supportive messaging: Warm, encouraging greetings with emojis and affirming language that validates parenting efforts.
+Authentication preference: Simple username/email + password system without social login complexity.
+
+## Important Notes
+
+**Authentication Usage**: Due to browser security restrictions, the authentication system works correctly in new tabs but may not function properly in the preview iframe. Users should click "Open in new tab" for login/signup functionality.
 
 ## System Architecture
 
@@ -22,8 +27,11 @@ The application follows a modern full-stack architecture with a clear separation
 
 ## New Features Added
 
-### Recent Updates (January 2025)
-- **🔐 Authentication-Based Onboarding**: Implemented conditional onboarding that only triggers after user signup/authentication, with "Later" button for dismissal and re-triggering when accessing profile features
+### Recent Updates (July 2025)
+- **🔐 Simplified Authentication System**: Replaced complex social login with streamlined username/email + password authentication for better user experience
+- **📊 PostgreSQL Database Migration**: Successfully migrated from MemStorage to PostgreSQL with Drizzle ORM for persistent data storage
+- **🔑 Session Management**: Implemented robust session handling with proper cookie configuration and cross-tab authentication support
+- **🚀 Production-Ready Authentication**: Fixed session persistence issues and confirmed authentication works correctly in new tabs (iframe restrictions prevent preview window login)
 - **👨‍👩‍👧‍👦 Multi-Parent Family Support**: Added comprehensive family management system supporting up to 4 parents per family with relationship tracking and role definitions
 - **🗣️ Community Forum Integration**: Built community posting and commenting system for parent interaction and support
 - **🎙️ Voice Input Integration**: Added voice input functionality across all text entry fields with inline microphone elements

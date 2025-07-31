@@ -66,11 +66,14 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
   const onSignUp = async (data: SignUpFormData) => {
     setIsLoading(true);
     try {
+      console.log('Attempting signup with:', { username: data.username, email: data.email }); // Debug log
+      
       const response = await fetch('/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'same-origin', // Ensure cookies are included
         body: JSON.stringify({
           username: data.username,
           name: data.name,
@@ -80,6 +83,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       });
 
       const result = await response.json();
+      console.log('Signup response:', { status: response.status, result }); // Debug log
 
       if (!response.ok) {
         throw new Error(result.error || 'Failed to create account');
@@ -95,6 +99,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       // Reload the page to update auth state
       window.location.reload();
     } catch (error) {
+      console.error('Signup error:', error); // Debug log
       toast({
         title: "Sign Up Failed",
         description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
@@ -108,11 +113,14 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
   const onLogin = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
+      console.log('Attempting login with:', { identifier: data.identifier }); // Debug log
+      
       const response = await fetch('/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'same-origin', // Ensure cookies are included
         body: JSON.stringify({
           identifier: data.identifier,
           password: data.password,
@@ -120,6 +128,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       });
 
       const result = await response.json();
+      console.log('Login response:', { status: response.status, result }); // Debug log
 
       if (!response.ok) {
         throw new Error(result.error || 'Failed to log in');
@@ -135,6 +144,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       // Reload the page to update auth state
       window.location.reload();
     } catch (error) {
+      console.error('Login error:', error); // Debug log
       toast({
         title: "Login Failed",
         description: error instanceof Error ? error.message : "Invalid credentials. Please try again.",

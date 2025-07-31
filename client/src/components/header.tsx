@@ -1,5 +1,6 @@
-import { Heart, Settings, User, BarChart3, Trophy, Archive } from "lucide-react";
+import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus } from "lucide-react";
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
   return (
@@ -72,6 +73,26 @@ export function Header() {
                   <Settings className="h-5 w-5" />
                 </button>
               </Link>
+            </div>
+            
+            {/* Authentication Buttons */}
+            <div className="flex items-center space-x-2 ml-4 border-l border-neutral-200 pl-4">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="text-neutral-600 hover:text-primary hover:bg-neutral-100 hidden sm:flex"
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Log In
+              </Button>
+              <Button 
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-white"
+              >
+                <UserPlus className="h-4 w-4 mr-2 sm:mr-2" />
+                <span className="hidden sm:inline">Sign Up</span>
+                <span className="sm:hidden">Join</span>
+              </Button>
             </div>
           </div>
         </div>

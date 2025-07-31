@@ -299,7 +299,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
   );
 
   return (
-    <Card className="shadow-sm border border-neutral-200 hover-lift animate-fade-in">
+    <Card className="shadow-sm border border-neutral-200 hover-lift animate-pop-fade">
       <CardContent className="p-6">
         <div className="mb-6">
           <div className="flex items-center mb-3">
@@ -356,7 +356,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
                 key={mood.value}
                 type="button"
                 onClick={() => setSelectedMood(mood.value)}
-                className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale animate-wiggle ${
+                className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale animate-wiggle hover:animate-bounce-subtle ${
                   selectedMood === mood.value
                     ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
                     : "border-neutral-200 hover:border-primary hover:bg-primary/5"

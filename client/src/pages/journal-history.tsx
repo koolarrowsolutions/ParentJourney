@@ -208,8 +208,14 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
     );
   }
 
-  function JournalEntryCard({ entry }: { entry: JournalEntry }) {
+  function LocalJournalEntryCard({ entry }: { entry: JournalEntry }) {
+    const [isExpanded, setIsExpanded] = useState(false);
     const isFavorite = entry.isFavorite === "true";
+    
+    const getContentPreview = (content: string) => {
+      if (content.length <= 150) return content;
+      return content.substring(0, 150) + "...";
+    };
     
     return (
       <Card className={`hover-lift animate-fade-in ${isFavorite ? 'ring-2 ring-yellow-200 bg-yellow-50/30' : ''}`}>
@@ -281,8 +287,19 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
         <CardContent className="pt-0">
           <div className="prose prose-sm max-w-none">
             <p className="text-neutral-700 leading-relaxed whitespace-pre-wrap">
-              {entry.content}
+              {isExpanded ? entry.content : getContentPreview(entry.content)}
             </p>
+            
+            {entry.content.length > 150 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="mt-2 p-0 h-auto text-sm text-primary hover:text-primary/80"
+              >
+                {isExpanded ? "Show less" : "Read more"}
+              </Button>
+            )}
           </div>
           
           {entry.photos && entry.photos.length > 0 && (
@@ -299,7 +316,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
             </div>
           )}
           
-          {entry.aiFeedback && (
+          {entry.aiFeedback && isExpanded && (
             <AiFeedbackDisplay feedback={entry.aiFeedback} />
           )}
           
@@ -450,7 +467,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
             ) : filteredEntries.length > 0 ? (
               <div className="space-y-6">
                 {filteredEntries.map((entry) => (
-                  <JournalEntryCard key={entry.id} entry={entry} />
+                  <LocalJournalEntryCard key={entry.id} entry={entry} />
                 ))}
               </div>
             ) : activeTab === "favorites" ? (

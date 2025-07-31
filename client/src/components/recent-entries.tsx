@@ -8,10 +8,13 @@ import { SearchBar } from "@/components/search-bar";
 import { EditEntryDialog } from "@/components/edit-entry-dialog";
 import { DeleteEntryDialog } from "@/components/delete-entry-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { JournalEntryCard } from "@/components/journal-entry-card";
+import { useLocation } from "wouter";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
 
 export function RecentEntries() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [, setLocation] = useLocation();
   
   const { data: entries, isLoading } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal-entries", searchQuery],
@@ -59,7 +62,11 @@ export function RecentEntries() {
             <span className="sm:hidden">📖 {searchQuery ? 'Search' : 'Recent'}</span>
           </h3>
           {!searchQuery && (
-            <Button variant="link" className="text-primary hover:text-primary/80 text-sm font-medium p-0">
+            <Button 
+              variant="link" 
+              className="text-primary hover:text-primary/80 text-sm font-medium p-0"
+              onClick={() => setLocation('/journal-history')}
+            >
               View All <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
           )}
@@ -102,85 +109,12 @@ export function RecentEntries() {
                 </div>
               )}
               {entries.map((entry) => (
-                <div 
+                <JournalEntryCard 
                   key={entry.id} 
-                  className="border border-neutral-200 rounded-lg p-3 sm:p-4 hover:shadow-sm transition-all cursor-pointer"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-medium text-neutral-800 text-sm sm:text-base truncate">
-                      {entry.title || "Untitled Entry"}
-                    </h4>
-                    <div className="flex items-center text-sm text-neutral-500">
-                      {entry.mood && <span className="mr-2">{entry.mood}</span>}
-                      <span>{formatDate(entry.createdAt.toString())}</span>
-                    </div>
-                  </div>
-                  <p className="text-neutral-600 text-sm mb-2 line-clamp-2">
-                    {truncateText(entry.content, 120)}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-xs text-neutral-500">
-                      {entry.childProfileId && (
-                        <div className="flex items-center">
-                          <Baby className="mr-1 h-3 w-3" />
-                          <span>{childProfiles?.find(p => p.id === entry.childProfileId)?.name}</span>
-                        </div>
-                      )}
-                      {entry.developmentalInsight && (
-                        <div className="flex items-center">
-                          <GraduationCap className="mr-1 h-3 w-3" />
-                          <span>Developmental insight</span>
-                        </div>
-                      )}
-                      {entry.hasAiFeedback === "true" ? (
-                        <div className="flex items-center">
-                          <Bot className="mr-1 h-3 w-3" />
-                          <span>AI feedback</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center">
-                          <PenTool className="mr-1 h-3 w-3" />
-                          <span>Entry only</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Entry Actions */}
-                    <div className="flex items-center space-x-2">
-                      <Button variant="link" className="text-primary hover:text-primary/80 text-sm p-0">
-                        Read more
-                      </Button>
-                      
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <EditEntryDialog 
-                            entry={entry}
-                            trigger={
-                              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                <Edit2 className="mr-2 h-4 w-4" />
-                                Edit Entry
-                              </DropdownMenuItem>
-                            }
-                          />
-                          <DeleteEntryDialog 
-                            entry={entry}
-                            trigger={
-                              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Entry
-                              </DropdownMenuItem>
-                            }
-                          />
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                </div>
+                  entry={entry}
+                  showChildInfo={true}
+                  childProfiles={childProfiles}
+                />
               ))}
             </>
           ) : (

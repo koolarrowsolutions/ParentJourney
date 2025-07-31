@@ -13,9 +13,10 @@ interface JournalEntryCardProps {
   entry: JournalEntry;
   showChildInfo?: boolean;
   onEdit?: (entry: JournalEntry) => void;
+  childProfiles?: any[];
 }
 
-export function JournalEntryCard({ entry, showChildInfo = true, onEdit }: JournalEntryCardProps) {
+export function JournalEntryCard({ entry, showChildInfo = true, onEdit, childProfiles }: JournalEntryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { toast } = useToast();
 
@@ -88,10 +89,10 @@ export function JournalEntryCard({ entry, showChildInfo = true, onEdit }: Journa
                 </Badge>
               )}
 
-              {entry.childProfileId && showChildInfo && (
+              {entry.childProfileId && showChildInfo && childProfiles && (
                 <Badge variant="outline" className="text-xs">
                   <User className="h-3 w-3 mr-1" />
-                  Child Profile
+                  {childProfiles.find(p => p.id === entry.childProfileId)?.name || 'Child Profile'}
                 </Badge>
               )}
             </div>

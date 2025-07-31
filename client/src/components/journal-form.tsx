@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -165,6 +165,7 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const { data: childProfiles } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
@@ -215,14 +216,19 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
           : "Your journal entry has been saved.",
       });
       
-      // Reset form
-      form.reset();
-      setSelectedChildIds([]);
+      // Don't reset AI feedback immediately - let user see it
+      if (!data.aiFeedback) {
+        // Only reset if no AI feedback to show
+        form.reset();
+        setSelectedChildIds([]);
+        setPhotos([]);
+      }
       setIsSubmittingWithAI(false);
-      setShowAiFeedback(false);
-      setAiFeedback("");
-      setDevelopmentalInsight("");
-      setPhotos([]);
+      
+      // Scroll to top to show AI feedback
+      if (formRef.current) {
+        formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     },
     onError: (error) => {
       console.error("Failed to save entry:", error);
@@ -313,7 +319,7 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
   };
 
   return (
-    <Card className="shadow-sm border border-neutral-200 hover-lift animate-pop-fade">
+    <Card ref={formRef} className="shadow-sm border border-neutral-200 hover-lift animate-pop-fade">
       <CardContent className="p-6">
         <div className="mb-6">
           <div className="flex items-center mb-3">
@@ -626,7 +632,25 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
         )}
 
         {showAiFeedback && aiFeedback && (
-          <AiFeedbackDisplay feedback={aiFeedback} />
+          <>
+            <AiFeedbackDisplay feedback={aiFeedback} />
+            <div className="mt-6 text-center">
+              <Button
+                onClick={() => {
+                  form.reset();
+                  setSelectedChildIds([]);
+                  setPhotos([]);
+                  setShowAiFeedback(false);
+                  setAiFeedback("");
+                  setDevelopmentalInsight("");
+                }}
+                className="hover-scale button-press"
+              >
+                <PenTool className="mr-2 h-4 w-4" />
+                Start New Entry
+              </Button>
+            </div>
+          </>
         )}
 
 

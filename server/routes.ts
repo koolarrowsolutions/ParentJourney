@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
+import bcrypt from "bcryptjs";
 import { storage } from "./storage";
 import { 
   insertJournalEntrySchema, 
@@ -9,7 +10,8 @@ import {
   insertParentProfileSchema, 
   insertFamilySchema,
   insertCommunityPostSchema,
-  insertCommunityCommentSchema
+  insertCommunityCommentSchema,
+  insertUserSchema
 } from "@shared/schema";
 import { generateParentingFeedback, analyzeMood } from "./services/openai";
 import { generateDevelopmentalInsight, calculateAgeInMonths } from "./services/developmental-insights";
@@ -25,8 +27,10 @@ function configureSession(app: Express) {
   }));
 }
 
-// Simple OAuth routes (will need actual keys to work)
-function setupOAuthRoutes(app: Express) {
+import { setupAuthRoutes } from "./auth-routes";
+
+// Legacy function - now using imported setupAuthRoutes
+function setupOldAuthRoutes(app: Express) {
   // Google OAuth
   app.get('/auth/google', (req, res) => {
     if (!process.env.GOOGLE_CLIENT_ID) {
@@ -281,7 +285,7 @@ function setupOAuthRoutes(app: Express) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure session and OAuth
   configureSession(app);
-  setupOAuthRoutes(app);
+  setupAuthRoutes(app);
   // Get journal entries
   app.get("/api/journal-entries", async (req, res) => {
     try {

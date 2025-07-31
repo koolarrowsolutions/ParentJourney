@@ -10,9 +10,10 @@ import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { LogIn, UserPlus, Mail, Eye, EyeOff } from "lucide-react";
-import { FaGoogle, FaFacebook, FaApple, FaGithub } from "react-icons/fa";
+
 
 const signUpSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -23,7 +24,7 @@ const signUpSchema = z.object({
 });
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  identifier: z.string().min(1, "Username or email is required"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -46,6 +47,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
   const signUpForm = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
+      username: "",
       name: "",
       email: "",
       password: "",
@@ -56,7 +58,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
   });
@@ -70,6 +72,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          username: data.username,
           name: data.name,
           email: data.email,
           password: data.password,
@@ -111,7 +114,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: data.email,
+          identifier: data.identifier,
           password: data.password,
         }),
       });
@@ -142,40 +145,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
     }
   };
 
-  const handleSocialAuth = (provider: string) => {
-    setIsLoading(true);
-    
-    // Open OAuth popup window
-    const popup = window.open(
-      `/auth/${provider}`,
-      `${provider}_login`,
-      'width=500,height=600,scrollbars=yes,resizable=yes'
-    );
 
-    // Listen for popup to close (indicates auth completion)
-    const checkClosed = setInterval(() => {
-      if (popup?.closed) {
-        clearInterval(checkClosed);
-        setIsLoading(false);
-        setOpen(false);
-        
-        toast({
-          title: `${provider.charAt(0).toUpperCase() + provider.slice(1)} Authentication`,
-          description: `Successfully authenticated with ${provider}!`,
-        });
-        
-        // Reload page to check for new auth state
-        window.location.reload();
-      }
-    }, 1000);
-  };
-
-  const socialProviders = [
-    { name: "Google", icon: FaGoogle, color: "hover:bg-red-50 border-red-200 hover:border-red-300" },
-    { name: "Facebook", icon: FaFacebook, color: "hover:bg-blue-50 border-blue-200 hover:border-blue-300" },
-    { name: "Apple", icon: FaApple, color: "hover:bg-gray-50 border-gray-200 hover:border-gray-300" },
-    { name: "GitHub", icon: FaGithub, color: "hover:bg-gray-50 border-gray-200 hover:border-gray-300" },
-  ];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -206,59 +176,23 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Social Authentication */}
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              {socialProviders.slice(0, 2).map((provider) => {
-                const IconComponent = provider.icon;
-                return (
-                  <Button
-                    key={provider.name}
-                    variant="outline"
-                    onClick={() => handleSocialAuth(provider.name)}
-                    disabled={isLoading}
-                    className={`${provider.color} transition-all hover-scale animate-pop-in`}
-                  >
-                    <IconComponent className="mr-2 h-4 w-4" />
-                    {provider.name}
-                  </Button>
-                );
-              })}
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {socialProviders.slice(2).map((provider) => {
-                const IconComponent = provider.icon;
-                return (
-                  <Button
-                    key={provider.name}
-                    variant="outline"
-                    onClick={() => handleSocialAuth(provider.name)}
-                    disabled={isLoading}
-                    className={`${provider.color} transition-all hover-scale animate-pop-in`}
-                  >
-                    <IconComponent className="mr-2 h-4 w-4" />
-                    {provider.name}
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-muted-foreground">
-                Or use email
-              </span>
-            </div>
-          </div>
-
-          {/* Email Authentication Forms */}
+          {/* Authentication Forms */}
           {mode === 'signup' ? (
             <Form {...signUpForm}>
               <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
+                <FormField
+                  control={signUpForm.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Choose a unique username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={signUpForm.control}
                   name="name"
@@ -363,12 +297,12 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
               <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
                 <FormField
                   control={loginForm.control}
-                  name="email"
+                  name="identifier"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Username or Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="Enter your email" {...field} />
+                        <Input placeholder="Enter your username or email" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

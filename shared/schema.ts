@@ -38,16 +38,13 @@ export const childProfiles = pgTable("child_profiles", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// OAuth Users table for authentication
-export const oauthUsers = pgTable("oauth_users", {
+// Users table for authentication
+export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  providerId: text("provider_id").notNull(),
-  provider: text("provider").notNull(), // google, facebook, github, twitter
-  email: text("email"),
+  username: text("username").notNull().unique(),
   name: text("name").notNull(),
-  avatar: text("avatar"),
-  accessToken: text("access_token"),
-  refreshToken: text("refresh_token"),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
   familyId: varchar("family_id").references(() => families.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -121,6 +118,12 @@ export const insertJournalEntrySchema = createInsertSchema(journalEntries).omit(
   createdAt: true,
 });
 
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const journalEntryWithAiSchema = insertJournalEntrySchema.extend({
   requestAiFeedback: z.boolean().default(false),
 });
@@ -138,5 +141,5 @@ export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
 export type CommunityPost = typeof communityPosts.$inferSelect;
 export type InsertCommunityComment = z.infer<typeof insertCommunityCommentSchema>;
 export type CommunityComment = typeof communityComments.$inferSelect;
-export type OAuthUser = typeof oauthUsers.$inferSelect;
-export type InsertOAuthUser = typeof oauthUsers.$inferInsert;
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;

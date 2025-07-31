@@ -105,7 +105,7 @@ export function Header() {
                       className="text-neutral-700 hover:text-primary transition-colors hover-scale button-press"
                     >
                       <User className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">{user.name}</span>
+                      <span className="hidden sm:inline">@{user.username}</span>
                       <span className="sm:hidden">Profile</span>
                     </Button>
                   </DropdownMenuTrigger>
@@ -117,19 +117,35 @@ export function Header() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <AuthDialog 
-                  mode="signup"
-                  trigger={
-                    <Button 
-                      size="sm"
-                      className="bg-primary hover:bg-primary/90 text-white animate-pop-in relative hover-scale button-press"
-                    >
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">Sign In / Join</span>
-                      <span className="sm:hidden">Sign In</span>
-                    </Button>
-                  }
-                />
+                <div className="flex items-center space-x-2">
+                  <AuthDialog 
+                    mode="login"
+                    trigger={
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        className="hover:bg-neutral-50 animate-pop-in hover-scale button-press"
+                      >
+                        <LogIn className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">Login</span>
+                        <span className="sm:hidden">Login</span>
+                      </Button>
+                    }
+                  />
+                  <AuthDialog 
+                    mode="signup"
+                    trigger={
+                      <Button 
+                        size="sm"
+                        className="bg-primary hover:bg-primary/90 text-white animate-pop-in relative hover-scale button-press"
+                      >
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">Join</span>
+                        <span className="sm:hidden">Join</span>
+                      </Button>
+                    }
+                  />
+                </div>
               )}
             </div>
           </div>

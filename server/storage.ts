@@ -11,8 +11,8 @@ import {
   type InsertCommunityPost,
   type CommunityComment,
   type InsertCommunityComment,
-  type OAuthUser,
-  type InsertOAuthUser
+  type User,
+  type InsertUser
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -59,10 +59,14 @@ export interface IStorage {
   getCommunityComments(postId: string): Promise<CommunityComment[]>;
   createCommunityComment(comment: InsertCommunityComment): Promise<CommunityComment>;
   
-  // OAuth users
-  getUserById(id: string): Promise<OAuthUser | undefined>;
-  getUserByProvider(provider: string, providerId: string): Promise<OAuthUser | undefined>;
-  createUser(user: InsertOAuthUser): Promise<OAuthUser>;
+  // Users
+  getUserById(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmailOrUsername(identifier: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUserPassword(id: string, passwordHash: string): Promise<User | undefined>;
+  updateUserEmail(id: string, email: string): Promise<User | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -72,7 +76,7 @@ export class MemStorage implements IStorage {
   private families: Map<string, Family>;
   private communityPosts: Map<string, CommunityPost>;
   private communityComments: Map<string, CommunityComment>;
-  private oauthUsers: Map<string, OAuthUser>;
+  private users: Map<string, User>;
 
   constructor() {
     this.journalEntries = new Map();
@@ -81,7 +85,7 @@ export class MemStorage implements IStorage {
     this.families = new Map();
     this.communityPosts = new Map();
     this.communityComments = new Map();
-    this.oauthUsers = new Map();
+    this.users = new Map();
   }
 
   async getJournalEntry(id: string): Promise<JournalEntry | undefined> {
@@ -472,30 +476,58 @@ export class MemStorage implements IStorage {
     return newComment;
   }
 
-  // OAuth users methods
-  async getUserById(id: string): Promise<OAuthUser | undefined> {
-    return this.oauthUsers.get(id);
+  // User methods
+  async getUserById(id: string): Promise<User | undefined> {
+    return this.users.get(id);
   }
 
-  async getUserByProvider(provider: string, providerId: string): Promise<OAuthUser | undefined> {
-    const users = Array.from(this.oauthUsers.values());
-    return users.find(user => user.provider === provider && user.providerId === providerId);
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const users = Array.from(this.users.values());
+    return users.find(user => user.email === email);
   }
 
-  async createUser(user: InsertOAuthUser): Promise<OAuthUser> {
-    const newUser: OAuthUser = {
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const users = Array.from(this.users.values());
+    return users.find(user => user.username === username);
+  }
+
+  async getUserByEmailOrUsername(identifier: string): Promise<User | undefined> {
+    const users = Array.from(this.users.values());
+    return users.find(user => user.email === identifier || user.username === identifier);
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const newUser: User = {
       ...user,
       familyId: user.familyId ?? null,
-      email: user.email ?? null,
-      avatar: user.avatar ?? null,
-      accessToken: user.accessToken ?? null,
-      refreshToken: user.refreshToken ?? null,
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    this.oauthUsers.set(newUser.id, newUser);
+    this.users.set(newUser.id, newUser);
     return newUser;
+  }
+
+  async updateUserPassword(id: string, passwordHash: string): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (user) {
+      user.passwordHash = passwordHash;
+      user.updatedAt = new Date();
+      this.users.set(id, user);
+      return user;
+    }
+    return undefined;
+  }
+
+  async updateUserEmail(id: string, email: string): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (user) {
+      user.email = email;
+      user.updatedAt = new Date();
+      this.users.set(id, user);
+      return user;
+    }
+    return undefined;
   }
 }
 

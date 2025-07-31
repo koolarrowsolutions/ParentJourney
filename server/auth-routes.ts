@@ -1,0 +1,212 @@
+import type { Express } from "express";
+import bcrypt from "bcryptjs";
+import { storage } from "./storage";
+import { insertUserSchema } from "@shared/schema";
+
+export function setupAuthRoutes(app: Express) {
+  // Check auth status
+  app.get('/auth/user', async (req, res) => {
+    if (req.session.userId) {
+      const user = await storage.getUserById(req.session.userId);
+      if (user) {
+        res.json({ 
+          success: true, 
+          user: { 
+            id: user.id, 
+            username: user.username,
+            name: user.name, 
+            email: user.email 
+          },
+          hasJustSignedUp: req.session.hasJustSignedUp || false
+        });
+      } else {
+        req.session.destroy((err) => {
+          res.json({ success: false, user: null });
+        });
+      }
+    } else {
+      res.json({ success: false, user: null });
+    }
+  });
+
+  // Signup route
+  app.post('/auth/signup', async (req, res) => {
+    try {
+      const { username, name, email, password } = req.body;
+      
+      if (!username || !name || !email || !password) {
+        return res.status(400).json({ error: 'All fields are required' });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmailOrUsername(email) || await storage.getUserByEmailOrUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ error: 'User already exists with this email or username' });
+      }
+
+      // Hash password
+      const passwordHash = await bcrypt.hash(password, 12);
+
+      // Create new user
+      const newUser = await storage.createUser({
+        username,
+        name,
+        email,
+        passwordHash,
+        familyId: null
+      });
+
+      // Set session
+      req.session.hasJustSignedUp = true;
+      req.session.userId = newUser.id;
+      
+      res.json({ 
+        success: true, 
+        message: 'Account created successfully',
+        user: { id: newUser.id, username: newUser.username, name: newUser.name, email: newUser.email }
+      });
+    } catch (error) {
+      console.error('Signup error:', error);
+      res.status(500).json({ error: 'Failed to create account' });
+    }
+  });
+
+  // Login route  
+  app.post('/auth/login', async (req, res) => {
+    try {
+      const { identifier, password } = req.body; // identifier can be username or email
+      
+      if (!identifier || !password) {
+        return res.status(400).json({ error: 'Username/email and password are required' });
+      }
+
+      // Find user by email or username
+      const user = await storage.getUserByEmailOrUsername(identifier);
+      if (!user) {
+        return res.status(401).json({ error: 'Invalid username/email or password' });
+      }
+
+      // Verify password
+      const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: 'Invalid username/email or password' });
+      }
+      
+      // Set session
+      req.session.userId = user.id;
+      req.session.hasJustSignedUp = false;
+      
+      res.json({ 
+        success: true, 
+        message: 'Logged in successfully',
+        user: { id: user.id, username: user.username, name: user.name, email: user.email }
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ error: 'Failed to log in' });
+    }
+  });
+
+  // Logout route
+  app.post('/auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Logout error:', err);
+        return res.status(500).json({ error: 'Failed to log out' });
+      }  
+      res.json({ success: true, message: 'Logged out successfully' });
+    });
+  });
+
+  // Change password route
+  app.post('/auth/change-password', async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: 'Current password and new password are required' });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ error: 'New password must be at least 8 characters long' });
+      }
+
+      const user = await storage.getUserById(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Verify current password
+      const isValidPassword = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: 'Current password is incorrect' });
+      }
+
+      // Hash new password
+      const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+      // Update password
+      await storage.updateUserPassword(user.id, newPasswordHash);
+      
+      res.json({ 
+        success: true, 
+        message: 'Password updated successfully'
+      });
+    } catch (error) {
+      console.error('Change password error:', error);
+      res.status(500).json({ error: 'Failed to change password' });
+    }
+  });
+
+  // Change email route
+  app.post('/auth/change-email', async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const { newEmail, password } = req.body;
+      
+      if (!newEmail || !password) {
+        return res.status(400).json({ error: 'New email and password are required' });
+      }
+
+      const user = await storage.getUserById(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Verify password
+      const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: 'Password is incorrect' });
+      }
+
+      // Check if email is already taken
+      const existingUser = await storage.getUserByEmail(newEmail);
+      if (existingUser && existingUser.id !== user.id) {
+        return res.status(400).json({ error: 'Email is already taken' });
+      }
+
+      // Update email
+      const updatedUser = await storage.updateUserEmail(user.id, newEmail);
+      
+      res.json({ 
+        success: true, 
+        message: 'Email updated successfully',
+        user: { id: updatedUser!.id, username: updatedUser!.username, name: updatedUser!.name, email: updatedUser!.email }
+      });
+    } catch (error) {
+      console.error('Change email error:', error);
+      res.status(500).json({ error: 'Failed to change email' });
+    }
+  });
+}

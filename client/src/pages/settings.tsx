@@ -10,6 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { 
   Settings as SettingsIcon, 
   Bell, 
@@ -26,7 +31,10 @@ import {
   RefreshCw,
   AlertTriangle,
   CheckCircle,
-  Sparkles
+  Sparkles,
+  Key,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { exportToJSON, exportToCSV, exportFavoritesToPDF, importFromJSON, validateImportData } from "@/utils/data-export";
 import { VoiceInputButton } from "@/components/voice-input";
@@ -39,12 +47,48 @@ interface SettingsProps {
   triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
 }
 
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(8, "New password must be at least 8 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+const changeEmailSchema = z.object({
+  newEmail: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required to change email"),
+});
+
 export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
   const [settings, setSettings] = useState<UserSettings>(getSettings);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showEmailPassword, setShowEmailPassword] = useState(false);
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
+
+  const passwordForm = useForm({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  const emailForm = useForm({
+    resolver: zodResolver(changeEmailSchema),
+    defaultValues: {
+      newEmail: user?.email || "",
+      password: "",
+    },
+  });
 
   // Fetch data for export
   const { data: entries } = useQuery<JournalEntry[]>({
@@ -201,6 +245,78 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
     }
   };
 
+  const onChangePassword = async (data: z.infer<typeof changePasswordSchema>) => {
+    try {
+      const response = await fetch('/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to change password');
+      }
+
+      toast({
+        title: "Password Updated",
+        description: "Your password has been successfully changed.",
+      });
+      passwordForm.reset();
+    } catch (error) {
+      toast({
+        title: "Password Change Failed",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const onChangeEmail = async (data: z.infer<typeof changeEmailSchema>) => {
+    try {
+      const response = await fetch('/auth/change-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          newEmail: data.newEmail,
+          password: data.password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to change email');
+      }
+
+      toast({
+        title: "Email Updated",
+        description: "Your email has been successfully changed.",
+      });
+      emailForm.reset({
+        newEmail: data.newEmail,
+        password: "",
+      });
+      
+      // Reload to update user info
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
+      toast({
+        title: "Email Change Failed",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleResetAllData = () => {
     clearAllAppData();
     resetSettings();
@@ -320,6 +436,202 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
               )}
             </CardContent>
           </Card>
+
+          {/* Account Settings */}
+          {isAuthenticated && user && (
+            <Card className="dark:bg-neutral-800 dark:border-neutral-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-neutral-800 dark:text-neutral-100">
+                  <Key className="h-5 w-5 text-primary" />
+                  Account Settings
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Username</Label>
+                  <div className="flex items-center space-x-2">
+                    <div className="bg-neutral-100 dark:bg-neutral-700 px-3 py-2 rounded-md text-neutral-700 dark:text-neutral-300 text-sm">
+                      @{user.username}
+                    </div>
+                    <Badge variant="secondary">Cannot be changed</Badge>
+                  </div>
+                </div>
+
+                <Separator className="dark:border-neutral-600" />
+
+                {/* Change Email */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-neutral-800 dark:text-neutral-100">Change Email Address</h4>
+                  <Form {...emailForm}>
+                    <form onSubmit={emailForm.handleSubmit(onChangeEmail)} className="space-y-4">
+                      <FormField
+                        control={emailForm.control}
+                        name="newEmail"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>New Email Address</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="Enter new email address" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={emailForm.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Current Password</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Input 
+                                  type={showEmailPassword ? "text" : "password"} 
+                                  placeholder="Enter your current password" 
+                                  {...field} 
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                  onClick={() => setShowEmailPassword(!showEmailPassword)}
+                                  tabIndex={-1}
+                                >
+                                  {showEmailPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" disabled={emailForm.formState.isSubmitting}>
+                        {emailForm.formState.isSubmitting ? "Updating..." : "Update Email"}
+                      </Button>
+                    </form>
+                  </Form>
+                </div>
+
+                <Separator className="dark:border-neutral-600" />
+
+                {/* Change Password */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-neutral-800 dark:text-neutral-100">Change Password</h4>
+                  <Form {...passwordForm}>
+                    <form onSubmit={passwordForm.handleSubmit(onChangePassword)} className="space-y-4">
+                      <FormField
+                        control={passwordForm.control}
+                        name="currentPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Current Password</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Input 
+                                  type={showCurrentPassword ? "text" : "password"} 
+                                  placeholder="Enter your current password" 
+                                  {...field} 
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                  tabIndex={-1}
+                                >
+                                  {showCurrentPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={passwordForm.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>New Password</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Input 
+                                  type={showNewPassword ? "text" : "password"} 
+                                  placeholder="Enter new password (min 8 characters)" 
+                                  {...field} 
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                  onClick={() => setShowNewPassword(!showNewPassword)}
+                                  tabIndex={-1}
+                                >
+                                  {showNewPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={passwordForm.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Confirm New Password</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Input 
+                                  type={showConfirmPassword ? "text" : "password"} 
+                                  placeholder="Confirm your new password" 
+                                  {...field} 
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                  tabIndex={-1}
+                                >
+                                  {showConfirmPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" disabled={passwordForm.formState.isSubmitting}>
+                        {passwordForm.formState.isSubmitting ? "Updating..." : "Change Password"}
+                      </Button>
+                    </form>
+                  </Form>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Backup & Export */}
           <Card className="dark:bg-neutral-800 dark:border-neutral-700">

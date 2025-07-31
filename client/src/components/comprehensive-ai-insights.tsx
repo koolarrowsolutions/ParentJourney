@@ -31,6 +31,11 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
   const [selectedInsight, setSelectedInsight] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
+  
+  // Debug the analysis data state
+  console.log("Current analysisData state:", analysisData);
+  console.log("Selected insight:", selectedInsight);
+  console.log("Is loading:", isLoading);
 
   // Fetch data for AI analysis
   const { data: entries } = useQuery<JournalEntry[]>({
@@ -284,7 +289,11 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 }
 
 function ParentingProgressAnalysis({ data }: { data: any }) {
-  if (!data) return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
+  console.log("ParentingProgressAnalysis received data:", data);
+  if (!data) {
+    console.log("ParentingProgressAnalysis: No data provided");
+    return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
+  }
 
   return (
     <div className="space-y-6">

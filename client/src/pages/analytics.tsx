@@ -38,9 +38,9 @@ export default function Analytics({ triggerSignUpPrompt }: AnalyticsProps) {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="hover-scale">
+              <Button variant="outline" className="hover-scale">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Journal
+                Back to Main
               </Button>
             </Link>
             <div>

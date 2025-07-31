@@ -34,8 +34,10 @@ import {
   Sparkles,
   Key,
   Eye,
-  EyeOff
+  EyeOff,
+  ArrowLeft
 } from "lucide-react";
+import { Link } from "wouter";
 import { exportToJSON, exportToCSV, exportFavoritesToPDF, importFromJSON, validateImportData } from "@/utils/data-export";
 import { VoiceInputButton } from "@/components/voice-input";
 import { OnboardingTour } from "@/components/onboarding-tour";
@@ -335,15 +337,25 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <SettingsIcon className="text-white h-5 w-5" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                <SettingsIcon className="text-white h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100">Settings</h1>
+                <p className="text-neutral-600 dark:text-neutral-300">
+                  Customize your ParentJourney experience
+                </p>
+              </div>
             </div>
-            <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100">Settings</h1>
+            <Link href="/">
+              <Button variant="outline" className="hover-scale">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Main
+              </Button>
+            </Link>
           </div>
-          <p className="text-neutral-600 dark:text-neutral-300">
-            Customize your ParentJourney experience
-          </p>
         </div>
 
         <div className="space-y-6">

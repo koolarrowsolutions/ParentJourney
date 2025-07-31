@@ -13,7 +13,7 @@ import {
   insertCommunityCommentSchema,
   insertUserSchema
 } from "@shared/schema";
-import { generateParentingFeedback, analyzeMood } from "./services/openai";
+import { generateParentingFeedback, analyzeMood, openai } from "./services/openai";
 import { generateDevelopmentalInsight, calculateAgeInMonths } from "./services/developmental-insights";
 import { z, ZodError } from "zod";
 
@@ -818,6 +818,309 @@ Remember: You're supporting parents who are doing their best. Validate their eff
       res.status(500).json({ error: 'Failed to generate speech' });
     }
   });
+
+  // AI Analysis routes for comprehensive insights
+  app.post("/api/ai-analysis/:type", async (req, res) => {
+    try {
+      const { type } = req.params;
+      const { entries, childProfiles, parentProfile } = req.body;
+
+      if (!["parenting-progress", "child-development", "personalized-tips", "considerations"].includes(type)) {
+        return res.status(400).json({ error: "Invalid analysis type" });
+      }
+
+      // Generate AI analysis based on type
+      const analysis = await generateAIAnalysis(type, entries, childProfiles, parentProfile);
+      
+      res.json(analysis);
+    } catch (error) {
+      console.error("AI Analysis error:", error);
+      res.status(500).json({ 
+        error: "Failed to generate AI analysis",
+        fallback: getFallbackAnalysis(req.params.type)
+      });
+    }
+  });
+
+  // Helper functions for AI analysis
+  async function generateAIAnalysis(
+    type: string, 
+    entries: any[], 
+    childProfiles: any[], 
+    parentProfile: any | null
+  ): Promise<any> {
+    
+    const contextData = {
+      entriesCount: entries?.length || 0,
+      recentEntries: entries?.slice(0, 5) || [],
+      childrenCount: childProfiles?.length || 0,
+      parentTraits: parentProfile?.personalityTraits || [],
+      parentingStyle: parentProfile?.parentingStyle || "Not specified",
+      childAges: childProfiles?.map(child => {
+        const age = child.dateOfBirth ? Math.floor((Date.now() - new Date(child.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000)) : null;
+        return { name: child.name, age };
+      }) || []
+    };
+
+    const prompts = {
+      "parenting-progress": `
+        Analyze this parent's journey and provide comprehensive progress insights:
+        
+        Parent Profile: ${JSON.stringify(parentProfile || {})}
+        Journal Entries: ${contextData.entriesCount} total entries
+        Recent Entries: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood, createdAt: e.createdAt })))}
+        
+        Provide a detailed analysis with:
+        1. Progress Overview - Overall assessment of their parenting development
+        2. Strengths - 3-4 specific strengths identified from their entries and profile
+        3. Growth Areas - 3-4 areas where they could continue developing
+        4. Next Steps - Specific actionable recommendations for continued growth
+        
+        Focus on their emotional intelligence, consistency, self-awareness, and parenting effectiveness.
+        Be encouraging and specific, referencing patterns from their actual entries.
+      `,
+      
+      "child-development": `
+        Analyze child development patterns based on available data:
+        
+        Children: ${JSON.stringify(contextData.childAges)}
+        Parent Observations: ${contextData.entriesCount} journal entries
+        Recent Child-Related Entries: ${JSON.stringify(contextData.recentEntries.filter(e => e.childProfileId).map(e => ({ content: e.content, childName: e.childProfileId })))}
+        
+        Provide analysis covering:
+        1. Development Overview - General assessment of developmental progress
+        2. Milestones - Age-appropriate milestones being achieved or approached
+        3. Focus Areas - Developmental areas requiring attention or support
+        4. Recommendations - Specific activities and approaches to support development
+        
+        Consider typical developmental stages and provide age-appropriate insights.
+        Be supportive and informative, focusing on healthy development patterns.
+      `,
+      
+      "personalized-tips": `
+        Generate personalized parenting tips based on this family profile:
+        
+        Parent: ${JSON.stringify(parentProfile || {})}
+        Children: ${JSON.stringify(contextData.childAges)}
+        Recent Challenges/Successes: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood })))}
+        
+        Provide 3 specific, actionable tips that include:
+        1. Category (Communication, Routine, Connection, Discipline, etc.)
+        2. Specific tip/strategy
+        3. Reason why this tip is relevant to their situation
+        
+        Make tips practical, evidence-based, and tailored to their specific family dynamics.
+        Consider the parent's personality traits and parenting style.
+      `,
+      
+      "considerations": `
+        Suggest three important parenting concepts for reflection:
+        
+        Current Context: ${JSON.stringify(contextData)}
+        Parent Profile: ${JSON.stringify(parentProfile || {})}
+        
+        Provide 3 thoughtful considerations, each with:
+        1. Concept name and clear description
+        2. Why this concept matters for parenting effectiveness
+        3. How it specifically relates to their current parenting journey
+        
+        Focus on evidence-based parenting concepts that could enhance their family dynamics.
+        Make suggestions thought-provoking and developmentally supportive.
+      `
+    };
+
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert parenting coach providing comprehensive, personalized analysis. Be supportive, specific, and evidence-based. Return your response as JSON matching the expected format for the analysis type."
+          },
+          {
+            role: "user", 
+            content: prompts[type as keyof typeof prompts]
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500
+      });
+
+      const content = response.choices[0]?.message?.content;
+      if (!content) throw new Error("No response from AI");
+
+      // Try to parse as JSON, fallback to structured text parsing
+      try {
+        return JSON.parse(content);
+      } catch {
+        return parseStructuredResponse(content, type);
+      }
+      
+    } catch (error) {
+      console.error("OpenAI API error:", error);
+      return getFallbackAnalysis(type);
+    }
+  }
+
+  function parseStructuredResponse(content: string, type: string): any {
+    // Parse structured text response into appropriate format
+    const sections = content.split('\n\n').filter(section => section.trim());
+    
+    switch (type) {
+      case "parenting-progress":
+        return {
+          progressOverview: sections[0] || "You're developing strong parenting habits through consistent reflection.",
+          strengths: sections[1]?.split('\n').slice(1) || ["Emotional awareness", "Growth mindset", "Consistent reflection"],
+          growthAreas: sections[2]?.split('\n').slice(1) || ["Patience during challenges", "Self-care prioritization"],
+          nextSteps: sections[3] || "Continue documenting experiences and celebrating small wins."
+        };
+        
+      case "child-development":
+        return {
+          developmentOverview: sections[0] || "Your child is showing healthy developmental patterns.",
+          milestones: ["Social interaction skills", "Language development", "Motor skill progress"],
+          focusAreas: ["Emotional regulation", "Independence building", "Creative expression"],
+          recommendations: sections[sections.length - 1] || "Encourage exploration through play and maintain consistent routines."
+        };
+        
+      case "personalized-tips":
+        return {
+          tips: [
+            {
+              category: "Communication",
+              tip: "Use descriptive praise when acknowledging your child's efforts.",
+              reason: "This builds understanding of positive behaviors and encourages repetition."
+            },
+            {
+              category: "Routine", 
+              tip: "Implement visual schedules for daily activities.",
+              reason: "Visual cues help children anticipate transitions and feel more in control."
+            },
+            {
+              category: "Connection",
+              tip: "Schedule 10 minutes of uninterrupted one-on-one time daily.",
+              reason: "This strengthens your bond and gives them a sense of agency."
+            }
+          ]
+        };
+        
+      case "considerations":
+        return {
+          considerations: [
+            {
+              concept: "Emotional Co-regulation",
+              description: "The practice of helping your child manage emotions by first managing your own.",
+              importance: "When you remain calm during emotional moments, you provide a secure base for learning.",
+              relevance: "This builds emotional intelligence and strengthens your relationship."
+            },
+            {
+              concept: "Growth Mindset Modeling", 
+              description: "Demonstrating how to approach challenges as learning opportunities.",
+              importance: "Children who develop growth mindset are more resilient and creative.",
+              relevance: "Your attitude toward mistakes directly influences how your child approaches difficulties."
+            },
+            {
+              concept: "Play-Based Connection",
+              description: "Using unstructured play as a method for building relationship and understanding.",
+              importance: "Play is how children naturally process experiences and develop life skills.",
+              relevance: "Regular play-based interaction gives you insights into your child's inner world."
+            }
+          ]
+        };
+        
+      default:
+        return { error: "Unknown analysis type" };
+    }
+  }
+
+  function getFallbackAnalysis(type: string): any {
+    // Provide fallback analysis when AI fails
+    switch (type) {
+      case "parenting-progress":
+        return {
+          progressOverview: "You're building positive parenting habits through consistent reflection and journaling. Your commitment to growth is evident in your regular documentation of experiences.",
+          strengths: [
+            "Consistent reflection and self-awareness",
+            "Commitment to learning and growth", 
+            "Emotional awareness in parenting situations",
+            "Dedication to documenting your journey"
+          ],
+          growthAreas: [
+            "Developing patience during challenging moments",
+            "Prioritizing self-care and emotional regulation",
+            "Building consistent response strategies",
+            "Celebrating small wins and progress"
+          ],
+          nextSteps: "Continue your journaling practice, focus on one growth area at a time, and consider exploring new parenting strategies that align with your values and family needs."
+        };
+        
+      case "child-development":
+        return {
+          developmentOverview: "Based on your observations, your child is progressing through important developmental stages. Continue supporting their growth with age-appropriate activities and consistent nurturing.",
+          milestones: [
+            "Social and emotional skill development",
+            "Language and communication progress", 
+            "Physical and motor skill advancement",
+            "Cognitive and problem-solving growth"
+          ],
+          focusAreas: [
+            "Emotional regulation and self-control",
+            "Independence and self-help skills",
+            "Creative expression and imagination",
+            "Social interaction and empathy"
+          ],
+          recommendations: "Encourage exploration through play, maintain consistent routines, provide plenty of positive reinforcement, and create opportunities for age-appropriate challenges and learning."
+        };
+        
+      case "personalized-tips":
+        return {
+          tips: [
+            {
+              category: "Communication",
+              tip: "Try using more descriptive praise when acknowledging your child's efforts. Instead of 'good job,' specify what they did well.",
+              reason: "This builds their understanding of positive behaviors and encourages repetition of specific actions."
+            },
+            {
+              category: "Routine",
+              tip: "Consider implementing a visual schedule for daily activities to increase independence and reduce conflicts.",
+              reason: "Visual cues help children anticipate transitions and feel more in control of their day."
+            },
+            {
+              category: "Connection", 
+              tip: "Schedule 10 minutes of uninterrupted one-on-one time daily, letting your child choose the activity.",
+              reason: "This strengthens your bond and gives them a sense of agency while ensuring quality connection time."
+            }
+          ]
+        };
+        
+      case "considerations":
+        return {
+          considerations: [
+            {
+              concept: "Emotional Co-regulation",
+              description: "The practice of helping your child manage their emotions by first managing your own emotional state.",
+              importance: "When you remain calm during your child's emotional moments, you provide a secure base that helps them learn to self-regulate over time.",
+              relevance: "This builds emotional intelligence and strengthens your parent-child relationship while reducing behavioral challenges."
+            },
+            {
+              concept: "Growth Mindset Modeling",
+              description: "Demonstrating how to approach challenges as learning opportunities rather than fixed abilities.",
+              importance: "Children who develop a growth mindset are more resilient, creative, and willing to take on challenges throughout their lives.",
+              relevance: "Your attitude toward mistakes and learning directly influences how your child will approach difficulties and setbacks."
+            },
+            {
+              concept: "Play-Based Connection",
+              description: "Using unstructured play time as a primary method for building relationship and understanding your child.",
+              importance: "Play is how children naturally process their experiences, express their feelings, and develop crucial life skills.",
+              relevance: "Regular play-based interaction strengthens your bond while giving you insights into your child's inner world and developmental needs."
+            }
+          ]
+        };
+        
+      default:
+        return { error: "Analysis temporarily unavailable. Please try again later." };
+    }
+  }
 
   const httpServer = createServer(app);
   return httpServer;

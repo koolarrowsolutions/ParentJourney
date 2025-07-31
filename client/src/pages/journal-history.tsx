@@ -22,8 +22,10 @@ import {
   Archive,
   Download,
   FileText,
-  Loader2
+  Loader2,
+  ArrowLeft
 } from "lucide-react";
+import { Link } from "wouter";
 import { format } from "date-fns";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
 import { exportEntryToPDF, exportFavoritesToPDF } from "@/utils/pdf-export";
@@ -338,15 +340,25 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <Archive className="text-white h-5 w-5" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                <Archive className="text-white h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-neutral-800">Journal History</h1>
+                <p className="text-neutral-600">
+                  Browse through your parenting journey entries and AI insights
+                </p>
+              </div>
             </div>
-            <h1 className="text-3xl font-bold text-neutral-800">Journal History</h1>
+            <Link href="/">
+              <Button variant="outline" className="hover-scale">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Main
+              </Button>
+            </Link>
           </div>
-          <p className="text-neutral-600">
-            Browse through your parenting journey entries and AI insights
-          </p>
         </div>
 
         {/* Child Selection */}

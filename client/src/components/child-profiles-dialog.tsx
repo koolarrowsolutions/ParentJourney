@@ -3,7 +3,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -304,7 +304,7 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">Auto-calculate from age</SelectItem>
+                  <SelectItem value="auto">Auto-calculate from age</SelectItem>
                   {DEVELOPMENTAL_STAGES.map((stage) => (
                     <SelectItem key={stage.key} value={stage.key}>
                       {stage.label} ({stage.ageRange})
@@ -519,6 +519,9 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
             <Users className="mr-2 h-5 w-5 text-primary" />
             👪 Manage Child Profiles
           </DialogTitle>
+          <DialogDescription>
+            Create and manage profiles for your children to get personalized parenting insights and track their development journey.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

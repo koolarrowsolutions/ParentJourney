@@ -58,6 +58,11 @@ export interface IStorage {
   createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost>;
   getCommunityComments(postId: string): Promise<CommunityComment[]>;
   createCommunityComment(comment: InsertCommunityComment): Promise<CommunityComment>;
+  
+  // OAuth users
+  getUserById(id: string): Promise<OAuthUser | undefined>;
+  getUserByProvider(provider: string, providerId: string): Promise<OAuthUser | undefined>;
+  createUser(user: InsertOAuthUser): Promise<OAuthUser>;
 }
 
 export class MemStorage implements IStorage {
@@ -67,6 +72,7 @@ export class MemStorage implements IStorage {
   private families: Map<string, Family>;
   private communityPosts: Map<string, CommunityPost>;
   private communityComments: Map<string, CommunityComment>;
+  private oauthUsers: Map<string, OAuthUser>;
 
   constructor() {
     this.journalEntries = new Map();
@@ -75,6 +81,7 @@ export class MemStorage implements IStorage {
     this.families = new Map();
     this.communityPosts = new Map();
     this.communityComments = new Map();
+    this.oauthUsers = new Map();
   }
 
   async getJournalEntry(id: string): Promise<JournalEntry | undefined> {
@@ -330,6 +337,7 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const profile: ChildProfile = {
       ...insertProfile,
+      familyId: insertProfile.familyId ?? null,
       gender: insertProfile.gender ?? null,
       developmentalStage: insertProfile.developmentalStage ?? null,
       notes: insertProfile.notes ?? null,
@@ -392,7 +400,9 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const profile: ParentProfile = {
       ...insertProfile,
+      familyId: insertProfile.familyId ?? null,
       age: insertProfile.age ?? null,
+      relationship: insertProfile.relationship ?? null,
       parentingStyle: insertProfile.parentingStyle ?? null,
       parentingPhilosophy: insertProfile.parentingPhilosophy ?? null,
       personalityTraits: insertProfile.personalityTraits ?? null,
@@ -432,6 +442,9 @@ export class MemStorage implements IStorage {
   async createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost> {
     const newPost: CommunityPost = {
       ...post,
+      parentId: post.parentId ?? null,
+      category: post.category ?? null,
+      isAnonymous: post.isAnonymous ?? "false",
       id: randomUUID(),
       likes: [],
       createdAt: new Date(),
@@ -449,11 +462,40 @@ export class MemStorage implements IStorage {
   async createCommunityComment(comment: InsertCommunityComment): Promise<CommunityComment> {
     const newComment: CommunityComment = {
       ...comment,
+      parentId: comment.parentId ?? null,
+      postId: comment.postId ?? null,
+      isAnonymous: comment.isAnonymous ?? "false",
       id: randomUUID(),
       createdAt: new Date(),
     };
     this.communityComments.set(newComment.id, newComment);
     return newComment;
+  }
+
+  // OAuth users methods
+  async getUserById(id: string): Promise<OAuthUser | undefined> {
+    return this.oauthUsers.get(id);
+  }
+
+  async getUserByProvider(provider: string, providerId: string): Promise<OAuthUser | undefined> {
+    const users = Array.from(this.oauthUsers.values());
+    return users.find(user => user.provider === provider && user.providerId === providerId);
+  }
+
+  async createUser(user: InsertOAuthUser): Promise<OAuthUser> {
+    const newUser: OAuthUser = {
+      ...user,
+      familyId: user.familyId ?? null,
+      email: user.email ?? null,
+      avatar: user.avatar ?? null,
+      accessToken: user.accessToken ?? null,
+      refreshToken: user.refreshToken ?? null,
+      id: randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.oauthUsers.set(newUser.id, newUser);
+    return newUser;
   }
 }
 

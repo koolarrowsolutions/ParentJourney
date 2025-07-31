@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import session from "express-session";
 import { storage } from "./storage";
 import { 
   insertJournalEntrySchema, 
@@ -16,7 +17,7 @@ import { z, ZodError } from "zod";
 
 // Configure session
 function configureSession(app: Express) {
-  app.use(require('express-session')({
+  app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,
@@ -518,7 +519,7 @@ Remember: You're supporting parents who are doing their best. Validate their eff
         conversationHistory.slice(-10).forEach((msg: any) => {
           if (msg.role === 'user' || msg.role === 'assistant') {
             messages.push({
-              role: msg.role as "user" | "assistant",
+              role: msg.role,
               content: msg.content
             });
           }

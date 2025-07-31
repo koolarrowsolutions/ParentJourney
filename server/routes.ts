@@ -288,6 +288,14 @@ function setupOldAuthRoutes(app: Express) {
   });
 }
 
+// Authentication middleware
+function requireAuth(req: any, res: any, next: any) {
+  if (!req.session?.userId) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+  next();
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure session and OAuth
   configureSession(app);
@@ -297,8 +305,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/test-auth', (req, res) => {
     res.json({ session: req.session, userId: req.session?.userId });
   });
-  // Get journal entries
-  app.get("/api/journal-entries", async (req, res) => {
+  
+  // Get journal entries (PROTECTED)
+  app.get("/api/journal-entries", requireAuth, async (req, res) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
       const search = req.query.search as string;
@@ -310,8 +319,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get a single journal entry
-  app.get("/api/journal-entries/:id", async (req, res) => {
+  // Get a single journal entry (PROTECTED)
+  app.get("/api/journal-entries/:id", requireAuth, async (req, res) => {
     try {
       const entry = await storage.getJournalEntry(req.params.id);
       if (!entry) {
@@ -337,8 +346,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create a new journal entry
-  app.post("/api/journal-entries", async (req, res) => {
+  // Create a new journal entry (PROTECTED)
+  app.post("/api/journal-entries", requireAuth, async (req, res) => {
     try {
       const validatedData = journalEntryWithAiSchema.parse(req.body);
       const { requestAiFeedback, ...entryData } = validatedData;
@@ -422,8 +431,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get journal statistics
-  app.get("/api/journal-stats", async (req, res) => {
+  // Get journal statistics (PROTECTED)
+  app.get("/api/journal-stats", requireAuth, async (req, res) => {
     try {
       const stats = await storage.getJournalStats();
       res.json(stats);
@@ -432,8 +441,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get mood analytics
-  app.get("/api/mood-analytics", async (req, res) => {
+  // Get mood analytics (PROTECTED)
+  app.get("/api/mood-analytics", requireAuth, async (req, res) => {
     try {
       const analytics = await storage.getMoodAnalytics();
       res.json(analytics);
@@ -442,8 +451,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update journal entry
-  app.patch("/api/journal-entries/:id", async (req, res) => {
+  // Update journal entry (PROTECTED)
+  app.patch("/api/journal-entries/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = insertJournalEntrySchema.partial().parse(req.body);
@@ -462,8 +471,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Delete journal entry
-  app.delete("/api/journal-entries/:id", async (req, res) => {
+  // Delete journal entry (PROTECTED)
+  app.delete("/api/journal-entries/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const deleted = await storage.deleteJournalEntry(id);
@@ -478,8 +487,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Child profile routes
-  app.get("/api/child-profiles", async (req, res) => {
+  // Child profile routes (PROTECTED)
+  app.get("/api/child-profiles", requireAuth, async (req, res) => {
     try {
       const profiles = await storage.getChildProfiles();
       res.json(profiles);
@@ -488,7 +497,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/child-profiles/:id", async (req, res) => {
+  app.get("/api/child-profiles/:id", requireAuth, async (req, res) => {
     try {
       const profile = await storage.getChildProfile(req.params.id);
       if (!profile) {
@@ -500,7 +509,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/child-profiles", async (req, res) => {
+  app.post("/api/child-profiles", requireAuth, async (req, res) => {
     try {
       const validatedData = insertChildProfileSchema.parse(req.body);
       const profile = await storage.createChildProfile(validatedData);
@@ -515,7 +524,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/child-profiles/:id", async (req, res) => {
+  app.put("/api/child-profiles/:id", requireAuth, async (req, res) => {
     try {
       const validatedData = insertChildProfileSchema.partial().parse(req.body);
       const profile = await storage.updateChildProfile(req.params.id, validatedData);
@@ -533,7 +542,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/child-profiles/:id", async (req, res) => {
+  app.delete("/api/child-profiles/:id", requireAuth, async (req, res) => {
     try {
       const success = await storage.deleteChildProfile(req.params.id);
       if (!success) {
@@ -546,8 +555,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Family routes
-  app.post("/api/families", async (req, res) => {
+  // Family routes (PROTECTED)
+  app.post("/api/families", requireAuth, async (req, res) => {
     try {
       const validatedData = insertFamilySchema.parse(req.body);
       const family = await storage.createFamily(validatedData);
@@ -562,7 +571,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/families/:id", async (req, res) => {
+  app.get("/api/families/:id", requireAuth, async (req, res) => {
     try {
       const family = await storage.getFamily(req.params.id);
       if (!family) {
@@ -574,8 +583,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Parent profile routes
-  app.get("/api/parent-profiles", async (req, res) => {
+  // Parent profile routes (PROTECTED)
+  app.get("/api/parent-profiles", requireAuth, async (req, res) => {
     try {
       const familyId = req.query.familyId as string;
       const profiles = await storage.getParentProfiles(familyId);
@@ -585,7 +594,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/parent-profiles", async (req, res) => {
+  app.post("/api/parent-profiles", requireAuth, async (req, res) => {
     try {
       const validatedData = insertParentProfileSchema.parse(req.body);
       const profile = await storage.createParentProfile(validatedData);
@@ -842,7 +851,7 @@ Provide your analysis in this exact JSON format:
   });
 
   // Parent profile endpoints
-  app.get("/api/parent-profile", async (req, res) => {
+  app.get("/api/parent-profile", requireAuth, async (req, res) => {
     try {
       const profile = await storage.getParentProfile();
       res.json(profile);
@@ -852,7 +861,7 @@ Provide your analysis in this exact JSON format:
     }
   });
 
-  app.post("/api/parent-profile", async (req, res) => {
+  app.post("/api/parent-profile", requireAuth, async (req, res) => {
     try {
       const validatedData = insertParentProfileSchema.parse(req.body);
       const profile = await storage.createParentProfile(validatedData);
@@ -911,7 +920,7 @@ Provide your analysis in this exact JSON format:
     }
   });
 
-  app.patch("/api/parent-profile", async (req, res) => {
+  app.patch("/api/parent-profile", requireAuth, async (req, res) => {
     try {
       const updates = req.body;
       const profile = await storage.updateParentProfile(updates);

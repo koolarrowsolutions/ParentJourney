@@ -30,10 +30,12 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
   const progressToNextMilestone = ((totalEntries % 5) / 5) * 100;
 
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {/* Total Entries */}
-      <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-pop-in stagger-1">
-        <div className="relative">
+    <div className="space-y-4">
+      {/* Top row - 3 metrics */}
+      <div className="grid grid-cols-3 gap-4">
+        {/* Total Entries */}
+        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-pop-in stagger-1">
+          <div className="relative">
           <div className={`text-2xl font-bold text-primary transition-all duration-700 ${
             animateNumbers ? 'scale-110 animate-pulse-glow' : 'scale-100'
           }`}>
@@ -61,11 +63,11 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
             </span>
           </div>
         )}
-      </div>
+          </div>
 
-      {/* This Week */}
-      <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-bounce-in stagger-2">
-        <div className="relative">
+        {/* This Week */}
+        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-bounce-in stagger-2">
+          <div className="relative">
           <div className={`text-2xl font-bold text-primary transition-all duration-700 ${
             animateNumbers ? 'scale-110' : 'scale-100'
           }`}>
@@ -92,12 +94,12 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
               style={{ animationDelay: `${i * 100}ms` }}
             />
           ))}
-        </div>
-      </div>
+            </div>
+          </div>
 
-      {/* Streak */}
-      <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-pop-fade stagger-3">
-        <div className="relative">
+        {/* Streak */}
+        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-pop-fade stagger-3">
+          <div className="relative">
           <div className={`text-2xl font-bold text-primary transition-all duration-700 ${
             animateNumbers ? 'scale-110' : 'scale-100'
           }`}>
@@ -121,25 +123,26 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
                 : 'bg-neutral-100 text-neutral-600'
           }`}>
             {longestStreak >= 7 ? 'On Fire!' : longestStreak >= 3 ? 'Good!' : 'Keep Going!'}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Mood Analytics */}
+      {/* Mood Analytics - Full width button below */}
       <div 
         className="bg-secondary/5 rounded-lg p-4 text-center border border-secondary/20 interactive-card hover-lift animate-bounce-in stagger-4 cursor-pointer"
         onClick={onMoodAnalyticsClick}
       >
-        <div className="relative">
-          <BarChart3 className="h-8 w-8 text-secondary mx-auto mb-2" />
-          <div className="text-xs text-secondary font-medium">Mood Analytics</div>
+        <div className="flex items-center justify-center space-x-3">
+          <BarChart3 className="h-6 w-6 text-secondary" />
+          <div className="text-sm font-medium text-secondary">Mood Analytics</div>
+          <span className="text-xs text-neutral-600">View emotional patterns and insights</span>
         </div>
-        <span className="text-xs text-neutral-600 block mt-1">View Patterns</span>
       </div>
 
       {/* Milestone Celebration */}
       {showMilestone && (
-        <div className="col-span-4 mt-4 p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20 animate-slide-up">
+        <div className="mt-4 p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20 animate-slide-up">
           <div className="text-center">
             <div className="flex justify-center items-center space-x-2 mb-2">
               <Star className="h-5 w-5 text-yellow-500 fill-current animate-wiggle" />

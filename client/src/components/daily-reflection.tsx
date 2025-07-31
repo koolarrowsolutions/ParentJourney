@@ -179,11 +179,6 @@ export function DailyReflection() {
           <p className="text-sm text-neutral-600">
             Get guided prompts to help you reflect on your parenting journey
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-xs text-blue-800">
-              <strong>💡 Daily Reflection vs Journal Entry:</strong> Reflection provides specific questions to guide your thinking, while regular journal entries give you complete freedom to write about anything on your mind.
-            </p>
-          </div>
           <div className="flex items-center text-xs text-neutral-500">
             <Clock className="mr-1 h-3 w-3" />
             {getTodaysDate()}

@@ -58,11 +58,13 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             </h2>
             <p className="text-neutral-600 mb-4">{getDailyGreeting()}</p>
             {isLoading ? (
-              <div className="grid grid-cols-4 gap-4">
-                <Skeleton className="h-16 rounded-lg animate-shimmer" />
-                <Skeleton className="h-16 rounded-lg animate-shimmer" />
-                <Skeleton className="h-16 rounded-lg animate-shimmer" />
-                <Skeleton className="h-16 rounded-lg animate-shimmer" />
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <Skeleton className="h-16 rounded-lg animate-shimmer" />
+                  <Skeleton className="h-16 rounded-lg animate-shimmer" />
+                  <Skeleton className="h-16 rounded-lg animate-shimmer" />
+                </div>
+                <Skeleton className="h-12 rounded-lg animate-shimmer" />
               </div>
             ) : (
               <InteractiveProgress 
@@ -72,6 +74,48 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                 onMoodAnalyticsClick={() => setShowMoodAnalytics(!showMoodAnalytics)}
               />
             )}
+          </div>
+        </div>
+
+        {/* AI Insights Section */}
+        <div className="mb-6">
+          <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 animate-pop-fade">
+            <h3 className="text-lg font-semibold text-neutral-800 mb-4">AI Insights & Guidance</h3>
+            <div className="space-y-4">
+              {/* Progress Analysis */}
+              <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
+                <h4 className="font-medium text-primary mb-2">Your Parenting Progress</h4>
+                <p className="text-sm text-neutral-700">
+                  Based on your journal entries, you're building consistent reflection habits. Continue documenting your experiences to unlock deeper insights.
+                </p>
+              </div>
+
+              {/* Child Behavior Analysis */}
+              <div className="bg-accent/5 rounded-lg p-4 border border-accent/20">
+                <h4 className="font-medium text-accent mb-2">Child Development Patterns</h4>
+                <p className="text-sm text-neutral-700">
+                  Add journal entries about your child's behavior and milestones to receive personalized developmental insights.
+                </p>
+              </div>
+
+              {/* Tips & Recommendations */}
+              <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/20">
+                <h4 className="font-medium text-secondary mb-2">Personalized Tips</h4>
+                <p className="text-sm text-neutral-700">
+                  Start by setting up your parent profile and adding child profiles to receive tailored parenting strategies.
+                </p>
+              </div>
+
+              {/* Introspective Questions */}
+              <div className="bg-neutral-50 rounded-lg p-4 border border-neutral-200">
+                <h4 className="font-medium text-neutral-800 mb-3">Have you considered?</h4>
+                <div className="space-y-2 text-sm text-neutral-700">
+                  <p>• What moments in your parenting journey bring you the most joy?</p>
+                  <p>• How do you currently handle challenging behavior situations?</p>
+                  <p>• What support systems could help you feel more confident as a parent?</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -106,7 +150,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             <p className="text-emerald-800 font-medium">
               Feeling overwhelmed today? Take a moment to center yourself.
             </p>
-            <CalmReset trigger="button" />
+            <CalmReset trigger="inline" />
           </div>
         </div>
 

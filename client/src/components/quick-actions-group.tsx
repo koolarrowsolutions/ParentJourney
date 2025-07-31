@@ -61,17 +61,14 @@ export function QuickActionsGroup({ selectedMood, triggerSignUpPrompt }: QuickAc
               >
                 <Lightbulb className="h-6 w-6 text-accent" />
                 <div className="text-center">
-                  <div className="font-medium text-sm">Daily Reflection</div>
+                  <div className="font-medium text-sm">Quick Daily Reflection</div>
                   <div className="text-xs text-neutral-500">Get guided prompts</div>
                 </div>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Daily Reflection</DialogTitle>
-                <DialogDescription>
-                  Take a moment to reflect on your parenting journey with guided prompts.
-                </DialogDescription>
+                <DialogTitle>Quick Daily Reflection</DialogTitle>
               </DialogHeader>
               <DailyReflection />
             </DialogContent>

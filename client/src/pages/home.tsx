@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +9,7 @@ import { Sidebar } from "@/components/sidebar";
 import { QuickTemplates } from "@/components/quick-templates";
 import { InteractiveProgress } from "@/components/interactive-progress";
 import { ChildEntryOverview } from "@/components/child-entry-overview";
+import { MoodSelector } from "@/components/mood-selector";
 import { getDailyGreeting } from "@shared/greetings";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
@@ -24,6 +26,8 @@ interface HomeProps {
 }
 
 export default function Home({ triggerSignUpPrompt }: HomeProps) {
+  const [selectedMood, setSelectedMood] = useState<string>("");
+
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
     queryFn: async () => {
@@ -70,6 +74,14 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         </div>
 
+        {/* Mood Selection - Independent Element */}
+        <div className="mb-6">
+          <MoodSelector 
+            selectedMood={selectedMood} 
+            onMoodChange={setSelectedMood} 
+          />
+        </div>
+
         {/* Feeling Overwhelmed Element */}
         <div className="mb-6 p-4 bg-emerald-50 rounded-lg border border-emerald-200 animate-pop-fade">
           <div className="flex items-center justify-between">
@@ -82,7 +94,10 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
             <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm animate-pop-fade stagger-1">
-              <JournalForm triggerSignUpPrompt={triggerSignUpPrompt} />
+              <JournalForm 
+                triggerSignUpPrompt={triggerSignUpPrompt} 
+                selectedMood={selectedMood}
+              />
             </div>
             
             {/* Child-specific entries overview */}

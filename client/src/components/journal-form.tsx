@@ -147,10 +147,10 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
 
 interface JournalFormProps {
   triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
+  selectedMood?: string;
 }
 
-export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
-  const [selectedMood, setSelectedMood] = useState<string>("");
+export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalFormProps) {
 
   const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const [isSubmittingWithAI, setIsSubmittingWithAI] = useState(false);
@@ -217,7 +217,6 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
       
       // Reset form
       form.reset();
-      setSelectedMood("");
       setSelectedChildIds([]);
       setIsSubmittingWithAI(false);
       setShowAiFeedback(false);
@@ -338,28 +337,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
             </div>
           )}
           
-          {/* Mood Selection - Expanded range for better AI analysis */}
-          <div className="mb-6">
-            <h4 className="text-sm font-medium text-neutral-700 mb-3">
-              How are you feeling today?
-            </h4>
-            <div className="flex flex-wrap justify-center gap-2">
-              {MOODS.map((mood) => (
-                <button
-                  key={mood.value}
-                  type="button"
-                  onClick={() => setSelectedMood(mood.value)}
-                  className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale animate-wiggle hover:animate-bounce-subtle ${
-                    selectedMood === mood.value
-                      ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
-                      : "border-neutral-200 hover:border-primary hover:bg-primary/5"
-                  }`}
-                >
-                  {mood.emoji} {mood.label}
-                </button>
-              ))}
-            </div>
-          </div>
+
           
 
           

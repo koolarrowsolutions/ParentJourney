@@ -156,7 +156,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
           <DialogDescription>
             {mode === 'login' 
               ? "Sign in to continue your parenting journey and access your entries"
-              : "Get started with your AI-powered parenting journal in seconds"
+              : "Create your account to start documenting your parenting journey with AI insights"
             }
           </DialogDescription>
         </DialogHeader>
@@ -310,7 +310,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
                   className="w-full bg-primary hover:bg-primary/90" 
                   disabled={isLoading}
                 >
-                  {isLoading ? "Getting you started..." : "Get Started"}
+                  {isLoading ? "Creating your account..." : "Create Account"}
                 </Button>
               </form>
             </Form>
@@ -381,13 +381,13 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
           {/* Switch between login/signup */}
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              {mode === 'login' ? "New to ParentJourney? " : "Already have an account? "}
+              {mode === 'login' ? "Don't have an account yet? " : "Already have an account? "}
               <Button
                 variant="link"
                 className="px-0 font-medium hover:text-primary animate-pop-in"
                 onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
               >
-                {mode === 'login' ? 'Create account' : 'Sign in instead'}
+                {mode === 'login' ? 'Create one here' : 'Sign in here'}
               </Button>
             </p>
           </div>

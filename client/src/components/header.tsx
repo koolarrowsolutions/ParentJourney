@@ -83,11 +83,11 @@ export function Header() {
                 trigger={
                   <Button 
                     size="sm"
-                    className="bg-primary hover:bg-primary/90 text-white animate-pop-in"
+                    className="bg-primary hover:bg-primary/90 text-white animate-pop-in relative"
                   >
                     <UserPlus className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Get Started</span>
-                    <span className="sm:hidden">Join</span>
+                    <span className="hidden sm:inline">Sign In / Join</span>
+                    <span className="sm:hidden">Sign In</span>
                   </Button>
                 }
               />

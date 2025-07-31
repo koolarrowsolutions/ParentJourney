@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -17,9 +17,8 @@ import { journalEntryWithAiSchema, type JournalEntryWithAi, type ChildProfile } 
 import { getRandomPrompt } from "@shared/prompts";
 import { getDailyGreeting } from "@shared/greetings";
 import { getSettings } from "@/utils/settings-storage";
-import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap, RefreshCw } from "lucide-react";
+import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap, RefreshCw, Camera, X } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
-import { PhotoUpload } from "./photo-upload";
 import { CalmReset } from "./calm-reset";
 import { VoiceInputButton, VoiceInput } from "./voice-input";
 
@@ -165,6 +164,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
   const [settings] = useState(() => getSettings());
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: childProfiles } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
@@ -283,6 +283,35 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
   const selectedChildProfiles = childProfiles?.filter(profile => 
     selectedChildIds.includes(profile.id)
   ) || [];
+
+  // Photo upload functions
+  const handleFileSelect = (files: FileList | null) => {
+    if (!files) return;
+
+    const newPhotos: string[] = [];
+    const remainingSlots = 5 - photos.length;
+    const filesToProcess = Math.min(files.length, remainingSlots);
+
+    for (let i = 0; i < filesToProcess; i++) {
+      const file = files[i];
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          newPhotos.push(result);
+          if (newPhotos.length === filesToProcess) {
+            setPhotos(prev => [...prev, ...newPhotos]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    const updatedPhotos = photos.filter((_, i) => i !== index);
+    setPhotos(updatedPhotos);
+  };
 
   return (
     <Card className="shadow-sm border border-neutral-200 hover-lift animate-pop-fade">
@@ -506,13 +535,61 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
               )}
             />
 
-            {/* Photo Upload */}
-            <div>
-              <PhotoUpload 
-                photos={photos} 
-                onPhotosChange={setPhotos}
-                maxPhotos={5}
-              />
+            {/* Photo Upload - Compact Version */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-neutral-700">
+                  Add Photos <span className="text-neutral-400">(optional)</span>
+                </label>
+                <div className="flex items-center gap-2">
+                  {photos.length > 0 && (
+                    <span className="text-xs text-neutral-500">{photos.length}/5 photos</span>
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={(e) => handleFileSelect(e.target.files)}
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                  />
+                  <TooltipWrapper content="Add photos to your entry">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={photos.length >= 5}
+                      className="text-xs"
+                    >
+                      <Camera className="h-3 w-3 mr-1" />
+                      {photos.length === 0 ? "Add Photos" : "Add More"}
+                    </Button>
+                  </TooltipWrapper>
+                </div>
+              </div>
+              
+              {/* Photo Gallery - Only show if photos exist */}
+              {photos.length > 0 && (
+                <div className="flex flex-wrap gap-2 p-3 bg-neutral-50 rounded-lg border">
+                  {photos.map((photo, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={photo}
+                        alt={`Photo ${index + 1}`}
+                        className="w-16 h-16 object-cover rounded-lg border border-neutral-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(index)}
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Quick Calm Reset for overwhelming moments */}

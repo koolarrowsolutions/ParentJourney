@@ -312,7 +312,7 @@ Remember: You're supporting parents who are doing their best. Validate their eff
         conversationHistory.slice(-10).forEach((msg: any) => {
           if (msg.role === 'user' || msg.role === 'assistant') {
             messages.push({
-              role: msg.role,
+              role: msg.role as "user" | "assistant",
               content: msg.content
             });
           }

@@ -15,6 +15,7 @@ interface CalmResetProps {
 export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentExercise, setCurrentExercise] = useState<string>('breathing');
+  const [activeBreathingExercise, setActiveBreathingExercise] = useState<string | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [progress, setProgress] = useState(0);
   const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale' | 'rest'>('inhale');
@@ -112,6 +113,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
   const startBreathingExercise = (exerciseType: keyof typeof breathingExercises) => {
     setCurrentExercise(exerciseType);
+    setActiveBreathingExercise(exerciseType);
     setIsActive(true);
     setProgress(0);
     setCycleCount(0);
@@ -143,6 +145,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
           runBreathingCycle(exerciseType, nextPhaseIndex);
         } else {
           setIsActive(false);
+          setActiveBreathingExercise(null);
           setProgress(100);
           if (onComplete) onComplete();
         }
@@ -154,6 +157,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
   const stopExercise = () => {
     setIsActive(false);
+    setActiveBreathingExercise(null);
     if (exerciseTimer) {
       clearInterval(exerciseTimer);
       setExerciseTimer(null);
@@ -165,6 +169,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
   const resetExercise = () => {
     stopExercise();
     setCurrentExercise('breathing');
+    setActiveBreathingExercise(null);
   };
 
   useEffect(() => {
@@ -248,74 +253,77 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
             <TabsContent value="breathing" className="space-y-6">
               <div className="grid grid-cols-1 gap-4">
                 {Object.entries(breathingExercises).map(([key, exercise]) => (
-                  <Card key={key} className="p-4 border-emerald-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium text-emerald-800">{exercise.name}</h4>
-                        <p className="text-sm text-emerald-600">{exercise.description}</p>
+                  <div key={key} className="space-y-3">
+                    <Card className="p-4 border-emerald-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-emerald-800">{exercise.name}</h4>
+                          <p className="text-sm text-emerald-600">{exercise.description}</p>
+                        </div>
+                        <Button
+                          onClick={() => startBreathingExercise(key as keyof typeof breathingExercises)}
+                          disabled={isActive}
+                          variant="outline"
+                          size="sm"
+                          className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                        >
+                          <Play className="h-4 w-4 mr-1" />
+                          Start
+                        </Button>
                       </div>
-                      <Button
-                        onClick={() => startBreathingExercise(key as keyof typeof breathingExercises)}
-                        disabled={isActive}
-                        variant="outline"
-                        size="sm"
-                        className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-                      >
-                        <Play className="h-4 w-4 mr-1" />
-                        Start
-                      </Button>
-                    </div>
-                  </Card>
+                    </Card>
+
+                    {/* Animation appears below the specific exercise that was started */}
+                    {isActive && activeBreathingExercise === key && (
+                      <Card className="p-6 border-2 border-emerald-300 bg-emerald-50 animate-pop-fade">
+                        <div className="text-center space-y-4">
+                          <div className="flex items-center justify-center space-x-4">
+                            <Badge variant="outline" className="border-emerald-300 text-emerald-700">
+                              {exercise.name}
+                            </Badge>
+                            <Badge variant="outline" className="border-emerald-300 text-emerald-700">
+                              Cycle {cycleCount + 1}/4
+                            </Badge>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <h3 className="text-lg font-medium text-emerald-800 capitalize">
+                              {breathingPhase}
+                            </h3>
+                            <p className="text-emerald-700">
+                              {exercise.phases.find(p => p.name === breathingPhase)?.instruction}
+                            </p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Progress value={progress} className="h-3" />
+                            <div className="flex justify-center space-x-2">
+                              <Button
+                                onClick={stopExercise}
+                                variant="outline"
+                                size="sm"
+                                className="border-emerald-300 text-emerald-700"
+                              >
+                                <Pause className="h-4 w-4 mr-1" />
+                                Stop
+                              </Button>
+                              <Button
+                                onClick={resetExercise}
+                                variant="outline"
+                                size="sm"
+                                className="border-emerald-300 text-emerald-700"
+                              >
+                                <RotateCcw className="h-4 w-4 mr-1" />
+                                Reset
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    )}
+                  </div>
                 ))}
               </div>
-
-              {isActive && currentBreathingExercise && (
-                <Card className="p-6 border-2 border-emerald-300 bg-emerald-50">
-                  <div className="text-center space-y-4">
-                    <div className="flex items-center justify-center space-x-4">
-                      <Badge variant="outline" className="border-emerald-300 text-emerald-700">
-                        {currentBreathingExercise.name}
-                      </Badge>
-                      <Badge variant="outline" className="border-emerald-300 text-emerald-700">
-                        Cycle {cycleCount + 1}/4
-                      </Badge>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-medium text-emerald-800 capitalize">
-                        {breathingPhase}
-                      </h3>
-                      <p className="text-emerald-700">
-                        {currentPhase?.instruction}
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Progress value={progress} className="h-3" />
-                      <div className="flex justify-center space-x-2">
-                        <Button
-                          onClick={stopExercise}
-                          variant="outline"
-                          size="sm"
-                          className="border-emerald-300 text-emerald-700"
-                        >
-                          <Pause className="h-4 w-4 mr-1" />
-                          Stop
-                        </Button>
-                        <Button
-                          onClick={resetExercise}
-                          variant="outline"
-                          size="sm"
-                          className="border-emerald-300 text-emerald-700"
-                        >
-                          <RotateCcw className="h-4 w-4 mr-1" />
-                          Reset
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              )}
             </TabsContent>
 
             <TabsContent value="guided" className="space-y-4">

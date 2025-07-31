@@ -76,16 +76,28 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
 
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const response = await apiRequest("POST", "/api/parenting-chat", {
-        message,
-        conversationHistory: messages.slice(-10) // Send last 10 messages for context
+      const response = await fetch("/api/parenting-chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message,
+          conversationHistory: messages.slice(-10) // Send last 10 messages for context
+        }),
       });
-      return response;
+      
+      if (!response.ok) {
+        throw new Error("Failed to get response");
+      }
+      
+      const data = await response.json();
+      return data;
     },
     onSuccess: (response: any) => {
       const assistantMessage: Message = {
         id: `assistant-${Date.now()}`,
-        content: response.reply || "I'm sorry, I couldn't generate a response.",
+        content: response.reply || "I'm here to help with any parenting questions you have!",
         role: 'assistant',
         timestamp: new Date()
       };
@@ -94,7 +106,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
     onError: () => {
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
-        content: "I'm sorry, I'm having trouble responding right now. Please try again in a moment.",
+        content: "I'm having trouble responding right now, but I'm here when you need parenting support!",
         role: 'assistant',
         timestamp: new Date()
       };
@@ -172,7 +184,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMinimized(!isMinimized)}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 md:flex hidden"
               >
                 {isMinimized ? (
                   <Maximize2 className="h-3 w-3" />

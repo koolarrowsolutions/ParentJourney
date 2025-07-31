@@ -199,58 +199,58 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 }
 
 function ParentingProgressAnalysis({ data }: { data: any }) {
-  if (!data) return <div className="text-center py-4 text-neutral-500">No analysis available yet</div>;
+  if (!data) return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
 
   return (
-    <div className="space-y-4">
-      <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
-        <h4 className="font-semibold text-primary mb-2 flex items-center">
-          <TrendingUp className="mr-2 h-4 w-4" />
-          Progress Overview
+    <div className="space-y-6">
+      <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
+        <h4 className="font-semibold text-primary mb-4 flex items-center text-lg">
+          <TrendingUp className="mr-3 h-5 w-5" />
+          Your Parenting Journey
         </h4>
-        <p className="text-neutral-700 text-sm leading-relaxed">
+        <p className="text-neutral-700 leading-relaxed">
           {data.progressOverview || "Based on your journal entries and reflections, you're developing consistent parenting practices and growing in self-awareness."}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-          <h5 className="font-medium text-green-800 mb-2 flex items-center">
-            <CheckCircle className="mr-2 h-4 w-4" />
-            Strengths Identified
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-green-50 rounded-xl p-5 border border-green-200">
+          <h5 className="font-medium text-green-800 mb-4 flex items-center">
+            <CheckCircle className="mr-3 h-5 w-5" />
+            Your Strengths
           </h5>
-          <ul className="text-sm text-green-700 space-y-1">
+          <div className="space-y-3">
             {(data.strengths || ["Consistent reflection habits", "Emotional awareness", "Growth mindset"]).map((strength: string, index: number) => (
-              <li key={index} className="flex items-start">
-                <ArrowRight className="mr-2 h-3 w-3 mt-0.5 flex-shrink-0" />
-                {strength}
-              </li>
+              <div key={index} className="flex items-start">
+                <div className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <span className="text-green-700 leading-relaxed">{strength}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
-        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-          <h5 className="font-medium text-blue-800 mb-2 flex items-center">
-            <Target className="mr-2 h-4 w-4" />
-            Growth Areas
+        <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
+          <h5 className="font-medium text-blue-800 mb-4 flex items-center">
+            <Target className="mr-3 h-5 w-5" />
+            Growth Opportunities
           </h5>
-          <ul className="text-sm text-blue-700 space-y-1">
-            {(data.growthAreas || ["Consistency in responses", "Patience during challenges", "Self-care prioritization"]).map((area: string, index: number) => (
-              <li key={index} className="flex items-start">
-                <ArrowRight className="mr-2 h-3 w-3 mt-0.5 flex-shrink-0" />
-                {area}
-              </li>
+          <div className="space-y-3">
+            {(data.growthAreas || ["Consistency in responses", "Patience during challenges"]).map((area: string, index: number) => (
+              <div key={index} className="flex items-start">
+                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <span className="text-blue-700 leading-relaxed">{area}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
 
-      <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
-        <h5 className="font-medium text-amber-800 mb-2 flex items-center">
-          <Sparkles className="mr-2 h-4 w-4" />
-          Recommended Next Steps
+      <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
+        <h5 className="font-medium text-amber-800 mb-4 flex items-center">
+          <Sparkles className="mr-3 h-5 w-5" />
+          Next Steps
         </h5>
-        <p className="text-sm text-amber-700 leading-relaxed">
+        <p className="text-amber-700 leading-relaxed">
           {data.nextSteps || "Continue documenting your experiences, focus on celebrating small wins, and consider exploring new parenting strategies that align with your values."}
         </p>
       </div>
@@ -259,52 +259,58 @@ function ParentingProgressAnalysis({ data }: { data: any }) {
 }
 
 function ChildDevelopmentAnalysis({ data }: { data: any }) {
-  if (!data) return <div className="text-center py-4 text-neutral-500">No analysis available yet</div>;
+  if (!data) return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
 
   return (
-    <div className="space-y-4">
-      <div className="bg-accent/5 rounded-lg p-4 border border-accent/20">
-        <h4 className="font-semibold text-accent mb-2 flex items-center">
-          <Baby className="mr-2 h-4 w-4" />
+    <div className="space-y-6">
+      <div className="bg-accent/5 rounded-xl p-6 border border-accent/20">
+        <h4 className="font-semibold text-accent mb-4 flex items-center text-lg">
+          <Baby className="mr-3 h-5 w-5" />
           Development Overview
         </h4>
-        <p className="text-neutral-700 text-sm leading-relaxed">
+        <p className="text-neutral-700 leading-relaxed">
           {data.developmentOverview || "Your child is showing healthy developmental patterns across multiple areas. Continue supporting their growth with age-appropriate activities."}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-          <h5 className="font-medium text-purple-800 mb-2">Milestones Achieved</h5>
-          <ul className="text-sm text-purple-700 space-y-1">
-            {(data.milestones || ["Social interaction skills", "Language development", "Motor skill progress"]).map((milestone: string, index: number) => (
-              <li key={index} className="flex items-start">
-                <CheckCircle className="mr-2 h-3 w-3 mt-0.5 flex-shrink-0" />
-                {milestone}
-              </li>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-purple-50 rounded-xl p-5 border border-purple-200">
+          <h5 className="font-medium text-purple-800 mb-4 flex items-center">
+            <CheckCircle className="mr-3 h-5 w-5" />
+            Recent Milestones
+          </h5>
+          <div className="space-y-3">
+            {(data.milestones || ["Social interaction skills", "Language development"]).map((milestone: string, index: number) => (
+              <div key={index} className="flex items-start">
+                <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <span className="text-purple-700 leading-relaxed">{milestone}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
-        <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
-          <h5 className="font-medium text-indigo-800 mb-2">Focus Areas</h5>
-          <ul className="text-sm text-indigo-700 space-y-1">
-            {(data.focusAreas || ["Emotional regulation", "Independence building", "Creative expression"]).map((area: string, index: number) => (
-              <li key={index} className="flex items-start">
-                <Target className="mr-2 h-3 w-3 mt-0.5 flex-shrink-0" />
-                {area}
-              </li>
+        <div className="bg-indigo-50 rounded-xl p-5 border border-indigo-200">
+          <h5 className="font-medium text-indigo-800 mb-4 flex items-center">
+            <Target className="mr-3 h-5 w-5" />
+            Development Focus
+          </h5>
+          <div className="space-y-3">
+            {(data.focusAreas || ["Emotional regulation", "Independence building"]).map((area: string, index: number) => (
+              <div key={index} className="flex items-start">
+                <div className="w-2 h-2 bg-indigo-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <span className="text-indigo-700 leading-relaxed">{area}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
 
-      <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-        <h5 className="font-medium text-green-800 mb-2 flex items-center">
-          <Lightbulb className="mr-2 h-4 w-4" />
-          Developmental Recommendations
+      <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+        <h5 className="font-medium text-green-800 mb-4 flex items-center">
+          <Lightbulb className="mr-3 h-5 w-5" />
+          Recommendations
         </h5>
-        <p className="text-sm text-green-700 leading-relaxed">
+        <p className="text-green-700 leading-relaxed">
           {data.recommendations || "Encourage exploration through play, maintain consistent routines, and provide plenty of positive reinforcement for their efforts and progress."}
         </p>
       </div>
@@ -313,53 +319,48 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
 }
 
 function PersonalizedTipsAnalysis({ data }: { data: any }) {
-  if (!data) return <div className="text-center py-4 text-neutral-500">No analysis available yet</div>;
+  if (!data) return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
 
   return (
-    <div className="space-y-4">
-      <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/20">
-        <h4 className="font-semibold text-secondary mb-2 flex items-center">
-          <Lightbulb className="mr-2 h-4 w-4" />
-          Personalized Recommendations
+    <div className="space-y-6">
+      <div className="bg-secondary/5 rounded-xl p-6 border border-secondary/20">
+        <h4 className="font-semibold text-secondary mb-4 flex items-center text-lg">
+          <Lightbulb className="mr-3 h-5 w-5" />
+          Personalized Tips
         </h4>
-        <p className="text-neutral-700 text-sm leading-relaxed">
+        <p className="text-neutral-700 leading-relaxed">
           Based on your parenting style, child's personality, and recent experiences, here are tailored suggestions for your family.
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {(data.tips || [
           {
             category: "Communication",
-            tip: "Try using more descriptive praise when acknowledging your child's efforts. Instead of 'good job,' specify what they did well.",
+            tip: "Try using more descriptive praise when acknowledging your child's efforts.",
             reason: "This builds their understanding of positive behaviors and encourages repetition."
           },
           {
-            category: "Routine",
-            tip: "Consider implementing a visual schedule for daily activities to increase independence and reduce conflicts.",
-            reason: "Visual cues help children anticipate transitions and feel more in control of their day."
-          },
-          {
             category: "Connection",
-            tip: "Schedule 10 minutes of uninterrupted one-on-one time daily, letting your child choose the activity.",
+            tip: "Schedule 10 minutes of uninterrupted one-on-one time daily.",
             reason: "This strengthens your bond and gives them a sense of agency while ensuring quality connection time."
           }
         ]).map((tip: any, index: number) => (
-          <div key={index} className="bg-white rounded-lg p-4 border border-neutral-200 shadow-sm">
+          <div key={index} className="bg-white rounded-xl p-6 border border-neutral-200 shadow-sm">
             <div className="flex items-start">
-              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                <span className="text-white text-xs font-semibold">{index + 1}</span>
+              <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                <span className="text-white font-semibold">{index + 1}</span>
               </div>
               <div className="flex-1">
-                <div className="flex items-center mb-2">
-                  <Badge variant="secondary" className="mr-2 text-xs">
+                <div className="flex items-center mb-3">
+                  <Badge variant="secondary" className="text-xs">
                     {tip.category}
                   </Badge>
                 </div>
-                <p className="text-neutral-800 text-sm mb-2 font-medium">
+                <p className="text-neutral-800 mb-3 font-medium leading-relaxed">
                   {tip.tip}
                 </p>
-                <p className="text-neutral-600 text-xs leading-relaxed">
+                <p className="text-neutral-600 text-sm leading-relaxed">
                   <strong>Why this helps:</strong> {tip.reason}
                 </p>
               </div>
@@ -372,66 +373,51 @@ function PersonalizedTipsAnalysis({ data }: { data: any }) {
 }
 
 function ConsiderationsAnalysis({ data }: { data: any }) {
-  if (!data) return <div className="text-center py-4 text-neutral-500">No analysis available yet</div>;
+  if (!data) return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
 
   return (
-    <div className="space-y-4">
-      <div className="bg-neutral-50 rounded-lg p-4 border border-neutral-200">
-        <h4 className="font-semibold text-neutral-800 mb-2 flex items-center">
-          <MessageSquare className="mr-2 h-4 w-4" />
-          Thoughtful Considerations
+    <div className="space-y-6">
+      <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
+        <h4 className="font-semibold text-primary mb-4 flex items-center text-lg">
+          <MessageSquare className="mr-3 h-5 w-5" />
+          Have You Considered...
         </h4>
-        <p className="text-neutral-700 text-sm leading-relaxed">
-          Three important concepts to consider for enhancing your parenting journey and family dynamics.
+        <p className="text-neutral-700 leading-relaxed">
+          These concepts might offer new perspectives on your parenting journey and family dynamics.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {(data.considerations || [
           {
             concept: "Emotional Co-regulation",
             description: "The practice of helping your child manage their emotions by first managing your own emotional state.",
-            importance: "When you remain calm during your child's emotional moments, you provide a secure base that helps them learn to self-regulate over time.",
-            relevance: "This builds emotional intelligence and strengthens your parent-child relationship while reducing behavioral challenges."
+            importance: "When you remain calm during your child's emotional moments, you provide a secure base that helps them learn to self-regulate over time."
           },
           {
-            concept: "Growth Mindset Modeling",
+            concept: "Growth Mindset Modeling", 
             description: "Demonstrating how to approach challenges as learning opportunities rather than fixed abilities.",
-            importance: "Children who develop a growth mindset are more resilient, creative, and willing to take on challenges throughout their lives.",
-            relevance: "Your attitude toward mistakes and learning directly influences how your child will approach difficulties and setbacks."
-          },
-          {
-            concept: "Play-Based Connection",
-            description: "Using unstructured play time as a primary method for building relationship and understanding your child.",
-            importance: "Play is how children naturally process their experiences, express their feelings, and develop crucial life skills.",
-            relevance: "Regular play-based interaction strengthens your bond while giving you insights into your child's inner world and developmental needs."
+            importance: "Children who develop a growth mindset are more resilient, creative, and willing to take on challenges throughout their lives."
           }
         ]).map((consideration: any, index: number) => (
-          <div key={index} className="bg-white rounded-lg p-5 border border-neutral-200 shadow-sm">
-            <div className="flex items-start">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-                <span className="text-white text-sm font-semibold">{index + 1}</span>
-              </div>
-              <div className="flex-1">
-                <h5 className="font-semibold text-neutral-800 mb-2 flex items-center">
-                  {consideration.concept}
-                </h5>
-                <p className="text-neutral-700 text-sm mb-3 leading-relaxed">
-                  {consideration.description}
-                </p>
-                <div className="space-y-2">
-                  <div className="bg-blue-50 rounded p-3 border-l-4 border-blue-400">
-                    <p className="text-xs text-blue-800">
-                      <strong>Why it matters:</strong> {consideration.importance}
-                    </p>
-                  </div>
-                  <div className="bg-green-50 rounded p-3 border-l-4 border-green-400">
-                    <p className="text-xs text-green-800">
-                      <strong>Relevance to you:</strong> {consideration.relevance}
-                    </p>
-                  </div>
+          <div key={index} className="bg-white rounded-xl p-6 border border-neutral-200 shadow-sm">
+            <div className="mb-4">
+              <h5 className="font-semibold text-neutral-800 text-lg mb-3 flex items-center">
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-primary text-sm font-bold">{index + 1}</span>
                 </div>
-              </div>
+                {consideration.concept}
+              </h5>
+              <p className="text-neutral-700 leading-relaxed mb-4">
+                {consideration.description}
+              </p>
+            </div>
+            
+            <div className="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-400">
+              <p className="text-blue-800 font-medium mb-2">Why it matters:</p>
+              <p className="text-blue-700 leading-relaxed">
+                {consideration.importance}
+              </p>
             </div>
           </div>
         ))}

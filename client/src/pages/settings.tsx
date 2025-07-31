@@ -28,6 +28,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { exportToJSON, exportToCSV, exportFavoritesToPDF, importFromJSON, validateImportData } from "@/utils/data-export";
+import { VoiceInputButton } from "@/components/voice-input";
 import { getSettings, saveSettings, resetSettings, clearAllAppData, type UserSettings } from "@/utils/settings-storage";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
 
@@ -274,13 +275,23 @@ export default function Settings() {
                 <Label htmlFor="parenting-focus" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
                   What's one parenting focus you want to work on?
                 </Label>
-                <Textarea
-                  id="parenting-focus"
-                  placeholder="e.g., Being more patient during bedtime routines, encouraging independence, improving communication..."
-                  value={settings.parentingFocus}
-                  onChange={(e) => updateSetting('parentingFocus', e.target.value)}
-                  className="min-h-[80px] dark:bg-neutral-700 dark:border-neutral-600 dark:text-neutral-100"
-                />
+                <div className="relative">
+                  <Textarea
+                    id="parenting-focus"
+                    placeholder="e.g., Being more patient during bedtime routines, encouraging independence, improving communication..."
+                    value={settings.parentingFocus}
+                    onChange={(e) => updateSetting('parentingFocus', e.target.value)}
+                    className="min-h-[80px] dark:bg-neutral-700 dark:border-neutral-600 dark:text-neutral-100 pr-12"
+                  />
+                  <div className="absolute right-2 top-2">
+                    <VoiceInputButton
+                      onTranscript={(text) => {
+                        const currentValue = settings.parentingFocus || '';
+                        updateSetting('parentingFocus', currentValue + (currentValue ? ' ' : '') + text);
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
               {settings.parentingFocus && (
                 <div className="p-3 bg-primary/5 dark:bg-primary/10 rounded-lg border border-primary/20">

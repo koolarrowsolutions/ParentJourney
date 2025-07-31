@@ -19,6 +19,7 @@ import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Us
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { PhotoUpload } from "./photo-upload";
 import { CalmReset, CalmResetTrigger } from "./calm-reset";
+import { VoiceInputButton, VoiceInput } from "./voice-input";
 
 const MOODS = [
   { emoji: "😊", label: "Happy", value: "😊" },
@@ -410,12 +411,23 @@ export function JournalForm() {
                     Entry Title <span className="text-neutral-400">(optional)</span>
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="e.g., Teaching patience today..."
-                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent input-glow hover-scale"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
+                    <div className="relative">
+                      <Input
+                        placeholder="e.g., Teaching patience today..."
+                        className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent input-glow hover-scale pr-12"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                        <VoiceInputButton
+                          onTranscript={(text) => {
+                            const currentValue = field.value || '';
+                            field.onChange(currentValue + (currentValue ? ' ' : '') + text);
+                          }}
+                          disabled={createEntryMutation.isPending}
+                        />
+                      </div>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -427,9 +439,19 @@ export function JournalForm() {
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-neutral-700">
-                    What's on your mind? <span className="text-red-400">*</span>
-                  </FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-sm font-medium text-neutral-700">
+                      What's on your mind? <span className="text-red-400">*</span>
+                    </FormLabel>
+                    <VoiceInput
+                      onTranscript={(text) => {
+                        const currentValue = field.value || '';
+                        field.onChange(currentValue + (currentValue ? ' ' : '') + text);
+                      }}
+                      disabled={createEntryMutation.isPending}
+                      className="mb-2"
+                    />
+                  </div>
                   <FormControl>
                     <Textarea
                       rows={5}

@@ -19,6 +19,7 @@ import { PERSONALITY_TRAITS, getTraitsByAge, getTraitByKey, type PersonalityTrai
 import { Users, Plus, Edit, Trash2, Baby, Calendar, User, Sparkles } from "lucide-react";
 import { calculateDevelopmentalStage, formatAge, DEVELOPMENTAL_STAGES } from "@/utils/developmental-stages";
 import { UpdateTraitsDialog } from "./update-traits-dialog";
+import { VoiceInputButton } from "./voice-input";
 
 interface ChildProfileDialogProps {
   trigger?: React.ReactNode;
@@ -201,11 +202,21 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
                 👶 Child's Name <span className="text-red-400">*</span>
               </FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Enter your child's name..."
-                  className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent"
-                  {...field}
-                />
+                <div className="relative">
+                  <Input
+                    placeholder="Enter your child's name..."
+                    className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent pr-12"
+                    {...field}
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <VoiceInputButton
+                      onTranscript={(text) => {
+                        const currentValue = field.value || '';
+                        field.onChange(currentValue + (currentValue ? ' ' : '') + text);
+                      }}
+                    />
+                  </div>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -250,12 +261,22 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
                   🗣️ Pronouns <span className="text-neutral-400">(optional)</span>
                 </FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="e.g., they/them, she/her, he/him" 
-                    className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent"
-                    {...field} 
-                    value={field.value || ""} 
-                  />
+                  <div className="relative">
+                    <Input 
+                      placeholder="e.g., they/them, she/her, he/him" 
+                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent pr-12"
+                      {...field} 
+                      value={field.value || ""} 
+                    />
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                      <VoiceInputButton
+                        onTranscript={(text) => {
+                          const currentValue = field.value || '';
+                          field.onChange(currentValue + (currentValue ? ' ' : '') + text);
+                        }}
+                      />
+                    </div>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -322,9 +343,17 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium text-neutral-700">
-                📝 Notes <span className="text-neutral-400">(optional)</span>
-              </FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel className="text-sm font-medium text-neutral-700">
+                  📝 Notes <span className="text-neutral-400">(optional)</span>
+                </FormLabel>
+                <VoiceInputButton
+                  onTranscript={(text) => {
+                    const currentValue = field.value || '';
+                    field.onChange(currentValue + (currentValue ? ' ' : '') + text);
+                  }}
+                />
+              </div>
               <FormControl>
                 <Textarea
                   rows={4}

@@ -98,7 +98,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
       ? selectedTraits.filter(t => t !== traitKey)
       : [...selectedTraits, traitKey];
     
-    if (newTraits.length <= 10) { // Limit to 10 traits
+    if (newTraits.length <= 7) { // Limit to 7 traits
       setSelectedTraits(newTraits);
       form.setValue("personalityTraits", newTraits);
     }
@@ -227,7 +227,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                 Your Personality Traits
               </h3>
               <Badge variant="outline" className="text-xs">
-                {selectedTraits.length}/10 selected
+                {selectedTraits.length}/7 selected
               </Badge>
             </div>
 
@@ -261,7 +261,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                     className={`justify-start text-left h-auto p-3 ${
                       isSelected ? "bg-sky-600 text-white" : "hover:bg-sky-50"
                     }`}
-                    disabled={!isSelected && selectedTraits.length >= 10}
+                    disabled={!isSelected && selectedTraits.length >= 7}
                   >
                     <div>
                       <div className="font-medium text-sm">{trait.label}</div>

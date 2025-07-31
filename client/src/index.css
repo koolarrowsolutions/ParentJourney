@@ -182,6 +182,17 @@
     }
   }
 
+  @keyframes gentlePulse {
+    0%, 100% { 
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+  }
+
   @keyframes pulseGlow {
     0%, 100% { 
       box-shadow: 0 0 5px rgba(var(--primary-rgb, 59 130 246), 0.3);
@@ -256,6 +267,10 @@
 
   .animate-gentle-fade {
     animation: gentleFadeIn 0.8s ease-out;
+  }
+
+  .animate-gentle-pulse {
+    animation: gentlePulse 2.5s ease-in-out infinite;
   }
 
   /* Interactive Hover Effects */

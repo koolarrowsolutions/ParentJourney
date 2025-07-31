@@ -184,12 +184,12 @@
 
   @keyframes gentlePulse {
     0%, 100% { 
-      opacity: 0.6;
-      transform: scale(1);
+      opacity: 0.4;
+      transform: scale(0.98);
     }
     50% { 
-      opacity: 0.9;
-      transform: scale(1.02);
+      opacity: 0.8;
+      transform: scale(1.01);
     }
   }
 
@@ -270,7 +270,7 @@
   }
 
   .animate-gentle-pulse {
-    animation: gentlePulse 2.5s ease-in-out infinite;
+    animation: gentlePulse 4s ease-in-out infinite;
   }
 
   /* Interactive Hover Effects */

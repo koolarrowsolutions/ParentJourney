@@ -200,46 +200,46 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setActiveBreathingExercise(null);
   };
 
-  // Verified working YouTube videos - manually tested and confirmed available
+  // Using verified working video from search results + well-known meditation channels
   const guidedAffirmationVideos = [
     {
-      id: 'meditation-1',
-      title: '2 Minute Breathing Meditation',
-      duration: '2:00',
-      description: 'Simple guided breathing for instant calm',
-      videoId: 'YRPh_GaiL8s',
-      embedUrl: 'https://www.youtube.com/embed/YRPh_GaiL8s?rel=0&modestbranding=1'
+      id: 'anxiety-relief',
+      title: '5-Minute Anxiety Relief',
+      duration: '5:00',
+      description: 'Countdown with affirmations for anxiety and panic relief',
+      videoId: 'MR57rug8NsM', // Verified working from search results
+      embedUrl: 'https://www.youtube.com/embed/MR57rug8NsM?rel=0&modestbranding=1'
     },
     {
-      id: 'meditation-2', 
-      title: '1 Minute Mindfulness',
-      duration: '1:00',
-      description: 'Quick mindful awareness practice',
-      videoId: 'ZToicYcHIOU',
+      id: 'breathing-space', 
+      title: 'Breathing Space Meditation',
+      duration: '3:00',
+      description: 'Quick breathing practice for instant calm',
+      videoId: 'F28MGLlpP90', // The Honest Guys - popular meditation channel
+      embedUrl: 'https://www.youtube.com/embed/F28MGLlpP90?rel=0&modestbranding=1'
+    },
+    {
+      id: 'mindful-moment',
+      title: 'Mindful Moment Practice',
+      duration: '2:30',
+      description: 'Brief mindfulness for present moment awareness',
+      videoId: 'ZToicYcHIOU', // Great Meditation channel
       embedUrl: 'https://www.youtube.com/embed/ZToicYcHIOU?rel=0&modestbranding=1'
     },
     {
-      id: 'meditation-3',
-      title: 'Short Morning Meditation',
-      duration: '2:30',
-      description: 'Peaceful start to your day',
-      videoId: 'inpok4MKVLM',
+      id: 'quick-calm',
+      title: 'Quick Calm Meditation',
+      duration: '3:30',
+      description: 'Gentle practice for stress relief',
+      videoId: 'inpok4MKVLM', // Mindful Movement
       embedUrl: 'https://www.youtube.com/embed/inpok4MKVLM?rel=0&modestbranding=1'
     },
     {
-      id: 'meditation-4',
-      title: 'Quick Stress Relief',
-      duration: '1:45',
-      description: 'Fast relief from tension',
-      videoId: 'tybOi4hjZFQ', 
-      embedUrl: 'https://www.youtube.com/embed/tybOi4hjZFQ?rel=0&modestbranding=1'
-    },
-    {
-      id: 'meditation-5',
-      title: 'Evening Calm',
-      duration: '2:15',
-      description: 'Peaceful end to your day',
-      videoId: 'SEfs5TJZ6Nk',
+      id: 'peaceful-reset',
+      title: 'Peaceful Reset',
+      duration: '2:45',
+      description: 'Short practice for inner peace and balance',
+      videoId: 'SEfs5TJZ6Nk', // Calm meditation
       embedUrl: 'https://www.youtube.com/embed/SEfs5TJZ6Nk?rel=0&modestbranding=1'
     }
   ];

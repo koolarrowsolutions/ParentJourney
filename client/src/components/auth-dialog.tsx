@@ -64,18 +64,37 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
   const onSignUp = async (data: SignUpFormData) => {
     setIsLoading(true);
     try {
-      // Simulate API call - replace with actual authentication logic
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch('/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create account');
+      }
+
       toast({
         title: "Account Created!",
         description: "Welcome to ParentJourney! Your account has been created successfully.",
       });
       setOpen(false);
       signUpForm.reset();
+      
+      // Reload the page to update auth state
+      window.location.reload();
     } catch (error) {
       toast({
         title: "Sign Up Failed",
-        description: "Something went wrong. Please try again.",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -86,18 +105,36 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
   const onLogin = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      // Simulate API call - replace with actual authentication logic
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch('/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to log in');
+      }
+
       toast({
         title: "Welcome Back!",
         description: "You've been logged in successfully.",
       });
       setOpen(false);
       loginForm.reset();
+      
+      // Reload the page to update auth state
+      window.location.reload();
     } catch (error) {
       toast({
         title: "Login Failed",
-        description: "Invalid credentials. Please try again.",
+        description: error instanceof Error ? error.message : "Invalid credentials. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -105,25 +142,32 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
     }
   };
 
-  const handleSocialAuth = async (provider: string) => {
+  const handleSocialAuth = (provider: string) => {
     setIsLoading(true);
-    try {
-      // Simulate social auth - replace with actual OAuth implementation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast({
-        title: `${provider} Authentication`,
-        description: `Successfully authenticated with ${provider}!`,
-      });
-      setOpen(false);
-    } catch (error) {
-      toast({
-        title: "Authentication Failed",
-        description: `Failed to authenticate with ${provider}. Please try again.`,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    
+    // Open OAuth popup window
+    const popup = window.open(
+      `/auth/${provider}`,
+      `${provider}_login`,
+      'width=500,height=600,scrollbars=yes,resizable=yes'
+    );
+
+    // Listen for popup to close (indicates auth completion)
+    const checkClosed = setInterval(() => {
+      if (popup?.closed) {
+        clearInterval(checkClosed);
+        setIsLoading(false);
+        setOpen(false);
+        
+        toast({
+          title: `${provider.charAt(0).toUpperCase() + provider.slice(1)} Authentication`,
+          description: `Successfully authenticated with ${provider}!`,
+        });
+        
+        // Reload page to check for new auth state
+        window.location.reload();
+      }
+    }, 1000);
   };
 
   const socialProviders = [

@@ -5,5 +5,6 @@ declare module "express-session" {
     hasJustSignedUp?: boolean;
     hasCompletedOnboarding?: boolean;
     hasDismissedOnboarding?: boolean;
+    userId?: string;
   }
 }

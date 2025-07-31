@@ -23,7 +23,10 @@ The application follows a modern full-stack architecture with a clear separation
 ## New Features Added
 
 ### Recent Updates (January 2025)
-- **🔐 Unified Authentication**: Consolidated login and signup into a single "Get Started" button that intelligently handles both new users and returning users with seamless mode switching
+- **🔐 Authentication-Based Onboarding**: Implemented conditional onboarding that only triggers after user signup/authentication, with "Later" button for dismissal and re-triggering when accessing profile features
+- **👨‍👩‍👧‍👦 Multi-Parent Family Support**: Added comprehensive family management system supporting up to 4 parents per family with relationship tracking and role definitions
+- **🗣️ Community Forum Integration**: Built community posting and commenting system for parent interaction and support
+- **🎙️ Voice Input Integration**: Added voice input functionality across all text entry fields with inline microphone elements
 - **✨ Enhanced Animation System**: Replaced all slide-in animations with modern pop/bounce effects using popFadeIn, bounceFadeIn, and bounceIn keyframes with cubic-bezier timing
 - **🎯 Interactive Button Effects**: Added industry-standard hover effects including hover-scale, button-press, and hover-lift animations for professional user experience
 - **💬 Improved Tooltip System**: Implemented TooltipWrapper component providing professional popup boxes for better user guidance
@@ -45,10 +48,11 @@ The application follows a modern full-stack architecture with a clear separation
 - **📚 Journal History**: Complete history view with child-specific filtering and AI feedback display
 
 ### Navigation Enhancement
-- **Multi-page Application**: Home, Analytics, Milestones, Settings, and Journal History pages with header navigation
-- **Responsive Navigation**: Mobile-optimized header with icon-based navigation
+- **Multi-page Application**: Home, Analytics, Milestones, Settings, Journal History, and Community pages with header navigation
+- **Responsive Navigation**: Mobile-optimized header with icon-based navigation including Community forum access
 - **Contextual Navigation**: Back buttons and breadcrumbs for better user experience
 - **Journal History Screen**: Dedicated page for viewing past entries organized by child
+- **Community Access**: Full community forum integration with posting, commenting, and interaction features
 
 ### Mental Health & Wellness Features
 - **🌿 Calm Reset Tool**: Easily accessible breathing exercises, guided meditations, and self-compassion practices
@@ -82,7 +86,42 @@ The application follows a modern full-stack architecture with a clear separation
 - **Developmental Insights**: Age-based parenting insights system
 
 ### Database Schema
-The application uses two main tables:
+The application uses an extended family-centric schema with multiple tables:
+
+**Families (`families`)**:
+- `id`: Primary key (UUID)
+- `name`: Family name (required)
+- `created_at`: Timestamp for family creation
+
+**Parent Profiles (`parent_profiles`)**:
+- `id`: Primary key (UUID) 
+- `name`: Parent's name (required)
+- `age`: Optional age field
+- `relationship`: Role in family ("Primary", "Partner", "Co-Parent", "Guardian")
+- `family_id`: Foreign key to families table
+- `parenting_style`: Optional parenting approach
+- `parenting_philosophy`: Optional parenting beliefs
+- `personality_traits`: Array of selected personality trait keys
+- `parenting_goals`: Optional text field for goals
+- `stressors`: Array of stress factors
+- `support_systems`: Optional support network description
+- `notes`: Optional additional notes
+- `created_at`, `updated_at`: Timestamps
+
+**Community Posts (`community_posts`)**:
+- `id`: Primary key (UUID)
+- `title`: Post title (required)
+- `content`: Post content (required)
+- `author_name`: Author display name (required)
+- `likes`: Array of user IDs who liked the post
+- `created_at`: Timestamp for post creation
+
+**Community Comments (`community_comments`)**:
+- `id`: Primary key (UUID)
+- `post_id`: Foreign key to community_posts
+- `content`: Comment content (required)
+- `author_name`: Comment author display name (required)
+- `created_at`: Timestamp for comment creation
 
 **Child Profiles (`child_profiles`)**:
 - `id`: Primary key (UUID)

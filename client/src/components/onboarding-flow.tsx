@@ -14,11 +14,13 @@ import type { InsertParentProfile, InsertChildProfile, InsertFamily } from "@sha
 interface OnboardingFlowProps {
   isOpen: boolean;
   onClose: () => void;
+  onComplete?: () => void;
+  showLaterButton?: boolean;
 }
 
 type OnboardingStep = 'welcome' | 'family' | 'parent' | 'child' | 'complete';
 
-export function OnboardingFlow({ isOpen, onClose }: OnboardingFlowProps) {
+export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = false }: OnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
   const [familyData, setFamilyData] = useState<InsertFamily>({ name: "" });
   const [parentData, setParentData] = useState<InsertParentProfile>({
@@ -137,7 +139,11 @@ export function OnboardingFlow({ isOpen, onClose }: OnboardingFlowProps) {
         }
         break;
       case 'complete':
-        onClose();
+        if (onComplete) {
+          onComplete();
+        } else {
+          onClose();
+        }
         break;
     }
   };
@@ -370,16 +376,27 @@ export function OnboardingFlow({ isOpen, onClose }: OnboardingFlowProps) {
         </div>
 
         <div className="flex justify-between pt-6 border-t">
-          {currentStep !== 'welcome' && currentStep !== 'complete' && (
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              disabled={createFamilyMutation.isPending || createParentMutation.isPending || createChildMutation.isPending}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-          )}
+          <div className="flex items-center space-x-2">
+            {currentStep !== 'welcome' && currentStep !== 'complete' && (
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                disabled={createFamilyMutation.isPending || createParentMutation.isPending || createChildMutation.isPending}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+            )}
+            {showLaterButton && currentStep === 'welcome' && (
+              <Button
+                variant="ghost"
+                onClick={onClose}
+                className="text-neutral-500 hover:text-neutral-700"
+              >
+                Later
+              </Button>
+            )}
+          </div>
           
           <div className="flex-1" />
           

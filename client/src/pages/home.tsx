@@ -12,8 +12,9 @@ import { getDailyGreeting } from "@shared/greetings";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { OnboardingFlow } from "@/components/onboarding-flow";
-import { useQuery as useParentQuery } from "@tanstack/react-query";
-import type { ChildProfile, ParentProfile } from "@shared/schema";
+import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
+import { TestAuthButtons } from "@/components/test-auth-buttons";
+import type { ChildProfile } from "@shared/schema";
 
 interface JournalStats {
   totalEntries: number;
@@ -23,12 +24,20 @@ interface JournalStats {
 
 interface HomeProps {
   triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
+  onProfileAccessAttempt?: () => boolean;
 }
 
 export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
-  const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
+  
+  const {
+    parentProfile,
+    shouldShowOnboarding,
+    completeOnboarding,
+    dismissOnboarding,
+    triggerOnboardingForProfileAccess,
+  } = useAuthOnboarding();
 
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
@@ -48,17 +57,16 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     },
   });
 
-  const { data: parentProfile } = useParentQuery<ParentProfile>({
-    queryKey: ["/api/parent-profile"],
-    queryFn: async () => {
-      const response = await fetch("/api/parent-profile");
-      if (!response.ok) throw new Error("Failed to fetch parent profile");
-      return response.json();
-    },
-  });
-
-  // Show onboarding if no parent profile exists
-  const shouldShowOnboarding = !parentProfile && !showOnboarding;
+  // Enhanced trigger function that includes onboarding check
+  const enhancedTriggerSignUpPrompt = (trigger: 'save' | 'bookmark' | 'export' | 'settings') => {
+    // First check if onboarding should be triggered for profile access
+    if (triggerOnboardingForProfileAccess()) {
+      return true; // Block the action, onboarding will show
+    }
+    
+    // Otherwise use the original trigger function
+    return triggerSignUpPrompt ? triggerSignUpPrompt(trigger) : false;
+  };
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -171,7 +179,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         <div className="mb-8">
           <QuickActionsGroup 
             selectedMood={selectedMood} 
-            triggerSignUpPrompt={triggerSignUpPrompt}
+            triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
           />
         </div>
 
@@ -201,15 +209,19 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       {/* Floating Parenting Chatbot */}
       <ParentingChatbot />
 
+      {/* Test Authentication Buttons (only in development) */}
+      {import.meta.env.DEV && <TestAuthButtons />}
+
       {/* Onboarding Flow */}
       {shouldShowOnboarding && (
         <OnboardingFlow 
           isOpen={true}
           onComplete={() => {
-            setShowOnboarding(true);
+            completeOnboarding();
             window.location.reload(); // Refresh to load new profile data
           }}
-          onClose={() => setShowOnboarding(true)}
+          onClose={dismissOnboarding}
+          showLaterButton={true}
         />
       )}
     </div>

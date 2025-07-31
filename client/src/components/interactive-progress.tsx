@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { Check, Star, Zap } from "lucide-react";
+import { Check, Star, Zap, BarChart3 } from "lucide-react";
 
 interface InteractiveProgressProps {
   totalEntries: number;
   weekEntries: number;
   longestStreak: number;
+  onMoodAnalyticsClick?: () => void;
 }
 
-export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }: InteractiveProgressProps) {
+export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, onMoodAnalyticsClick }: InteractiveProgressProps) {
   const [animateNumbers, setAnimateNumbers] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
 
@@ -29,7 +30,7 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
   const progressToNextMilestone = ((totalEntries % 5) / 5) * 100;
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-4 gap-4">
       {/* Total Entries */}
       <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 interactive-card hover-lift animate-pop-in stagger-1">
         <div className="relative">
@@ -124,9 +125,21 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
         </div>
       </div>
 
+      {/* Mood Analytics */}
+      <div 
+        className="bg-secondary/5 rounded-lg p-4 text-center border border-secondary/20 interactive-card hover-lift animate-bounce-in stagger-4 cursor-pointer"
+        onClick={onMoodAnalyticsClick}
+      >
+        <div className="relative">
+          <BarChart3 className="h-8 w-8 text-secondary mx-auto mb-2" />
+          <div className="text-xs text-secondary font-medium">Mood Analytics</div>
+        </div>
+        <span className="text-xs text-neutral-600 block mt-1">View Patterns</span>
+      </div>
+
       {/* Milestone Celebration */}
       {showMilestone && (
-        <div className="col-span-3 mt-4 p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20 animate-slide-up">
+        <div className="col-span-4 mt-4 p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20 animate-slide-up">
           <div className="text-center">
             <div className="flex justify-center items-center space-x-2 mb-2">
               <Star className="h-5 w-5 text-yellow-500 fill-current animate-wiggle" />

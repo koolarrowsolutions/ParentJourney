@@ -25,6 +25,7 @@ interface HomeProps {
 
 export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const [selectedMood, setSelectedMood] = useState<string>("");
+  const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
 
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
@@ -57,7 +58,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             </h2>
             <p className="text-neutral-600 mb-4">{getDailyGreeting()}</p>
             {isLoading ? (
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-4 gap-4">
+                <Skeleton className="h-16 rounded-lg animate-shimmer" />
                 <Skeleton className="h-16 rounded-lg animate-shimmer" />
                 <Skeleton className="h-16 rounded-lg animate-shimmer" />
                 <Skeleton className="h-16 rounded-lg animate-shimmer" />
@@ -67,10 +69,28 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                 totalEntries={stats?.totalEntries || 0}
                 weekEntries={stats?.weekEntries || 0}
                 longestStreak={stats?.longestStreak || 0}
+                onMoodAnalyticsClick={() => setShowMoodAnalytics(!showMoodAnalytics)}
               />
             )}
           </div>
         </div>
+
+        {/* Mood Analytics Results - Shows between welcome and mood selection */}
+        {showMoodAnalytics && (
+          <div className="mb-6">
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 animate-slide-in-down">
+              <h3 className="text-lg font-semibold text-neutral-800 mb-4">Mood Analytics</h3>
+              <p className="text-neutral-600 text-sm mb-4">
+                Your emotional patterns and insights from journal entries.
+              </p>
+              <div className="bg-neutral-50 rounded-lg p-4 text-center">
+                <p className="text-neutral-500 text-sm">
+                  Add more journal entries to see detailed mood analytics and patterns.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Mood Selection - Independent Element */}
         <div className="mb-6">

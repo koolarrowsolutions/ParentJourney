@@ -687,80 +687,25 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
 
             <TabsContent value="affirmations" className="space-y-4">
-              {/* Audio Controls for Affirmations */}
-              <Card className="p-4 border-sky-200 bg-sky-25">
-                <div className="space-y-3">
-                  <h4 className="font-medium text-sky-800 flex items-center">
-                    <Volume2 className="h-4 w-4 mr-2" />
-                    Audio Affirmations
-                  </h4>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm text-sky-700">Background Sound:</label>
-                      <select 
-                        value={selectedBackgroundSound}
-                        onChange={(e) => setSelectedBackgroundSound(e.target.value)}
-                        className="px-3 py-1 border border-sky-300 rounded-md text-sm bg-white"
-                      >
-                        {Object.entries(backgroundSounds).map(([key, sound]) => (
-                          <option key={key} value={key}>{sound.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <Button
-                      onClick={() => startGuidedAudio(affirmations)}
-                      variant={isPlaying ? "destructive" : "default"}
-                      size="sm"
-                      className={isPlaying 
-                        ? "bg-red-500 hover:bg-red-600 text-white" 
-                        : "bg-sky-600 hover:bg-sky-700 text-white"
-                      }
-                    >
-                      {isPlaying ? (
-                        <>
-                          <Square className="h-3 w-3 mr-1" />
-                          Stop
-                        </>
-                      ) : (
-                        <>
-                          <Play className="h-3 w-3 mr-1" />
-                          Listen to All
-                        </>
-                      )}
-                    </Button>
-                    {isPlaying && (
-                      <div className="text-sm text-sky-600 flex items-center">
-                        <div className="animate-pulse w-2 h-2 bg-sky-500 rounded-full mr-2"></div>
-                        Playing affirmations...
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </Card>
-
               <div className="text-center mb-4">
+                <h3 className="text-lg font-medium text-sky-800 mb-2">Positive Affirmations</h3>
                 <p className="text-sky-700">
                   Take a moment to read these affirmations. Choose one that resonates with you today.
                 </p>
               </div>
+              
               <div className="grid gap-3">
                 {affirmations.map((affirmation, index) => (
                   <Card key={index} className="p-4 border-sky-200 bg-sky-50">
-                    <div className="flex items-center justify-between">
-                      <p className="text-center text-sky-800 font-medium flex-1">
-                        "{affirmation}"
-                      </p>
-                      <Button
-                        onClick={() => startGuidedAudio([affirmation])}
-                        variant="ghost"
-                        size="sm"
-                        className="ml-2 text-sky-600 hover:text-sky-800 hover:bg-sky-100"
-                      >
-                        <Play className="h-3 w-3" />
-                      </Button>
-                    </div>
+                    <p className="text-center text-sky-800 font-medium">
+                      "{affirmation}"
+                    </p>
                   </Card>
                 ))}
+              </div>
+              
+              <div className="text-center text-sm text-sky-600 bg-sky-50 p-3 rounded">
+                <p>Read these affirmations slowly and mindfully. Repeat the ones that speak to you most.</p>
               </div>
             </TabsContent>
 

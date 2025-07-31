@@ -166,6 +166,30 @@ export function setupAuthRoutes(app: Express) {
     }
   });
 
+  // Get current user route
+  app.get('/api/auth/user', async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, user: null });
+      }
+
+      const user = await storage.getUserById(req.session.userId);
+      if (!user) {
+        req.session.destroy(() => {});
+        return res.status(401).json({ success: false, user: null });
+      }
+
+      res.json({ 
+        success: true, 
+        user: { id: user.id, username: user.username, name: user.name, email: user.email },
+        hasJustSignedUp: req.session.hasJustSignedUp || false
+      });
+    } catch (error) {
+      console.error('Get user error:', error);
+      res.status(500).json({ success: false, user: null });
+    }
+  });
+
   // Change email route
   app.post('/auth/change-email', async (req, res) => {
     try {

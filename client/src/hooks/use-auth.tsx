@@ -24,9 +24,9 @@ export function useAuth(): AuthState {
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['/auth/user'],
+    queryKey: ['/api/auth/user'],
     queryFn: async () => {
-      const response = await fetch('/auth/user');
+      const response = await fetch('/api/auth/user');
       if (!response.ok) {
         throw new Error('Not authenticated');
       }
@@ -65,7 +65,7 @@ export function useLogout() {
   return async () => {
     try {
       await fetch('/auth/logout', { method: 'POST' });
-      queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
       window.location.reload();
     } catch (error) {
       console.error('Logout error:', error);

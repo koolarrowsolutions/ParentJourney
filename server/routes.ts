@@ -286,6 +286,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Configure session and OAuth
   configureSession(app);
   setupAuthRoutes(app);
+  
+  // Add a test route to verify auth is working
+  app.get('/api/test-auth', (req, res) => {
+    res.json({ session: req.session, userId: req.session?.userId });
+  });
   // Get journal entries
   app.get("/api/journal-entries", async (req, res) => {
     try {

@@ -94,8 +94,8 @@ export class DatabaseStorage implements IStorage {
       .where(gte(schema.journalEntries.createdAt, weekAgo));
     const weekEntries = weekResult[0]?.count || 0;
 
-    // Simple streak calculation - could be improved
-    const longestStreak = 1; // Placeholder for now
+    // Calculate longest streak - for now just return 0 if no entries
+    const longestStreak = totalEntries > 0 ? 1 : 0;
 
     return {
       totalEntries,

@@ -96,8 +96,10 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       setOpen(false);
       signUpForm.reset();
       
-      // Reload the page to update auth state
-      window.location.reload();
+      // Wait a bit then reload to ensure cookie is set
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } catch (error) {
       console.error('Signup error:', error); // Debug log
       toast({
@@ -141,8 +143,10 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       setOpen(false);
       loginForm.reset();
       
-      // Reload the page to update auth state
-      window.location.reload();
+      // Wait a bit then reload to ensure cookie is set
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } catch (error) {
       console.error('Login error:', error); // Debug log
       toast({

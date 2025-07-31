@@ -20,10 +20,16 @@ import { z, ZodError } from "zod";
 // Configure session
 function configureSession(app: Express) {
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    secret: process.env.SESSION_SECRET || 'your-secret-key-for-parenting-journal',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+    cookie: { 
+      secure: false, // Set to true in production with HTTPS
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'lax' // Important for cross-origin requests
+    },
+    name: 'parentjourney.sid' // Custom cookie name
   }));
 }
 

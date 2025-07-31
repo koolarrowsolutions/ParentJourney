@@ -527,14 +527,10 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
           </DialogHeader>
 
           <Tabs defaultValue="breathing" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="breathing" className="flex items-center gap-2">
                 <Heart className="h-4 w-4" />
                 Breathing
-              </TabsTrigger>
-              <TabsTrigger value="guided" className="flex items-center gap-2">
-                <Brain className="h-4 w-4" />
-                Guided
               </TabsTrigger>
               <TabsTrigger value="affirmations" className="flex items-center gap-2">
                 <Volume2 className="h-4 w-4" />
@@ -688,86 +684,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
               </div>
             </TabsContent>
 
-            <TabsContent value="guided" className="space-y-4">
-              {/* Audio Controls */}
-              <Card className="p-4 border-sky-200 bg-sky-25">
-                <div className="space-y-3">
-                  <h4 className="font-medium text-sky-800 flex items-center">
-                    <Volume2 className="h-4 w-4 mr-2" />
-                    Audio Guidance
-                  </h4>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm text-sky-700">Background Sound:</label>
-                      <select 
-                        value={selectedBackgroundSound}
-                        onChange={(e) => setSelectedBackgroundSound(e.target.value)}
-                        className="px-3 py-1 border border-sky-300 rounded-md text-sm bg-white"
-                      >
-                        {Object.entries(backgroundSounds).map(([key, sound]) => (
-                          <option key={key} value={key}>{sound.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                    {isPlaying && (
-                      <div className="text-sm text-sky-600 flex items-center">
-                        <div className="animate-pulse w-2 h-2 bg-sky-500 rounded-full mr-2"></div>
-                        Playing with natural AI voice...
-                      </div>
-                    )}
-                  </div>
-                  <div className="text-xs text-sky-600 bg-sky-50 p-2 rounded">
-                    💡 Tip: Uses natural AI voices (Nova) when available, with calming background sounds for a spa-like experience.
-                  </div>
-                </div>
-              </Card>
 
-              {guidedExercises.map((exercise) => (
-                <Card key={exercise.id} className="p-4 border-sky-200">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium text-sky-800">{exercise.title}</h4>
-                        <p className="text-sm text-sky-600">{exercise.description}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="border-sky-300 text-sky-700">
-                          {exercise.duration}
-                        </Badge>
-                        <Button
-                          onClick={() => startGuidedAudio(exercise.content)}
-                          variant={isPlaying ? "destructive" : "default"}
-                          size="sm"
-                          className={isPlaying 
-                            ? "bg-red-500 hover:bg-red-600 text-white" 
-                            : "bg-sky-600 hover:bg-sky-700 text-white"
-                          }
-                        >
-                          {isPlaying ? (
-                            <>
-                              <Square className="h-3 w-3 mr-1" />
-                              Stop
-                            </>
-                          ) : (
-                            <>
-                              <Play className="h-3 w-3 mr-1" />
-                              Listen
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {exercise.content.map((step, index) => (
-                        <p key={index} className="text-sm text-sky-700 pl-4 border-l-2 border-sky-200">
-                          {step}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </TabsContent>
 
             <TabsContent value="affirmations" className="space-y-4">
               {/* Audio Controls for Affirmations */}

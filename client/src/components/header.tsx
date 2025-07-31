@@ -1,6 +1,7 @@
 import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { AuthDialog } from "./auth-dialog";
 
 export function Header() {
   return (
@@ -77,22 +78,32 @@ export function Header() {
             
             {/* Authentication Buttons */}
             <div className="flex items-center space-x-2 ml-4 border-l border-neutral-200 pl-4">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="text-neutral-600 hover:text-primary hover:bg-neutral-100 hidden sm:flex"
-              >
-                <LogIn className="h-4 w-4 mr-2" />
-                Log In
-              </Button>
-              <Button 
-                size="sm"
-                className="bg-primary hover:bg-primary/90 text-white"
-              >
-                <UserPlus className="h-4 w-4 mr-2 sm:mr-2" />
-                <span className="hidden sm:inline">Sign Up</span>
-                <span className="sm:hidden">Join</span>
-              </Button>
+              <AuthDialog 
+                mode="login"
+                trigger={
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-neutral-600 hover:text-primary hover:bg-neutral-100 hidden sm:flex"
+                  >
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Log In
+                  </Button>
+                }
+              />
+              <AuthDialog 
+                mode="signup"
+                trigger={
+                  <Button 
+                    size="sm"
+                    className="bg-primary hover:bg-primary/90 text-white"
+                  >
+                    <UserPlus className="h-4 w-4 mr-2 sm:mr-2" />
+                    <span className="hidden sm:inline">Sign Up</span>
+                    <span className="sm:hidden">Join</span>
+                  </Button>
+                }
+              />
             </div>
           </div>
         </div>

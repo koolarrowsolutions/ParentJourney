@@ -27,6 +27,7 @@ export const journalEntries = pgTable("journal_entries", {
   developmentalInsight: text("developmental_insight"),
   hasAiFeedback: text("has_ai_feedback").notNull().default("false"),
   photos: text("photos").array(),
+  isFavorite: text("is_favorite").notNull().default("false"), // Bookmarking support
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

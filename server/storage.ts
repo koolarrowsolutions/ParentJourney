@@ -7,6 +7,7 @@ export interface IStorage {
   getJournalEntries(limit?: number, search?: string, childId?: string): Promise<JournalEntry[]>;
   createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry>;
   updateJournalEntry(id: string, updates: Partial<InsertJournalEntry>): Promise<JournalEntry | undefined>;
+  updateJournalEntryFavorite(id: string, isFavorite: boolean): Promise<JournalEntry | undefined>;
   deleteJournalEntry(id: string): Promise<boolean>;
   getJournalStats(): Promise<{
     totalEntries: number;
@@ -78,6 +79,7 @@ export class MemStorage implements IStorage {
       developmentalInsight: insertEntry.developmentalInsight ?? null,
       hasAiFeedback: insertEntry.hasAiFeedback ?? "false",
       photos: insertEntry.photos ?? null,
+      isFavorite: insertEntry.isFavorite ?? "false",
       id,
       createdAt: new Date(),
     };
@@ -93,6 +95,19 @@ export class MemStorage implements IStorage {
     const updated: JournalEntry = {
       ...existing,
       ...updates,
+    };
+
+    this.journalEntries.set(id, updated);
+    return updated;
+  }
+
+  async updateJournalEntryFavorite(id: string, isFavorite: boolean): Promise<JournalEntry | undefined> {
+    const existing = this.journalEntries.get(id);
+    if (!existing) return undefined;
+
+    const updated: JournalEntry = {
+      ...existing,
+      isFavorite: isFavorite ? "true" : "false",
     };
 
     this.journalEntries.set(id, updated);

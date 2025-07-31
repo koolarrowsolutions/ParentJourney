@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { 
   BookOpen, 
   Calendar, 
@@ -16,13 +19,19 @@ import {
   Clock,
   Search,
   Filter,
-  Archive
+  Archive,
+  Download,
+  FileText,
+  Loader2
 } from "lucide-react";
 import { format } from "date-fns";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
+import { exportEntryToPDF, exportFavoritesToPDF } from "@/utils/pdf-export";
 
 export default function JournalHistory() {
   const [selectedChildId, setSelectedChildId] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const { toast } = useToast();
 
   // Fetch all child profiles
   const { data: childProfiles, isLoading: profilesLoading } = useQuery<ChildProfile[]>({
@@ -39,16 +48,104 @@ export default function JournalHistory() {
     queryKey: ["/api/journal-entries", selectedChildId],
     queryFn: async () => {
       const url = selectedChildId 
-        ? `/api/journal-entries?childId=${selectedChildId}`
-        : "/api/journal-entries";
+        ? `/api/journal-entries?childId=${selectedChildId}&limit=50`
+        : "/api/journal-entries?limit=50";
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },
-    enabled: !!selectedChildId,
+  });
+
+  // Mutation for updating favorite status
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async ({ entryId, isFavorite }: { entryId: string; isFavorite: boolean }) => {
+      const response = await fetch(`/api/journal-entries/${entryId}/favorite`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isFavorite }),
+      });
+      if (!response.ok) throw new Error("Failed to update favorite");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/journal-entries"] });
+      toast({
+        title: "Success",
+        description: "Entry bookmark updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update bookmark",
+        variant: "destructive",
+      });
+    },
   });
 
   const selectedChild = childProfiles?.find(child => child.id === selectedChildId);
+
+  // Filter entries based on active tab
+  const filteredEntries = entries?.filter(entry => {
+    if (activeTab === "favorites") {
+      return entry.isFavorite === "true";
+    }
+    return true;
+  }) || [];
+
+  const favoriteEntries = entries?.filter(entry => entry.isFavorite === "true") || [];
+
+  const handleToggleFavorite = (entryId: string, currentStatus: string) => {
+    const newStatus = currentStatus === "true" ? false : true;
+    toggleFavoriteMutation.mutate({ entryId, isFavorite: newStatus });
+  };
+
+  const handleExportEntry = async (entry: JournalEntry) => {
+    try {
+      const childProfile = childProfiles?.find(p => p.id === entry.childProfileId);
+      await exportEntryToPDF({ entry, childProfile });
+      toast({
+        title: "Success",
+        description: "Entry exported to PDF successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to export entry",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExportAllFavorites = async () => {
+    if (favoriteEntries.length === 0) {
+      toast({
+        title: "No Favorites",
+        description: "You don't have any favorite entries to export",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await exportFavoritesToPDF({ 
+        entries: favoriteEntries, 
+        childProfiles: childProfiles || [] 
+      });
+      toast({
+        title: "Success",
+        description: `Exported ${favoriteEntries.length} favorite entries to PDF`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to export favorites",
+        variant: "destructive",
+      });
+    }
+  };
 
   function AiFeedbackDisplay({ feedback }: { feedback: string }) {
     const sections = feedback.split('\n\n').filter(section => section.trim());
@@ -108,8 +205,10 @@ export default function JournalHistory() {
   }
 
   function JournalEntryCard({ entry }: { entry: JournalEntry }) {
+    const isFavorite = entry.isFavorite === "true";
+    
     return (
-      <Card className="hover-lift animate-fade-in">
+      <Card className={`hover-lift animate-fade-in ${isFavorite ? 'ring-2 ring-yellow-200 bg-yellow-50/30' : ''}`}>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -121,11 +220,34 @@ export default function JournalHistory() {
                 {format(new Date(entry.createdAt), 'h:mm a')}
               </span>
             </div>
-            {entry.mood && (
-              <Badge variant="outline" className="text-xs">
-                {entry.mood}
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              {entry.mood && (
+                <Badge variant="outline" className="text-xs">
+                  {entry.mood}
+                </Badge>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleToggleFavorite(entry.id, entry.isFavorite || "false")}
+                disabled={toggleFavoriteMutation.isPending}
+                className={`p-1 h-8 w-8 ${isFavorite ? 'text-yellow-600 hover:text-yellow-700' : 'text-neutral-400 hover:text-yellow-600'}`}
+              >
+                {toggleFavoriteMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Star className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleExportEntry(entry)}
+                className="p-1 h-8 w-8 text-neutral-400 hover:text-primary"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           
           {/* Emotion Tags */}
@@ -248,32 +370,54 @@ export default function JournalHistory() {
           </CardContent>
         </Card>
 
-        {/* Future Enhancement Placeholder */}
+        {/* Tabs and Export Controls */}
         {selectedChild && (
-          <Card className="mb-6 border-dashed border-2 border-neutral-200">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 text-sm text-neutral-500">
-                <Filter className="h-4 w-4" />
-                <span>Future enhancements: Filter by mood, keyword search, emotion trends</span>
+          <Card className="mb-6">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  <h2 className="text-lg font-semibold text-neutral-800">
+                    {selectedChild.name}'s Journal Entries
+                  </h2>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {filteredEntries.length} entries
+                  </Badge>
+                  {favoriteEntries.length > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleExportAllFavorites}
+                      className="text-xs"
+                    >
+                      <FileText className="h-3 w-3 mr-1" />
+                      Export All Favorites
+                    </Button>
+                  )}
+                </div>
               </div>
+              
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="all" className="flex items-center gap-2">
+                    <Archive className="h-4 w-4" />
+                    All Entries ({entries?.length || 0})
+                  </TabsTrigger>
+                  <TabsTrigger value="favorites" className="flex items-center gap-2">
+                    <Star className="h-4 w-4" />
+                    Favorites ({favoriteEntries.length})
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </CardContent>
           </Card>
         )}
-
-        {/* Journal Entries */}
+        
+        {/* Journal Entries Display */}
         {selectedChild && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-neutral-800">
-                Journal Entries for {selectedChild.name}
-              </h2>
-              {entries && entries.length > 0 && (
-                <Badge variant="secondary">
-                  {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
-                </Badge>
-              )}
-            </div>
-
             {entriesLoading ? (
               <div className="space-y-6">
                 {[1, 2, 3].map((i) => (
@@ -288,12 +432,28 @@ export default function JournalHistory() {
                   </Card>
                 ))}
               </div>
-            ) : entries && entries.length > 0 ? (
+            ) : filteredEntries.length > 0 ? (
               <div className="space-y-6">
-                {entries.map((entry) => (
+                {filteredEntries.map((entry) => (
                   <JournalEntryCard key={entry.id} entry={entry} />
                 ))}
               </div>
+            ) : activeTab === "favorites" ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <Star className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-neutral-800 mb-2">
+                    No favorite entries yet
+                  </h3>
+                  <p className="text-neutral-600 mb-4">
+                    Click the star icon on entries you want to save as favorites
+                  </p>
+                  <Button onClick={() => setActiveTab("all")} variant="outline">
+                    <Archive className="h-4 w-4 mr-2" />
+                    View All Entries
+                  </Button>
+                </CardContent>
+              </Card>
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">

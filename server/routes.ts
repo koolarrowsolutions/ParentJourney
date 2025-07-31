@@ -33,6 +33,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update journal entry favorite status
+  app.patch("/api/journal-entries/:id/favorite", async (req, res) => {
+    try {
+      const { isFavorite } = req.body;
+      const entry = await storage.updateJournalEntryFavorite(req.params.id, isFavorite);
+      if (!entry) {
+        return res.status(404).json({ message: "Journal entry not found" });
+      }
+      res.json(entry);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update favorite status" });
+    }
+  });
+
   // Create a new journal entry
   app.post("/api/journal-entries", async (req, res) => {
     try {

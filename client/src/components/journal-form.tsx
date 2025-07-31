@@ -12,7 +12,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { journalEntryWithAiSchema, type JournalEntryWithAi, type ChildProfile } from "@shared/schema";
-import { getRandomPrompt, getDailyGreeting } from "@shared/prompts";
+import { getRandomPrompt } from "@shared/prompts";
+import { getDailyGreeting } from "@shared/greetings";
 import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap, RefreshCw } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { PhotoUpload } from "./photo-upload";

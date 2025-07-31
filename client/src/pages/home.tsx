@@ -8,7 +8,7 @@ import { Sidebar } from "@/components/sidebar";
 import { QuickTemplates } from "@/components/quick-templates";
 import { InteractiveProgress } from "@/components/interactive-progress";
 import { ChildEntryOverview } from "@/components/child-entry-overview";
-import { getDailyGreeting } from "@shared/prompts";
+import { getDailyGreeting } from "@shared/greetings";
 import type { ChildProfile } from "@shared/schema";
 
 interface JournalStats {

@@ -5,6 +5,7 @@ import { Header } from "@/components/header";
 import { JournalForm } from "@/components/journal-form";
 import { RecentEntries } from "@/components/recent-entries";
 import { Sidebar } from "@/components/sidebar";
+import { QuickTemplates } from "@/components/quick-templates";
 
 interface JournalStats {
   totalEntries: number;
@@ -74,6 +75,10 @@ export default function Home() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             <JournalForm />
+            <QuickTemplates onTemplateSelect={(content) => {
+              // This will be handled by the JournalForm component
+              console.log('Template selected:', content);
+            }} />
             <RecentEntries />
           </div>
 

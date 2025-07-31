@@ -22,6 +22,7 @@ export const journalEntries = pgTable("journal_entries", {
   aiFeedback: text("ai_feedback"),
   developmentalInsight: text("developmental_insight"),
   hasAiFeedback: text("has_ai_feedback").notNull().default("false"),
+  photos: text("photos").array(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

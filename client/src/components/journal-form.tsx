@@ -13,6 +13,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { journalEntryWithAiSchema, type JournalEntryWithAi, type ChildProfile } from "@shared/schema";
 import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
+import { PhotoUpload } from "./photo-upload";
 
 const MOODS = [
   { emoji: "😊", label: "Happy", value: "😊" },
@@ -108,6 +109,7 @@ export function JournalForm() {
   const [aiFeedback, setAiFeedback] = useState<string>("");
   const [developmentalInsight, setDevelopmentalInsight] = useState<string>("");
   const [showAiFeedback, setShowAiFeedback] = useState(false);
+  const [photos, setPhotos] = useState<string[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -167,6 +169,7 @@ export function JournalForm() {
       setShowAiFeedback(false);
       setAiFeedback("");
       setDevelopmentalInsight("");
+      setPhotos([]);
     },
     onError: (error) => {
       console.error("Failed to save entry:", error);
@@ -185,6 +188,7 @@ export function JournalForm() {
       mood: selectedMood || null,
       childProfileId: selectedChildId && selectedChildId !== "none" ? selectedChildId : null,
       requestAiFeedback,
+      photos: photos.length > 0 ? photos : null,
     };
     
     if (requestAiFeedback) {
@@ -332,6 +336,15 @@ The more detail you share, the better AI feedback you'll receive! 🤖"
                   💡 Selecting a child will provide age-appropriate developmental insights!
                 </p>
               )}
+            </div>
+
+            {/* Photo Upload */}
+            <div>
+              <PhotoUpload 
+                photos={photos} 
+                onPhotosChange={setPhotos}
+                maxPhotos={5}
+              />
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">

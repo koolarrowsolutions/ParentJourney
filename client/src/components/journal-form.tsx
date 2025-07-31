@@ -294,11 +294,11 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
               <PenTool className="text-white h-5 w-5" />
             </div>
             <h3 className="text-xl font-semibold text-neutral-800">
-              How are you feeling today?
+              Share Your Parenting Journey
             </h3>
           </div>
           <p className="text-neutral-600 mb-4">
-            {dailyGreeting}
+            {dailyGreeting} Your emotions and experiences help our AI provide personalized parenting insights and track your wellness journey.
           </p>
           
           {/* Parenting Focus Reminder */}
@@ -309,6 +309,29 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
               </p>
             </div>
           )}
+          
+          {/* Mood Selection - Expanded range for better AI analysis */}
+          <div className="mb-6">
+            <h4 className="text-sm font-medium text-neutral-700 mb-3">
+              How are you feeling today?
+            </h4>
+            <div className="flex flex-wrap justify-center gap-2">
+              {MOODS.map((mood) => (
+                <button
+                  key={mood.value}
+                  type="button"
+                  onClick={() => setSelectedMood(mood.value)}
+                  className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale animate-wiggle hover:animate-bounce-subtle ${
+                    selectedMood === mood.value
+                      ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
+                      : "border-neutral-200 hover:border-primary hover:bg-primary/5"
+                  }`}
+                >
+                  {mood.emoji} {mood.label}
+                </button>
+              ))}
+            </div>
+          </div>
           
           {/* Daily Prompt Helper */}
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -334,24 +357,6 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
                 </Button>
               </TooltipWrapper>
             </div>
-          </div>
-          
-          {/* Mood Selection - Expanded range for better AI analysis */}
-          <div className="flex flex-wrap justify-center gap-2 mb-6">
-            {MOODS.map((mood) => (
-              <button
-                key={mood.value}
-                type="button"
-                onClick={() => setSelectedMood(mood.value)}
-                className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale animate-wiggle hover:animate-bounce-subtle ${
-                  selectedMood === mood.value
-                    ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
-                    : "border-neutral-200 hover:border-primary hover:bg-primary/5"
-                }`}
-              >
-                {mood.emoji} {mood.label}
-              </button>
-            ))}
           </div>
           
 

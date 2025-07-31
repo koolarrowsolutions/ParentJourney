@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Waves, Heart, Brain, Volume2, Play, Pause, RotateCcw } from "lucide-react";
+import { Waves, Heart, Brain, Volume2, Play, Pause, RotateCcw, Square } from "lucide-react";
 
 interface CalmResetProps {
   trigger?: 'inline' | 'standalone';
@@ -116,11 +116,11 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
   ];
 
   const backgroundSounds = {
-    ocean: { name: 'Ocean Waves', url: 'https://www.soundjay.com/misc/sounds-799.mp3' },
-    creek: { name: 'Running Creek', url: 'https://www.soundjay.com/misc/sounds-1022.mp3' },
-    birds: { name: 'Chirping Birds', url: 'https://www.soundjay.com/misc/sounds-1143.mp3' },
-    rain: { name: 'Gentle Rain', url: 'https://www.soundjay.com/misc/sounds-1164.mp3' },
-    none: { name: 'No Background', url: '' }
+    ocean: { name: 'Ocean Waves', description: 'Gentle ocean wave sounds' },
+    creek: { name: 'Running Creek', description: 'Peaceful flowing water' },
+    birds: { name: 'Chirping Birds', description: 'Calming bird songs' },
+    rain: { name: 'Gentle Rain', description: 'Soft rainfall sounds' },
+    none: { name: 'No Background', description: 'Voice only' }
   };
 
   const startBreathingExercise = (exerciseType: keyof typeof breathingExercises) => {
@@ -192,18 +192,11 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
     setIsPlaying(true);
     
-    // Start background sound
+    // Start background sound simulation
     if (selectedBackgroundSound !== 'none') {
-      const audio = new Audio();
-      audio.loop = true;
-      audio.volume = 0.3;
-      // For demo purposes, we'll use a nature sound URL
-      // In production, you'd host these files or use a service
-      audio.src = `data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEaAkCY3Oz`; // Placeholder
-      setBackgroundAudio(audio);
-      audio.play().catch(() => {
-        console.log('Background audio failed to play');
-      });
+      console.log(`🌊 Playing ${backgroundSounds[selectedBackgroundSound as keyof typeof backgroundSounds].description} in the background`);
+      // Note: Background sounds would require audio files to be hosted
+      // For now, we show which sound would be playing
     }
 
     // Start reading content
@@ -222,10 +215,11 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       // Try to use a more natural voice
       const voices = speechSynthesis.getVoices();
       const preferredVoice = voices.find(voice => 
-        voice.name.includes('Google') && voice.lang.includes('en') ||
-        voice.name.includes('Microsoft') && voice.lang.includes('en') ||
+        (voice.name.includes('Google') && voice.lang.includes('en')) ||
+        (voice.name.includes('Microsoft') && voice.lang.includes('en')) ||
         voice.name.includes('Alex') ||
-        voice.name.includes('Samantha')
+        voice.name.includes('Samantha') ||
+        (voice.lang.includes('en') && voice.name.toLowerCase().includes('female'))
       );
       if (preferredVoice) {
         utterance.voice = preferredVoice;
@@ -256,6 +250,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     }
     
     setCurrentAudio(null);
+    console.log('🔇 Stopped audio guidance');
   };
 
   useEffect(() => {

@@ -444,3 +444,42 @@
     opacity: 0;
   }
 }
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  /* Modal responsive sizing */
+  [data-radix-dialog-content] {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 0 auto;
+  }
+  
+  /* Breathing exercise adjustments */
+  .calm-reset-modal {
+    padding: 1rem;
+  }
+  
+  .breathing-circle {
+    transform: scale(0.9);
+  }
+}
+
+/* Tablet responsive design */
+@media (min-width: 769px) and (max-width: 1024px) {
+  [data-radix-dialog-content] {
+    width: 85vw !important;
+    max-width: 85vw !important;
+  }
+}
+
+/* Desktop responsive design */
+@media (min-width: 1025px) {
+  [data-radix-dialog-content] {
+    width: 80vw !important;
+    max-width: 80vw !important;
+  }
+}

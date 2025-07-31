@@ -33,8 +33,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       phases: [
         { name: 'inhale', duration: 4000, instruction: 'Breathe in slowly through your nose' },
         { name: 'hold', duration: 7000, instruction: 'Hold your breath gently' },
-        { name: 'exhale', duration: 8000, instruction: 'Exhale completely through your mouth' },
-        { name: 'rest', duration: 1000, instruction: 'Rest and prepare for the next cycle' }
+        { name: 'exhale', duration: 8000, instruction: 'Exhale completely through your mouth' }
       ]
     },
     'box': {
@@ -43,8 +42,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       phases: [
         { name: 'inhale', duration: 4000, instruction: 'Breathe in slowly and deeply' },
         { name: 'hold', duration: 4000, instruction: 'Hold your breath comfortably' },
-        { name: 'exhale', duration: 4000, instruction: 'Exhale slowly and completely' },
-        { name: 'rest', duration: 4000, instruction: 'Rest before the next breath' }
+        { name: 'exhale', duration: 4000, instruction: 'Exhale slowly and completely' }
       ]
     },
     'calm': {
@@ -515,7 +513,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       )}
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl md:max-w-4xl w-[95vw] sm:w-[90vw] md:w-[80vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center text-sky-800">
               <Waves className="mr-2 h-5 w-5" />
@@ -567,7 +565,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
                     {/* Animation appears below the specific exercise that was started */}
                     {isActive && activeBreathingExercise === key && (
-                      <Card className="p-8 border border-sky-200 bg-gradient-to-br from-sky-50 to-blue-50 shadow-lg animate-gentle-fade">
+                      <Card className="p-4 sm:p-6 md:p-8 border border-sky-200 bg-gradient-to-br from-sky-50 to-blue-50 shadow-lg animate-gentle-fade">
                         <div className="text-center space-y-6">
                           <div className="flex items-center justify-center space-x-4">
                             <Badge variant="outline" className="border-sky-300 text-sky-700 bg-white/50">
@@ -579,27 +577,51 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                           </div>
                           
                           {/* Enhanced breathing visualization */}
-                          <div className="flex flex-col items-center space-y-6">
-                            {/* Main breathing circle with ripple effect */}
+                          <div className="flex flex-col items-center space-y-4 sm:space-y-6">
+                            {/* Main breathing circle with timer ring */}
                             <div className="relative">
+                              {/* Outer timer ring with progress indicator */}
+                              <div className="absolute inset-0 w-40 h-40 sm:w-48 sm:h-48">
+                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                  {/* Background ring */}
+                                  <circle 
+                                    cx="50" 
+                                    cy="50" 
+                                    r="45" 
+                                    fill="none" 
+                                    stroke="rgb(125 211 252 / 0.3)" 
+                                    strokeWidth="2"
+                                  />
+                                  {/* Progress ring */}
+                                  <circle 
+                                    cx="50" 
+                                    cy="50" 
+                                    r="45" 
+                                    fill="none" 
+                                    stroke="rgb(255 255 255 / 0.9)"
+                                    strokeWidth="3"
+                                    strokeLinecap="round"
+                                    strokeDasharray="283"
+                                    strokeDashoffset={283 - (progress * 283) / 100}
+                                    className="transition-all duration-100 ease-linear drop-shadow-sm"
+                                    style={{
+                                      filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.6))'
+                                    }}
+                                  />
+                                </svg>
+                              </div>
+                              
                               {/* Outer ripple rings */}
                               <div className={`
-                                absolute inset-0 w-32 h-32 rounded-full border-2 border-sky-300/30
+                                absolute inset-2 w-36 h-36 sm:w-44 sm:h-44 rounded-full border-2 border-sky-300/20
                                 transition-all duration-1000 ease-in-out
-                                ${breathingPhase === 'inhale' ? 'scale-150 opacity-20' : 
-                                  breathingPhase === 'hold' ? 'scale-150 opacity-30' : 
-                                  'scale-100 opacity-10'}
-                              `}></div>
-                              <div className={`
-                                absolute inset-0 w-32 h-32 rounded-full border-2 border-sky-400/20
-                                transition-all duration-1000 ease-in-out delay-150
-                                ${breathingPhase === 'inhale' ? 'scale-125 opacity-30' : 
-                                  breathingPhase === 'hold' ? 'scale-125 opacity-40' : 
-                                  'scale-100 opacity-15'}
+                                ${breathingPhase === 'inhale' ? 'scale-110 opacity-30' : 
+                                  breathingPhase === 'hold' ? 'scale-105 opacity-40' : 
+                                  'scale-100 opacity-20'}
                               `}></div>
                               
                               {/* Main breathing circle - outer container */}
-                              <div className="w-32 h-32 rounded-full border-4 border-sky-300 bg-gradient-to-br from-sky-50 via-blue-25 to-sky-50 flex items-center justify-center shadow-2xl relative overflow-hidden">
+                              <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-sky-300 bg-gradient-to-br from-sky-50 via-blue-25 to-sky-50 flex items-center justify-center shadow-2xl overflow-hidden mx-auto mt-4 sm:mt-4">
                                 {/* Inner circle with phase-specific behavior */}
                                 <div 
                                   className={`absolute inset-0 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 flex items-center justify-center transition-all duration-300 ease-out
@@ -615,28 +637,22 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                                     opacity: progress > 5 ? 0.8 : 0.2
                                   }}
                                 >
-                                  <Waves className="h-6 w-6 text-sky-700" />
+                                  <Waves className="h-5 w-5 sm:h-6 sm:w-6 text-sky-700" />
                                 </div>
                                 
                                 {/* Always visible center icon for reference */}
                                 <div className="relative z-10">
-                                  <Waves className="h-4 w-4 text-sky-400/60" />
+                                  <Waves className="h-3 w-3 sm:h-4 sm:w-4 text-sky-400/60" />
                                 </div>
                               </div>
                             </div>
                             
                             {/* Phase indicator and instructions */}
-                            <div className="space-y-3 text-center">
-                              <div className="flex items-center justify-center space-x-2">
-                                <div className={`w-2 h-2 rounded-full transition-all duration-500
-                                  ${breathingPhase === 'inhale' ? 'bg-sky-500 scale-150' : 'bg-sky-300'}`}></div>
-                                <h3 className="text-2xl font-light text-sky-800 capitalize tracking-wider min-w-[100px]">
-                                  {breathingPhase}
-                                </h3>
-                                <div className={`w-2 h-2 rounded-full transition-all duration-500
-                                  ${breathingPhase === 'exhale' ? 'bg-sky-500 scale-150' : 'bg-sky-300'}`}></div>
-                              </div>
-                              <p className="text-sky-700 text-base max-w-sm leading-relaxed font-light">
+                            <div className="space-y-2 sm:space-y-3 text-center">
+                              <h3 className="text-xl sm:text-2xl font-light text-sky-800 capitalize tracking-wider">
+                                {breathingPhase}
+                              </h3>
+                              <p className="text-sky-700 text-sm sm:text-base max-w-xs sm:max-w-sm leading-relaxed font-light px-4">
                                 {exercise.phases.find(p => p.name === breathingPhase)?.instruction}
                               </p>
                             </div>

@@ -317,7 +317,7 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
                 <FormLabel className="text-sm font-medium text-neutral-700">
                   📝 Notes <span className="text-neutral-400">(optional)</span>
                 </FormLabel>
-                <VoiceInputButtonButton
+                <VoiceInputButton
                   onTranscription={(text: string) => {
                     const currentValue = field.value || '';
                     field.onChange(currentValue + (currentValue ? ' ' : '') + text);
@@ -618,9 +618,7 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
                           <div className="flex items-center text-sm text-neutral-600 mb-2">
                             <Calendar className="mr-1 h-3 w-3" />
                             <span>{formatAge(profile.dateOfBirth)}</span>
-                            {profile.pronouns && (
-                              <span className="ml-2 text-neutral-500">• {profile.pronouns}</span>
-                            )}
+
                           </div>
                           {(() => {
                             const stage = profile.developmentalStage 

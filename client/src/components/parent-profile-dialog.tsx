@@ -32,15 +32,15 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
   const form = useForm<InsertParentProfile>({
     resolver: zodResolver(insertParentProfileSchema),
     defaultValues: {
-      name: existingProfile?.name || "",
-      age: existingProfile?.age || "",
-      parentingStyle: existingProfile?.parentingStyle || "",
-      parentingPhilosophy: existingProfile?.parentingPhilosophy || "",
-      personalityTraits: existingProfile?.personalityTraits || [],
-      parentingGoals: existingProfile?.parentingGoals || "",
-      stressors: existingProfile?.stressors || [],
-      supportSystems: existingProfile?.supportSystems || "",
-      notes: existingProfile?.notes || "",
+      name: existingProfile?.name ?? "",
+      age: existingProfile?.age ?? "",
+      parentingStyle: existingProfile?.parentingStyle ?? "",
+      parentingPhilosophy: existingProfile?.parentingPhilosophy ?? "",
+      personalityTraits: existingProfile?.personalityTraits ?? [],
+      parentingGoals: existingProfile?.parentingGoals ?? "",
+      stressors: existingProfile?.stressors ?? [],
+      supportSystems: existingProfile?.supportSystems ?? "",
+      notes: existingProfile?.notes ?? "",
     },
   });
 
@@ -150,7 +150,12 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                     <FormLabel>Your Name *</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input {...field} placeholder="Enter your name" className="pr-12" />
+                        <Input 
+                          placeholder="Enter your name" 
+                          className="pr-12"
+                          {...field}
+                          value={field.value ?? ""}
+                        />
                         <VoiceInputButton
                           onTranscription={(transcript: string) => {
                             field.onChange(transcript);
@@ -171,7 +176,11 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                   <FormItem>
                     <FormLabel>Age (Optional)</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g., 32" />
+                      <Input 
+                        placeholder="e.g., 32"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -185,7 +194,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Parenting Style</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value ?? ""}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select your parenting style" />
@@ -312,13 +321,14 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                   <FormControl>
                     <div className="flex flex-col gap-2">
                       <Textarea
-                        {...field}
                         placeholder="Describe your approach to parenting, core beliefs, and values..."
                         className="min-h-[80px]"
+                        {...field}
+                        value={field.value ?? ""}
                       />
                       <VoiceInputButton
                         onTranscription={(transcript: string) => {
-                          const currentValue = field.value || "";
+                          const currentValue = field.value ?? "";
                           const newValue = currentValue ? `${currentValue} ${transcript}` : transcript;
                           field.onChange(newValue);
                         }}
@@ -340,13 +350,14 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                   <FormControl>
                     <div className="flex flex-col gap-2">
                       <Textarea
-                        {...field}
                         placeholder="What kind of person do you want to help your child become? What values do you want to instill?"
                         className="min-h-[80px]"
+                        {...field}
+                        value={field.value ?? ""}
                       />
                       <VoiceInputButton
                         onTranscription={(transcript: string) => {
-                          const currentValue = field.value || "";
+                          const currentValue = field.value ?? "";
                           const newValue = currentValue ? `${currentValue} ${transcript}` : transcript;
                           field.onChange(newValue);
                         }}
@@ -400,13 +411,14 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                   <FormControl>
                     <div className="flex flex-col gap-2">
                       <Textarea
-                        {...field}
                         placeholder="Who or what helps you when parenting gets tough? (family, friends, community, professionals, etc.)"
                         className="min-h-[60px]"
+                        {...field}
+                        value={field.value ?? ""}
                       />
                       <VoiceInputButton
                         onTranscription={(transcript: string) => {
-                          const currentValue = field.value || "";
+                          const currentValue = field.value ?? "";
                           const newValue = currentValue ? `${currentValue} ${transcript}` : transcript;
                           field.onChange(newValue);
                         }}
@@ -434,13 +446,14 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                   <FormControl>
                     <div className="flex flex-col gap-2">
                       <Textarea
-                        {...field}
                         placeholder="Any other details about your parenting style, preferences, or circumstances that might help with AI analysis..."
                         className="min-h-[60px]"
+                        {...field}
+                        value={field.value ?? ""}
                       />
                       <VoiceInputButton
                         onTranscription={(transcript: string) => {
-                          const currentValue = field.value || "";
+                          const currentValue = field.value ?? "";
                           const newValue = currentValue ? `${currentValue} ${transcript}` : transcript;
                           field.onChange(newValue);
                         }}

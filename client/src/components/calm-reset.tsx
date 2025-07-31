@@ -191,109 +191,74 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     }
 
     setIsPlaying(true);
+    console.log('Starting audio with content:', content);
     
-    // Start background sound simulation
+    // Skip background audio for now to focus on speech
     if (selectedBackgroundSound !== 'none') {
-      console.log(`🌊 Playing ${backgroundSounds[selectedBackgroundSound as keyof typeof backgroundSounds].description} in the background`);
-      
-      // Create a simple background audio simulation using Web Audio API
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        // Create gentle nature-like sounds
-        if (selectedBackgroundSound === 'ocean') {
-          oscillator.frequency.setValueAtTime(100, audioContext.currentTime);
-          oscillator.type = 'sine';
-        } else if (selectedBackgroundSound === 'rain') {
-          oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-          oscillator.type = 'sawtooth';
-        } else {
-          oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
-          oscillator.type = 'triangle';
-        }
-        
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        oscillator.start();
-        
-        // Store reference to stop later
-        setBackgroundAudio(oscillator as any);
-      } catch (error) {
-        console.log('Background audio not available');
-      }
+      console.log(`Background: ${backgroundSounds[selectedBackgroundSound as keyof typeof backgroundSounds].description}`);
     }
 
-    // Ensure voices are loaded
-    const initVoices = () => {
-      return new Promise<SpeechSynthesisVoice[]>((resolve) => {
-        let voices = speechSynthesis.getVoices();
-        if (voices.length > 0) {
-          resolve(voices);
-        } else {
-          speechSynthesis.onvoiceschanged = () => {
-            voices = speechSynthesis.getVoices();
-            resolve(voices);
-          };
-        }
-      });
-    };
-
-    // Start reading content
+    // Start reading content immediately
     let currentIndex = 0;
-    const speakNext = async () => {
-      if (currentIndex >= content.length || !isPlaying) {
-        stopGuidedAudio();
+    
+    const speakNext = () => {
+      if (currentIndex >= content.length) {
+        console.log('Finished reading all content');
+        setIsPlaying(false);
         return;
       }
 
-      const voices = await initVoices();
-      const utterance = new SpeechSynthesisUtterance(content[currentIndex]);
-      
-      // Enhanced voice settings for calm delivery
-      utterance.rate = 0.6; // Even slower for meditation
-      utterance.pitch = 0.7; // Lower pitch for calm effect
-      utterance.volume = 0.9;
-      
-      // Find the best available female voice
-      const preferredVoice = voices.find(voice => 
-        voice.lang.startsWith('en') && (
-          voice.name.toLowerCase().includes('female') ||
-          voice.name.toLowerCase().includes('woman') ||
-          voice.name.includes('Zira') ||
-          voice.name.includes('Hazel') ||
-          voice.name.includes('Karen') ||
-          voice.name.includes('Moira') ||
-          voice.name.includes('Tessa') ||
-          voice.name.includes('Samantha') ||
-          voice.name.includes('Victoria') ||
-          voice.name.includes('Google UK English Female') ||
-          voice.name.includes('Microsoft Eva') ||
-          voice.name.includes('Microsoft Aria')
-        )
-      ) || voices.find(voice => voice.lang.startsWith('en') && voice.name.includes('Google'));
-      
-      if (preferredVoice) {
-        utterance.voice = preferredVoice;
-        console.log(`Using voice: ${preferredVoice.name}`);
+      if (!isPlaying) {
+        console.log('Audio stopped by user');
+        return;
       }
 
+      const text = content[currentIndex];
+      console.log(`Speaking item ${currentIndex + 1} of ${content.length}: ${text.substring(0, 50)}...`);
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Calm voice settings
+      utterance.rate = 0.8;
+      utterance.pitch = 0.9;
+      utterance.volume = 1.0;
+      
+      // Try to find a better voice
+      const voices = speechSynthesis.getVoices();
+      const femaleVoice = voices.find(voice => 
+        voice.lang.includes('en') && (
+          voice.name.includes('female') ||
+          voice.name.includes('Female') ||
+          voice.name.includes('Samantha') ||
+          voice.name.includes('Zira') ||
+          voice.name.includes('Google')
+        )
+      );
+      
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+        console.log(`Using voice: ${femaleVoice.name}`);
+      } else {
+        console.log('Using default voice');
+      }
+
+      utterance.onstart = () => {
+        console.log(`Started speaking: ${text.substring(0, 30)}...`);
+      };
+
       utterance.onend = () => {
-        if (!isPlaying) return;
+        console.log(`Finished speaking item ${currentIndex + 1}`);
         currentIndex++;
         setTimeout(() => {
-          if (isPlaying) speakNext();
-        }, 1500); // 1.5 second pause between statements
+          speakNext();
+        }, 2000); // 2 second pause
       };
 
       utterance.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
+        console.error('Speech error:', event.error, event.message);
         currentIndex++;
         setTimeout(() => {
-          if (isPlaying) speakNext();
+          speakNext();
         }, 1000);
       };
 
@@ -301,20 +266,22 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       speechSynthesis.speak(utterance);
     };
 
-    speakNext();
+    // Wait a moment for voices to load, then start
+    setTimeout(() => {
+      console.log('Available voices:', speechSynthesis.getVoices().length);
+      speakNext();
+    }, 100);
   };
 
   const stopGuidedAudio = () => {
+    console.log('Stopping audio guidance');
     setIsPlaying(false);
     speechSynthesis.cancel();
     
     if (backgroundAudio) {
       try {
-        if (backgroundAudio.stop) {
+        if (typeof backgroundAudio.stop === 'function') {
           backgroundAudio.stop();
-        } else if (backgroundAudio.pause) {
-          backgroundAudio.pause();
-          backgroundAudio.currentTime = 0;
         }
       } catch (error) {
         console.log('Background audio cleanup error:', error);
@@ -323,7 +290,6 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     }
     
     setCurrentAudio(null);
-    console.log('🔇 Stopped audio guidance');
   };
 
   useEffect(() => {
@@ -593,7 +559,11 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                           {exercise.duration}
                         </Badge>
                         <Button
-                          onClick={() => startGuidedAudio(exercise.content)}
+                          onClick={() => {
+                            console.log('Button clicked for exercise:', exercise.title);
+                            console.log('Exercise content:', exercise.content);
+                            startGuidedAudio(exercise.content);
+                          }}
                           variant={isPlaying ? "destructive" : "default"}
                           size="sm"
                           className={isPlaying 

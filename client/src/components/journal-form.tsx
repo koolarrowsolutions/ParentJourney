@@ -321,15 +321,15 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
             </div>
           )}
           
-          {/* Daily Prompt Inspiration */}
+          {/* Daily Prompt Helper */}
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h4 className="text-sm font-medium text-blue-800 mb-2 flex items-center">
                   <Lightbulb className="h-4 w-4 mr-2" />
-                  Today's Writing Prompt
+                  Today's Writing Prompt Helper
                 </h4>
-                <p className="text-blue-700 text-sm leading-relaxed mb-3">
+                <p className="text-blue-700 text-sm leading-relaxed">
                   {currentPrompt}
                 </p>
               </div>
@@ -339,13 +339,11 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
                 size="sm"
                 onClick={() => setCurrentPrompt(getRandomPrompt())}
                 className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 ml-2 flex-shrink-0"
+                title="Get another prompt"
               >
                 <RefreshCw className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-blue-600">
-              Need inspiration? Use this prompt or write about anything on your mind.
-            </p>
           </div>
           
           {/* Mood Selection - Moved to top */}

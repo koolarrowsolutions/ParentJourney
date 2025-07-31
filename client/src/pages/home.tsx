@@ -17,7 +17,11 @@ interface JournalStats {
   longestStreak: number;
 }
 
-export default function Home() {
+interface HomeProps {
+  triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
+}
+
+export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
     queryFn: async () => {
@@ -68,7 +72,7 @@ export default function Home() {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
             <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm animate-fade-in stagger-1">
-              <JournalForm />
+              <JournalForm triggerSignUpPrompt={triggerSignUpPrompt} />
             </div>
             
             {/* Child-specific entries overview */}

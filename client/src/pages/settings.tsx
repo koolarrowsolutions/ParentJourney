@@ -29,13 +29,20 @@ import {
 } from "lucide-react";
 import { exportToJSON, exportToCSV, exportFavoritesToPDF, importFromJSON, validateImportData } from "@/utils/data-export";
 import { VoiceInputButton } from "@/components/voice-input";
+import { OnboardingTour } from "@/components/onboarding-tour";
 import { getSettings, saveSettings, resetSettings, clearAllAppData, type UserSettings } from "@/utils/settings-storage";
+import { shouldShowTour } from "@/utils/onboarding-storage";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
 
-export default function Settings() {
+interface SettingsProps {
+  triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
+}
+
+export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
   const [settings, setSettings] = useState<UserSettings>(getSettings);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const { toast } = useToast();
 
   // Fetch data for export
@@ -92,6 +99,11 @@ export default function Settings() {
   };
 
   const handleExportCSV = () => {
+    // Check if user needs to sign up before exporting
+    if (triggerSignUpPrompt && triggerSignUpPrompt('export')) {
+      return; // Don't proceed with export, show sign-up prompt instead
+    }
+
     if (!entries || !childProfiles) {
       toast({
         title: "Export Failed",
@@ -109,6 +121,11 @@ export default function Settings() {
   };
 
   const handleExportFavorites = async () => {
+    // Check if user needs to sign up before exporting
+    if (triggerSignUpPrompt && triggerSignUpPrompt('export')) {
+      return; // Don't proceed with export, show sign-up prompt instead
+    }
+
     if (!entries || !childProfiles) {
       toast({
         title: "Export Failed",
@@ -417,6 +434,27 @@ export default function Settings() {
 
               <Separator className="dark:bg-neutral-600" />
 
+              {/* Tour Again */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  App Tutorial
+                </Label>
+                <Button 
+                  onClick={() => setShowTour(true)}
+                  variant="outline"
+                  className="w-full dark:border-neutral-600 dark:text-neutral-100"
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Take Tour Again
+                </Button>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Revisit key features and learn how to make the most of ParentJourney
+                </p>
+              </div>
+
+              <Separator className="dark:bg-neutral-600" />
+
               {/* Reset Data */}
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-red-600 dark:text-red-400 flex items-center gap-2">
@@ -457,6 +495,11 @@ export default function Settings() {
           </Card>
         </div>
       </div>
+      
+      <OnboardingTour
+        isOpen={showTour}
+        onClose={() => setShowTour(false)}
+      />
     </div>
   );
 }

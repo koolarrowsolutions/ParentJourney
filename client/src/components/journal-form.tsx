@@ -149,7 +149,11 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
   );
 }
 
-export function JournalForm() {
+interface JournalFormProps {
+  triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
+}
+
+export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
   const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
@@ -247,6 +251,11 @@ export function JournalForm() {
   });
 
   const onSubmit = (data: JournalEntryWithAi, requestAiFeedback: boolean) => {
+    // Check if user needs to sign up before saving
+    if (triggerSignUpPrompt && triggerSignUpPrompt('save')) {
+      return; // Don't proceed with save, show sign-up prompt instead
+    }
+
     const submissionData = {
       ...data,
       mood: selectedMood || null,

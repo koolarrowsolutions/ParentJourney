@@ -28,7 +28,11 @@ import { format } from "date-fns";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
 import { exportEntryToPDF, exportFavoritesToPDF } from "@/utils/pdf-export";
 
-export default function JournalHistory() {
+interface JournalHistoryProps {
+  triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
+}
+
+export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryProps) {
   const [selectedChildId, setSelectedChildId] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("all");
   const { toast } = useToast();

@@ -11,7 +11,11 @@ import { JournalEntry } from "@shared/schema";
 // Temporarily remove JournalEntryCard import until it's properly implemented
 // import { JournalEntryCard } from "@/components/journal-entry-card";
 
-export default function Analytics() {
+interface AnalyticsProps {
+  triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
+}
+
+export default function Analytics({ triggerSignUpPrompt }: AnalyticsProps) {
   const [searchResults, setSearchResults] = useState<JournalEntry[] | null>(null);
   const [selectedChildId, setSelectedChildId] = useState<string>("all");
 

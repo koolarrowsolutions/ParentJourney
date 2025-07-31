@@ -23,7 +23,9 @@ The application follows a modern full-stack architecture with a clear separation
 
 ### Comprehensive Feature Set
 - **📸 Photo Upload**: Drag-and-drop photo uploads with gallery display and image management
-- **📊 Analytics Dashboard**: Advanced search, weekly reflection summaries, and mood analytics with visual charts
+- **📊 Analytics Dashboard**: Advanced search, weekly reflection summaries, and comprehensive mood analytics
+- **🤖 AI Mood Analysis**: Automatic mood detection for every journal entry using OpenAI GPT-4o
+- **📈 Mood Trends Visualization**: Interactive Chart.js graphs showing emotional patterns over time
 - **🎯 Milestone Tracking**: Age-appropriate developmental milestone tracking with custom milestone creation
 - **🔔 Smart Notifications**: Browser notifications for journaling reminders and milestone celebrations
 - **⚡ Quick Entry Templates**: Pre-built templates for common parenting situations and guided prompts
@@ -31,6 +33,7 @@ The application follows a modern full-stack architecture with a clear separation
 - **🔍 Advanced Search**: Multi-filter search by keywords, mood, child, date ranges, and AI feedback
 - **📈 Weekly Reflections**: Automated weekly summaries with pattern analysis and insights
 - **💕 Mood Analytics**: Visual mood tracking with trends, streaks, and distribution charts
+- **🧠 AI-Powered Insights**: OpenAI integration providing warm, age-appropriate parenting feedback
 - **⚙️ Settings Dashboard**: Notification preferences and customization options
 - **📚 Journal History**: Complete history view with child-specific filtering and AI feedback display
 
@@ -79,9 +82,11 @@ The application uses two main tables:
 - `id`: Primary key (UUID)
 - `title`: Optional entry title
 - `content`: Required entry content
-- `mood`: Optional mood tracking with emoji
+- `mood`: Optional mood tracking with emoji (user-selected)
+- `ai_analyzed_mood`: AI-detected mood for trend analysis (automated)
+- `emotion_tags`: Array of user-selected emotion tags
 - `child_profile_id`: Foreign key to child_profiles (optional)
-- `ai_feedback`: Optional AI-generated feedback
+- `ai_feedback`: Optional AI-generated parenting feedback
 - `developmental_insight`: Age-specific developmental insights
 - `has_ai_feedback`: Flag indicating if AI feedback was requested/generated
 - `photos`: Array of base64-encoded photos attached to entry
@@ -108,13 +113,19 @@ The application uses two main tables:
    - Structured prompt provides validation, suggestions, growth insights, and summary
    - JSON response format ensures consistent feedback structure
 
-4. **Developmental Insights**:
+4. **AI Mood Analysis**:
+   - Automatic mood detection for every journal entry using OpenAI GPT-4o
+   - Analyzes emotional tone and categorizes into 10 mood types (joyful, hopeful, content, neutral, etc.)
+   - Creates quantified mood scoring system (1-10) for trend visualization
+   - Builds comprehensive emotional journey maps for parents
+
+5. **Developmental Insights**:
    - Age-specific parenting insights based on child development research
    - Automatically generated when a child profile is selected
    - Covers all developmental stages from infancy to young adulthood
    - Personalized based on selected personality traits for the child
 
-5. **Data Retrieval**:
+6. **Data Retrieval**:
    - Client fetches journal entries with optional limit parameter
    - Server returns entries sorted by creation date (newest first)
    - Child profiles linked to journal entries for context

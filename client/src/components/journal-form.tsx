@@ -17,6 +17,7 @@ import { getDailyGreeting } from "@shared/greetings";
 import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap, RefreshCw } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { PhotoUpload } from "./photo-upload";
+import { CalmReset, CalmResetTrigger } from "./calm-reset";
 
 const MOODS = [
   { emoji: "😊", label: "Happy", value: "😊" },
@@ -157,6 +158,7 @@ export function JournalForm() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [currentPrompt, setCurrentPrompt] = useState<string>(() => getRandomPrompt());
   const [dailyGreeting] = useState<string>(() => getDailyGreeting());
+  const [isCalmResetOpen, setIsCalmResetOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -495,6 +497,12 @@ export function JournalForm() {
               />
             </div>
 
+            {/* Calm Reset Trigger */}
+            <CalmResetTrigger 
+              selectedEmotions={selectedEmotions}
+              onTrigger={() => setIsCalmResetOpen(true)}
+            />
+
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 type="button"
@@ -545,6 +553,18 @@ export function JournalForm() {
         {showAiFeedback && aiFeedback && (
           <AiFeedbackDisplay feedback={aiFeedback} />
         )}
+
+        {/* Calm Reset Dialog */}
+        <CalmReset
+          isOpen={isCalmResetOpen}
+          onClose={() => setIsCalmResetOpen(false)}
+          onComplete={() => {
+            toast({
+              title: "Feeling Better",
+              description: "Take your time with your journal entry. You've got this.",
+            });
+          }}
+        />
       </CardContent>
     </Card>
   );

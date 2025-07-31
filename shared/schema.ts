@@ -28,6 +28,7 @@ export const journalEntries = pgTable("journal_entries", {
   hasAiFeedback: text("has_ai_feedback").notNull().default("false"),
   photos: text("photos").array(),
   isFavorite: text("is_favorite").notNull().default("false"), // Bookmarking support
+  calmResetUsed: text("calm_reset_used").notNull().default("false"), // Track calm reset usage
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

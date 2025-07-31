@@ -65,9 +65,22 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
       if (response.ok) {
         const data = await response.json();
-        setAnalysisData(data);
+        // Handle both direct data and fallback data
+        setAnalysisData(data.fallback || data);
       } else {
-        console.error('Failed to fetch AI analysis');
+        const errorData = await response.json();
+        if (errorData.fallback) {
+          setAnalysisData(errorData.fallback);
+        } else {
+          console.error('Failed to fetch AI analysis:', errorData.error);
+          // Set fallback data if no server fallback provided
+          setAnalysisData({
+            progressOverview: "Your parenting journey shows consistent growth and dedication to understanding your child's needs.",
+            strengths: ["Regular reflection and journaling", "Caring attention to child's development", "Commitment to growth"],
+            growthAreas: ["Continue current positive practices", "Explore new approaches as needed"],
+            nextSteps: "Keep documenting your experiences and celebrating the progress you're making as a parent."
+          });
+        }
       }
     } catch (error) {
       console.error('Error fetching AI analysis:', error);

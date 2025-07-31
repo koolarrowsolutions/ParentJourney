@@ -18,10 +18,11 @@ interface OnboardingFlowProps {
   showLaterButton?: boolean;
 }
 
-type OnboardingStep = 'welcome' | 'family' | 'parent' | 'child' | 'complete';
+type OnboardingStep = 'welcome' | 'privacy' | 'family' | 'parent' | 'child' | 'complete';
 
 export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = false }: OnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [familyData, setFamilyData] = useState<InsertFamily>({ name: "" });
   const [parentData, setParentData] = useState<InsertParentProfile>({
     name: "",
@@ -121,7 +122,12 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
   const handleNext = () => {
     switch (currentStep) {
       case 'welcome':
-        setCurrentStep('family');
+        setCurrentStep('privacy');
+        break;
+      case 'privacy':
+        if (privacyAccepted) {
+          setCurrentStep('family');
+        }
         break;
       case 'family':
         if (familyData.name.trim()) {
@@ -150,8 +156,11 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
 
   const handleBack = () => {
     switch (currentStep) {
-      case 'family':
+      case 'privacy':
         setCurrentStep('welcome');
+        break;
+      case 'family':
+        setCurrentStep('privacy');
         break;
       case 'parent':
         setCurrentStep('family');
@@ -166,6 +175,8 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
     switch (currentStep) {
       case 'welcome':
         return true;
+      case 'privacy':
+        return privacyAccepted;
       case 'family':
         return familyData.name.trim().length > 0;
       case 'parent':
@@ -208,6 +219,74 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
                 <Baby className="h-3 w-3 mr-1" />
                 Child Profiles
               </Badge>
+            </div>
+          </div>
+        );
+
+      case 'privacy':
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-neutral-800 mb-2">Privacy & Data Usage</h2>
+              <p className="text-neutral-600">Important information about how we handle your data</p>
+            </div>
+            
+            <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+              <div className="space-y-4">
+                <h3 className="font-semibold text-blue-900 mb-3">AI-Powered Insights</h3>
+                <p className="text-blue-800 text-sm leading-relaxed">
+                  ParentJourney uses OpenAI's advanced AI technology to provide personalized parenting insights, 
+                  mood analysis, and developmental guidance. To deliver these features, your journal entries, 
+                  family information, and child profiles are securely processed by OpenAI's systems.
+                </p>
+                
+                <div className="bg-blue-100 rounded-md p-4 mt-4">
+                  <h4 className="font-medium text-blue-900 mb-2">What we share with AI services:</h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Journal entries and reflections</li>
+                    <li>• Child profiles and developmental information</li>
+                    <li>• Parent profiles and family dynamics</li>
+                    <li>• Milestone tracking and progress data</li>
+                  </ul>
+                </div>
+
+                <div className="bg-green-50 rounded-md p-4 border border-green-200">
+                  <h4 className="font-medium text-green-800 mb-2">Your data protection:</h4>
+                  <ul className="text-sm text-green-700 space-y-1">
+                    <li>• No personal health information is stored permanently</li>
+                    <li>• Data is encrypted and transmitted securely</li>
+                    <li>• You can delete your data at any time</li>
+                    <li>• We follow industry-standard privacy practices</li>
+                  </ul>
+                </div>
+
+                <p className="text-xs text-neutral-600 mt-4">
+                  By continuing, you acknowledge that you understand and consent to this data processing. 
+                  You can review our full{" "}
+                  <button 
+                    onClick={() => window.open('/privacy-policy', '_blank')}
+                    className="text-primary underline hover:text-primary/80"
+                  >
+                    Privacy Policy
+                  </button>
+                  {" "}for complete details.
+                </p>
+
+                <div className="flex items-start space-x-3 mt-6">
+                  <input
+                    type="checkbox"
+                    id="privacy-consent"
+                    checked={privacyAccepted}
+                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  />
+                  <label htmlFor="privacy-consent" className="text-sm text-neutral-700 leading-relaxed">
+                    I understand and consent to sharing my family information with OpenAI for AI-powered 
+                    parenting insights and analysis. I acknowledge that this helps provide personalized 
+                    recommendations and developmental guidance.
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         );

@@ -1,424 +1,330 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import type { ChildProfile } from "@shared/schema";
+import { 
+  getAgeAppropriateMilestones, 
+  getMilestoneStatus, 
+  calculateAgeInMonths,
+  formatAgeRange,
+  getCategoryEmoji,
+  getStatusColor,
+  type Milestone
+} from "@/utils/age-appropriate-milestones";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Star, Trophy, Calendar as CalendarIcon, Plus, Check, Clock, Gift } from "lucide-react";
-import { ChildProfile } from "@shared/schema";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Star, Trophy, Plus, Check, Clock, Gift, Target, Baby } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-interface Milestone {
-  id: string;
-  childId: string;
-  title: string;
-  description: string;
-  category: string;
-  targetAge: number; // in months
-  isCompleted: boolean;
-  completedDate?: string;
-  notes?: string;
-  isCustom: boolean;
-}
-
-const MILESTONE_CATEGORIES = [
-  { value: "physical", label: "🏃 Physical Development", emoji: "🏃" },
-  { value: "cognitive", label: "🧠 Cognitive Development", emoji: "🧠" },
-  { value: "social", label: "👥 Social & Emotional", emoji: "👥" },
-  { value: "language", label: "💬 Language & Communication", emoji: "💬" },
-  { value: "creative", label: "🎨 Creative & Artistic", emoji: "🎨" },
-  { value: "academic", label: "📚 Academic & Learning", emoji: "📚" },
-  { value: "personal", label: "⭐ Personal Achievement", emoji: "⭐" }
-];
-
-const DEFAULT_MILESTONES = [
-  // 0-6 months
-  { title: "First Smile", category: "social", targetAge: 2, description: "Social smile in response to others" },
-  { title: "Holds Head Up", category: "physical", targetAge: 3, description: "Can hold head steady when upright" },
-  { title: "Rolls Over", category: "physical", targetAge: 4, description: "Rolls from tummy to back or back to tummy" },
-  { title: "Sits Without Support", category: "physical", targetAge: 6, description: "Can sit up without being held" },
-  
-  // 6-12 months
-  { title: "First Words", category: "language", targetAge: 9, description: "Says first meaningful words like 'mama' or 'dada'" },
-  { title: "Crawls", category: "physical", targetAge: 8, description: "Moves around by crawling" },
-  { title: "Stands Up", category: "physical", targetAge: 10, description: "Pulls self up to standing position" },
-  { title: "First Steps", category: "physical", targetAge: 12, description: "Takes first independent steps" },
-  
-  // 1-2 years
-  { title: "Says 10+ Words", category: "language", targetAge: 15, description: "Has vocabulary of 10 or more words" },
-  { title: "Walks Confidently", category: "physical", targetAge: 15, description: "Walks without falling frequently" },
-  { title: "Plays Pretend", category: "cognitive", targetAge: 18, description: "Engages in pretend play activities" },
-  { title: "Follows Simple Instructions", category: "cognitive", targetAge: 18, description: "Can follow one-step instructions" },
-  
-  // 2-3 years
-  { title: "Potty Training", category: "personal", targetAge: 30, description: "Successfully uses the potty" },
-  { title: "Speaks in Sentences", category: "language", targetAge: 24, description: "Uses 2-3 word sentences regularly" },
-  { title: "Shares with Others", category: "social", targetAge: 30, description: "Willingly shares toys with friends" },
-  { title: "Rides Tricycle", category: "physical", targetAge: 36, description: "Can pedal and steer a tricycle" },
-  
-  // 3-5 years
-  { title: "Writes Own Name", category: "academic", targetAge: 48, description: "Can write their name independently" },
-  { title: "Counts to 10", category: "academic", targetAge: 42, description: "Can count from 1 to 10" },
-  { title: "Makes Friends", category: "social", targetAge: 48, description: "Forms friendships with peers" },
-  { title: "Tells Stories", category: "language", targetAge: 48, description: "Can tell simple stories about events" },
-  
-  // 5+ years
-  { title: "Reads Simple Books", category: "academic", targetAge: 60, description: "Can read age-appropriate books" },
-  { title: "Rides Bicycle", category: "physical", targetAge: 72, description: "Rides a two-wheel bicycle" },
-  { title: "Shows Empathy", category: "social", targetAge: 60, description: "Demonstrates understanding of others' feelings" },
-  { title: "Completes Chores", category: "personal", targetAge: 72, description: "Takes responsibility for simple household tasks" }
-];
 
 export function MilestoneTracking() {
   const [selectedChild, setSelectedChild] = useState<string>("");
+  const [completedMilestones, setCompletedMilestones] = useState<Set<string>>(new Set());
   const [showAddMilestone, setShowAddMilestone] = useState(false);
-  const [completedDate, setCompletedDate] = useState<Date | undefined>(new Date());
-  const [completionNotes, setCompletionNotes] = useState("");
+  const [customMilestones, setCustomMilestones] = useState<Milestone[]>([]);
+  const [newMilestone, setNewMilestone] = useState({
+    title: "",
+    description: "",
+    category: "physical" as Milestone['category'],
+    ageMin: 12,
+    ageMax: 18
+  });
+  
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const { data: childProfiles } = useQuery<ChildProfile[]>({
+  
+  // Fetch child profiles
+  const { data: childProfiles = [] } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
   });
 
-  // Mock milestone data - in real app, this would come from an API
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  // Get selected child data
+  const selectedChildData = childProfiles.find(child => child.id === selectedChild);
+  
+  // Get age-appropriate milestones for selected child
+  const ageAppropriateMilestones = selectedChildData 
+    ? getAgeAppropriateMilestones(selectedChildData.dateOfBirth, customMilestones)
+    : [];
 
-  const initializeMilestones = (childId: string, ageInMonths: number) => {
-    const relevantMilestones = DEFAULT_MILESTONES
-      .filter(m => m.targetAge <= ageInMonths + 12) // Show milestones up to 12 months ahead
-      .map(m => ({
-        id: `${childId}-${m.title.replace(/\s+/g, '-').toLowerCase()}`,
-        childId,
-        title: m.title,
-        description: m.description,
-        category: m.category,
-        targetAge: m.targetAge,
-        isCompleted: false,
-        isCustom: false
-      }));
-    
-    setMilestones(prev => [
-      ...prev.filter(existing => existing.childId !== childId),
-      ...relevantMilestones
-    ]);
-  };
-
-  const calculateAge = (dateOfBirth: string) => {
-    const birth = new Date(dateOfBirth);
-    const today = new Date();
-    let months = (today.getFullYear() - birth.getFullYear()) * 12;
-    months += today.getMonth() - birth.getMonth();
-    if (today.getDate() < birth.getDate()) months--;
-    return Math.max(0, months);
-  };
-
-  const getSelectedChildMilestones = () => {
-    if (!selectedChild) return [];
-    
-    const child = childProfiles?.find(c => c.id === selectedChild);
-    if (!child) return [];
-    
-    const ageInMonths = calculateAge(child.dateOfBirth);
-    const childMilestones = milestones.filter(m => m.childId === selectedChild);
-    
-    // Initialize milestones if none exist for this child
-    if (childMilestones.length === 0) {
-      initializeMilestones(selectedChild, ageInMonths);
-      return milestones.filter(m => m.childId === selectedChild);
+  const handleToggleMilestone = (milestoneId: string) => {
+    const newCompleted = new Set(completedMilestones);
+    if (newCompleted.has(milestoneId)) {
+      newCompleted.delete(milestoneId);
+    } else {
+      newCompleted.add(milestoneId);
     }
+    setCompletedMilestones(newCompleted);
     
-    return childMilestones;
+    toast({
+      title: newCompleted.has(milestoneId) ? "Milestone Completed! 🎉" : "Milestone Unchecked",
+      description: newCompleted.has(milestoneId) 
+        ? "Great job celebrating this achievement!" 
+        : "Milestone has been unmarked as completed.",
+    });
   };
 
-  const markMilestoneComplete = (milestoneId: string) => {
-    setMilestones(prev => prev.map(m => 
-      m.id === milestoneId 
-        ? { ...m, isCompleted: true, completedDate: new Date().toISOString(), notes: completionNotes }
-        : m
-    ));
-    
-    const milestone = milestones.find(m => m.id === milestoneId);
-    if (milestone) {
+  const handleAddCustomMilestone = () => {
+    if (!newMilestone.title.trim()) {
       toast({
-        title: "🎉 Milestone Achieved!",
-        description: `Congratulations! ${milestone.title} has been completed.`,
+        title: "Error",
+        description: "Please enter a milestone title",
+        variant: "destructive"
       });
+      return;
     }
-    
-    setCompletionNotes("");
-  };
 
-  const addCustomMilestone = (data: { title: string; description: string; category: string; targetAge: number }) => {
-    const newMilestone: Milestone = {
-      id: `${selectedChild}-custom-${Date.now()}`,
-      childId: selectedChild,
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      targetAge: data.targetAge,
-      isCompleted: false,
+    const customMilestone: Milestone = {
+      id: `custom-${Date.now()}`,
+      title: newMilestone.title,
+      description: newMilestone.description,
+      ageRange: { min: newMilestone.ageMin, max: newMilestone.ageMax },
+      category: newMilestone.category,
+      priority: 'medium',
       isCustom: true
     };
-    
-    setMilestones(prev => [...prev, newMilestone]);
+
+    setCustomMilestones(prev => [...prev, customMilestone]);
+    setNewMilestone({
+      title: "",
+      description: "",
+      category: "physical",
+      ageMin: 12,
+      ageMax: 18
+    });
     setShowAddMilestone(false);
     
     toast({
       title: "Custom Milestone Added!",
-      description: `"${data.title}" has been added to the milestone tracker.`,
+      description: "Your custom milestone has been added to the tracking list.",
     });
   };
 
-  const getMilestoneStatus = (milestone: Milestone, currentAge: number) => {
-    if (milestone.isCompleted) return "completed";
-    if (currentAge >= milestone.targetAge) return "due";
-    if (currentAge >= milestone.targetAge - 3) return "upcoming";
-    return "future";
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed": return "bg-green-100 text-green-800 border-green-200";
-      case "due": return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "upcoming": return "bg-blue-100 text-blue-800 border-blue-200";
-      default: return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed": return <Check className="h-4 w-4" />;
-      case "due": return <Trophy className="h-4 w-4" />;
-      case "upcoming": return <Clock className="h-4 w-4" />;
-      default: return <Star className="h-4 w-4" />;
-    }
-  };
-
-  const selectedChildData = childProfiles?.find(c => c.id === selectedChild);
-  const currentAge = selectedChildData ? calculateAge(selectedChildData.dateOfBirth) : 0;
-  const childMilestones = getSelectedChildMilestones();
-
-  // Group milestones by status
-  const groupedMilestones = {
-    due: childMilestones.filter(m => getMilestoneStatus(m, currentAge) === "due"),
-    upcoming: childMilestones.filter(m => getMilestoneStatus(m, currentAge) === "upcoming"),
-    completed: childMilestones.filter(m => getMilestoneStatus(m, currentAge) === "completed"),
-    future: childMilestones.filter(m => getMilestoneStatus(m, currentAge) === "future")
-  };
+  if (childProfiles.length === 0) {
+    return (
+      <Card className="w-full max-w-4xl mx-auto">
+        <CardContent className="text-center py-12">
+          <Baby className="mx-auto h-16 w-16 text-neutral-400 mb-4" />
+          <h3 className="text-lg font-semibold text-neutral-700 mb-2">No Children Added Yet</h3>
+          <p className="text-neutral-500 mb-6">Add child profiles to start tracking developmental milestones</p>
+          <Button variant="outline">Add Child Profile</Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card className="shadow-sm border border-neutral-200 animate-fade-in">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span className="flex items-center">
-            <Trophy className="mr-2 h-5 w-5 text-yellow-500" />
-            🎯 Milestone Tracking
-          </span>
-          {selectedChild && (
-            <Button 
-              onClick={() => setShowAddMilestone(true)} 
-              size="sm"
-              className="animate-scale-in"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Custom
-            </Button>
-          )}
-        </CardTitle>
-        <div className="text-sm text-neutral-600">
-          Track and celebrate your child's developmental milestones
-        </div>
-      </CardHeader>
+    <div className="space-y-6 max-w-6xl mx-auto">
+      {/* Child Selection */}
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-blue-900">
+            <Target className="h-5 w-5" />
+            Choose Child to Track
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Select value={selectedChild} onValueChange={setSelectedChild}>
+            <SelectTrigger className="bg-white border-blue-200">
+              <SelectValue placeholder="Select a child to track milestones" />
+            </SelectTrigger>
+            <SelectContent>
+              {childProfiles.map((child) => (
+                <SelectItem key={child.id} value={child.id}>
+                  {child.name} ({calculateAgeInMonths(child.dateOfBirth)} months old)
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
 
-      <CardContent className="space-y-6">
-        {/* Child Selection */}
-        <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
-            👶 Select Child
-          </label>
-          <div className="space-y-2">
-            {childProfiles && childProfiles.length > 0 ? (
-              childProfiles.map((profile) => (
-                <div key={profile.id} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id={`milestone-child-${profile.id}`}
-                    checked={selectedChild === profile.id}
-                    onChange={(e) => {
-                      setSelectedChild(e.target.checked ? profile.id : "");
-                    }}
-                    className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
-                  />
-                  <label 
-                    htmlFor={`milestone-child-${profile.id}`}
-                    className="text-sm text-neutral-700 flex items-center cursor-pointer"
-                  >
-                    👶 {profile.name} ({Math.floor(calculateAge(profile.dateOfBirth) / 12)} years old)
-                  </label>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-neutral-500 italic">No children added yet</p>
-            )}
-          </div>
-        </div>
-
-        {selectedChild && selectedChildData && (
-          <div className="space-y-6">
-            {/* Child Info */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium text-blue-900">
-                    👶 {selectedChildData.name}'s Milestones
-                  </h3>
-                  <p className="text-sm text-blue-700">
-                    Age: {Math.floor(currentAge / 12)} years, {currentAge % 12} months
-                  </p>
+      {selectedChildData && (
+        <>
+          {/* Child Info & Progress Summary */}
+          <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-900">
+                <Trophy className="h-5 w-5" />
+                {selectedChildData.name}'s Milestone Journey
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-700">
+                    {calculateAgeInMonths(selectedChildData.dateOfBirth)} months
+                  </div>
+                  <div className="text-sm text-green-600">Current Age</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {groupedMilestones.completed.length}
+                  <div className="text-2xl font-bold text-blue-700">
+                    {completedMilestones.size}
                   </div>
-                  <div className="text-xs text-blue-700">Completed</div>
+                  <div className="text-sm text-blue-600">Completed Milestones</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-700">
+                    {ageAppropriateMilestones.length}
+                  </div>
+                  <div className="text-sm text-purple-600">Available Milestones</div>
                 </div>
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            {/* Milestone Progress */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="text-center p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                <div className="text-lg font-bold text-yellow-600">{groupedMilestones.due.length}</div>
-                <div className="text-xs text-yellow-700">Ready Now</div>
-              </div>
-              <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="text-lg font-bold text-blue-600">{groupedMilestones.upcoming.length}</div>
-                <div className="text-xs text-blue-700">Upcoming</div>
-              </div>
-              <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
-                <div className="text-lg font-bold text-green-600">{groupedMilestones.completed.length}</div>
-                <div className="text-xs text-green-700">Achieved</div>
-              </div>
-              <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="text-lg font-bold text-gray-600">{groupedMilestones.future.length}</div>
-                <div className="text-xs text-gray-700">Future</div>
-              </div>
-            </div>
+          {/* Add Custom Milestone */}
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-neutral-800">Age-Appropriate Milestones</h2>
+            <Dialog open={showAddMilestone} onOpenChange={setShowAddMilestone}>
+              <DialogTrigger asChild>
+                <Button className="bg-primary hover:bg-primary/90">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Custom Milestone
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Add Custom Milestone</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-neutral-700">Title</label>
+                    <Input
+                      value={newMilestone.title}
+                      onChange={(e) => setNewMilestone(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Enter milestone title"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-neutral-700">Description</label>
+                    <Textarea
+                      value={newMilestone.description}
+                      onChange={(e) => setNewMilestone(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Describe the milestone"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-neutral-700">Category</label>
+                    <Select 
+                      value={newMilestone.category} 
+                      onValueChange={(value: Milestone['category']) => 
+                        setNewMilestone(prev => ({ ...prev, category: value }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="physical">🏃‍♂️ Physical</SelectItem>
+                        <SelectItem value="cognitive">🧠 Cognitive</SelectItem>
+                        <SelectItem value="social">👥 Social</SelectItem>
+                        <SelectItem value="emotional">💕 Emotional</SelectItem>
+                        <SelectItem value="language">🗣️ Language</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-neutral-700">Min Age (months)</label>
+                      <Input
+                        type="number"
+                        value={newMilestone.ageMin}
+                        onChange={(e) => setNewMilestone(prev => ({ ...prev, ageMin: parseInt(e.target.value) || 12 }))}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-neutral-700">Max Age (months)</label>
+                      <Input
+                        type="number"
+                        value={newMilestone.ageMax}
+                        onChange={(e) => setNewMilestone(prev => ({ ...prev, ageMax: parseInt(e.target.value) || 18 }))}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-4">
+                    <Button onClick={handleAddCustomMilestone} className="flex-1">
+                      Add Milestone
+                    </Button>
+                    <Button variant="outline" onClick={() => setShowAddMilestone(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
 
-            {/* Milestone Lists */}
-            {Object.entries(groupedMilestones).map(([status, statusMilestones]) => {
-              if (statusMilestones.length === 0) return null;
-              
-              const statusLabels = {
-                due: "🎯 Ready to Achieve",
-                upcoming: "⏰ Coming Up Soon",
-                completed: "✅ Completed Milestones",
-                future: "🔮 Future Milestones"
-              };
+          {/* Milestones Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {ageAppropriateMilestones.map((milestone) => {
+              const isCompleted = completedMilestones.has(milestone.id);
+              const childAge = calculateAgeInMonths(selectedChildData.dateOfBirth);
+              const status = getMilestoneStatus(milestone, childAge);
+              const statusColor = getStatusColor(status);
 
               return (
-                <div key={status} className="space-y-3">
-                  <h3 className="font-medium text-neutral-800 flex items-center">
-                    {statusLabels[status as keyof typeof statusLabels]}
-                    <Badge variant="secondary" className="ml-2">
-                      {statusMilestones.length}
-                    </Badge>
-                  </h3>
-
-                  <div className="space-y-2">
-                    {statusMilestones.map(milestone => {
-                      const milestoneStatus = getMilestoneStatus(milestone, currentAge);
-                      const category = MILESTONE_CATEGORIES.find(c => c.value === milestone.category);
-                      
-                      return (
-                        <div
-                          key={milestone.id}
-                          className={cn(
-                            "p-4 rounded-lg border transition-all hover-lift",
-                            getStatusColor(milestoneStatus)
-                          )}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-2">
-                                {getStatusIcon(milestoneStatus)}
-                                <span className="font-medium">{milestone.title}</span>
-                                {category && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {category.emoji} {category.label.split(' ')[1]}
-                                  </Badge>
-                                )}
-                                {milestone.isCustom && (
-                                  <Badge variant="secondary" className="text-xs">
-                                    Custom
-                                  </Badge>
-                                )}
-                              </div>
-                              <p className="text-sm opacity-80 mb-2">
-                                {milestone.description}
-                              </p>
-                              <div className="flex items-center text-xs opacity-70">
-                                <CalendarIcon className="mr-1 h-3 w-3" />
-                                Target age: {Math.floor(milestone.targetAge / 12)} years, {milestone.targetAge % 12} months
-                              </div>
-                              {milestone.completedDate && (
-                                <div className="flex items-center text-xs opacity-70 mt-1">
-                                  <Gift className="mr-1 h-3 w-3" />
-                                  Completed: {format(new Date(milestone.completedDate), 'MMM d, yyyy')}
-                                </div>
-                              )}
-                              {milestone.notes && (
-                                <div className="mt-2 text-xs bg-white/50 p-2 rounded">
-                                  💭 {milestone.notes}
-                                </div>
-                              )}
-                            </div>
-                            
-                            {!milestone.isCompleted && milestoneStatus === "due" && (
-                              <div className="ml-4 space-y-2">
-                                <Textarea
-                                  placeholder="Add celebration notes..."
-                                  value={completionNotes}
-                                  onChange={(e) => setCompletionNotes(e.target.value)}
-                                  rows={2}
-                                  className="text-xs"
-                                />
-                                <Button
-                                  size="sm"
-                                  onClick={() => markMilestoneComplete(milestone.id)}
-                                  className="w-full animate-gentle-bounce"
-                                >
-                                  <Check className="mr-1 h-3 w-3" />
-                                  Complete!
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                <Card 
+                  key={milestone.id} 
+                  className={`transition-all duration-300 hover:shadow-md cursor-pointer ${
+                    isCompleted ? 'ring-2 ring-green-400 bg-green-50' : 'hover:ring-2 hover:ring-blue-200'
+                  }`}
+                  onClick={() => handleToggleMilestone(milestone.id)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{getCategoryEmoji(milestone.category)}</span>
+                        <Badge className={`text-xs ${statusColor}`}>
+                          {status}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {milestone.isCustom && (
+                          <Star className="h-3 w-3 text-amber-500" />
+                        )}
+                        {isCompleted ? (
+                          <Check className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <Clock className="h-5 w-5 text-neutral-400" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    <h3 className={`font-semibold mb-1 ${isCompleted ? 'text-green-800' : 'text-neutral-800'}`}>
+                      {milestone.title}
+                    </h3>
+                    
+                    <p className={`text-sm mb-2 ${isCompleted ? 'text-green-700' : 'text-neutral-600'}`}>
+                      {milestone.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-xs">
+                      <span className={`${isCompleted ? 'text-green-600' : 'text-neutral-500'}`}>
+                        Age: {formatAgeRange(milestone.ageRange)}
+                      </span>
+                      <span className={`capitalize ${isCompleted ? 'text-green-600' : 'text-neutral-500'}`}>
+                        {milestone.priority} priority
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
               );
             })}
           </div>
-        )}
 
-        {!selectedChild && (
-          <div className="text-center py-8 text-neutral-500">
-            <Trophy className="mx-auto h-12 w-12 mb-4 text-neutral-300" />
-            <p>Select a child to start tracking milestones</p>
-            <p className="text-sm">Celebrate every achievement in your child's journey!</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          {ageAppropriateMilestones.length === 0 && (
+            <Card>
+              <CardContent className="text-center py-12">
+                <Gift className="mx-auto h-12 w-12 text-neutral-400 mb-4" />
+                <h3 className="text-lg font-semibold text-neutral-700 mb-2">No Milestones Available</h3>
+                <p className="text-neutral-500">Add custom milestones to start tracking your child's progress</p>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
+    </div>
   );
 }

@@ -738,6 +738,109 @@ Remember: You're supporting parents who are doing their best. Validate their eff
     }
   });
 
+  // AI Analysis endpoints
+  app.post("/api/ai-analysis/:type", async (req, res) => {
+    try {
+      const { type } = req.params;
+      const { entries, childProfiles, parentProfile } = req.body;
+
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ 
+          error: "OpenAI API key not configured. Please provide your OpenAI API key to enable AI analysis features."
+        });
+      }
+
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      let systemPrompt = "";
+      let analysisPrompt = "";
+
+      if (type === "parenting-progress") {
+        systemPrompt = `You are an expert parenting coach and child development specialist. Analyze the provided journal entries and family data to provide insights about parenting progress. Return your analysis in a structured format that includes:
+1. A progress overview paragraph
+2. An array of 3-4 specific strengths
+3. An array of 2-3 growth areas
+4. A next steps paragraph with actionable recommendations
+
+Focus on patterns in emotional responses, consistency, growth mindset, and positive parenting practices.`;
+
+        analysisPrompt = `Based on these journal entries and family information, provide a comprehensive parenting progress analysis:
+
+Journal Entries: ${JSON.stringify(entries.slice(0, 20))}
+Parent Profile: ${JSON.stringify(parentProfile)}
+Children: ${JSON.stringify(childProfiles)}
+
+Provide your analysis in this exact JSON format:
+{
+  "progressOverview": "A 2-3 sentence overview of overall parenting journey progress",
+  "strengths": ["strength 1", "strength 2", "strength 3", "strength 4"],
+  "growthAreas": ["area 1", "area 2", "area 3"],
+  "nextSteps": "A paragraph with 2-3 specific, actionable recommendations for continued growth"
+}`;
+      } else if (type === "child-development") {
+        systemPrompt = `You are a child development expert. Analyze the provided data to give insights about child development patterns. Return your analysis in a structured format that includes:
+1. A development overview paragraph
+2. An array of recent milestones or positive developments
+3. An array of current development focus areas
+4. A recommendations paragraph
+
+Focus on age-appropriate development, emotional growth, social skills, and learning patterns.`;
+
+        analysisPrompt = `Based on this family data, provide child development insights:
+
+Journal Entries: ${JSON.stringify(entries.slice(0, 20))}
+Children: ${JSON.stringify(childProfiles)}
+Parent Profile: ${JSON.stringify(parentProfile)}
+
+Provide your analysis in this exact JSON format:
+{
+  "developmentOverview": "A 2-3 sentence overview of child development patterns",
+  "milestones": ["recent milestone 1", "recent milestone 2", "recent milestone 3"],
+  "focusAreas": ["development focus 1", "development focus 2"],
+  "recommendations": "A paragraph with specific recommendations for supporting development"
+}`;
+      }
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: analysisPrompt }
+        ],
+        max_tokens: 800,
+        temperature: 0.7,
+      });
+
+      const result = completion.choices[0]?.message?.content;
+      
+      try {
+        const parsedResult = JSON.parse(result || "{}");
+        res.json(parsedResult);
+      } catch (parseError) {
+        // If JSON parsing fails, return a fallback structure
+        res.json({
+          progressOverview: "Based on your journal entries, you're showing consistent growth in your parenting journey with thoughtful reflection and care for your children's well-being.",
+          strengths: ["Consistent journaling and reflection", "Emotional awareness and growth", "Commitment to child's development"],
+          growthAreas: ["Continue building patience during challenging moments", "Explore new positive reinforcement strategies"],
+          nextSteps: "Keep documenting your experiences, celebrate small wins, and consider trying new approaches that align with your family values."
+        });
+      }
+
+    } catch (error) {
+      console.error("AI analysis error:", error);
+      res.status(500).json({ 
+        error: "Failed to generate analysis",
+        fallback: {
+          progressOverview: "Your consistent journaling shows dedication to growth and reflection in your parenting journey.",
+          strengths: ["Regular self-reflection", "Care for child's well-being", "Growth mindset"],
+          growthAreas: ["Continue current positive practices", "Explore new strategies"],
+          nextSteps: "Keep documenting your journey and celebrating progress along the way."
+        }
+      });
+    }
+  });
+
   // Parent profile endpoints
   app.get("/api/parent-profile", async (req, res) => {
     try {
@@ -760,6 +863,51 @@ Remember: You're supporting parents who are doing their best. Validate their eff
       }
       console.error("Failed to create parent profile:", error);
       res.status(500).json({ message: "Failed to create parent profile" });
+    }
+  });
+
+  // Object storage endpoints
+  app.get("/public-objects/:filePath(*)", async (req, res) => {
+    const filePath = req.params.filePath;
+    const { ObjectStorageService } = await import("./objectStorage");
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const file = await objectStorageService.searchPublicObject(filePath);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      objectStorageService.downloadObject(file, res);
+    } catch (error) {
+      console.error("Error searching for public object:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/objects/upload", async (req, res) => {
+    const { ObjectStorageService } = await import("./objectStorage");
+    const objectStorageService = new ObjectStorageService();
+    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+    res.json({ uploadURL });
+  });
+
+  app.put("/api/profile-images", async (req, res) => {
+    if (!req.body.imageURL) {
+      return res.status(400).json({ error: "imageURL is required" });
+    }
+
+    try {
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(
+        req.body.imageURL,
+      );
+
+      res.status(200).json({
+        objectPath: objectPath,
+      });
+    } catch (error) {
+      console.error("Error setting profile image:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 

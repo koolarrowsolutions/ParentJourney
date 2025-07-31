@@ -3,12 +3,12 @@ import { Link } from "wouter";
 
 export function Header() {
   return (
-    <header className="bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8">
+    <header className="bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-50 animate-slide-up">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
             <Link href="/">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-primary/90 transition-colors">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-primary/90 transition-colors hover-scale button-press animate-gentle-bounce">
                 <Heart className="text-white h-4 w-4 sm:h-5 sm:w-5" />
               </div>
             </Link>
@@ -25,19 +25,19 @@ export function Header() {
           <div className="flex items-center space-x-1 ml-2">
             <div className="hidden sm:flex items-center space-x-1">
               <Link href="/analytics">
-                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm">
+                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
                   <BarChart3 className="h-4 w-4 mr-1 inline" />
                   Analytics
                 </button>
               </Link>
               <Link href="/milestones">
-                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm">
+                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
                   <Trophy className="h-4 w-4 mr-1 inline" />
                   Goals
                 </button>
               </Link>
               <Link href="/settings">
-                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm">
+                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
                   <Settings className="h-4 w-4 mr-1 inline" />
                   Settings
                 </button>
@@ -47,17 +47,17 @@ export function Header() {
             {/* Mobile Navigation */}
             <div className="sm:hidden flex items-center space-x-1">
               <Link href="/analytics">
-                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100">
+                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100 button-press hover-scale">
                   <BarChart3 className="h-5 w-5" />
                 </button>
               </Link>
               <Link href="/milestones">
-                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100">
+                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100 button-press hover-scale">
                   <Trophy className="h-5 w-5" />
                 </button>
               </Link>
               <Link href="/settings">
-                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100">
+                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100 button-press hover-scale">
                   <Settings className="h-5 w-5" />
                 </button>
               </Link>

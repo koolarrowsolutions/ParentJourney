@@ -6,6 +6,7 @@ import { JournalForm } from "@/components/journal-form";
 import { RecentEntries } from "@/components/recent-entries";
 import { Sidebar } from "@/components/sidebar";
 import { QuickTemplates } from "@/components/quick-templates";
+import { InteractiveProgress } from "@/components/interactive-progress";
 
 interface JournalStats {
   totalEntries: number;
@@ -35,47 +36,30 @@ export default function Home() {
               Welcome back to your parenting journey
             </h2>
             <p className="text-neutral-600 mb-4">How has your day been?</p>
-            <div className="grid grid-cols-3 gap-4">
-              {isLoading ? (
-                <>
-                  <Skeleton className="h-16 rounded-lg" />
-                  <Skeleton className="h-16 rounded-lg" />
-                  <Skeleton className="h-16 rounded-lg" />
-                </>
-              ) : (
-                <>
-                  <div className="bg-primary/5 rounded-lg p-3 text-center border border-primary/20">
-                    <div className="text-lg font-semibold text-primary">
-                      {stats?.totalEntries || 0}
-                    </div>
-                    <span className="text-xs text-neutral-600">Total Entries</span>
-                  </div>
-                  <div className="bg-primary/5 rounded-lg p-3 text-center border border-primary/20">
-                    <div className="text-lg font-semibold text-primary">
-                      {stats?.weekEntries || 0}
-                    </div>
-                    <span className="text-xs text-neutral-600">This Week</span>
-                  </div>
-                  <div className="bg-primary/5 rounded-lg p-3 text-center border border-primary/20">
-                    <div className="text-lg font-semibold text-primary">
-                      {stats?.longestStreak || 0}
-                    </div>
-                    <span className="text-xs text-neutral-600">Day Streak</span>
-                  </div>
-                </>
-              )}
-            </div>
+            {isLoading ? (
+              <div className="grid grid-cols-3 gap-4">
+                <Skeleton className="h-16 rounded-lg animate-shimmer" />
+                <Skeleton className="h-16 rounded-lg animate-shimmer" />
+                <Skeleton className="h-16 rounded-lg animate-shimmer" />
+              </div>
+            ) : (
+              <InteractiveProgress 
+                totalEntries={stats?.totalEntries || 0}
+                weekEntries={stats?.weekEntries || 0}
+                longestStreak={stats?.longestStreak || 0}
+              />
+            )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
-            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm">
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm animate-fade-in stagger-1">
               <JournalForm />
             </div>
             
-            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 hover-lift animate-fade-in stagger-2">
               <h3 className="text-lg font-semibold text-neutral-800 mb-4">Recent Entries</h3>
               <RecentEntries />
             </div>
@@ -83,7 +67,7 @@ export default function Home() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm">
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm animate-slide-in-right stagger-3">
               <Sidebar />
             </div>
           </div>

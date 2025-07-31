@@ -40,8 +40,8 @@ export function Sidebar() {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Quick Actions */}
-      <Card className="shadow-sm border border-neutral-200">
-        <CardContent className="p-4 sm:p-6">
+      <Card className="shadow-sm border border-neutral-200 hover-lift animate-slide-in-right stagger-1">
+        <CardContent className="p-6">
           <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
             <Bolt className="text-primary mr-2 h-5 w-5" />
             Quick Actions
@@ -51,7 +51,7 @@ export function Sidebar() {
               trigger={
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"
+                  className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"
                 >
                   <Users className="text-primary mr-3 h-5 w-5 flex-shrink-0" />
                   <div className="text-left min-w-0 flex-1">
@@ -67,7 +67,7 @@ export function Sidebar() {
             />
             <Button 
               variant="outline" 
-              className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"
+              className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"
               onClick={() => setShowDailyReflection(!showDailyReflection)}
             >
               <Lightbulb className="text-accent mr-3 h-5 w-5" />
@@ -78,7 +78,7 @@ export function Sidebar() {
             </Button>
             <Button 
               variant="outline" 
-              className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"
+              className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"
               onClick={() => setShowMoodAnalytics(!showMoodAnalytics)}
             >
               <BarChart3 className="text-secondary mr-3 h-5 w-5" />
@@ -89,7 +89,7 @@ export function Sidebar() {
             </Button>
             <Button 
               variant="outline" 
-              className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5"
+              className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"
             >
               <Download className="text-primary mr-3 h-5 w-5" />
               <div className="text-left">
@@ -102,7 +102,7 @@ export function Sidebar() {
       </Card>
 
       {/* Weekly Insights */}
-      <Card className="shadow-sm border border-neutral-200">
+      <Card className="shadow-sm border border-neutral-200 hover-lift animate-slide-in-right stagger-2">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
             <CalendarX className="text-primary mr-2 h-5 w-5" />
@@ -116,9 +116,9 @@ export function Sidebar() {
               </>
             ) : (
               <>
-                <div className="p-3 bg-accent/10 rounded-lg border border-accent/20">
+                <div className="p-3 bg-accent/10 rounded-lg border border-accent/20 hover-scale interactive-card animate-fade-in stagger-3">
                   <div className="flex items-center mb-2">
-                    <TrendingUp className="text-accent mr-2 h-4 w-4" />
+                    <TrendingUp className="text-accent mr-2 h-4 w-4 animate-gentle-bounce" />
                     <span className="font-medium text-neutral-800">Growth Pattern</span>
                   </div>
                   <p className="text-sm text-neutral-600">
@@ -128,9 +128,9 @@ export function Sidebar() {
                     }
                   </p>
                 </div>
-                <div className="p-3 bg-secondary/10 rounded-lg border border-secondary/20">
+                <div className="p-3 bg-secondary/10 rounded-lg border border-secondary/20 hover-scale interactive-card animate-fade-in stagger-4">
                   <div className="flex items-center mb-2">
-                    <Heart className="text-secondary mr-2 h-4 w-4" />
+                    <Heart className="text-secondary mr-2 h-4 w-4 animate-gentle-bounce" />
                     <span className="font-medium text-neutral-800">Streak Status</span>
                   </div>
                   <p className="text-sm text-neutral-600">

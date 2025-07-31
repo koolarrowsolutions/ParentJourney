@@ -209,7 +209,7 @@ export function JournalForm() {
   const contentLength = form.watch("content")?.length || 0;
 
   return (
-    <Card className="shadow-sm border border-neutral-200">
+    <Card className="shadow-sm border border-neutral-200 hover-lift animate-fade-in">
       <CardContent className="p-6">
         <div className="mb-6">
           <div className="flex items-center mb-3">
@@ -238,7 +238,7 @@ export function JournalForm() {
                   <FormControl>
                     <Input
                       placeholder="e.g., Teaching patience today..."
-                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent input-glow hover-scale"
                       {...field}
                       value={field.value ?? ""}
                     />
@@ -260,7 +260,7 @@ export function JournalForm() {
                     <Textarea
                       rows={5}
                       placeholder="Share your thoughts, challenges, victories, or anything about your day as a parent..."
-                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none input-glow hover-scale"
                       {...field}
                     />
                   </FormControl>
@@ -282,10 +282,10 @@ export function JournalForm() {
                     key={mood.value}
                     type="button"
                     onClick={() => setSelectedMood(mood.value)}
-                    className={`px-3 py-2 rounded-full border text-sm hover:border-primary hover:bg-primary/5 transition-all ${
+                    className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale animate-wiggle ${
                       selectedMood === mood.value
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-neutral-200"
+                        ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
+                        : "border-neutral-200 hover:border-primary hover:bg-primary/5"
                     }`}
                   >
                     {mood.emoji} {mood.label}
@@ -341,7 +341,7 @@ export function JournalForm() {
                 type="button"
                 onClick={() => onSubmit(form.getValues(), true)}
                 disabled={createEntryMutation.isPending || !form.getValues().content?.trim()}
-                className="flex-1 bg-primary text-white hover:bg-primary/90"
+                className="flex-1 bg-primary text-white hover:bg-primary/90 button-ripple button-press hover-lift"
               >
                 {isSubmittingWithAI ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -355,7 +355,7 @@ export function JournalForm() {
                 onClick={() => onSubmit(form.getValues(), false)}
                 disabled={createEntryMutation.isPending || !form.getValues().content?.trim()}
                 variant="outline"
-                className="sm:w-auto"
+                className="sm:w-auto button-press hover-scale"
               >
                 <Save className="mr-2 h-4 w-4" />
                 Save Only

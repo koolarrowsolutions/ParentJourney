@@ -36,20 +36,26 @@ export function useAuthOnboarding() {
     const hasCompletedOnboarding = localStorage.getItem("hasCompletedOnboarding") === "true";
     const hasDismissedOnboarding = localStorage.getItem("hasDismissedOnboarding") === "true";
 
+    console.log("Auth state check:", { hasJustSignedUp, hasCompletedOnboarding, hasDismissedOnboarding, parentProfile });
+
+    const shouldShow = hasJustSignedUp && !parentProfile && !hasDismissedOnboarding && !hasCompletedOnboarding;
+
     setAuthState(prev => ({
       ...prev,
       hasJustSignedUp,
       hasCompletedOnboarding,
-      showOnboarding: hasJustSignedUp && !parentProfile && !hasDismissedOnboarding,
+      showOnboarding: shouldShow,
     }));
-  }, [parentProfile]);
+  }, [parentProfile, isLoading]);
 
   const markUserAsSignedUp = () => {
     localStorage.setItem("hasJustSignedUp", "true");
+    localStorage.removeItem("hasDismissedOnboarding");
+    localStorage.removeItem("hasCompletedOnboarding");
     setAuthState(prev => ({
       ...prev,
       hasJustSignedUp: true,
-      showOnboarding: !parentProfile,
+      showOnboarding: true,
     }));
   };
 

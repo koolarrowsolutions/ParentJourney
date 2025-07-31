@@ -155,10 +155,10 @@ export function JournalForm() {
       }
       
       toast({
-        title: "Entry Saved! 📝",
+        title: "Entry saved!",
         description: data.aiFeedback 
-          ? "Your journal entry has been saved with AI feedback and insights."
-          : "Your journal entry has been saved successfully.",
+          ? "AI insights have been generated for your entry."
+          : "Entry saved! AI insights coming soon...",
       });
       
       // Reset form
@@ -186,7 +186,7 @@ export function JournalForm() {
     const submissionData = {
       ...data,
       mood: selectedMood || null,
-      childProfileId: selectedChildIds.length > 0 ? selectedChildIds[0] : null, // For now, use first selected child for compatibility
+      childProfileId: data.childProfileId || null,
       requestAiFeedback,
       photos: photos.length > 0 ? photos : null,
     };
@@ -292,64 +292,56 @@ export function JournalForm() {
 
 
 
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-3">
-                Writing about specific children? <span className="text-neutral-400">(optional)</span>
-              </label>
-              
-              {/* Multi-child selection */}
-              <div className="space-y-3">
-                <div className="flex flex-wrap gap-2">
-                  {childProfiles?.map((profile) => {
-                    const isSelected = selectedChildIds.includes(profile.id);
-                    return (
-                      <button
-                        key={profile.id}
-                        type="button"
-                        onClick={() => {
-                          if (isSelected) {
-                            setSelectedChildIds(prev => prev.filter(id => id !== profile.id));
-                          } else {
-                            setSelectedChildIds(prev => [...prev, profile.id]);
-                          }
-                        }}
-                        className={`px-3 py-2 rounded-full border text-sm transition-all button-press hover-scale ${
-                          isSelected
-                            ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
-                            : "border-neutral-200 hover:border-primary hover:bg-primary/5"
-                        }`}
-                      >
-                        {profile.name}
-                      </button>
-                    );
-                  })}
-                  
-                  <ChildProfilesDialog
-                    trigger={
-                      <Button variant="outline" type="button" className="px-3 py-2 text-sm hover-scale button-press">
-                        <Users className="h-4 w-4 mr-1" />
-                        Add Child
-                      </Button>
-                    }
-                  />
-                </div>
-                
-                {selectedChildIds.length > 0 && (
-                  <div className="flex items-center text-xs text-neutral-500">
-                    <Users className="h-3 w-3 mr-1" />
-                    Selected: {selectedChildIds.map(id => 
-                      childProfiles?.find(p => p.id === id)?.name
-                    ).join(', ')}
+            <FormField
+              control={form.control}
+              name="childProfileId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-neutral-700">
+                    Which child is this entry about? <span className="text-neutral-400">(optional)</span>
+                  </FormLabel>
+                  <Select 
+                    onValueChange={(value) => {
+                      const actualValue = value === "none" ? "" : value;
+                      field.onChange(actualValue);
+                      setSelectedChildIds(actualValue ? [actualValue] : []);
+                    }} 
+                    value={field.value || "none"}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <SelectValue placeholder="Select a child (optional)" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">No specific child</SelectItem>
+                      {childProfiles?.map((profile) => (
+                        <SelectItem key={profile.id} value={profile.id}>
+                          <div className="flex items-center">
+                            <Baby className="h-4 w-4 mr-2 text-primary" />
+                            {profile.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-xs text-neutral-500">
+                      Selecting a child will provide personalized developmental insights
+                    </p>
+                    <ChildProfilesDialog
+                      trigger={
+                        <Button variant="outline" size="sm" type="button" className="text-xs">
+                          <Users className="h-3 w-3 mr-1" />
+                          Add Child
+                        </Button>
+                      }
+                    />
                   </div>
-                )}
-                
-                {selectedChildIds.length > 0 && (
-                  <p className="text-xs text-neutral-500">
-                    Selecting children will provide age-appropriate developmental insights.
-                  </p>
-                )}
-              </div>
-            </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Photo Upload */}
             <div>

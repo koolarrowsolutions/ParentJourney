@@ -256,6 +256,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Parenting chatbot endpoint
+  app.post("/api/parenting-chat", async (req, res) => {
+    try {
+      const { message, conversationHistory } = req.body;
+      
+      if (!message || typeof message !== "string") {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      // Check if OpenAI key is available
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(500).json({ 
+          error: "OpenAI API key not configured",
+          reply: "I'm sorry, but I'm not properly configured right now. Please ask the administrator to set up the OpenAI API key."
+        });
+      }
+
+      const OpenAI = (await import("openai")).default;
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      // Build conversation context
+      const messages = [
+        {
+          role: "system" as const,
+          content: `You are a knowledgeable and supportive AI parenting assistant. You specialize in:
+
+- Child development stages and milestones (0-18 years)
+- Behavioral challenges and positive discipline strategies
+- Different parenting styles and techniques
+- Sleep, feeding, and routine guidance
+- Age-appropriate activities and learning
+- Social and emotional development
+- Managing difficult behaviors (tantrums, defiance, etc.)
+- Sibling relationships and family dynamics
+- Safety and health considerations
+- Supporting parent well-being and self-care
+
+Guidelines for your responses:
+- Be warm, empathetic, and non-judgmental
+- Provide practical, evidence-based advice
+- Acknowledge that every child and family is unique
+- Suggest when professional help might be beneficial
+- Keep responses concise but comprehensive
+- Use encouraging, supportive language
+- Never provide medical advice - refer to healthcare providers when appropriate
+- Respect different parenting philosophies while prioritizing child well-being
+
+Remember: You're supporting parents who are doing their best. Validate their efforts while providing helpful guidance.`
+        }
+      ];
+
+      // Add conversation history for context (last 10 messages)
+      if (conversationHistory && Array.isArray(conversationHistory)) {
+        conversationHistory.slice(-10).forEach((msg: any) => {
+          if (msg.role === 'user' || msg.role === 'assistant') {
+            messages.push({
+              role: msg.role,
+              content: msg.content
+            });
+          }
+        });
+      }
+
+      // Add current message
+      messages.push({
+        role: "user" as const,
+        content: message
+      });
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages,
+        max_tokens: 500,
+        temperature: 0.7,
+      });
+
+      const reply = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response. Please try again.";
+
+      res.json({ reply });
+    } catch (error) {
+      console.error("Parenting chat error:", error);
+      res.status(500).json({ 
+        error: "Failed to process chat message",
+        reply: "I'm experiencing some technical difficulties. Please try again in a moment."
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

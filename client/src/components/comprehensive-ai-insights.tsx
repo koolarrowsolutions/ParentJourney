@@ -236,7 +236,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
       {/* Analysis Dialog */}
       <Dialog open={!!selectedInsight} onOpenChange={() => setSelectedInsight(null)}>
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto relative bg-white border shadow-lg">
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto relative bg-white border shadow-lg p-6">
           <button
             onClick={() => setSelectedInsight(null)}
             className="absolute top-4 right-4 z-50 p-2 hover:bg-neutral-100 rounded-full transition-colors"
@@ -296,55 +296,55 @@ function ParentingProgressAnalysis({ data }: { data: any }) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
-        <h4 className="font-semibold text-primary mb-4 flex items-center text-lg">
+    <div className="space-y-6" style={{minHeight: '400px', display: 'block', visibility: 'visible'}}>
+      <div className="bg-blue-50 rounded-xl p-6 border border-blue-200" style={{backgroundColor: '#eff6ff', border: '1px solid #bfdbfe'}}>
+        <h4 className="font-semibold text-blue-800 mb-4 flex items-center text-lg" style={{color: '#1e40af', fontSize: '18px', fontWeight: '600'}}>
           <TrendingUp className="mr-3 h-5 w-5" />
           Your Parenting Journey
         </h4>
-        <p className="text-neutral-700 leading-relaxed">
+        <p className="text-blue-700 leading-relaxed" style={{color: '#1d4ed8', lineHeight: '1.6'}}>
           {data.progressOverview || "Based on your journal entries and reflections, you're developing consistent parenting practices and growing in self-awareness."}
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-green-50 rounded-xl p-5 border border-green-200">
-          <h5 className="font-medium text-green-800 mb-4 flex items-center">
+        <div className="bg-green-50 rounded-xl p-5 border border-green-200" style={{backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '20px'}}>
+          <h5 className="font-medium text-green-800 mb-4 flex items-center" style={{color: '#166534', fontSize: '16px', fontWeight: '500'}}>
             <CheckCircle className="mr-3 h-5 w-5" />
             Your Strengths
           </h5>
           <div className="space-y-3">
             {(data.strengths || ["Consistent reflection habits", "Emotional awareness", "Growth mindset"]).map((strength: string, index: number) => (
-              <div key={index} className="flex items-start">
-                <div className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <span className="text-green-700 leading-relaxed">{strength}</span>
+              <div key={index} className="flex items-start" style={{display: 'flex', alignItems: 'flex-start', marginBottom: '12px'}}>
+                <div className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0" style={{width: '8px', height: '8px', backgroundColor: '#16a34a', borderRadius: '50%', marginTop: '8px', marginRight: '12px'}}></div>
+                <span className="text-green-700 leading-relaxed" style={{color: '#15803d', lineHeight: '1.6'}}>{strength}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
-          <h5 className="font-medium text-blue-800 mb-4 flex items-center">
+        <div className="bg-orange-50 rounded-xl p-5 border border-orange-200" style={{backgroundColor: '#fff7ed', border: '1px solid #fed7aa', padding: '20px'}}>
+          <h5 className="font-medium text-orange-800 mb-4 flex items-center" style={{color: '#9a3412', fontSize: '16px', fontWeight: '500'}}>
             <Target className="mr-3 h-5 w-5" />
             Growth Opportunities
           </h5>
           <div className="space-y-3">
             {(data.growthAreas || ["Consistency in responses", "Patience during challenges"]).map((area: string, index: number) => (
-              <div key={index} className="flex items-start">
-                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <span className="text-blue-700 leading-relaxed">{area}</span>
+              <div key={index} className="flex items-start" style={{display: 'flex', alignItems: 'flex-start', marginBottom: '12px'}}>
+                <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 mr-3 flex-shrink-0" style={{width: '8px', height: '8px', backgroundColor: '#ea580c', borderRadius: '50%', marginTop: '8px', marginRight: '12px'}}></div>
+                <span className="text-orange-700 leading-relaxed" style={{color: '#c2410c', lineHeight: '1.6'}}>{area}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
-        <h5 className="font-medium text-amber-800 mb-4 flex items-center">
+      <div className="bg-amber-50 rounded-xl p-6 border border-amber-200" style={{backgroundColor: '#fffbeb', border: '1px solid #fcd34d', padding: '24px'}}>
+        <h5 className="font-medium text-amber-800 mb-4 flex items-center" style={{color: '#92400e', fontSize: '16px', fontWeight: '500'}}>
           <Sparkles className="mr-3 h-5 w-5" />
           Next Steps
         </h5>
-        <p className="text-amber-700 leading-relaxed">
+        <p className="text-amber-700 leading-relaxed" style={{color: '#b45309', lineHeight: '1.6'}}>
           {data.nextSteps || "Continue documenting your experiences, focus on celebrating small wins, and consider exploring new parenting strategies that align with your values."}
         </p>
       </div>

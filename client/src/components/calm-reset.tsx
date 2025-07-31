@@ -185,6 +185,8 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
   };
 
   const startGuidedAudio = (content: string[]) => {
+    console.log('Audio button clicked, current playing state:', isPlaying);
+    
     if (isPlaying) {
       stopGuidedAudio();
       return;
@@ -193,45 +195,38 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setIsPlaying(true);
     console.log('Starting audio with content:', content);
     
-    // Skip background audio for now to focus on speech
     if (selectedBackgroundSound !== 'none') {
       console.log(`Background: ${backgroundSounds[selectedBackgroundSound as keyof typeof backgroundSounds].description}`);
     }
 
-    // Start reading content immediately
     let currentIndex = 0;
     
     const speakNext = () => {
+      console.log(`speakNext called, currentIndex: ${currentIndex}, isPlaying: ${isPlaying}`);
+      
       if (currentIndex >= content.length) {
         console.log('Finished reading all content');
         setIsPlaying(false);
         return;
       }
 
-      if (!isPlaying) {
-        console.log('Audio stopped by user');
-        return;
-      }
-
       const text = content[currentIndex];
-      console.log(`Speaking item ${currentIndex + 1} of ${content.length}: ${text.substring(0, 50)}...`);
+      console.log(`Speaking item ${currentIndex + 1} of ${content.length}: "${text}"`);
       
       const utterance = new SpeechSynthesisUtterance(text);
-      
-      // Calm voice settings
       utterance.rate = 0.8;
       utterance.pitch = 0.9;
       utterance.volume = 1.0;
       
-      // Try to find a better voice
       const voices = speechSynthesis.getVoices();
+      console.log('Available voices:', voices.map(v => v.name));
+      
       const femaleVoice = voices.find(voice => 
         voice.lang.includes('en') && (
           voice.name.includes('female') ||
           voice.name.includes('Female') ||
           voice.name.includes('Samantha') ||
-          voice.name.includes('Zira') ||
-          voice.name.includes('Google')
+          voice.name.includes('Zira')
         )
       );
       
@@ -243,7 +238,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       }
 
       utterance.onstart = () => {
-        console.log(`Started speaking: ${text.substring(0, 30)}...`);
+        console.log('Speech started successfully');
       };
 
       utterance.onend = () => {
@@ -251,11 +246,11 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
         currentIndex++;
         setTimeout(() => {
           speakNext();
-        }, 2000); // 2 second pause
+        }, 1500);
       };
 
       utterance.onerror = (event) => {
-        console.error('Speech error:', event.error, event.message);
+        console.error('Speech error:', event.error);
         currentIndex++;
         setTimeout(() => {
           speakNext();
@@ -263,14 +258,20 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       };
 
       setCurrentAudio(utterance);
+      console.log('About to call speechSynthesis.speak()');
       speechSynthesis.speak(utterance);
     };
 
-    // Wait a moment for voices to load, then start
-    setTimeout(() => {
-      console.log('Available voices:', speechSynthesis.getVoices().length);
+    // Ensure voices are loaded
+    if (speechSynthesis.getVoices().length === 0) {
+      speechSynthesis.onvoiceschanged = () => {
+        console.log('Voices loaded, starting speech');
+        speakNext();
+      };
+    } else {
+      console.log('Voices already available, starting immediately');
       speakNext();
-    }, 100);
+    }
   };
 
   const stopGuidedAudio = () => {
@@ -559,11 +560,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                           {exercise.duration}
                         </Badge>
                         <Button
-                          onClick={() => {
-                            console.log('Button clicked for exercise:', exercise.title);
-                            console.log('Exercise content:', exercise.content);
-                            startGuidedAudio(exercise.content);
-                          }}
+                          onClick={() => startGuidedAudio(exercise.content)}
                           variant={isPlaying ? "destructive" : "default"}
                           size="sm"
                           className={isPlaying 

@@ -1122,6 +1122,78 @@ Remember: You're supporting parents who are doing their best. Validate their eff
     }
   }
 
+  // Parenting chatbot API endpoint
+  app.post("/api/parenting-chat", async (req, res) => {
+    try {
+      const { message, conversationHistory } = req.body;
+
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      // Get user context data
+      const parentProfile = await storage.getParentProfile() || null;
+      const childProfiles = await storage.getAllChildProfiles() || [];
+      const recentEntries = await storage.getJournalEntries(5) || [];
+
+      const contextPrompt = `
+        You are a warm, expert parenting assistant providing supportive guidance.
+        
+        Parent Context: ${parentProfile ? JSON.stringify({
+          name: parentProfile.name,
+          parentingStyle: parentProfile.parentingStyle,
+          personalityTraits: parentProfile.personalityTraits,
+          parentingGoals: parentProfile.parentingGoals
+        }) : "No parent profile available"}
+        
+        Children: ${childProfiles.map(child => ({
+          name: child.name,
+          age: Math.floor((Date.now() - new Date(child.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000)),
+          personality: child.personalityTraits
+        }))}
+        
+        Recent Journal Context: ${recentEntries.slice(0, 3).map(entry => entry.content.substring(0, 200))}
+        
+        Conversation History: ${conversationHistory?.map((msg: any) => `${msg.role}: ${msg.content}`).join('\n') || 'None'}
+        
+        User Question: ${message}
+        
+        Provide a warm, personalized response that:
+        1. Acknowledges their specific family context when relevant
+        2. Offers practical, evidence-based advice
+        3. Is supportive and non-judgmental
+        4. References their parenting journey when appropriate
+        5. Keeps responses conversational and under 150 words
+      `;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are a caring parenting expert providing personalized guidance. Be warm, supportive, and practical."
+          },
+          {
+            role: "user",
+            content: contextPrompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 300
+      });
+
+      const reply = response.choices[0]?.message?.content || "I'm here to help with any parenting questions you have!";
+      
+      res.json({ reply });
+    } catch (error) {
+      console.error("Parenting chat error:", error);
+      res.status(500).json({ 
+        error: "Failed to generate response",
+        reply: "I'm having trouble responding right now, but I'm here when you need parenting support!"
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

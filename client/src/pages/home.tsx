@@ -101,12 +101,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         </div>
 
-        {/* AI Insights Section */}
-        <div className="mb-6">
-          <ComprehensiveAIInsights />
-        </div>
-
-        {/* Mood Analytics Results - Shows between welcome and mood selection */}
+        {/* Mood Analytics Results - Shows between welcome and AI insights */}
         {showMoodAnalytics && (
           <div className="mb-6">
             <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 animate-slide-in-down">
@@ -122,6 +117,11 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             </div>
           </div>
         )}
+
+        {/* AI Insights Section */}
+        <div className="mb-6">
+          <ComprehensiveAIInsights />
+        </div>
 
         {/* Mood Selection - Independent Element */}
         <div className="mb-6">

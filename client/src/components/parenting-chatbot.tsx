@@ -148,10 +148,12 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   return (
     <Card className={cn(
       "fixed bottom-6 right-6 w-96 h-[500px] shadow-xl z-50 animate-pop-fade bg-white border border-neutral-200",
-      isMinimized && "h-14",
+      "md:w-96 md:h-[500px]", // Desktop size
+      "max-md:fixed max-md:inset-0 max-md:w-full max-md:h-full max-md:bottom-0 max-md:right-0 max-md:rounded-none", // Mobile full screen
+      isMinimized && "h-14 max-md:h-14",
       className
     )}>
-      <CardHeader className="p-4 pb-2 border-b border-neutral-100">
+      <CardHeader className="p-4 pb-2 border-b border-neutral-100 max-md:rounded-none">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
@@ -194,7 +196,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
       </CardHeader>
 
       {!isMinimized && (
-        <CardContent className="p-0 flex flex-col h-[calc(500px-80px)]">
+        <CardContent className="p-0 flex flex-col h-[calc(500px-80px)] max-md:h-[calc(100vh-80px)]">
           {/* Messages Area */}
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">

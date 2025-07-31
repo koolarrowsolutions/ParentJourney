@@ -118,26 +118,22 @@ export function Community() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-between mb-4">
+      <div className="mb-8">
+        <div className="flex items-start justify-between">
           <Link href="/">
             <Button variant="outline" className="hover-scale">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Main
             </Button>
           </Link>
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mr-4">
-              <Users className="h-6 w-6 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-neutral-800">Community Forum</h1>
-          </div>
-          <div className="w-[120px]"></div> {/* Spacer for balance */}
         </div>
-        <p className="text-neutral-600 max-w-2xl mx-auto">
-          Connect with other parents, share experiences, seek advice, and celebrate milestones together. 
-          You're not alone in this parenting journey.
-        </p>
+        <div className="text-center mt-4">
+          <h1 className="text-3xl font-bold text-neutral-800">💬 Community</h1>
+          <p className="text-neutral-600 max-w-2xl mx-auto">
+            Connect with other parents, share experiences, seek advice, and celebrate milestones together. 
+            You're not alone in this parenting journey.
+          </p>
+        </div>
       </div>
 
       {/* Controls */}

@@ -116,11 +116,11 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       title: "Have You Considered",
       description: "Three thoughtful suggestions to enhance your parenting journey and family dynamics",
       icon: <MessageSquare className="h-5 w-5" />,
-      color: "text-neutral-600",
-      bgColor: "bg-neutral-50",
-      borderColor: "border-neutral-200",
-      hoverBorder: "hover:border-neutral-400",
-      hoverBg: "hover:bg-neutral-100"
+      color: "text-primary",
+      bgColor: "bg-primary/5",
+      borderColor: "border-primary/20",
+      hoverBorder: "hover:border-primary",
+      hoverBg: "hover:bg-primary/10"
     }
   ];
 

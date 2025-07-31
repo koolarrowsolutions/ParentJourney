@@ -35,18 +35,18 @@ export default function Analytics({ triggerSignUpPrompt }: AnalyticsProps) {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 animate-fade-in">
       <div className="container mx-auto p-6 max-w-6xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
+        <div className="mb-8">
+          <div className="flex items-start justify-between">
             <Link href="/">
               <Button variant="outline" className="hover-scale">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Main
               </Button>
             </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-neutral-800">📊 Analytics & Insights</h1>
-              <p className="text-neutral-600">Discover patterns and insights from your parenting journey</p>
-            </div>
+          </div>
+          <div className="text-center mt-4">
+            <h1 className="text-3xl font-bold text-neutral-800">📊 Analytics & Insights</h1>
+            <p className="text-neutral-600">Discover patterns and insights from your parenting journey</p>
           </div>
         </div>
 

@@ -9,6 +9,7 @@ import { QuickTemplates } from "@/components/quick-templates";
 import { InteractiveProgress } from "@/components/interactive-progress";
 import { ChildEntryOverview } from "@/components/child-entry-overview";
 import { getDailyGreeting } from "@shared/greetings";
+import { CalmReset } from "@/components/calm-reset";
 import type { ChildProfile } from "@shared/schema";
 
 interface JournalStats {

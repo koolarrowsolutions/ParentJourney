@@ -17,6 +17,7 @@ import {
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { MoodAnalytics } from "./mood-analytics";
 import { DailyReflection } from "./daily-reflection";
+import { CalmReset } from "./calm-reset";
 
 interface JournalStats {
   totalEntries: number;
@@ -39,6 +40,9 @@ export function Sidebar() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Calm Reset - Prominently Featured */}
+      <CalmReset trigger="standalone" />
+      
       {/* Quick Actions */}
       <Card className="shadow-sm border border-neutral-200 hover-lift animate-slide-in-right stagger-1">
         <CardContent className="p-6">

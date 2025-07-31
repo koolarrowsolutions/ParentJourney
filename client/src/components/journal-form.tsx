@@ -18,7 +18,7 @@ import { getSettings } from "@/utils/settings-storage";
 import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap, RefreshCw } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { PhotoUpload } from "./photo-upload";
-import { CalmReset, CalmResetTrigger } from "./calm-reset";
+import { CalmReset } from "./calm-reset";
 import { VoiceInputButton, VoiceInput } from "./voice-input";
 
 const MOODS = [
@@ -539,11 +539,13 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
               />
             </div>
 
-            {/* Calm Reset Trigger */}
-            <CalmResetTrigger 
-              selectedEmotions={selectedEmotions}
-              onTrigger={() => setIsCalmResetOpen(true)}
-            />
+            {/* Quick Calm Reset for overwhelming moments */}
+            <div className="mb-4 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-emerald-700">Feeling overwhelmed while writing?</p>
+                <CalmReset trigger="inline" />
+              </div>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
@@ -596,17 +598,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
           <AiFeedbackDisplay feedback={aiFeedback} />
         )}
 
-        {/* Calm Reset Dialog */}
-        <CalmReset
-          isOpen={isCalmResetOpen}
-          onClose={() => setIsCalmResetOpen(false)}
-          onComplete={() => {
-            toast({
-              title: "Feeling Better",
-              description: "Take your time with your journal entry. You've got this.",
-            });
-          }}
-        />
+
       </CardContent>
     </Card>
   );

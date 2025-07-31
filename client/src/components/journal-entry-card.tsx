@@ -19,6 +19,8 @@ export function JournalEntryCard({ entry, showChildInfo = true, onEdit }: Journa
   const [isExpanded, setIsExpanded] = useState(false);
   const { toast } = useToast();
 
+  const queryClient = useQueryClient();
+  
   const deleteMutation = useMutation({
     mutationFn: () => fetch(`/api/journal-entries/${entry.id}`, {
       method: "DELETE",

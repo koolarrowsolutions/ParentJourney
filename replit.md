@@ -44,6 +44,14 @@ The application follows a modern full-stack architecture with a clear separation
 - **Contextual Navigation**: Back buttons and breadcrumbs for better user experience
 - **Journal History Screen**: Dedicated page for viewing past entries organized by child
 
+### Mental Health & Wellness Features
+- **🌿 Calm Reset Tool**: Easily accessible breathing exercises, guided meditations, and self-compassion practices
+- **💆‍♀️ Multiple Breathing Techniques**: 4-7-8 breathing, box breathing, and calm breathing with visual progress indicators
+- **🧘‍♀️ Guided Mindfulness**: Self-compassion exercises, present moment grounding, and quick energy reset techniques
+- **💝 Positive Affirmations**: Curated affirmations specifically for parenting challenges
+- **🎯 Strategic Placement**: Prominently featured in sidebar and inline access during journal writing
+- **⏱️ Timed Exercises**: Visual progress tracking with multiple cycles for effective stress relief
+
 ## Key Components
 
 ### Frontend Architecture

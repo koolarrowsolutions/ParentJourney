@@ -311,7 +311,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                                 {/* Inner circle with phase-specific behavior */}
                                 <div 
                                   className={`absolute inset-0 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 flex items-center justify-center transition-all duration-300 ease-out
-                                    ${breathingPhase === 'hold' ? 'animate-gentle-breathe' : ''}
+                                    ${breathingPhase === 'hold' ? 'animate-calm-hold' : ''}
                                   `}
                                   style={{ 
                                     transform: `scale(${

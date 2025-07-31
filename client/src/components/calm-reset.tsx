@@ -200,49 +200,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setActiveBreathingExercise(null);
   };
 
-  // Using verified working video from search results + well-known meditation channels
-  const guidedAffirmationVideos = [
-    {
-      id: 'anxiety-relief',
-      title: '5-Minute Anxiety Relief',
-      duration: '5:00',
-      description: 'Countdown with affirmations for anxiety and panic relief',
-      videoId: 'MR57rug8NsM', // Verified working from search results
-      embedUrl: 'https://www.youtube.com/embed/MR57rug8NsM?rel=0&modestbranding=1'
-    },
-    {
-      id: 'breathing-space', 
-      title: 'Breathing Space Meditation',
-      duration: '3:00',
-      description: 'Quick breathing practice for instant calm',
-      videoId: 'F28MGLlpP90', // The Honest Guys - popular meditation channel
-      embedUrl: 'https://www.youtube.com/embed/F28MGLlpP90?rel=0&modestbranding=1'
-    },
-    {
-      id: 'mindful-moment',
-      title: 'Mindful Moment Practice',
-      duration: '2:30',
-      description: 'Brief mindfulness for present moment awareness',
-      videoId: 'ZToicYcHIOU', // Great Meditation channel
-      embedUrl: 'https://www.youtube.com/embed/ZToicYcHIOU?rel=0&modestbranding=1'
-    },
-    {
-      id: 'quick-calm',
-      title: 'Quick Calm Meditation',
-      duration: '3:30',
-      description: 'Gentle practice for stress relief',
-      videoId: 'inpok4MKVLM', // Mindful Movement
-      embedUrl: 'https://www.youtube.com/embed/inpok4MKVLM?rel=0&modestbranding=1'
-    },
-    {
-      id: 'peaceful-reset',
-      title: 'Peaceful Reset',
-      duration: '2:45',
-      description: 'Short practice for inner peace and balance',
-      videoId: 'SEfs5TJZ6Nk', // Calm meditation
-      embedUrl: 'https://www.youtube.com/embed/SEfs5TJZ6Nk?rel=0&modestbranding=1'
-    }
-  ];
+
 
   const startGuidedAudio = async (content: string[]) => {
     console.log('Audio button clicked, current playing state:', isPlaying);
@@ -527,7 +485,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
           </DialogHeader>
 
           <Tabs defaultValue="breathing" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="breathing" className="flex items-center gap-2">
                 <Heart className="h-4 w-4" />
                 Breathing
@@ -539,10 +497,6 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
               <TabsTrigger value="affirmations" className="flex items-center gap-2">
                 <Volume2 className="h-4 w-4" />
                 Affirmations
-              </TabsTrigger>
-              <TabsTrigger value="guided-videos" className="flex items-center gap-2">
-                <Play className="h-4 w-4" />
-                Videos
               </TabsTrigger>
             </TabsList>
 
@@ -847,51 +801,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
               </div>
             </TabsContent>
 
-            <TabsContent value="guided-videos" className="space-y-4">
-              <div className="text-center mb-4">
-                <h3 className="text-lg font-medium text-sky-800 mb-2">Quick Meditation Videos</h3>
-                <p className="text-sky-700">
-                  Short YouTube meditation videos under 3 minutes for instant calm and centering.
-                </p>
-              </div>
-              
-              <div className="grid gap-4">
-                {guidedAffirmationVideos.map((video) => (
-                  <Card key={video.id} className="p-4 border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium text-sky-800">{video.title}</h4>
-                          <p className="text-sm text-sky-600">{video.description}</p>
-                        </div>
-                        <Badge variant="outline" className="border-sky-300 text-sky-700">
-                          {video.duration}
-                        </Badge>
-                      </div>
-                      
-                      <div className="relative w-full h-48 bg-slate-100 rounded-lg overflow-hidden">
-                        <iframe
-                          src={video.embedUrl}
-                          title={video.title}
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="w-full h-full"
-                        ></iframe>
-                      </div>
-                      
-                      <div className="text-xs text-sky-600 bg-sky-50 p-2 rounded">
-                        💡 Tip: Use headphones for the best experience. Perfect for quick stress relief and centering.
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-              
-              <div className="text-center text-sm text-sky-600 bg-sky-50 p-3 rounded">
-                <p>These short meditations can be done anytime you need a moment of calm. No experience necessary.</p>
-              </div>
-            </TabsContent>
+
           </Tabs>
 
           <div className="flex justify-end pt-4">

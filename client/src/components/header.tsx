@@ -22,27 +22,45 @@ export function Header() {
               <p className="text-xs text-neutral-500 hidden sm:block truncate">✨ Reflect. Grow. Thrive. ✨</p>
             </div>
           </div>
-          <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
-            <Link href="/analytics">
-              <button className="text-neutral-600 hover:text-primary transition-colors p-1 sm:p-2 rounded-lg hover:bg-neutral-100">
-                <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span className="sr-only">Analytics</span>
-              </button>
-            </Link>
-            <Link href="/milestones">
-              <button className="text-neutral-600 hover:text-primary transition-colors p-1 sm:p-2 rounded-lg hover:bg-neutral-100">
-                <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span className="sr-only">Milestones</span>
-              </button>
-            </Link>
-            <Link href="/settings">
-              <button className="text-neutral-600 hover:text-primary transition-colors p-1 sm:p-2 rounded-lg hover:bg-neutral-100">
-                <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span className="sr-only">Settings</span>
-              </button>
-            </Link>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
-              <User className="text-white h-3 w-3 sm:h-4 sm:w-4" />
+          <div className="flex items-center space-x-1 ml-2">
+            <div className="hidden sm:flex items-center space-x-1">
+              <Link href="/analytics">
+                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm">
+                  <BarChart3 className="h-4 w-4 mr-1 inline" />
+                  Analytics
+                </button>
+              </Link>
+              <Link href="/milestones">
+                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm">
+                  <Trophy className="h-4 w-4 mr-1 inline" />
+                  Goals
+                </button>
+              </Link>
+              <Link href="/settings">
+                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm">
+                  <Settings className="h-4 w-4 mr-1 inline" />
+                  Settings
+                </button>
+              </Link>
+            </div>
+            
+            {/* Mobile Navigation */}
+            <div className="sm:hidden flex items-center space-x-1">
+              <Link href="/analytics">
+                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100">
+                  <BarChart3 className="h-5 w-5" />
+                </button>
+              </Link>
+              <Link href="/milestones">
+                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100">
+                  <Trophy className="h-5 w-5" />
+                </button>
+              </Link>
+              <Link href="/settings">
+                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100">
+                  <Settings className="h-5 w-5" />
+                </button>
+              </Link>
             </div>
           </div>
         </div>

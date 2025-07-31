@@ -42,7 +42,7 @@ function DevelopmentalInsightDisplay({ insight, childName }: DevelopmentalInsigh
         </div>
         <div className="flex-1">
           <h4 className="font-semibold text-neutral-800 mb-2">
-            🎯 Developmental Insight {childName && `for ${childName}`}
+            Developmental Insight {childName && `for ${childName}`}
           </h4>
           <div className="text-neutral-700 leading-relaxed">
             {insight}
@@ -63,7 +63,7 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
           <Bot className="text-white h-5 w-5" />
         </div>
         <div className="flex-1">
-          <h4 className="font-semibold text-neutral-800 mb-2">🤖 AI Insights & Suggestions</h4>
+          <h4 className="font-semibold text-neutral-800 mb-2">AI Insights & Suggestions</h4>
           <div className="text-neutral-700 leading-relaxed space-y-3">
             {sections.map((section, index) => {
               const [title, ...contentParts] = section.split(':');
@@ -210,21 +210,19 @@ export function JournalForm() {
 
   return (
     <Card className="shadow-sm border border-neutral-200">
-      <CardContent className="p-4 sm:p-6">
-        <div className="space-y-4 mb-4 sm:mb-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg sm:text-xl font-semibold text-neutral-800 flex items-center">
-              <PenTool className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="hidden sm:inline">📝 New Journal Entry</span>
-              <span className="sm:hidden">📝 Entry</span>
+      <CardContent className="p-6">
+        <div className="mb-6">
+          <div className="flex items-center mb-3">
+            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-3">
+              <PenTool className="text-white h-5 w-5" />
+            </div>
+            <h3 className="text-xl font-semibold text-neutral-800">
+              New Journal Entry
             </h3>
-            <div className="text-xs sm:text-sm text-neutral-500 hidden sm:block">Today, {currentDate}</div>
           </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-            <p className="text-xs text-amber-800">
-              <strong>💡 Free-form journaling:</strong> Write about anything on your mind! For guided prompts and structured reflection questions, try the "📱 Daily Reflection" feature in the sidebar.
-            </p>
-          </div>
+          <p className="text-neutral-600">
+            Share what's on your mind today.
+          </p>
         </div>
 
         <Form {...form}>
@@ -235,12 +233,12 @@ export function JournalForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-neutral-700">
-                    📚 Entry Title <span className="text-neutral-400 hidden sm:inline">(optional)</span>
+                    Entry Title <span className="text-neutral-400">(optional)</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="💡 e.g., Teaching patience today..."
-                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base"
+                      placeholder="e.g., Teaching patience today..."
+                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent"
                       {...field}
                       value={field.value ?? ""}
                     />
@@ -256,22 +254,13 @@ export function JournalForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-neutral-700">
-                    💭 What's on your mind? <span className="text-red-400">*</span>
+                    What's on your mind? <span className="text-red-400">*</span>
                   </FormLabel>
                   <FormControl>
                     <Textarea
-                      rows={6}
-
-                      placeholder="✨ Share your thoughts, challenges, victories, or anything about your parenting journey today! 
-
-💭 Here are some ideas to get you started:
-• How did you handle a tough moment today?
-• What made you smile as a parent?
-• What's challenging you right now?
-• What are you proud of?
-
-The more detail you share, the better AI feedback you'll receive! 🤖"
-                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-sm sm:text-base"
+                      rows={5}
+                      placeholder="Share your thoughts, challenges, victories, or anything about your day as a parent..."
+                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                       {...field}
                     />
                   </FormControl>
@@ -285,7 +274,7 @@ The more detail you share, the better AI feedback you'll receive! 🤖"
 
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-3">
-                💕 How are you feeling today?
+                How are you feeling today?
               </label>
               <div className="flex flex-wrap gap-2">
                 {MOODS.map((mood) => (
@@ -307,7 +296,7 @@ The more detail you share, the better AI feedback you'll receive! 🤖"
 
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-3">
-                👶 Writing about a specific child? <span className="text-neutral-400">(optional)</span>
+                Writing about a specific child? <span className="text-neutral-400">(optional)</span>
               </label>
               <div className="flex gap-3">
                 <Select onValueChange={setSelectedChildId} value={selectedChildId}>
@@ -318,7 +307,7 @@ The more detail you share, the better AI feedback you'll receive! 🤖"
                     <SelectItem value="none">No specific child</SelectItem>
                     {childProfiles?.map((profile) => (
                       <SelectItem key={profile.id} value={profile.id}>
-                        👶 {profile.name}
+                        {profile.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -333,7 +322,7 @@ The more detail you share, the better AI feedback you'll receive! 🤖"
               </div>
               {selectedChildId && (
                 <p className="text-xs text-neutral-500 mt-2">
-                  💡 Selecting a child will provide age-appropriate developmental insights!
+                  Selecting a child will provide age-appropriate developmental insights.
                 </p>
               )}
             </div>
@@ -359,27 +348,27 @@ The more detail you share, the better AI feedback you'll receive! 🤖"
                 ) : (
                   <Sparkles className="mr-2 h-4 w-4" />
                 )}
-                💡 Save & Get AI Feedback
+                Save & Get AI Feedback
               </Button>
               <Button
                 type="button"
                 onClick={() => onSubmit(form.getValues(), false)}
                 disabled={createEntryMutation.isPending || !form.getValues().content?.trim()}
-                variant="secondary"
-                className="sm:w-auto bg-neutral-600 text-white hover:bg-neutral-700"
+                variant="outline"
+                className="sm:w-auto"
               >
                 <Save className="mr-2 h-4 w-4" />
-                💾 Save Only
+                Save Only
               </Button>
             </div>
           </form>
         </Form>
 
         {isSubmittingWithAI && (
-          <div className="mt-6 p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+          <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
             <div className="flex items-center">
               <Loader2 className="animate-spin h-5 w-5 text-primary mr-3" />
-              <span className="text-neutral-600">🤖 Getting AI insights for your entry... This usually takes just a few seconds!</span>
+              <span className="text-neutral-700">Getting AI insights for your entry...</span>
             </div>
           </div>
         )}

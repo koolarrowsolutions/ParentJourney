@@ -127,6 +127,24 @@ export default function JournalHistory() {
               </Badge>
             )}
           </div>
+          
+          {/* Emotion Tags */}
+          {entry.emotionTags && entry.emotionTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {entry.emotionTags.map((emotion) => (
+                <Badge
+                  key={emotion}
+                  variant="secondary"
+                  className="text-xs bg-primary/10 text-primary border-primary/20"
+                >
+                  {emotion.charAt(0).toUpperCase() + emotion.slice(1)}
+                </Badge>
+              ))}
+            </div>
+          )}
+          
+          <div className="flex justify-between items-start">{/* Restore div structure */}
+          </div>
           {entry.title && (
             <CardTitle className="text-lg text-neutral-800 mt-2">
               {entry.title}

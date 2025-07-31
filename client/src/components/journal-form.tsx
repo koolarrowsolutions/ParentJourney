@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +23,17 @@ const MOODS = [
   { emoji: "🤔", label: "Thoughtful", value: "🤔" },
   { emoji: "😅", label: "Overwhelmed", value: "😅" },
   { emoji: "🥰", label: "Grateful", value: "🥰" },
+];
+
+const EMOTIONS = [
+  { label: "Happy", value: "happy", color: "bg-yellow-100 border-yellow-300 text-yellow-800" },
+  { label: "Calm", value: "calm", color: "bg-blue-100 border-blue-300 text-blue-800" },
+  { label: "Frustrated", value: "frustrated", color: "bg-red-100 border-red-300 text-red-800" },
+  { label: "Guilty", value: "guilty", color: "bg-purple-100 border-purple-300 text-purple-800" },
+  { label: "Overwhelmed", value: "overwhelmed", color: "bg-orange-100 border-orange-300 text-orange-800" },
+  { label: "Proud", value: "proud", color: "bg-green-100 border-green-300 text-green-800" },
+  { label: "Tired", value: "tired", color: "bg-gray-100 border-gray-300 text-gray-800" },
+  { label: "Grateful", value: "grateful", color: "bg-pink-100 border-pink-300 text-pink-800" },
 ];
 
 interface AiFeedbackDisplayProps {
@@ -134,6 +146,7 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
 
 export function JournalForm() {
   const [selectedMood, setSelectedMood] = useState<string>("");
+  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
   const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const [isSubmittingWithAI, setIsSubmittingWithAI] = useState(false);
   const [aiFeedback, setAiFeedback] = useState<string>("");
@@ -158,6 +171,7 @@ export function JournalForm() {
       title: "",
       content: "",
       mood: "",
+      emotionTags: [],
       childProfileId: "",
       hasAiFeedback: "false",
       aiFeedback: null,
@@ -188,14 +202,13 @@ export function JournalForm() {
         title: "Entry saved!",
         description: data.aiFeedback 
           ? "Your AI parenting coach has provided insights below."
-          : requestAiFeedback 
-            ? "Generating AI coaching insights..." 
-            : "Your journal entry has been saved.",
+          : "Your journal entry has been saved.",
       });
       
       // Reset form
       form.reset();
       setSelectedMood("");
+      setSelectedEmotions([]);
       setSelectedChildIds([]);
       setIsSubmittingWithAI(false);
       setShowAiFeedback(false);
@@ -228,6 +241,7 @@ export function JournalForm() {
     const submissionData = {
       ...data,
       mood: selectedMood || null,
+      emotionTags: selectedEmotions.length > 0 ? selectedEmotions : null,
       childProfileId: data.childProfileId || null,
       requestAiFeedback,
       photos: photos.length > 0 ? photos : null,
@@ -249,6 +263,20 @@ export function JournalForm() {
   });
 
   const contentLength = form.watch("content")?.length || 0;
+
+  const toggleEmotion = (emotion: string) => {
+    setSelectedEmotions(prev => {
+      if (prev.includes(emotion)) {
+        return prev.filter(e => e !== emotion);
+      } else {
+        return [...prev, emotion];
+      }
+    });
+  };
+
+  const selectedChildProfile = childProfiles?.find(profile => 
+    profile.id === form.watch("childProfileId")
+  );
 
   return (
     <Card className="shadow-sm border border-neutral-200 hover-lift animate-fade-in">
@@ -282,6 +310,48 @@ export function JournalForm() {
                 {mood.emoji} {mood.label}
               </button>
             ))}
+          </div>
+          
+          {/* Emotion Tags Selection */}
+          <div className="mb-6">
+            <label className="text-sm font-medium text-neutral-700 block mb-3">
+              What emotions are you feeling? <span className="text-neutral-400">(optional)</span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {EMOTIONS.map((emotion) => (
+                <Button
+                  key={emotion.value}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleEmotion(emotion.value)}
+                  className={`text-xs transition-all duration-200 hover-scale ${
+                    selectedEmotions.includes(emotion.value)
+                      ? `${emotion.color} border-2 animate-bounce-subtle`
+                      : "border-neutral-200 hover:border-neutral-300"
+                  }`}
+                >
+                  {emotion.label}
+                </Button>
+              ))}
+            </div>
+            {selectedEmotions.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                <span className="text-xs text-neutral-500">Selected:</span>
+                {selectedEmotions.map((emotion) => {
+                  const emotionData = EMOTIONS.find(e => e.value === emotion);
+                  return (
+                    <Badge
+                      key={emotion}
+                      variant="secondary"
+                      className={`text-xs ${emotionData?.color || ''}`}
+                    >
+                      {emotionData?.label || emotion}
+                    </Badge>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 

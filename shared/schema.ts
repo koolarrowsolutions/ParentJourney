@@ -20,6 +20,7 @@ export const journalEntries = pgTable("journal_entries", {
   title: text("title"),
   content: text("content").notNull(),
   mood: text("mood"),
+  emotionTags: text("emotion_tags").array(),
   childProfileId: varchar("child_profile_id").references(() => childProfiles.id),
   aiFeedback: text("ai_feedback"),
   developmentalInsight: text("developmental_insight"),

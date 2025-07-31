@@ -200,31 +200,47 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setActiveBreathingExercise(null);
   };
 
-  // Guided video affirmations from YouTube (under 2 minutes)
-  const guidedVideos = [
+  // Instead of embedding external videos with uncertain availability,
+  // we'll provide text-based guided content that users can follow
+  const guidedVideoContent = [
     {
-      id: 'morning-affirmations',
-      title: 'Morning Parenting Affirmations',
-      duration: '1:45',
-      description: 'Start your day with positive parenting mindset',
-      videoId: 'SfLV8hD7zX4', // Actual 1:45 parenting affirmations video
-      embedUrl: 'https://www.youtube.com/embed/SfLV8hD7zX4'
+      id: 'morning-practice',
+      title: 'Morning Mindful Parenting Practice',
+      duration: '2 min',
+      description: 'Start your day with intention and calm energy',
+      steps: [
+        "Take three deep breaths and place your hand on your heart",
+        "Say: 'I am patient, loving, and capable as a parent today'",
+        "Visualize your child's smile and feel gratitude for this relationship",
+        "Set an intention: 'I will respond with kindness when challenges arise'",
+        "Take one more deep breath and carry this calm energy into your day"
+      ]
     },
     {
-      id: 'stress-relief',
-      title: 'Quick Stress Relief for Parents',
-      duration: '1:30',
-      description: 'Immediate calm when parenting gets overwhelming',
-      videoId: 'ZToicYcHIOU', // Actual 1:30 quick stress relief video
-      embedUrl: 'https://www.youtube.com/embed/ZToicYcHIOU'
+      id: 'stress-reset',
+      title: 'Quick Stress Reset for Overwhelming Moments',
+      duration: '90 sec',
+      description: 'Immediate calm when parenting feels too much',
+      steps: [
+        "Stop what you're doing and take 5 slow, deep breaths",
+        "Remind yourself: 'This moment is temporary, I am doing my best'",
+        "Soften your shoulders and release tension in your jaw",
+        "Say: 'My child needs my calm presence more than my perfection'",
+        "Ground yourself by feeling your feet on the floor, then continue"
+      ]
     },
     {
-      id: 'bedtime-peace',
-      title: 'Peaceful End-of-Day Affirmations',
-      duration: '1:20',
-      description: 'Release the day and find peace as a parent',
-      videoId: 'x7zGiRUxxxI', // Actual 1:20 bedtime affirmations video
-      embedUrl: 'https://www.youtube.com/embed/x7zGiRUxxxI'
+      id: 'evening-reflection',
+      title: 'Evening Gratitude and Release',
+      duration: '2 min',
+      description: 'End your parenting day with peace and self-compassion',
+      steps: [
+        "Reflect on one moment today when you felt connected to your child",
+        "Acknowledge: 'I showed up for my family today, even when it was hard'",
+        "Release any guilt: 'Tomorrow is a fresh start to try again'",
+        "Feel gratitude for your child's unique spirit and your growing bond",
+        "Rest knowing you are enough, exactly as you are"
+      ]
     }
   ];
 
@@ -827,39 +843,65 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
             <TabsContent value="guided-videos" className="space-y-4">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-medium text-sky-800 mb-2">Guided Video Affirmations</h3>
+                <h3 className="text-lg font-medium text-sky-800 mb-2">Guided Mindful Practices</h3>
                 <p className="text-sky-700">
-                  Short, powerful video affirmations designed specifically for parents. Each video is under 2 minutes.
+                  Step-by-step mindfulness practices designed specifically for parents. Follow along at your own pace.
                 </p>
               </div>
               
               <div className="grid gap-4">
-                {guidedVideos.map((video) => (
-                  <Card key={video.id} className="p-4 border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50">
-                    <div className="space-y-3">
+                {guidedVideoContent.map((practice) => (
+                  <Card key={practice.id} className="p-4 border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50">
+                    <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-sky-800">{video.title}</h4>
-                          <p className="text-sm text-sky-600">{video.description}</p>
+                          <h4 className="font-medium text-sky-800">{practice.title}</h4>
+                          <p className="text-sm text-sky-600">{practice.description}</p>
                         </div>
-                        <Badge variant="outline" className="border-sky-300 text-sky-700">
-                          {video.duration}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="border-sky-300 text-sky-700">
+                            {practice.duration}
+                          </Badge>
+                          <Button
+                            onClick={() => startGuidedAudio(practice.steps)}
+                            variant={isPlaying ? "destructive" : "default"}
+                            size="sm"
+                            className={isPlaying 
+                              ? "bg-red-500 hover:bg-red-600 text-white" 
+                              : "bg-sky-600 hover:bg-sky-700 text-white"
+                            }
+                          >
+                            {isPlaying ? (
+                              <>
+                                <Square className="h-3 w-3 mr-1" />
+                                Stop
+                              </>
+                            ) : (
+                              <>
+                                <Play className="h-3 w-3 mr-1" />
+                                Listen
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                       
-                      <div className="relative w-full h-48 bg-slate-100 rounded-lg overflow-hidden">
-                        <iframe
-                          src={video.embedUrl}
-                          title={video.title}
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="w-full h-full"
-                        ></iframe>
+                      <div className="bg-white/60 rounded-lg p-4 space-y-3">
+                        <h5 className="text-sm font-medium text-sky-800 mb-2">Practice Steps:</h5>
+                        <div className="space-y-2">
+                          {practice.steps.map((step, index) => (
+                            <div key={index} className="flex items-start gap-3">
+                              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-sky-200 text-sky-700 text-xs font-medium flex items-center justify-center mt-0.5">
+                                {index + 1}
+                              </div>
+                              <p className="text-sm text-sky-700 leading-relaxed">{step}</p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                       
                       <div className="text-xs text-sky-600 bg-sky-50 p-2 rounded">
-                        💡 Tip: Use headphones for the best experience. These videos combine visual cues with calming affirmations.
+                        💡 Tip: Read through the steps first, then use the "Listen" button to have them read aloud with calming background sounds.
                       </div>
                     </div>
                   </Card>
@@ -867,7 +909,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
               </div>
               
               <div className="text-center text-sm text-sky-600 bg-sky-50 p-3 rounded">
-                <p>Can't see the videos? Try refreshing the page or check your internet connection.</p>
+                <p>These practices are designed to fit into your busy parenting schedule. Even 90 seconds can make a difference.</p>
               </div>
             </TabsContent>
           </Tabs>

@@ -304,6 +304,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                 </div>
               </div>
             )}
+            </div>
           </CardContent>
         </Card>
 

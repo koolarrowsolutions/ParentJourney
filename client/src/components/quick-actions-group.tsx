@@ -69,6 +69,9 @@ export function QuickActionsGroup({ selectedMood, triggerSignUpPrompt }: QuickAc
             <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Quick Daily Reflection</DialogTitle>
+                <DialogDescription>
+                  Take a moment to reflect on your parenting experiences today.
+                </DialogDescription>
               </DialogHeader>
               <DailyReflection />
             </DialogContent>

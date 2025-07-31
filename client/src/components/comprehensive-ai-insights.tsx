@@ -234,56 +234,95 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
         </div>
       </div>
 
-      {/* Analysis Dialog */}
-      <Dialog open={!!selectedInsight} onOpenChange={() => setSelectedInsight(null)}>
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto relative bg-white border shadow-lg p-6">
-          <button
-            onClick={() => setSelectedInsight(null)}
-            className="absolute top-4 right-4 z-50 p-2 hover:bg-neutral-100 rounded-full transition-colors"
-            aria-label="Close dialog"
+      {/* Simplified Modal - Fixed Position Overlay */}
+      {selectedInsight && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={() => setSelectedInsight(null)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto relative"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              maxWidth: '672px',
+              width: '100%',
+              margin: '0 16px',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              position: 'relative',
+              padding: '24px'
+            }}
           >
-            <X className="h-4 w-4 text-neutral-500 hover:text-neutral-700" />
-          </button>
-          <DialogHeader className="pr-12 pb-4">
-            <DialogTitle className="flex items-center gap-2 text-lg font-bold text-neutral-900">
-              <Brain className="h-5 w-5 text-primary" />
-              {insights.find(i => i.id === selectedInsight)?.title}
-            </DialogTitle>
-            <DialogDescription>
-              {insights.find(i => i.id === selectedInsight)?.description}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="text-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-                  <p className="text-neutral-600">Analyzing your parenting journey...</p>
-                  <p className="text-sm text-neutral-500 mt-2">
-                    This comprehensive analysis considers your journal entries, child profiles, and parenting patterns
-                  </p>
+            <button
+              onClick={() => setSelectedInsight(null)}
+              className="absolute top-4 right-4 z-50 p-2 hover:bg-neutral-100 rounded-full transition-colors"
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                zIndex: 50,
+                padding: '8px',
+                borderRadius: '50%',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer'
+              }}
+            >
+              <X className="h-4 w-4 text-neutral-500 hover:text-neutral-700" />
+            </button>
+            
+            <div className="pr-12 pb-4" style={{paddingRight: '48px', paddingBottom: '16px'}}>
+              <h2 className="flex items-center gap-2 text-lg font-bold text-neutral-900" style={{fontSize: '18px', fontWeight: 'bold', color: '#171717', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                <Brain className="h-5 w-5 text-primary" />
+                {insights.find(i => i.id === selectedInsight)?.title}
+              </h2>
+              <p className="text-sm text-neutral-600 mt-2" style={{fontSize: '14px', color: '#525252', marginTop: '8px'}}>
+                {insights.find(i => i.id === selectedInsight)?.description}
+              </p>
+            </div>
+            
+            <div className="space-y-4" style={{marginTop: '16px'}}>
+              {isLoading ? (
+                <div className="flex items-center justify-center py-8" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 0'}}>
+                  <div className="text-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+                    <p className="text-neutral-600">Analyzing your parenting journey...</p>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {selectedInsight === "parenting-progress" && (
-                  <ParentingProgressAnalysis data={analysisData} />
-                )}
-                {selectedInsight === "child-development" && (
-                  <ChildDevelopmentAnalysis data={analysisData} />
-                )}
-                {selectedInsight === "personalized-tips" && (
-                  <PersonalizedTipsAnalysis data={analysisData} />
-                )}
-                {selectedInsight === "considerations" && (
-                  <ConsiderationsAnalysis data={analysisData} />
-                )}
-              </div>
-            )}
+              ) : (
+                <div>
+                  {selectedInsight === "parenting-progress" && (
+                    <ParentingProgressAnalysis data={analysisData} />
+                  )}
+                  {selectedInsight === "child-development" && (
+                    <ChildDevelopmentAnalysis data={analysisData} />
+                  )}
+                  {selectedInsight === "personalized-tips" && (
+                    <PersonalizedTipsAnalysis data={analysisData} />
+                  )}
+                  {selectedInsight === "considerations" && (
+                    <ConsiderationsAnalysis data={analysisData} />
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </>
   );
 }

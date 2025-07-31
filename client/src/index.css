@@ -456,15 +456,68 @@
     width: 95vw !important;
     max-width: 95vw !important;
     margin: 0 auto;
+    padding: 1rem !important;
   }
   
-  /* Breathing exercise adjustments */
-  .calm-reset-modal {
+  /* Button adjustments */
+  .btn-mobile {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Card adjustments */
+  .card-mobile {
     padding: 1rem;
+    border-radius: 0.75rem;
   }
   
-  .breathing-circle {
-    transform: scale(0.9);
+  /* Text scaling */
+  .text-responsive-lg {
+    font-size: 1rem;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.125rem;
+  }
+  
+  .text-responsive-2xl {
+    font-size: 1.25rem;
+  }
+  
+  /* Input fields */
+  .input-mobile {
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  /* Grid adjustments */
+  .grid-mobile-1 {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  
+  .grid-mobile-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small mobile (portrait phones) */
+@media (max-width: 480px) {
+  [data-radix-dialog-content] {
+    width: 98vw !important;
+    max-width: 98vw !important;
+    padding: 0.75rem !important;
+  }
+  
+  .text-responsive-lg {
+    font-size: 0.875rem;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1rem;
+  }
+  
+  .text-responsive-2xl {
+    font-size: 1.125rem;
   }
 }
 

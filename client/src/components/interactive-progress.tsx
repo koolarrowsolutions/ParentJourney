@@ -30,24 +30,24 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
   const progressToNextMilestone = ((totalEntries % 5) / 5) * 100;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Top row - 3 metrics */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {/* Total Entries */}
-        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 animate-pop-in stagger-1">
+        <div className="bg-primary/5 rounded-lg p-3 sm:p-4 text-center border border-primary/20 animate-pop-in stagger-1">
           <div className="relative">
-          <div className={`text-2xl font-bold text-primary transition-all duration-700 ${
+          <div className={`text-xl sm:text-2xl font-bold text-primary transition-all duration-700 ${
             animateNumbers ? 'scale-110 animate-pulse-glow' : 'scale-100'
           }`}>
             {totalEntries || 0}
           </div>
           {showMilestone && totalEntries % 5 === 0 && totalEntries > 0 && (
-            <div className="absolute -top-2 -right-2 animate-bounce-subtle">
-              <Star className="h-4 w-4 text-yellow-500 fill-current" />
+            <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 animate-bounce-subtle">
+              <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 fill-current" />
             </div>
           )}
         </div>
-        <span className="text-sm text-neutral-600 block mt-1">Total Entries</span>
+        <span className="text-xs sm:text-sm text-neutral-600 block mt-1">Total Entries</span>
         
         {/* Progress bar for next milestone */}
         {totalEntries > 0 && (
@@ -66,20 +66,20 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
           </div>
 
         {/* This Week */}
-        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 animate-bounce-in stagger-2">
+        <div className="bg-primary/5 rounded-lg p-3 sm:p-4 text-center border border-primary/20 animate-bounce-in stagger-2">
           <div className="relative">
-          <div className={`text-2xl font-bold text-primary transition-all duration-700 ${
+          <div className={`text-xl sm:text-2xl font-bold text-primary transition-all duration-700 ${
             animateNumbers ? 'scale-110' : 'scale-100'
           }`}>
             {weekEntries || 0}
           </div>
           {weekEntries >= 5 && (
-            <div className="absolute -top-2 -right-2 animate-gentle-bounce">
-              <Zap className="h-4 w-4 text-orange-500 fill-current" />
+            <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 animate-gentle-bounce">
+              <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500 fill-current" />
             </div>
           )}
         </div>
-        <span className="text-sm text-neutral-600 block mt-1">This Week</span>
+        <span className="text-xs sm:text-sm text-neutral-600 block mt-1">This Week</span>
         
         {/* Week progress indicator */}
         <div className="mt-2 flex justify-center space-x-1">
@@ -98,20 +98,20 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
           </div>
 
         {/* Streak */}
-        <div className="bg-primary/5 rounded-lg p-4 text-center border border-primary/20 animate-pop-fade stagger-3">
+        <div className="bg-primary/5 rounded-lg p-3 sm:p-4 text-center border border-primary/20 animate-pop-fade stagger-3">
           <div className="relative">
-          <div className={`text-2xl font-bold text-primary transition-all duration-700 ${
+          <div className={`text-xl sm:text-2xl font-bold text-primary transition-all duration-700 ${
             animateNumbers ? 'scale-110' : 'scale-100'
           }`}>
             {longestStreak || 0}
           </div>
           {showMilestone && longestStreak >= 7 && (
-            <div className="absolute -top-2 -right-2 animate-bounce-subtle">
-              <Check className="h-4 w-4 text-green-500 fill-current" />
+            <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 animate-bounce-subtle">
+              <Check className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 fill-current" />
             </div>
           )}
         </div>
-        <span className="text-sm text-neutral-600 block mt-1">Day Streak</span>
+        <span className="text-xs sm:text-sm text-neutral-600 block mt-1">Day Streak</span>
         
         {/* Streak status */}
         <div className="mt-2">
@@ -130,13 +130,13 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
 
       {/* Mood Analytics - Full width button below */}
       <div 
-        className="bg-secondary/5 rounded-lg p-4 text-center border border-secondary/20 interactive-card hover-lift button-press animate-bounce-in stagger-4 cursor-pointer hover:border-secondary hover:bg-secondary/10 hover:shadow-md transition-all duration-200"
+        className="bg-secondary/5 rounded-lg p-3 sm:p-4 text-center border border-secondary/20 interactive-card hover-lift button-press animate-bounce-in stagger-4 cursor-pointer hover:border-secondary hover:bg-secondary/10 hover:shadow-md transition-all duration-200"
         onClick={onMoodAnalyticsClick}
       >
-        <div className="flex items-center justify-center space-x-3">
-          <BarChart3 className="h-7 w-7 text-secondary" />
-          <div className="text-lg font-semibold text-secondary">Mood Analytics</div>
-          <span className="text-sm text-neutral-700 font-medium">View emotional patterns and insights</span>
+        <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3">
+          <BarChart3 className="h-6 w-6 sm:h-7 sm:w-7 text-secondary" />
+          <div className="text-base sm:text-lg font-semibold text-secondary">Mood Analytics</div>
+          <span className="text-xs sm:text-sm text-neutral-700 font-medium hidden sm:block">View emotional patterns and insights</span>
         </div>
       </div>
 

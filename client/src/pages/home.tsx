@@ -73,22 +73,22 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-2xl border border-primary/20 shadow-lg p-6 mb-6">
-            <h2 className="text-2xl font-semibold text-neutral-800 mb-2">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-2">
               Welcome back to your parenting journey
             </h2>
-            <p className="text-neutral-600 mb-4">{getDailyGreeting()}</p>
+            <p className="text-sm sm:text-base text-neutral-600 mb-3 sm:mb-4">{getDailyGreeting()}</p>
             {isLoading ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
-                  <Skeleton className="h-16 rounded-lg animate-shimmer" />
-                  <Skeleton className="h-16 rounded-lg animate-shimmer" />
-                  <Skeleton className="h-16 rounded-lg animate-shimmer" />
+              <div className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                  <Skeleton className="h-12 sm:h-16 rounded-lg animate-shimmer" />
+                  <Skeleton className="h-12 sm:h-16 rounded-lg animate-shimmer" />
+                  <Skeleton className="h-12 sm:h-16 rounded-lg animate-shimmer" />
                 </div>
-                <Skeleton className="h-12 rounded-lg animate-shimmer" />
+                <Skeleton className="h-10 sm:h-12 rounded-lg animate-shimmer" />
               </div>
             ) : (
               <InteractiveProgress 
@@ -103,14 +103,14 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
         {/* Mood Analytics Results - Shows between welcome and AI insights */}
         {showMoodAnalytics && (
-          <div className="mb-6">
-            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 animate-slide-in-down">
-              <h3 className="text-lg font-semibold text-neutral-800 mb-4">Mood Analytics</h3>
-              <p className="text-neutral-600 text-sm mb-4">
+          <div className="mb-4 sm:mb-6">
+            <div className="bg-white rounded-xl sm:rounded-2xl border border-neutral-200 shadow-sm p-4 sm:p-6 animate-slide-in-down">
+              <h3 className="text-base sm:text-lg font-semibold text-neutral-800 mb-3 sm:mb-4">Mood Analytics</h3>
+              <p className="text-neutral-600 text-xs sm:text-sm mb-3 sm:mb-4">
                 Your emotional patterns and insights from journal entries.
               </p>
-              <div className="bg-neutral-50 rounded-lg p-4 text-center">
-                <p className="text-neutral-500 text-sm">
+              <div className="bg-neutral-50 rounded-lg p-3 sm:p-4 text-center">
+                <p className="text-neutral-500 text-xs sm:text-sm">
                   Add more journal entries to see detailed mood analytics and patterns.
                 </p>
               </div>
@@ -119,7 +119,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         )}
 
         {/* AI Insights Section */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <ComprehensiveAIInsights />
         </div>
 

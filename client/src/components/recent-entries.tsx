@@ -54,9 +54,9 @@ export function RecentEntries() {
 
   return (
     <Card className="shadow-sm border border-neutral-200">
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h3 className="text-lg sm:text-xl font-semibold text-neutral-800 flex items-center">
+      <CardContent className="p-3 sm:p-4 md:p-6">
+        <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
+          <h3 className="text-base sm:text-lg md:text-xl font-semibold text-neutral-800 flex items-center">
             <History className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
             <span className="hidden sm:inline">📖 {searchQuery ? 'Search Results' : 'Recent Entries'}</span>
             <span className="sm:hidden">📖 {searchQuery ? 'Search' : 'Recent'}</span>
@@ -64,10 +64,12 @@ export function RecentEntries() {
           {!searchQuery && (
             <Button 
               variant="link" 
-              className="text-primary hover:text-primary/80 text-sm font-medium p-0"
+              className="text-primary hover:text-primary/80 text-xs sm:text-sm font-medium p-0"
               onClick={() => setLocation('/journal-history')}
             >
-              View All <ArrowRight className="ml-1 h-4 w-4" />
+              <span className="hidden sm:inline">View All</span>
+              <span className="sm:hidden">All</span>
+              <ArrowRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           )}
         </div>

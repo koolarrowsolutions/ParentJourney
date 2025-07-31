@@ -12,7 +12,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { journalEntryWithAiSchema, type JournalEntryWithAi, type ChildProfile } from "@shared/schema";
-import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap } from "lucide-react";
+import { getRandomPrompt, getDailyGreeting } from "@shared/prompts";
+import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap, RefreshCw } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { PhotoUpload } from "./photo-upload";
 
@@ -153,6 +154,8 @@ export function JournalForm() {
   const [developmentalInsight, setDevelopmentalInsight] = useState<string>("");
   const [showAiFeedback, setShowAiFeedback] = useState(false);
   const [photos, setPhotos] = useState<string[]>([]);
+  const [currentPrompt, setCurrentPrompt] = useState<string>(() => getRandomPrompt());
+  const [dailyGreeting] = useState<string>(() => getDailyGreeting());
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -291,8 +294,35 @@ export function JournalForm() {
             </h3>
           </div>
           <p className="text-neutral-600 mb-4">
-            Share your parenting moment and get personalized insights.
+            {dailyGreeting}
           </p>
+          
+          {/* Daily Prompt Inspiration */}
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h4 className="text-sm font-medium text-blue-800 mb-2 flex items-center">
+                  <Lightbulb className="h-4 w-4 mr-2" />
+                  Today's Writing Prompt
+                </h4>
+                <p className="text-blue-700 text-sm leading-relaxed mb-3">
+                  {currentPrompt}
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentPrompt(getRandomPrompt())}
+                className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 ml-2 flex-shrink-0"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-blue-600">
+              Need inspiration? Use this prompt or write about anything on your mind.
+            </p>
+          </div>
           
           {/* Mood Selection - Moved to top */}
           <div className="flex flex-wrap justify-center gap-2 mb-6">

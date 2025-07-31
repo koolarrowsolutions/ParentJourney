@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/sidebar";
 import { QuickTemplates } from "@/components/quick-templates";
 import { InteractiveProgress } from "@/components/interactive-progress";
 import { ChildEntryOverview } from "@/components/child-entry-overview";
+import { getDailyGreeting } from "@shared/prompts";
 import type { ChildProfile } from "@shared/schema";
 
 interface JournalStats {
@@ -46,7 +47,7 @@ export default function Home() {
             <h2 className="text-2xl font-semibold text-neutral-800 mb-2">
               Welcome back to your parenting journey
             </h2>
-            <p className="text-neutral-600 mb-4">How has your day been?</p>
+            <p className="text-neutral-600 mb-4">{getDailyGreeting()}</p>
             {isLoading ? (
               <div className="grid grid-cols-3 gap-4">
                 <Skeleton className="h-16 rounded-lg animate-shimmer" />

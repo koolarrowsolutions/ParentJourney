@@ -7,6 +7,7 @@ ParentJourney is a comprehensive full-stack web application designed as a digita
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Supportive messaging: Warm, encouraging greetings with emojis and affirming language that validates parenting efforts.
 
 ## System Architecture
 

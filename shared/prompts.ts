@@ -22,6 +22,11 @@ export const journalPrompts = [
 ];
 
 export const supportiveGreetings = [
+  "You're doing better than you think 💛",
+  "Every day counts — even the hard ones 🌿",
+  "Your reflections matter. You matter.",
+  "Thanks for showing up today. Let's reflect together.",
+  "Parenting isn't perfect — but your effort is powerful.",
   "You're doing an amazing job. What's on your heart today?",
   "Every parent needs a safe space to reflect. How are you feeling?",
   "Your thoughts and experiences matter. What would you like to share?",
@@ -31,7 +36,6 @@ export const supportiveGreetings = [
   "Your parenting story is unique and valuable. What chapter are you living?",
   "This is your space to be honest and real. What's in your heart?",
   "Every day brings new lessons in parenting. What did today teach you?",
-  "You're doing better than you think. What's weighing on you or lifting you up?",
   "Your feelings and experiences are valid. What would you like to process?",
   "Parenting moments, big and small, all matter. What's yours today?",
   "This is a judgment-free space for your thoughts. What's happening?",

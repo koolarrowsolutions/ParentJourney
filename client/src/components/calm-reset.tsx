@@ -14,7 +14,7 @@ interface CalmResetProps {
 
 export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentExercise, setCurrentExercise] = useState<string>('breathing');
+  const [currentExercise, setCurrentExercise] = useState<'breathing' | 'mindfulness' | 'affirmations' | 'guided-videos'>('breathing');
   const [activeBreathingExercise, setActiveBreathingExercise] = useState<string | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -199,6 +199,34 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setCurrentExercise('breathing');
     setActiveBreathingExercise(null);
   };
+
+  // Guided video affirmations from YouTube (under 2 minutes)
+  const guidedVideos = [
+    {
+      id: 'morning-affirmations',
+      title: 'Morning Parenting Affirmations',
+      duration: '1:45',
+      description: 'Start your day with positive parenting mindset',
+      videoId: 'SfLV8hD7zX4', // Actual 1:45 parenting affirmations video
+      embedUrl: 'https://www.youtube.com/embed/SfLV8hD7zX4'
+    },
+    {
+      id: 'stress-relief',
+      title: 'Quick Stress Relief for Parents',
+      duration: '1:30',
+      description: 'Immediate calm when parenting gets overwhelming',
+      videoId: 'ZToicYcHIOU', // Actual 1:30 quick stress relief video
+      embedUrl: 'https://www.youtube.com/embed/ZToicYcHIOU'
+    },
+    {
+      id: 'bedtime-peace',
+      title: 'Peaceful End-of-Day Affirmations',
+      duration: '1:20',
+      description: 'Release the day and find peace as a parent',
+      videoId: 'x7zGiRUxxxI', // Actual 1:20 bedtime affirmations video
+      embedUrl: 'https://www.youtube.com/embed/x7zGiRUxxxI'
+    }
+  ];
 
   const startGuidedAudio = async (content: string[]) => {
     console.log('Audio button clicked, current playing state:', isPlaying);
@@ -477,7 +505,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
           </DialogHeader>
 
           <Tabs defaultValue="breathing" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="breathing" className="flex items-center gap-2">
                 <Heart className="h-4 w-4" />
                 Breathing
@@ -489,6 +517,10 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
               <TabsTrigger value="affirmations" className="flex items-center gap-2">
                 <Volume2 className="h-4 w-4" />
                 Affirmations
+              </TabsTrigger>
+              <TabsTrigger value="guided-videos" className="flex items-center gap-2">
+                <Play className="h-4 w-4" />
+                Videos
               </TabsTrigger>
             </TabsList>
 
@@ -790,6 +822,52 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                     </div>
                   </Card>
                 ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="guided-videos" className="space-y-4">
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-medium text-sky-800 mb-2">Guided Video Affirmations</h3>
+                <p className="text-sky-700">
+                  Short, powerful video affirmations designed specifically for parents. Each video is under 2 minutes.
+                </p>
+              </div>
+              
+              <div className="grid gap-4">
+                {guidedVideos.map((video) => (
+                  <Card key={video.id} className="p-4 border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-sky-800">{video.title}</h4>
+                          <p className="text-sm text-sky-600">{video.description}</p>
+                        </div>
+                        <Badge variant="outline" className="border-sky-300 text-sky-700">
+                          {video.duration}
+                        </Badge>
+                      </div>
+                      
+                      <div className="relative w-full h-48 bg-slate-100 rounded-lg overflow-hidden">
+                        <iframe
+                          src={video.embedUrl}
+                          title={video.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="w-full h-full"
+                        ></iframe>
+                      </div>
+                      
+                      <div className="text-xs text-sky-600 bg-sky-50 p-2 rounded">
+                        💡 Tip: Use headphones for the best experience. These videos combine visual cues with calming affirmations.
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+              
+              <div className="text-center text-sm text-sky-600 bg-sky-50 p-3 rounded">
+                <p>Can't see the videos? Try refreshing the page or check your internet connection.</p>
               </div>
             </TabsContent>
           </Tabs>

@@ -40,7 +40,6 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
     defaultValues: {
       name: editProfile?.name || "",
       dateOfBirth: editProfile?.dateOfBirth || "",
-      pronouns: editProfile?.pronouns || "",
       gender: editProfile?.gender || "",
       developmentalStage: editProfile?.developmentalStage || "",
       notes: editProfile?.notes || "",
@@ -254,64 +253,31 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
           )}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="pronouns"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium text-neutral-700">
-                  🗣️ Pronouns <span className="text-neutral-400">(optional)</span>
-                </FormLabel>
+        <FormField
+          control={form.control}
+          name="gender"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium text-neutral-700">
+                ⚤ Gender <span className="text-neutral-400">(optional)</span>
+              </FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
                 <FormControl>
-                  <div className="relative">
-                    <Input 
-                      placeholder="e.g., they/them, she/her, he/him" 
-                      className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent pr-12"
-                      {...field} 
-                      value={field.value || ""} 
-                    />
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                      <VoiceInputButton
-                        onTranscript={(text) => {
-                          const currentValue = field.value || '';
-                          field.onChange(currentValue + (currentValue ? ' ' : '') + text);
-                        }}
-                      />
-                    </div>
-                  </div>
+                  <SelectTrigger className="border-neutral-200 focus:ring-2 focus:ring-primary">
+                    <SelectValue placeholder="Select gender..." />
+                  </SelectTrigger>
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="gender"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium text-neutral-700">
-                  ⚤ Gender <span className="text-neutral-400">(optional)</span>
-                </FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
-                  <FormControl>
-                    <SelectTrigger className="border-neutral-200 focus:ring-2 focus:ring-primary">
-                      <SelectValue placeholder="Select gender..." />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="male">👦 Boy</SelectItem>
-                    <SelectItem value="female">👧 Girl</SelectItem>
-                    <SelectItem value="other">🌈 Other</SelectItem>
-                    <SelectItem value="not_specified">Prefer not to say</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+                <SelectContent>
+                  <SelectItem value="male">👦 Boy</SelectItem>
+                  <SelectItem value="female">👧 Girl</SelectItem>
+                  <SelectItem value="other">🌈 Other</SelectItem>
+                  <SelectItem value="not_specified">Prefer not to say</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

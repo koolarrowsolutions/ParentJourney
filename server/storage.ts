@@ -298,7 +298,6 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const profile: ChildProfile = {
       ...insertProfile,
-      pronouns: insertProfile.pronouns ?? null,
       gender: insertProfile.gender ?? null,
       developmentalStage: insertProfile.developmentalStage ?? null,
       notes: insertProfile.notes ?? null,
@@ -338,7 +337,6 @@ export class MemStorage implements IStorage {
     const profile: ParentProfile = {
       ...insertProfile,
       age: insertProfile.age ?? null,
-      pronouns: insertProfile.pronouns ?? null,
       parentingStyle: insertProfile.parentingStyle ?? null,
       parentingPhilosophy: insertProfile.parentingPhilosophy ?? null,
       personalityTraits: insertProfile.personalityTraits ?? null,

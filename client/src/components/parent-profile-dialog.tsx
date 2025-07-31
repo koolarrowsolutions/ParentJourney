@@ -34,7 +34,6 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
     defaultValues: {
       name: existingProfile?.name || "",
       age: existingProfile?.age || "",
-      pronouns: existingProfile?.pronouns || "",
       parentingStyle: existingProfile?.parentingStyle || "",
       parentingPhilosophy: existingProfile?.parentingPhilosophy || "",
       personalityTraits: existingProfile?.personalityTraits || [],
@@ -178,49 +177,35 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="pronouns"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pronouns (Optional)</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g., she/her, he/him, they/them" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="parentingStyle"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Parenting Style</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your parenting style" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {PARENTING_STYLES.map((style) => (
-                          <SelectItem key={style.value} value={style.value}>
-                            <div>
-                              <div className="font-medium">{style.label}</div>
-                              <div className="text-xs text-neutral-500">{style.description}</div>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
+
+            <FormField
+              control={form.control}
+              name="parentingStyle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Parenting Style</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your parenting style" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {PARENTING_STYLES.map((style) => (
+                        <SelectItem key={style.value} value={style.value}>
+                          <div>
+                            <div className="font-medium">{style.label}</div>
+                            <div className="text-xs text-neutral-500">{style.description}</div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 

@@ -30,13 +30,24 @@ export function useAuthOnboarding() {
     retry: false,
   });
 
-  // Check localStorage for onboarding state
+  // Check for OAuth authentication
+  const { data: authUser } = useQuery({
+    queryKey: ["/auth/user"],
+    queryFn: async () => {
+      const response = await fetch("/auth/user");
+      if (!response.ok) return null;
+      return response.json();
+    },
+    retry: false,
+  });
+
+  // Check localStorage and OAuth for onboarding state
   useEffect(() => {
-    const hasJustSignedUp = localStorage.getItem("hasJustSignedUp") === "true";
+    const hasJustSignedUp = localStorage.getItem("hasJustSignedUp") === "true" || authUser?.hasJustSignedUp;
     const hasCompletedOnboarding = localStorage.getItem("hasCompletedOnboarding") === "true";
     const hasDismissedOnboarding = localStorage.getItem("hasDismissedOnboarding") === "true";
 
-    console.log("Auth state check:", { hasJustSignedUp, hasCompletedOnboarding, hasDismissedOnboarding, parentProfile });
+    console.log("Auth state check:", { hasJustSignedUp, hasCompletedOnboarding, hasDismissedOnboarding, parentProfile, authUser });
 
     const shouldShow = hasJustSignedUp && !parentProfile && !hasDismissedOnboarding && !hasCompletedOnboarding;
 
@@ -46,7 +57,7 @@ export function useAuthOnboarding() {
       hasCompletedOnboarding,
       showOnboarding: shouldShow,
     }));
-  }, [parentProfile, isLoading]);
+  }, [parentProfile, isLoading, authUser]);
 
   const markUserAsSignedUp = () => {
     localStorage.setItem("hasJustSignedUp", "true");

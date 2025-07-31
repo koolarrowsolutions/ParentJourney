@@ -14,7 +14,101 @@ import { generateParentingFeedback, analyzeMood } from "./services/openai";
 import { generateDevelopmentalInsight, calculateAgeInMonths } from "./services/developmental-insights";
 import { z, ZodError } from "zod";
 
+// Configure session
+function configureSession(app: Express) {
+  app.use(require('express-session')({
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+  }));
+}
+
+// Simple OAuth routes (will need actual keys to work)
+function setupOAuthRoutes(app: Express) {
+  // Google OAuth
+  app.get('/auth/google', (req, res) => {
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      return res.status(500).json({ error: 'Google OAuth not configured' });
+    }
+    // Redirect to Google OAuth
+    const redirectUri = `${req.protocol}://${req.get('host')}/auth/google/callback`;
+    const googleAuthUrl = `https://accounts.google.com/oauth2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&scope=email profile&response_type=code`;
+    res.redirect(googleAuthUrl);
+  });
+
+  app.get('/auth/google/callback', (req, res) => {
+    // Mark user as signed up and redirect
+    req.session.hasJustSignedUp = true;
+    res.send(`<script>window.close();</script>`);
+  });
+
+  // Facebook OAuth
+  app.get('/auth/facebook', (req, res) => {
+    if (!process.env.FACEBOOK_APP_ID) {
+      return res.status(500).json({ error: 'Facebook OAuth not configured' });
+    }
+    const redirectUri = `${req.protocol}://${req.get('host')}/auth/facebook/callback`;
+    const facebookAuthUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=${redirectUri}&scope=email`;
+    res.redirect(facebookAuthUrl);
+  });
+
+  app.get('/auth/facebook/callback', (req, res) => {
+    req.session.hasJustSignedUp = true;
+    res.send(`<script>window.close();</script>`);
+  });
+
+  // GitHub OAuth
+  app.get('/auth/github', (req, res) => {
+    if (!process.env.GITHUB_CLIENT_ID) {
+      return res.status(500).json({ error: 'GitHub OAuth not configured' });
+    }
+    const redirectUri = `${req.protocol}://${req.get('host')}/auth/github/callback`;
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=user:email`;
+    res.redirect(githubAuthUrl);
+  });
+
+  app.get('/auth/github/callback', (req, res) => {
+    req.session.hasJustSignedUp = true;
+    res.send(`<script>window.close();</script>`);
+  });
+
+  // Twitter OAuth
+  app.get('/auth/twitter', (req, res) => {
+    if (!process.env.TWITTER_CLIENT_ID) {
+      return res.status(500).json({ error: 'Twitter OAuth not configured' });
+    }
+    const redirectUri = `${req.protocol}://${req.get('host')}/auth/twitter/callback`;
+    const twitterAuthUrl = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${process.env.TWITTER_CLIENT_ID}&redirect_uri=${redirectUri}&scope=tweet.read users.read`;
+    res.redirect(twitterAuthUrl);
+  });
+
+  app.get('/auth/twitter/callback', (req, res) => {
+    req.session.hasJustSignedUp = true;
+    res.send(`<script>window.close();</script>`);
+  });
+
+  // Logout
+  app.get('/auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+      res.redirect('/');
+    });
+  });
+
+  // Check auth status
+  app.get('/auth/user', (req, res) => {
+    if (req.session.hasJustSignedUp) {
+      res.json({ hasJustSignedUp: true });
+    } else {
+      res.status(401).json({ error: 'Not authenticated' });
+    }
+  });
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configure session and OAuth
+  configureSession(app);
+  setupOAuthRoutes(app);
   // Get journal entries
   app.get("/api/journal-entries", async (req, res) => {
     try {

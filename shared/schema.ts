@@ -38,6 +38,21 @@ export const childProfiles = pgTable("child_profiles", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// OAuth Users table for authentication
+export const oauthUsers = pgTable("oauth_users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  providerId: text("provider_id").notNull(),
+  provider: text("provider").notNull(), // google, facebook, github, twitter
+  email: text("email"),
+  name: text("name").notNull(),
+  avatar: text("avatar"),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  familyId: varchar("family_id").references(() => families.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const communityPosts = pgTable("community_posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   parentId: varchar("parent_id").references(() => parentProfiles.id),
@@ -123,3 +138,5 @@ export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
 export type CommunityPost = typeof communityPosts.$inferSelect;
 export type InsertCommunityComment = z.infer<typeof insertCommunityCommentSchema>;
 export type CommunityComment = typeof communityComments.$inferSelect;
+export type OAuthUser = typeof oauthUsers.$inferSelect;
+export type InsertOAuthUser = typeof oauthUsers.$inferInsert;

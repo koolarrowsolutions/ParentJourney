@@ -10,7 +10,9 @@ import {
   type CommunityPost,
   type InsertCommunityPost,
   type CommunityComment,
-  type InsertCommunityComment
+  type InsertCommunityComment,
+  type OAuthUser,
+  type InsertOAuthUser
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 

@@ -81,39 +81,37 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         <div className="mb-6">
           <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 animate-pop-fade">
             <h3 className="text-lg font-semibold text-neutral-800 mb-4">AI Insights & Guidance</h3>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Progress Analysis */}
-              <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
+              <div className="bg-primary/5 rounded-lg p-4 border border-primary/20 interactive-card hover-lift button-press cursor-pointer hover:border-primary hover:bg-primary/10 hover:shadow-md transition-all duration-200">
                 <h4 className="font-medium text-primary mb-2">Your Parenting Progress</h4>
-                <p className="text-sm text-neutral-700">
-                  Based on your journal entries, you're building consistent reflection habits. Continue documenting your experiences to unlock deeper insights.
+                <p className="text-xs text-neutral-700">
+                  Building consistent reflection habits. Continue documenting experiences.
                 </p>
               </div>
 
               {/* Child Behavior Analysis */}
-              <div className="bg-accent/5 rounded-lg p-4 border border-accent/20">
+              <div className="bg-accent/5 rounded-lg p-4 border border-accent/20 interactive-card hover-lift button-press cursor-pointer hover:border-accent hover:bg-accent/10 hover:shadow-md transition-all duration-200">
                 <h4 className="font-medium text-accent mb-2">Child Development Patterns</h4>
-                <p className="text-sm text-neutral-700">
-                  Add journal entries about your child's behavior and milestones to receive personalized developmental insights.
+                <p className="text-xs text-neutral-700">
+                  Add entries about your child's behavior for personalized insights.
                 </p>
               </div>
 
               {/* Tips & Recommendations */}
-              <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/20">
+              <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/20 interactive-card hover-lift button-press cursor-pointer hover:border-secondary hover:bg-secondary/10 hover:shadow-md transition-all duration-200">
                 <h4 className="font-medium text-secondary mb-2">Personalized Tips</h4>
-                <p className="text-sm text-neutral-700">
-                  Start by setting up your parent profile and adding child profiles to receive tailored parenting strategies.
+                <p className="text-xs text-neutral-700">
+                  Set up profiles to receive tailored parenting strategies.
                 </p>
               </div>
 
               {/* Introspective Questions */}
-              <div className="bg-neutral-50 rounded-lg p-4 border border-neutral-200">
-                <h4 className="font-medium text-neutral-800 mb-3">Have you considered?</h4>
-                <div className="space-y-2 text-sm text-neutral-700">
-                  <p>• What moments in your parenting journey bring you the most joy?</p>
-                  <p>• How do you currently handle challenging behavior situations?</p>
-                  <p>• What support systems could help you feel more confident as a parent?</p>
-                </div>
+              <div className="bg-neutral-50 rounded-lg p-4 border border-neutral-200 interactive-card hover-lift button-press cursor-pointer hover:border-neutral-400 hover:bg-neutral-100 hover:shadow-md transition-all duration-200">
+                <h4 className="font-medium text-neutral-800 mb-2">Have you considered?</h4>
+                <p className="text-xs text-neutral-700">
+                  Explore thoughtful questions for deeper self-reflection.
+                </p>
               </div>
             </div>
           </div>

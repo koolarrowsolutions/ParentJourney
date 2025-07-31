@@ -130,13 +130,13 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
 
       {/* Mood Analytics - Full width button below */}
       <div 
-        className="bg-secondary/5 rounded-lg p-4 text-center border border-secondary/20 interactive-card hover-lift animate-bounce-in stagger-4 cursor-pointer"
+        className="bg-secondary/5 rounded-lg p-4 text-center border border-secondary/20 interactive-card hover-lift button-press animate-bounce-in stagger-4 cursor-pointer hover:border-secondary hover:bg-secondary/10 hover:shadow-md transition-all duration-200"
         onClick={onMoodAnalyticsClick}
       >
         <div className="flex items-center justify-center space-x-3">
-          <BarChart3 className="h-6 w-6 text-secondary" />
-          <div className="text-sm font-medium text-secondary">Mood Analytics</div>
-          <span className="text-xs text-neutral-600">View emotional patterns and insights</span>
+          <BarChart3 className="h-7 w-7 text-secondary" />
+          <div className="text-lg font-semibold text-secondary">Mood Analytics</div>
+          <span className="text-sm text-neutral-700 font-medium">View emotional patterns and insights</span>
         </div>
       </div>
 

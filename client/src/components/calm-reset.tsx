@@ -21,6 +21,10 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
   const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale' | 'rest'>('inhale');
   const [cycleCount, setCycleCount] = useState(0);
   const [exerciseTimer, setExerciseTimer] = useState<NodeJS.Timeout | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState<SpeechSynthesisUtterance | null>(null);
+  const [selectedBackgroundSound, setSelectedBackgroundSound] = useState<string>('ocean');
+  const [backgroundAudio, setBackgroundAudio] = useState<HTMLAudioElement | null>(null);
 
   const breathingExercises = {
     '4-7-8': {
@@ -111,6 +115,14 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     "I trust myself to figure things out as they come."
   ];
 
+  const backgroundSounds = {
+    ocean: { name: 'Ocean Waves', url: 'https://www.soundjay.com/misc/sounds-799.mp3' },
+    creek: { name: 'Running Creek', url: 'https://www.soundjay.com/misc/sounds-1022.mp3' },
+    birds: { name: 'Chirping Birds', url: 'https://www.soundjay.com/misc/sounds-1143.mp3' },
+    rain: { name: 'Gentle Rain', url: 'https://www.soundjay.com/misc/sounds-1164.mp3' },
+    none: { name: 'No Background', url: '' }
+  };
+
   const startBreathingExercise = (exerciseType: keyof typeof breathingExercises) => {
     setCurrentExercise(exerciseType);
     setActiveBreathingExercise(exerciseType);
@@ -170,6 +182,80 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     stopExercise();
     setCurrentExercise('breathing');
     setActiveBreathingExercise(null);
+  };
+
+  const startGuidedAudio = (content: string[]) => {
+    if (isPlaying) {
+      stopGuidedAudio();
+      return;
+    }
+
+    setIsPlaying(true);
+    
+    // Start background sound
+    if (selectedBackgroundSound !== 'none') {
+      const audio = new Audio();
+      audio.loop = true;
+      audio.volume = 0.3;
+      // For demo purposes, we'll use a nature sound URL
+      // In production, you'd host these files or use a service
+      audio.src = `data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEaAkCY3Oz`; // Placeholder
+      setBackgroundAudio(audio);
+      audio.play().catch(() => {
+        console.log('Background audio failed to play');
+      });
+    }
+
+    // Start reading content
+    let currentIndex = 0;
+    const speakNext = () => {
+      if (currentIndex >= content.length) {
+        stopGuidedAudio();
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(content[currentIndex]);
+      utterance.rate = 0.7; // Slower, calmer pace
+      utterance.pitch = 0.8; // Slightly lower pitch for calm effect
+      utterance.volume = 0.8;
+      
+      // Try to use a more natural voice
+      const voices = speechSynthesis.getVoices();
+      const preferredVoice = voices.find(voice => 
+        voice.name.includes('Google') && voice.lang.includes('en') ||
+        voice.name.includes('Microsoft') && voice.lang.includes('en') ||
+        voice.name.includes('Alex') ||
+        voice.name.includes('Samantha')
+      );
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+
+      utterance.onend = () => {
+        currentIndex++;
+        setTimeout(() => {
+          if (isPlaying) speakNext();
+        }, 2000); // 2 second pause between statements
+      };
+
+      setCurrentAudio(utterance);
+      speechSynthesis.speak(utterance);
+    };
+
+    speakNext();
+  };
+
+  const stopGuidedAudio = () => {
+    setIsPlaying(false);
+    speechSynthesis.cancel();
+    
+    if (backgroundAudio) {
+      backgroundAudio.pause();
+      backgroundAudio.currentTime = 0;
+      setBackgroundAudio(null);
+    }
+    
+    setCurrentAudio(null);
   };
 
   useEffect(() => {
@@ -393,21 +479,74 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
             </TabsContent>
 
             <TabsContent value="guided" className="space-y-4">
+              {/* Audio Controls */}
+              <Card className="p-4 border-sky-200 bg-sky-25">
+                <div className="space-y-3">
+                  <h4 className="font-medium text-sky-800 flex items-center">
+                    <Volume2 className="h-4 w-4 mr-2" />
+                    Audio Guidance
+                  </h4>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm text-sky-700">Background Sound:</label>
+                      <select 
+                        value={selectedBackgroundSound}
+                        onChange={(e) => setSelectedBackgroundSound(e.target.value)}
+                        className="px-3 py-1 border border-sky-300 rounded-md text-sm bg-white"
+                      >
+                        {Object.entries(backgroundSounds).map(([key, sound]) => (
+                          <option key={key} value={key}>{sound.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {isPlaying && (
+                      <div className="text-sm text-sky-600 flex items-center">
+                        <div className="animate-pulse w-2 h-2 bg-sky-500 rounded-full mr-2"></div>
+                        Playing audio guidance...
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Card>
+
               {guidedExercises.map((exercise) => (
-                <Card key={exercise.id} className="p-4 border-emerald-200">
+                <Card key={exercise.id} className="p-4 border-sky-200">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-medium text-emerald-800">{exercise.title}</h4>
-                        <p className="text-sm text-emerald-600">{exercise.description}</p>
+                        <h4 className="font-medium text-sky-800">{exercise.title}</h4>
+                        <p className="text-sm text-sky-600">{exercise.description}</p>
                       </div>
-                      <Badge variant="outline" className="border-emerald-300 text-emerald-700">
-                        {exercise.duration}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="border-sky-300 text-sky-700">
+                          {exercise.duration}
+                        </Badge>
+                        <Button
+                          onClick={() => startGuidedAudio(exercise.content)}
+                          variant={isPlaying ? "destructive" : "default"}
+                          size="sm"
+                          className={isPlaying 
+                            ? "bg-red-500 hover:bg-red-600 text-white" 
+                            : "bg-sky-600 hover:bg-sky-700 text-white"
+                          }
+                        >
+                          {isPlaying ? (
+                            <>
+                              <Square className="h-3 w-3 mr-1" />
+                              Stop
+                            </>
+                          ) : (
+                            <>
+                              <Play className="h-3 w-3 mr-1" />
+                              Listen
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       {exercise.content.map((step, index) => (
-                        <p key={index} className="text-sm text-emerald-700 pl-4 border-l-2 border-emerald-200">
+                        <p key={index} className="text-sm text-sky-700 pl-4 border-l-2 border-sky-200">
                           {step}
                         </p>
                       ))}
@@ -418,17 +557,78 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
             </TabsContent>
 
             <TabsContent value="affirmations" className="space-y-4">
+              {/* Audio Controls for Affirmations */}
+              <Card className="p-4 border-sky-200 bg-sky-25">
+                <div className="space-y-3">
+                  <h4 className="font-medium text-sky-800 flex items-center">
+                    <Volume2 className="h-4 w-4 mr-2" />
+                    Audio Affirmations
+                  </h4>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm text-sky-700">Background Sound:</label>
+                      <select 
+                        value={selectedBackgroundSound}
+                        onChange={(e) => setSelectedBackgroundSound(e.target.value)}
+                        className="px-3 py-1 border border-sky-300 rounded-md text-sm bg-white"
+                      >
+                        {Object.entries(backgroundSounds).map(([key, sound]) => (
+                          <option key={key} value={key}>{sound.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <Button
+                      onClick={() => startGuidedAudio(affirmations)}
+                      variant={isPlaying ? "destructive" : "default"}
+                      size="sm"
+                      className={isPlaying 
+                        ? "bg-red-500 hover:bg-red-600 text-white" 
+                        : "bg-sky-600 hover:bg-sky-700 text-white"
+                      }
+                    >
+                      {isPlaying ? (
+                        <>
+                          <Square className="h-3 w-3 mr-1" />
+                          Stop
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-3 w-3 mr-1" />
+                          Listen to All
+                        </>
+                      )}
+                    </Button>
+                    {isPlaying && (
+                      <div className="text-sm text-sky-600 flex items-center">
+                        <div className="animate-pulse w-2 h-2 bg-sky-500 rounded-full mr-2"></div>
+                        Playing affirmations...
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Card>
+
               <div className="text-center mb-4">
-                <p className="text-emerald-700">
+                <p className="text-sky-700">
                   Take a moment to read these affirmations. Choose one that resonates with you today.
                 </p>
               </div>
               <div className="grid gap-3">
                 {affirmations.map((affirmation, index) => (
-                  <Card key={index} className="p-4 border-emerald-200 bg-emerald-50">
-                    <p className="text-center text-emerald-800 font-medium">
-                      "{affirmation}"
-                    </p>
+                  <Card key={index} className="p-4 border-sky-200 bg-sky-50">
+                    <div className="flex items-center justify-between">
+                      <p className="text-center text-sky-800 font-medium flex-1">
+                        "{affirmation}"
+                      </p>
+                      <Button
+                        onClick={() => startGuidedAudio([affirmation])}
+                        variant="ghost"
+                        size="sm"
+                        className="ml-2 text-sky-600 hover:text-sky-800 hover:bg-sky-100"
+                      >
+                        <Play className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </Card>
                 ))}
               </div>
@@ -437,8 +637,11 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
           <div className="flex justify-end pt-4">
             <Button 
-              onClick={() => setIsOpen(false)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              onClick={() => {
+                stopGuidedAudio();
+                setIsOpen(false);
+              }}
+              className="bg-sky-600 hover:bg-sky-700 text-white"
             >
               I'm Ready to Continue
             </Button>

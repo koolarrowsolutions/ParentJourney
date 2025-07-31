@@ -306,26 +306,22 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                                   'scale-100 opacity-15'}
                               `}></div>
                               
-                              {/* Main breathing circle */}
-                              <div className={`
-                                w-32 h-32 rounded-full border-4 bg-gradient-to-br from-sky-100 via-blue-50 to-sky-100 
-                                flex items-center justify-center transition-all duration-1000 ease-in-out shadow-2xl
-                                ${breathingPhase === 'inhale' ? 'scale-110 border-sky-400 shadow-sky-200/50' : 
-                                  breathingPhase === 'hold' ? 'scale-110 border-sky-500 shadow-sky-300/60' : 
-                                  'scale-90 border-sky-300 shadow-sky-100/40'}
-                              `}>
-                                {/* Inner circle with wave icon */}
-                                <div className={`
-                                  w-16 h-16 rounded-full bg-gradient-to-br from-sky-200 to-blue-200 
-                                  flex items-center justify-center transition-all duration-1000 ease-in-out
-                                  ${breathingPhase === 'inhale' ? 'scale-110' : 
-                                    breathingPhase === 'hold' ? 'scale-110' : 
-                                    'scale-80'}
-                                `}>
-                                  <Waves className={`h-6 w-6 text-sky-600 transition-all duration-1000
-                                    ${breathingPhase === 'inhale' ? 'scale-125' : 
-                                      breathingPhase === 'hold' ? 'scale-125' : 
-                                      'scale-75'}`} />
+                              {/* Main breathing circle - outer container */}
+                              <div className="w-32 h-32 rounded-full border-4 border-sky-300 bg-gradient-to-br from-sky-50 via-blue-25 to-sky-50 flex items-center justify-center shadow-2xl relative overflow-hidden">
+                                {/* Inner expanding circle based on breath progress */}
+                                <div 
+                                  className="absolute inset-0 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 transition-all duration-300 ease-out flex items-center justify-center"
+                                  style={{ 
+                                    transform: `scale(${0.1 + (progress / 100) * 0.9})`,
+                                    opacity: progress > 5 ? 0.8 : 0.2
+                                  }}
+                                >
+                                  <Waves className="h-6 w-6 text-sky-700" />
+                                </div>
+                                
+                                {/* Always visible center icon for reference */}
+                                <div className="relative z-10">
+                                  <Waves className="h-4 w-4 text-sky-400/60" />
                                 </div>
                               </div>
                             </div>
@@ -348,30 +344,17 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                           </div>
 
                           <div className="space-y-4">
-                            {/* Enhanced progress visualization */}
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-xs text-sky-600 font-medium">
-                                <span>Phase Progress</span>
-                                <span>{Math.round(progress)}%</span>
-                              </div>
-                              <div className="w-full bg-sky-100 rounded-full h-3 overflow-hidden shadow-inner">
+                            {/* Cycle dots indicator */}
+                            <div className="flex justify-center space-x-2">
+                              {Array.from({length: 4}).map((_, index) => (
                                 <div 
-                                  className="h-full bg-gradient-to-r from-sky-400 via-blue-400 to-sky-500 rounded-full transition-all duration-300 ease-out shadow-sm"
-                                  style={{ width: `${progress}%` }}
+                                  key={index}
+                                  className={`w-3 h-3 rounded-full transition-all duration-500
+                                    ${index <= cycleCount 
+                                      ? 'bg-sky-500 scale-110 shadow-md' 
+                                      : 'bg-sky-200'}`}
                                 ></div>
-                              </div>
-                              {/* Phase dots indicator */}
-                              <div className="flex justify-center space-x-1 mt-3">
-                                {exercise.phases.map((phase, index) => (
-                                  <div 
-                                    key={index}
-                                    className={`w-2 h-2 rounded-full transition-all duration-300
-                                      ${phase.name === breathingPhase 
-                                        ? 'bg-sky-500 scale-125' 
-                                        : 'bg-sky-200'}`}
-                                  ></div>
-                                ))}
-                              </div>
+                              ))}
                             </div>
                             <div className="flex justify-center space-x-3">
                               <Button

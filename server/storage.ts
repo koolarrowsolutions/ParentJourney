@@ -1,4 +1,4 @@
-import { type JournalEntry, type InsertJournalEntry, type ChildProfile, type InsertChildProfile } from "@shared/schema";
+import { type JournalEntry, type InsertJournalEntry, type ChildProfile, type InsertChildProfile, type ParentProfile, type InsertParentProfile } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -27,15 +27,22 @@ export interface IStorage {
   createChildProfile(profile: InsertChildProfile): Promise<ChildProfile>;
   updateChildProfile(id: string, updates: Partial<InsertChildProfile>): Promise<ChildProfile | undefined>;
   deleteChildProfile(id: string): Promise<boolean>;
+  
+  // Parent profiles
+  getParentProfile(): Promise<ParentProfile | undefined>;
+  createParentProfile(profile: InsertParentProfile): Promise<ParentProfile>;
+  updateParentProfile(updates: Partial<InsertParentProfile>): Promise<ParentProfile | undefined>;
 }
 
 export class MemStorage implements IStorage {
   private journalEntries: Map<string, JournalEntry>;
   private childProfiles: Map<string, ChildProfile>;
+  private parentProfile: ParentProfile | undefined;
 
   constructor() {
     this.journalEntries = new Map();
     this.childProfiles = new Map();
+    this.parentProfile = undefined;
   }
 
   async getJournalEntry(id: string): Promise<JournalEntry | undefined> {
@@ -319,6 +326,46 @@ export class MemStorage implements IStorage {
 
   async deleteChildProfile(id: string): Promise<boolean> {
     return this.childProfiles.delete(id);
+  }
+
+  // Parent profile methods
+  async getParentProfile(): Promise<ParentProfile | undefined> {
+    return this.parentProfile;
+  }
+
+  async createParentProfile(insertProfile: InsertParentProfile): Promise<ParentProfile> {
+    const id = randomUUID();
+    const profile: ParentProfile = {
+      ...insertProfile,
+      age: insertProfile.age ?? null,
+      pronouns: insertProfile.pronouns ?? null,
+      parentingStyle: insertProfile.parentingStyle ?? null,
+      parentingPhilosophy: insertProfile.parentingPhilosophy ?? null,
+      personalityTraits: insertProfile.personalityTraits ?? null,
+      parentingGoals: insertProfile.parentingGoals ?? null,
+      stressors: insertProfile.stressors ?? null,
+      supportSystems: insertProfile.supportSystems ?? null,
+      notes: insertProfile.notes ?? null,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    this.parentProfile = profile;
+    return profile;
+  }
+
+  async updateParentProfile(updates: Partial<InsertParentProfile>): Promise<ParentProfile | undefined> {
+    if (!this.parentProfile) return undefined;
+
+    const updated: ParentProfile = {
+      ...this.parentProfile,
+      ...updates,
+      updatedAt: new Date(),
+    };
+
+    this.parentProfile = updated;
+    return updated;
   }
 }
 

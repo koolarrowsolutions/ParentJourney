@@ -3,6 +3,22 @@ import { pgTable, text, varchar, timestamp, json, date } from "drizzle-orm/pg-co
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+export const parentProfiles = pgTable("parent_profiles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  age: text("age"),
+  pronouns: text("pronouns"),
+  parentingStyle: text("parenting_style"), // Authoritative, Permissive, Authoritarian, Uninvolved, etc.
+  parentingPhilosophy: text("parenting_philosophy"), // Free-form text about their approach
+  personalityTraits: text("personality_traits").array(), // array of selected personality trait keys
+  parentingGoals: text("parenting_goals"), // What they hope to achieve as a parent
+  stressors: text("stressors").array(), // Common parenting stressors
+  supportSystems: text("support_systems"), // Family, friends, professionals, etc.
+  notes: text("notes"), // Additional notes about parenting style/preferences
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const childProfiles = pgTable("child_profiles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
@@ -32,6 +48,12 @@ export const journalEntries = pgTable("journal_entries", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const insertParentProfileSchema = createInsertSchema(parentProfiles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertChildProfileSchema = createInsertSchema(childProfiles).omit({
   id: true,
   createdAt: true,
@@ -46,6 +68,8 @@ export const journalEntryWithAiSchema = insertJournalEntrySchema.extend({
   requestAiFeedback: z.boolean().default(false),
 });
 
+export type InsertParentProfile = z.infer<typeof insertParentProfileSchema>;
+export type ParentProfile = typeof parentProfiles.$inferSelect;
 export type InsertChildProfile = z.infer<typeof insertChildProfileSchema>;
 export type ChildProfile = typeof childProfiles.$inferSelect;
 export type InsertJournalEntry = z.infer<typeof insertJournalEntrySchema>;

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertJournalEntrySchema, journalEntryWithAiSchema, insertChildProfileSchema } from "@shared/schema";
+import { insertJournalEntrySchema, journalEntryWithAiSchema, insertChildProfileSchema, insertParentProfileSchema } from "@shared/schema";
 import { generateParentingFeedback, analyzeMood } from "./services/openai";
 import { generateDevelopmentalInsight, calculateAgeInMonths } from "./services/developmental-insights";
 import { z, ZodError } from "zod";
@@ -341,6 +341,45 @@ Remember: You're supporting parents who are doing their best. Validate their eff
         error: "Failed to process chat message",
         reply: "I'm experiencing some technical difficulties. Please try again in a moment."
       });
+    }
+  });
+
+  // Parent profile endpoints
+  app.get("/api/parent-profile", async (req, res) => {
+    try {
+      const profile = await storage.getParentProfile();
+      res.json(profile);
+    } catch (error) {
+      console.error("Failed to fetch parent profile:", error);
+      res.status(500).json({ message: "Failed to fetch parent profile" });
+    }
+  });
+
+  app.post("/api/parent-profile", async (req, res) => {
+    try {
+      const validatedData = insertParentProfileSchema.parse(req.body);
+      const profile = await storage.createParentProfile(validatedData);
+      res.status(201).json(profile);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid profile data", errors: error.errors });
+      }
+      console.error("Failed to create parent profile:", error);
+      res.status(500).json({ message: "Failed to create parent profile" });
+    }
+  });
+
+  app.patch("/api/parent-profile", async (req, res) => {
+    try {
+      const updates = req.body;
+      const profile = await storage.updateParentProfile(updates);
+      if (!profile) {
+        return res.status(404).json({ message: "Parent profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      console.error("Failed to update parent profile:", error);
+      res.status(500).json({ message: "Failed to update parent profile" });
     }
   });
 

@@ -12,9 +12,11 @@ import {
   Heart,
   GraduationCap,
   Users,
-  BarChart3
+  BarChart3,
+  User
 } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
+import { ParentProfileDialog } from "./parent-profile-dialog";
 import { MoodAnalytics } from "./mood-analytics";
 import { DailyReflection } from "./daily-reflection";
 import { CalmReset } from "./calm-reset";
@@ -69,6 +71,7 @@ export function Sidebar() {
                 </Button>
               }
             />
+            <ParentProfileDialog />
             <Button 
               variant="outline" 
               className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"

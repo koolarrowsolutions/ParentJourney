@@ -69,6 +69,14 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         </div>
 
+        {/* Feeling Overwhelmed Element */}
+        <div className="mb-6 p-4 bg-emerald-50 rounded-lg border border-emerald-200 animate-pop-fade">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-emerald-700">Feeling overwhelmed today? Take a moment to center yourself.</p>
+            <CalmReset trigger="inline" />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">

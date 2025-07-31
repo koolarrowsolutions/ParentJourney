@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Brain, 
@@ -183,6 +183,9 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
               <Brain className="h-5 w-5 text-primary" />
               {insights.find(i => i.id === selectedInsight)?.title}
             </DialogTitle>
+            <DialogDescription>
+              {insights.find(i => i.id === selectedInsight)?.description}
+            </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4">

@@ -424,7 +424,6 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
                         value={field.value ?? ""}
                         onChange={(e) => {
                           field.onChange(e.target.value);
-                          setContentLength(e.target.value.length);
                         }}
                       />
                       <VoiceInput
@@ -432,7 +431,6 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
                           const currentValue = field.value || '';
                           const newValue = currentValue + (currentValue && !currentValue.endsWith(' ') ? ' ' : '') + text;
                           field.onChange(newValue);
-                          setContentLength(newValue.length);
                         }}
                         isInline
                         className="bottom-2"

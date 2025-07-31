@@ -11,6 +11,11 @@ export interface AiFeedback {
   suggestion: string;
 }
 
+export interface MoodAnalysis {
+  mood: string;
+  confidence: number;
+}
+
 export async function generateParentingFeedback(
   title: string | null,
   content: string,
@@ -70,5 +75,44 @@ Keep your tone warm, empathetic, and non-judgmental. Focus on practical wisdom a
     }
     
     throw new Error("Failed to generate AI feedback. Please try again later.");
+  }
+}
+
+export async function analyzeMood(content: string): Promise<string> {
+  const prompt = `Analyze the overall emotional tone of this parenting journal entry and respond with exactly one word that best describes the parent's mood. Choose from these options only: joyful, hopeful, content, neutral, tired, stressed, frustrated, overwhelmed, sad, anxious.
+
+Journal entry: "${content}"
+
+Respond with only the single mood word, nothing else.`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert at analyzing emotional tone in text. Always respond with exactly one word from the provided list."
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      temperature: 0.3,
+      max_tokens: 10,
+    });
+
+    const analyzedMood = response.choices[0].message.content?.trim().toLowerCase() || "neutral";
+    
+    // Validate that the response is one of our expected moods
+    const validMoods = ["joyful", "hopeful", "content", "neutral", "tired", "stressed", "frustrated", "overwhelmed", "sad", "anxious"];
+    if (validMoods.includes(analyzedMood)) {
+      return analyzedMood;
+    } else {
+      return "neutral"; // Default fallback
+    }
+  } catch (error: any) {
+    console.error("Mood analysis failed:", error);
+    return "neutral"; // Default fallback
   }
 }

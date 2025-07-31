@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertJournalEntrySchema, journalEntryWithAiSchema, insertChildProfileSchema } from "@shared/schema";
-import { generateParentingFeedback } from "./services/openai";
+import { generateParentingFeedback, analyzeMood } from "./services/openai";
 import { generateDevelopmentalInsight, calculateAgeInMonths } from "./services/developmental-insights";
 import { z, ZodError } from "zod";
 
@@ -43,6 +43,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let aiFeedback = null;
       let developmentalInsight = null;
       let hasAiFeedback = "false";
+      let aiAnalyzedMood = null;
+
+      // Always analyze mood using AI (for mood trends)
+      try {
+        aiAnalyzedMood = await analyzeMood(entryData.content);
+      } catch (error) {
+        console.error("Failed to analyze mood:", error);
+        // Continue without mood analysis
+      }
 
       // Generate developmental insight if child profile is selected
       if (entryData.childProfileId) {
@@ -95,6 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         aiFeedback,
         developmentalInsight,
         hasAiFeedback,
+        aiAnalyzedMood,
       });
 
       res.status(201).json(entry);

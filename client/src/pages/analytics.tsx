@@ -5,6 +5,7 @@ import { WeeklyReflection } from "@/components/weekly-reflection";
 import { MoodAnalytics } from "@/components/mood-analytics";
 import { AdvancedSearch } from "@/components/advanced-search";
 import { EmotionTrendsDashboard } from "@/components/emotion-trends-dashboard";
+import { MoodTrendsDashboard } from "@/components/mood-trends-dashboard";
 import { useState } from "react";
 import { JournalEntry } from "@shared/schema";
 // Temporarily remove JournalEntryCard import until it's properly implemented
@@ -83,8 +84,16 @@ export default function Analytics() {
           {/* Analytics Content */}
           {!searchResults && (
             <div className="space-y-8">
-              {/* Emotion Trends Dashboard */}
+              {/* AI Mood Trends Dashboard */}
               <div className="animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
+                <MoodTrendsDashboard 
+                  selectedChildId={selectedChildId}
+                  onChildChange={handleChildChange}
+                />
+              </div>
+
+              {/* Emotion Trends Dashboard */}
+              <div className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
                 <EmotionTrendsDashboard 
                   selectedChildId={selectedChildId}
                   onChildChange={handleChildChange}
@@ -94,12 +103,12 @@ export default function Analytics() {
               {/* Analytics Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Weekly Reflection */}
-                <div className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
+                <div className="animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
                   <WeeklyReflection />
                 </div>
 
                 {/* Mood Analytics */}
-                <div className="animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
+                <div className="animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
                   <MoodAnalytics />
                 </div>
               </div>

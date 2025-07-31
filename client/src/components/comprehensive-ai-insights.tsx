@@ -71,6 +71,109 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     onInsightClick?.(insightType);
   };
 
+  // Helper functions for child development analysis
+  const calculateAge = (dateOfBirth: string) => {
+    const birth = new Date(dateOfBirth);
+    const today = new Date();
+    let months = (today.getFullYear() - birth.getFullYear()) * 12;
+    months += today.getMonth() - birth.getMonth();
+    if (today.getDate() < birth.getDate()) months--;
+    
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    
+    if (years === 0) {
+      return `${remainingMonths} ${remainingMonths === 1 ? 'month' : 'months'} old`;
+    }
+    if (remainingMonths === 0) {
+      return `${years} ${years === 1 ? 'year' : 'years'} old`;
+    }
+    return `${years} ${years === 1 ? 'year' : 'years'}, ${remainingMonths} ${remainingMonths === 1 ? 'month' : 'months'} old`;
+  };
+
+  const getDevelopmentalStage = (dateOfBirth: string) => {
+    const birth = new Date(dateOfBirth);
+    const today = new Date();
+    const months = (today.getFullYear() - birth.getFullYear()) * 12 + today.getMonth() - birth.getMonth();
+    
+    if (months < 12) return "Infant Development";
+    if (months < 36) return "Toddler Development";
+    if (months < 60) return "Preschool Development";
+    if (months < 144) return "School-Age Development";
+    return "Adolescent Development";
+  };
+
+  const getAgeAppropriateeMilestones = (dateOfBirth: string) => {
+    const birth = new Date(dateOfBirth);
+    const today = new Date();
+    const months = (today.getFullYear() - birth.getFullYear()) * 12 + today.getMonth() - birth.getMonth();
+    
+    if (months < 12) return [
+      "Motor skills and physical coordination",
+      "Attachment and bonding development",
+      "Communication through crying and gestures",
+      "Sensory exploration and recognition"
+    ];
+    if (months < 36) return [
+      "Language explosion and vocabulary growth",
+      "Independence and self-assertion",
+      "Social play and interaction skills",
+      "Emotional regulation development"
+    ];
+    if (months < 60) return [
+      "Social skills and peer interaction",
+      "Emotional expression and empathy",
+      "Creative play and imagination",
+      "Pre-academic skills development"
+    ];
+    if (months < 144) return [
+      "Academic skills and learning abilities",
+      "Friendship formation and social dynamics",
+      "Self-confidence and identity development",
+      "Problem-solving and critical thinking"
+    ];
+    return [
+      "Identity formation and self-discovery",
+      "Peer relationships and social belonging",
+      "Independence and responsibility",
+      "Future planning and goal setting"
+    ];
+  };
+
+  const getPersonalizedFocusAreas = (child: ChildProfile) => {
+    const baseAreas = ["Emotional regulation", "Social skills", "Independence", "Creative expression"];
+    const personalityTraits = child.personalityTraits || [];
+    
+    if (personalityTraits.includes("shy") || personalityTraits.includes("introverted")) {
+      baseAreas.push("Building confidence in social situations");
+    }
+    if (personalityTraits.includes("energetic") || personalityTraits.includes("active")) {
+      baseAreas.push("Channeling energy into positive activities");
+    }
+    if (personalityTraits.includes("sensitive") || personalityTraits.includes("emotional")) {
+      baseAreas.push("Emotional processing and coping skills");
+    }
+    
+    return baseAreas.slice(0, 4);
+  };
+
+  const getPersonalizedRecommendations = (child: ChildProfile) => {
+    const personalityTraits = child.personalityTraits || [];
+    let recommendations = "Encourage exploration through play, maintain consistent routines, and provide positive reinforcement. ";
+    
+    if (personalityTraits.includes("creative") || personalityTraits.includes("imaginative")) {
+      recommendations += "Foster their creativity with art, music, and open-ended play activities. ";
+    }
+    if (personalityTraits.includes("analytical") || personalityTraits.includes("curious")) {
+      recommendations += "Provide opportunities for exploration, experiments, and problem-solving challenges. ";
+    }
+    if (personalityTraits.includes("social") || personalityTraits.includes("outgoing")) {
+      recommendations += "Arrange playdates and group activities to support their social nature. ";
+    }
+    
+    return recommendations;
+  };
+
   // Provide proper structured fallback data for each analysis type
   const getProperFallbackData = (type: string) => {
     switch (type) {
@@ -94,20 +197,35 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
         
       case "child-development":
         return {
-          developmentOverview: "Based on your observations, your child is progressing through important developmental stages. Continue supporting their growth with age-appropriate activities and consistent nurturing.",
-          milestones: [
-            "Social and emotional skill development",
-            "Language and communication progress", 
-            "Physical and motor skill advancement",
-            "Cognitive and problem-solving growth"
-          ],
-          focusAreas: [
-            "Emotional regulation and self-control",
-            "Independence and self-help skills",
-            "Creative expression and imagination",
-            "Social interaction and empathy"
-          ],
-          recommendations: "Encourage exploration through play, maintain consistent routines, provide plenty of positive reinforcement, and create opportunities for age-appropriate challenges and learning."
+          developmentOverview: "Based on your observations, your children are progressing through important developmental stages. Each child has unique patterns and growth areas that deserve individual attention and support.",
+          children: childProfiles?.map(child => ({
+            name: child.name,
+            age: calculateAge(child.dateOfBirth),
+            developmentalStage: getDevelopmentalStage(child.dateOfBirth),
+            milestones: getAgeAppropriateeMilestones(child.dateOfBirth),
+            focusAreas: getPersonalizedFocusAreas(child),
+            recommendations: getPersonalizedRecommendations(child)
+          })) || [{
+            name: "Your Child",
+            age: "Age not specified",
+            developmentalStage: "General Development",
+            milestones: [
+              "Social and emotional skill development",
+              "Language and communication progress", 
+              "Physical and motor skill advancement",
+              "Cognitive and problem-solving growth"
+            ],
+            focusAreas: [
+              "Emotional regulation and self-control",
+              "Independence and self-help skills",
+              "Creative expression and imagination",
+              "Social interaction and empathy"
+            ],
+            recommendations: "Encourage exploration through play, maintain consistent routines, provide plenty of positive reinforcement, and create opportunities for age-appropriate challenges and learning."
+          }],
+          familyDynamics: childProfiles && childProfiles.length > 1 ? 
+            "With multiple children, consider how sibling dynamics, different developmental needs, and individual personalities affect your family interactions." : 
+            "Focus on your child's individual developmental journey and creating a nurturing environment for their unique growth."
         };
         
       case "personalized-tips":
@@ -172,7 +290,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     {
       id: "child-development",
       title: "Child Development Patterns", 
-      description: "Insights into your child's growth stages, milestones, and behavioral patterns",
+      description: "Insights into each child's growth stages, milestones, and behavioral patterns with personalized guidance for your family",
       icon: <Baby className="h-5 w-5" />,
       color: "text-accent",
       bgColor: "bg-accent/5",
@@ -399,54 +517,82 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
       <div className="bg-accent/5 rounded-xl p-6 border border-accent/20">
         <h4 className="font-semibold text-accent mb-4 flex items-center text-lg">
           <Baby className="mr-3 h-5 w-5" />
-          Development Overview
+          Family Development Overview
         </h4>
         <p className="text-neutral-700 leading-relaxed">
-          {data.developmentOverview || "Your child is showing healthy developmental patterns across multiple areas. Continue supporting their growth with age-appropriate activities."}
+          {data.developmentOverview || "Your children are showing healthy developmental patterns across multiple areas. Each child has unique growth needs."}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-purple-50 rounded-xl p-5 border border-purple-200">
-          <h5 className="font-medium text-purple-800 mb-4 flex items-center">
-            <CheckCircle className="mr-3 h-5 w-5" />
-            Recent Milestones
-          </h5>
-          <div className="space-y-3">
-            {(data.milestones || ["Social interaction skills", "Language development"]).map((milestone: string, index: number) => (
-              <div key={index} className="flex items-start">
-                <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <span className="text-purple-700 leading-relaxed">{milestone}</span>
+      {/* Individual Child Analysis */}
+      {data.children && data.children.map((child: any, index: number) => (
+        <div key={index} className="bg-white rounded-xl p-6 border border-neutral-200 shadow-sm">
+          <div className="flex items-center mb-4">
+            <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center mr-3">
+              <User className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h5 className="font-semibold text-neutral-800 text-lg">{child.name}</h5>
+              <p className="text-sm text-neutral-600">{child.age} • {child.developmentalStage}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+              <h6 className="font-medium text-purple-800 mb-3 flex items-center text-sm">
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Key Milestones for {child.name}
+              </h6>
+              <div className="space-y-2">
+                {child.milestones.map((milestone: string, idx: number) => (
+                  <div key={idx} className="flex items-start">
+                    <div className="w-1.5 h-1.5 bg-purple-600 rounded-full mt-2 mr-2 flex-shrink-0"></div>
+                    <span className="text-purple-700 text-sm leading-relaxed">{milestone}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <h6 className="font-medium text-blue-800 mb-3 flex items-center text-sm">
+                <Target className="mr-2 h-4 w-4" />
+                Focus Areas for {child.name}
+              </h6>
+              <div className="space-y-2">
+                {child.focusAreas.map((area: string, idx: number) => (
+                  <div key={idx} className="flex items-start">
+                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-2 flex-shrink-0"></div>
+                    <span className="text-blue-700 text-sm leading-relaxed">{area}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 bg-green-50 rounded-lg p-4 border border-green-200">
+            <h6 className="font-medium text-green-800 mb-2 flex items-center text-sm">
+              <Lightbulb className="mr-2 h-4 w-4" />
+              Personalized Recommendations for {child.name}
+            </h6>
+            <p className="text-green-700 text-sm leading-relaxed">
+              {child.recommendations}
+            </p>
           </div>
         </div>
+      ))}
 
-        <div className="bg-indigo-50 rounded-xl p-5 border border-indigo-200">
-          <h5 className="font-medium text-indigo-800 mb-4 flex items-center">
-            <Target className="mr-3 h-5 w-5" />
-            Development Focus
+      {/* Family Dynamics Section */}
+      {data.familyDynamics && (
+        <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
+          <h5 className="font-medium text-amber-800 mb-4 flex items-center">
+            <Heart className="mr-3 h-5 w-5" />
+            Family Dynamics & Multi-Child Considerations
           </h5>
-          <div className="space-y-3">
-            {(data.focusAreas || ["Emotional regulation", "Independence building"]).map((area: string, index: number) => (
-              <div key={index} className="flex items-start">
-                <div className="w-2 h-2 bg-indigo-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                <span className="text-indigo-700 leading-relaxed">{area}</span>
-              </div>
-            ))}
-          </div>
+          <p className="text-amber-700 leading-relaxed">
+            {data.familyDynamics}
+          </p>
         </div>
-      </div>
-
-      <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-        <h5 className="font-medium text-green-800 mb-4 flex items-center">
-          <Lightbulb className="mr-3 h-5 w-5" />
-          Recommendations
-        </h5>
-        <p className="text-green-700 leading-relaxed">
-          {data.recommendations || "Encourage exploration through play, maintain consistent routines, and provide plenty of positive reinforcement for their efforts and progress."}
-        </p>
-      </div>
+      )}
     </div>
   );
 }

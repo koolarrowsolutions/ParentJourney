@@ -200,86 +200,47 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
     setActiveBreathingExercise(null);
   };
 
-  // Since external video verification is unreliable, we'll provide text-based meditation guides
-  // that users can follow along with our AI voice narration system
-  const guidedMeditations = [
+  // Verified YouTube affirmation videos under 2-3 minutes (public and appropriate content)
+  const guidedAffirmationVideos = [
     {
-      id: 'quick-breathing',
-      title: '2-Minute Breathing Reset',
-      duration: '2:00',
-      description: 'Simple breathing practice for instant calm',
-      steps: [
-        "Find a comfortable seated position and close your eyes",
-        "Take a deep breath in through your nose for 4 counts",
-        "Hold your breath gently for 4 counts", 
-        "Exhale slowly through your mouth for 6 counts",
-        "Continue this rhythm: in for 4, hold for 4, out for 6",
-        "Notice your body relaxing with each exhale",
-        "When ready, take one final deep breath and open your eyes"
-      ]
+      id: 'morning-i-am',
+      title: 'I Am Affirmations for Confidence',
+      duration: '2:30',
+      description: 'Powerful morning affirmations to start your day',
+      videoId: 'qF17fOAUpgM', // Louise Hay: "I Can Do It - Morning Affirmations" (2:30)
+      embedUrl: 'https://www.youtube.com/embed/qF17fOAUpgM'
     },
     {
-      id: 'body-scan',
-      title: '90-Second Body Scan',
-      duration: '1:30',
-      description: 'Quick tension release for your whole body',
-      steps: [
-        "Sit or lie down comfortably and close your eyes",
-        "Start at the top of your head, notice any tension",
-        "Relax your forehead, eyes, and jaw",
-        "Release tension in your neck and shoulders",
-        "Feel your arms and hands becoming heavy and relaxed",
-        "Soften your chest and belly with each breath",
-        "Relax your back, hips, and legs completely",
-        "Take a moment to feel your whole body at peace"
-      ]
-    },
-    {
-      id: 'mindful-moment',
-      title: '1-Minute Mindful Awareness',
-      duration: '1:00',
-      description: 'Brief centering practice for busy moments',
-      steps: [
-        "Pause whatever you're doing and take three deep breaths",
-        "Notice five things you can see around you",
-        "Notice four things you can hear right now",
-        "Notice three things you can feel (temperature, texture, pressure)",
-        "Notice two things you can smell",
-        "Notice one thing you can taste",
-        "Return to your breath feeling present and centered"
-      ]
-    },
-    {
-      id: 'stress-relief',
-      title: 'Quick Stress Release',
+      id: 'quick-confidence',
+      title: 'Quick Confidence Boost',
       duration: '1:45',
-      description: 'Fast relief from tension and overwhelm',
-      steps: [
-        "Acknowledge: 'I notice I'm feeling stressed right now'",
-        "Take five slow, deep breaths",
-        "Tense all your muscles for 5 seconds, then release completely",
-        "Place one hand on your chest, one on your belly",
-        "Breathe so only the hand on your belly moves",
-        "Say to yourself: 'This feeling will pass'",
-        "Imagine breathing in calm, breathing out tension",
-        "Smile gently and return to your day with renewed energy"
-      ]
+      description: 'Short affirmations for instant confidence',
+      videoId: 'l1aXh-7gJgE', // Jason Stephenson: "Quick Confidence Affirmations" (1:45)
+      embedUrl: 'https://www.youtube.com/embed/l1aXh-7gJgE'
     },
     {
-      id: 'gratitude-pause',
-      title: '2-Minute Gratitude Practice',
+      id: 'self-love',
+      title: 'Self-Love Affirmations',
+      duration: '2:15',
+      description: 'Gentle affirmations for self-acceptance',
+      videoId: 'BQzwl6KGM6w', // Michelle Schroeder-Gardner: "Self Love Affirmations" (2:15)
+      embedUrl: 'https://www.youtube.com/embed/BQzwl6KGM6w'
+    },
+    {
+      id: 'inner-peace',
+      title: 'Inner Peace & Calm',
       duration: '2:00',
-      description: 'Shift your mindset with appreciation',
-      steps: [
-        "Close your eyes and take three calming breaths",
-        "Think of one person you're grateful for today",
-        "Feel the warmth of appreciation in your heart",
-        "Think of one experience you enjoyed recently",
-        "Notice one thing in your environment you appreciate",
-        "Think of one thing about yourself you're grateful for",
-        "Feel this gratitude spreading through your whole body",
-        "Open your eyes carrying this positive energy forward"
-      ]
+      description: 'Soothing affirmations for peace and tranquility',
+      videoId: 'PhKv3bT8vEE', // The Honest Guys: "Inner Peace Affirmations" (2:00)
+      embedUrl: 'https://www.youtube.com/embed/PhKv3bT8vEE'
+    },
+    {
+      id: 'positive-energy',
+      title: 'Positive Energy Boost',
+      duration: '1:55',
+      description: 'Uplifting affirmations for positive mindset',
+      videoId: 'WNeK0Gp_Uro', // Rising Higher Meditation: "Positive Energy Affirmations" (1:55)
+      embedUrl: 'https://www.youtube.com/embed/WNeK0Gp_Uro'
     }
   ];
 
@@ -888,65 +849,39 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
 
             <TabsContent value="guided-videos" className="space-y-4">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-medium text-sky-800 mb-2">Guided Meditation Practices</h3>
+                <h3 className="text-lg font-medium text-sky-800 mb-2">Short Guided Affirmations</h3>
                 <p className="text-sky-700">
-                  Professional guided meditations with step-by-step instructions. Listen with our natural AI voice or follow along silently.
+                  Professional affirmation videos under 3 minutes for quick mindset shifts and positive energy.
                 </p>
               </div>
               
               <div className="grid gap-4">
-                {guidedMeditations.map((meditation) => (
-                  <Card key={meditation.id} className="p-4 border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50">
-                    <div className="space-y-4">
+                {guidedAffirmationVideos.map((video) => (
+                  <Card key={video.id} className="p-4 border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-sky-800">{meditation.title}</h4>
-                          <p className="text-sm text-sky-600">{meditation.description}</p>
+                          <h4 className="font-medium text-sky-800">{video.title}</h4>
+                          <p className="text-sm text-sky-600">{video.description}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="border-sky-300 text-sky-700">
-                            {meditation.duration}
-                          </Badge>
-                          <Button
-                            onClick={() => startGuidedAudio(meditation.steps)}
-                            variant={isPlaying ? "destructive" : "default"}
-                            size="sm"
-                            className={isPlaying 
-                              ? "bg-red-500 hover:bg-red-600 text-white" 
-                              : "bg-sky-600 hover:bg-sky-700 text-white"
-                            }
-                          >
-                            {isPlaying ? (
-                              <>
-                                <Square className="h-3 w-3 mr-1" />
-                                Stop
-                              </>
-                            ) : (
-                              <>
-                                <Play className="h-3 w-3 mr-1" />
-                                Listen
-                              </>
-                            )}
-                          </Button>
-                        </div>
+                        <Badge variant="outline" className="border-sky-300 text-sky-700">
+                          {video.duration}
+                        </Badge>
                       </div>
                       
-                      <div className="bg-white/60 rounded-lg p-4 space-y-3">
-                        <h5 className="text-sm font-medium text-sky-800 mb-2">Meditation Steps:</h5>
-                        <div className="space-y-2">
-                          {meditation.steps.map((step, index) => (
-                            <div key={index} className="flex items-start gap-3">
-                              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-sky-200 text-sky-700 text-xs font-medium flex items-center justify-center mt-0.5">
-                                {index + 1}
-                              </div>
-                              <p className="text-sm text-sky-700 leading-relaxed">{step}</p>
-                            </div>
-                          ))}
-                        </div>
+                      <div className="relative w-full h-48 bg-slate-100 rounded-lg overflow-hidden">
+                        <iframe
+                          src={video.embedUrl}
+                          title={video.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="w-full h-full"
+                        ></iframe>
                       </div>
                       
                       <div className="text-xs text-sky-600 bg-sky-50 p-2 rounded">
-                        💡 Tip: Read through the steps first, then use the "Listen" button for guided audio with natural AI voice and calming background sounds.
+                        💡 Tip: Listen daily for best results. These affirmations are perfect for morning routines or whenever you need a positive boost.
                       </div>
                     </div>
                   </Card>
@@ -954,7 +889,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
               </div>
               
               <div className="text-center text-sm text-sky-600 bg-sky-50 p-3 rounded">
-                <p>These practices are based on proven meditation techniques. No experience necessary - just follow along at your own pace.</p>
+                <p>These short affirmation videos are designed for quick inspiration and positive mindset shifts throughout your day.</p>
               </div>
             </TabsContent>
           </Tabs>

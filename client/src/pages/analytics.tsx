@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { WeeklyReflection } from "@/components/weekly-reflection";
 import { MoodAnalytics } from "@/components/mood-analytics";
 import { AdvancedSearch } from "@/components/advanced-search";
+import { EmotionTrendsDashboard } from "@/components/emotion-trends-dashboard";
 import { useState } from "react";
 import { JournalEntry } from "@shared/schema";
 // Temporarily remove JournalEntryCard import until it's properly implemented
@@ -11,6 +12,7 @@ import { JournalEntry } from "@shared/schema";
 
 export default function Analytics() {
   const [searchResults, setSearchResults] = useState<JournalEntry[] | null>(null);
+  const [selectedChildId, setSelectedChildId] = useState<string>("all");
 
   const handleSearchResults = (results: JournalEntry[]) => {
     setSearchResults(results);
@@ -18,6 +20,10 @@ export default function Analytics() {
 
   const handleClearSearch = () => {
     setSearchResults(null);
+  };
+
+  const handleChildChange = (childId: string) => {
+    setSelectedChildId(childId);
   };
 
   return (
@@ -74,17 +80,28 @@ export default function Analytics() {
             </div>
           )}
 
-          {/* Analytics Grid */}
+          {/* Analytics Content */}
           {!searchResults && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Weekly Reflection */}
+            <div className="space-y-8">
+              {/* Emotion Trends Dashboard */}
               <div className="animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
-                <WeeklyReflection />
+                <EmotionTrendsDashboard 
+                  selectedChildId={selectedChildId}
+                  onChildChange={handleChildChange}
+                />
               </div>
 
-              {/* Mood Analytics */}
-              <div className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
-                <MoodAnalytics />
+              {/* Analytics Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Weekly Reflection */}
+                <div className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
+                  <WeeklyReflection />
+                </div>
+
+                {/* Mood Analytics */}
+                <div className="animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
+                  <MoodAnalytics />
+                </div>
               </div>
             </div>
           )}

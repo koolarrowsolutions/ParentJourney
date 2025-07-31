@@ -298,7 +298,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
             </h3>
           </div>
           <p className="text-neutral-600 mb-4">
-            {dailyGreeting} Your emotions and experiences help our AI provide personalized parenting insights and track your wellness journey.
+            Your emotions and experiences help our AI provide personalized parenting insights and track your wellness journey.
           </p>
           
           {/* Parenting Focus Reminder */}
@@ -333,31 +333,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
             </div>
           </div>
           
-          {/* Daily Prompt Helper */}
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h4 className="text-sm font-medium text-blue-800 mb-2 flex items-center">
-                  <Lightbulb className="h-4 w-4 mr-2" />
-                  Today's Writing Prompt Helper
-                </h4>
-                <p className="text-blue-700 text-sm leading-relaxed">
-                  {currentPrompt}
-                </p>
-              </div>
-              <TooltipWrapper content="Get another prompt">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCurrentPrompt(getRandomPrompt())}
-                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 ml-2 flex-shrink-0"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
-              </TooltipWrapper>
-            </div>
-          </div>
+
           
 
         </div>
@@ -414,6 +390,33 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
                       className="mb-2"
                     />
                   </div>
+                  
+                  {/* Writing Prompt Helper integrated into text area */}
+                  <div className="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="text-xs font-medium text-blue-800 mb-1 flex items-center">
+                          <Lightbulb className="h-3 w-3 mr-1" />
+                          Writing Prompt Helper
+                        </h4>
+                        <p className="text-blue-700 text-xs leading-relaxed">
+                          {currentPrompt}
+                        </p>
+                      </div>
+                      <TooltipWrapper content="Get another prompt">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setCurrentPrompt(getRandomPrompt())}
+                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 ml-2 flex-shrink-0 h-6 w-6 p-0"
+                        >
+                          <RefreshCw className="h-3 w-3" />
+                        </Button>
+                      </TooltipWrapper>
+                    </div>
+                  </div>
+                  
                   <FormControl>
                     <Textarea
                       rows={5}

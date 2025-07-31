@@ -211,7 +211,7 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
                     {...field}
                   />
                   <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                    <VoiceInput
+                    <VoiceInputButton
                       onTranscription={(text: string) => {
                         const currentValue = field.value || '';
                         field.onChange(currentValue + (currentValue ? ' ' : '') + text);
@@ -317,8 +317,8 @@ function ChildProfileForm({ editProfile, onSuccess }: { editProfile?: ChildProfi
                 <FormLabel className="text-sm font-medium text-neutral-700">
                   📝 Notes <span className="text-neutral-400">(optional)</span>
                 </FormLabel>
-                <VoiceInputButton
-                  onTranscript={(text) => {
+                <VoiceInputButtonButton
+                  onTranscription={(text: string) => {
                     const currentValue = field.value || '';
                     field.onChange(currentValue + (currentValue ? ' ' : '') + text);
                   }}

@@ -151,7 +151,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                     <FormControl>
                       <div className="relative">
                         <Input {...field} placeholder="Enter your name" className="pr-12" />
-                        <VoiceInput
+                        <VoiceInputButton
                           onTranscription={(transcript: string) => {
                             field.onChange(transcript);
                           }}
@@ -229,7 +229,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                   key={category}
                   type="button"
                   variant={activeCategory === category ? "default" : "outline"}
-                  size="sm"
+                  
                   onClick={() => setActiveCategory(category)}
                   className="text-xs"
                 >
@@ -247,7 +247,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                     key={trait.key}
                     type="button"
                     variant={isSelected ? "default" : "outline"}
-                    size="sm"
+                    
                     onClick={() => handleTraitToggle(trait.key)}
                     className={`justify-start text-left h-auto p-3 ${
                       isSelected ? "bg-sky-600 text-white" : "hover:bg-sky-50"
@@ -280,7 +280,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                         <Button
                           type="button"
                           variant="ghost"
-                          size="sm"
+                          
                           className="h-4 w-4 p-0 ml-1 hover:bg-sky-200"
                           onClick={() => handleTraitToggle(traitKey)}
                         >
@@ -317,12 +317,11 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                         className="min-h-[80px]"
                       />
                       <VoiceInputButton
-                        onTranscript={(transcript) => {
+                        onTranscription={(transcript: string) => {
                           const currentValue = field.value || "";
                           const newValue = currentValue ? `${currentValue} ${transcript}` : transcript;
                           field.onChange(newValue);
                         }}
-                        size="sm"
                         className="self-start"
                       />
                     </div>
@@ -346,12 +345,12 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                         className="min-h-[80px]"
                       />
                       <VoiceInputButton
-                        onTranscript={(transcript) => {
+                        onTranscription={(transcript: string) => {
                           const currentValue = field.value || "";
                           const newValue = currentValue ? `${currentValue} ${transcript}` : transcript;
                           field.onChange(newValue);
                         }}
-                        size="sm"
+                        
                         className="self-start"
                       />
                     </div>
@@ -380,7 +379,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                     key={stressor}
                     type="button"
                     variant={isSelected ? "default" : "outline"}
-                    size="sm"
+                    
                     onClick={() => handleStressorToggle(stressor)}
                     className={`justify-start text-left ${
                       isSelected ? "bg-sky-600 text-white" : "hover:bg-sky-50"
@@ -406,12 +405,12 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                         className="min-h-[60px]"
                       />
                       <VoiceInputButton
-                        onTranscript={(transcript) => {
+                        onTranscription={(transcript: string) => {
                           const currentValue = field.value || "";
                           const newValue = currentValue ? `${currentValue} ${transcript}` : transcript;
                           field.onChange(newValue);
                         }}
-                        size="sm"
+                        
                         className="self-start"
                       />
                     </div>
@@ -440,12 +439,12 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
                         className="min-h-[60px]"
                       />
                       <VoiceInputButton
-                        onTranscript={(transcript) => {
+                        onTranscription={(transcript: string) => {
                           const currentValue = field.value || "";
                           const newValue = currentValue ? `${currentValue} ${transcript}` : transcript;
                           field.onChange(newValue);
                         }}
-                        size="sm"
+                        
                         className="self-start"
                       />
                     </div>

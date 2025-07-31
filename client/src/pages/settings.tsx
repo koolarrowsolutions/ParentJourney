@@ -25,7 +25,8 @@ import {
   Archive,
   RefreshCw,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Sparkles
 } from "lucide-react";
 import { exportToJSON, exportToCSV, exportFavoritesToPDF, importFromJSON, validateImportData } from "@/utils/data-export";
 import { VoiceInputButton } from "@/components/voice-input";

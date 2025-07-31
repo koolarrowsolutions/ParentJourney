@@ -218,7 +218,6 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
       // Reset form
       form.reset();
       setSelectedMood("");
-
       setSelectedChildIds([]);
       setIsSubmittingWithAI(false);
       setShowAiFeedback(false);
@@ -257,7 +256,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
       ...data,
       mood: selectedMood || null,
       emotionTags: null,
-      childProfileId: data.childProfileId || null,
+      childProfileId: selectedChildIds.length > 0 ? selectedChildIds[0] : null,
       requestAiFeedback,
       photos: photos.length > 0 ? photos : null,
     };
@@ -281,9 +280,9 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
 
 
 
-  const selectedChildProfile = childProfiles?.find(profile => 
-    profile.id === form.watch("childProfileId")
-  );
+  const selectedChildProfiles = childProfiles?.filter(profile => 
+    selectedChildIds.includes(profile.id)
+  ) || [];
 
   return (
     <Card className="shadow-sm border border-neutral-200 hover-lift animate-pop-fade">
@@ -441,36 +440,44 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-neutral-700">
-                    Which child is this entry about? <span className="text-neutral-400">(optional)</span>
+                    Which child(ren) is this entry about? <span className="text-neutral-400">(optional)</span>
                   </FormLabel>
-                  <Select 
-                    onValueChange={(value) => {
-                      const actualValue = value === "none" ? "" : value;
-                      field.onChange(actualValue);
-                      setSelectedChildIds(actualValue ? [actualValue] : []);
-                    }} 
-                    value={field.value || "none"}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="border-neutral-200 focus:ring-2 focus:ring-primary focus:border-transparent">
-                        <SelectValue placeholder="Select a child (optional)" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="none">No specific child</SelectItem>
-                      {childProfiles?.map((profile) => (
-                        <SelectItem key={profile.id} value={profile.id}>
-                          <div className="flex items-center">
-                            <Baby className="h-4 w-4 mr-2 text-primary" />
-                            {profile.name}
+                  <FormControl>
+                    <div className="space-y-2">
+                      {childProfiles && childProfiles.length > 0 ? (
+                        childProfiles.map((profile) => (
+                          <div key={profile.id} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`child-${profile.id}`}
+                              checked={selectedChildIds.includes(profile.id)}
+                              onChange={(e) => {
+                                const newSelectedIds = e.target.checked
+                                  ? [...selectedChildIds, profile.id]
+                                  : selectedChildIds.filter(id => id !== profile.id);
+                                setSelectedChildIds(newSelectedIds);
+                                // Update form field with first selected child for backward compatibility
+                                field.onChange(newSelectedIds.length > 0 ? newSelectedIds[0] : "");
+                              }}
+                              className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                            />
+                            <label 
+                              htmlFor={`child-${profile.id}`}
+                              className="text-sm text-neutral-700 flex items-center cursor-pointer"
+                            >
+                              <Baby className="h-4 w-4 mr-2 text-primary" />
+                              {profile.name}
+                            </label>
                           </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        ))
+                      ) : (
+                        <p className="text-sm text-neutral-500 italic">No children added yet</p>
+                      )}
+                    </div>
+                  </FormControl>
                   <div className="flex items-center justify-between mt-2">
                     <p className="text-xs text-neutral-500">
-                      Selecting a child will provide personalized developmental insights
+                      Selecting children will provide personalized developmental insights
                     </p>
                     <ChildProfilesDialog
                       trigger={
@@ -481,6 +488,19 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
                       }
                     />
                   </div>
+                  {selectedChildIds.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      <span className="text-xs text-neutral-500">Selected:</span>
+                      {selectedChildIds.map((childId) => {
+                        const child = childProfiles?.find(p => p.id === childId);
+                        return child ? (
+                          <Badge key={childId} variant="secondary" className="text-xs">
+                            {child.name}
+                          </Badge>
+                        ) : null;
+                      })}
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -546,7 +566,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
         {developmentalInsight && (
           <DevelopmentalInsightDisplay 
             insight={developmentalInsight} 
-            childName={selectedChildIds.length > 0 ? childProfiles?.find(p => p.id === selectedChildIds[0])?.name : undefined}
+            childName={selectedChildProfiles.length > 0 ? selectedChildProfiles[0]?.name : undefined}
           />
         )}
 

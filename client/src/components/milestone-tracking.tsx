@@ -243,18 +243,31 @@ export function MilestoneTracking() {
           <label className="block text-sm font-medium text-neutral-700 mb-2">
             👶 Select Child
           </label>
-          <Select value={selectedChild} onValueChange={setSelectedChild}>
-            <SelectTrigger>
-              <SelectValue placeholder="Choose a child to track milestones..." />
-            </SelectTrigger>
-            <SelectContent>
-              {childProfiles?.map(profile => (
-                <SelectItem key={profile.id} value={profile.id}>
-                  👶 {profile.name} ({Math.floor(calculateAge(profile.dateOfBirth) / 12)} years old)
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="space-y-2">
+            {childProfiles && childProfiles.length > 0 ? (
+              childProfiles.map((profile) => (
+                <div key={profile.id} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={`milestone-child-${profile.id}`}
+                    checked={selectedChild === profile.id}
+                    onChange={(e) => {
+                      setSelectedChild(e.target.checked ? profile.id : "");
+                    }}
+                    className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                  />
+                  <label 
+                    htmlFor={`milestone-child-${profile.id}`}
+                    className="text-sm text-neutral-700 flex items-center cursor-pointer"
+                  >
+                    👶 {profile.name} ({Math.floor(calculateAge(profile.dateOfBirth) / 12)} years old)
+                  </label>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-neutral-500 italic">No children added yet</p>
+            )}
+          </div>
         </div>
 
         {selectedChild && selectedChildData && (

@@ -338,27 +338,38 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Baby className="h-5 w-5 text-primary" />
-                <h2 className="text-lg font-semibold text-neutral-800">Select Child</h2>
+                <h2 className="text-lg font-semibold text-neutral-800">Select Children</h2>
               </div>
               
               {profilesLoading ? (
                 <Skeleton className="h-10 w-full" />
               ) : (
-                <Select value={selectedChildId} onValueChange={setSelectedChildId}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose a child to view their journal entries" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {childProfiles?.map((child) => (
-                      <SelectItem key={child.id} value={child.id}>
-                        <div className="flex items-center gap-2">
-                          <Baby className="h-4 w-4 text-primary" />
+                <div className="space-y-2">
+                  {childProfiles && childProfiles.length > 0 ? (
+                    childProfiles.map((child) => (
+                      <div key={child.id} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={`history-child-${child.id}`}
+                          checked={selectedChildId === child.id}
+                          onChange={(e) => {
+                            setSelectedChildId(e.target.checked ? child.id : "");
+                          }}
+                          className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                        />
+                        <label 
+                          htmlFor={`history-child-${child.id}`}
+                          className="text-sm text-neutral-700 flex items-center cursor-pointer"
+                        >
+                          <Baby className="h-4 w-4 mr-2 text-primary" />
                           {child.name}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                        </label>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-neutral-500 italic">No children added yet</p>
+                  )}
+                </div>
               )}
               
               {childProfiles?.length === 0 && !profilesLoading && (

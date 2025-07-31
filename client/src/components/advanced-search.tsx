@@ -217,21 +217,45 @@ export function AdvancedSearch({ onResults, onClear }: AdvancedSearchProps) {
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
                   <User className="inline mr-1 h-4 w-4" />
-                  Child
+                  Children
                 </label>
-                <Select value={filters.childId} onValueChange={(value) => updateFilter("childId", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Any child" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Any child</SelectItem>
-                    {childProfiles?.map(profile => (
-                      <SelectItem key={profile.id} value={profile.id}>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="search-any-child"
+                      checked={filters.childId === ""}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          updateFilter("childId", "");
+                        }
+                      }}
+                      className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                    />
+                    <label htmlFor="search-any-child" className="text-sm text-neutral-700 cursor-pointer">
+                      Any child
+                    </label>
+                  </div>
+                  {childProfiles?.map(profile => (
+                    <div key={profile.id} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`search-child-${profile.id}`}
+                        checked={filters.childId === profile.id}
+                        onChange={(e) => {
+                          updateFilter("childId", e.target.checked ? profile.id : "");
+                        }}
+                        className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                      />
+                      <label 
+                        htmlFor={`search-child-${profile.id}`}
+                        className="text-sm text-neutral-700 cursor-pointer"
+                      >
                         👶 {profile.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* AI Feedback Filter */}

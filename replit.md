@@ -22,6 +22,12 @@ The application follows a modern full-stack architecture with a clear separation
 
 ## New Features Added
 
+### Recent Updates (January 2025)
+- **🔐 Unified Authentication**: Consolidated login and signup into a single "Get Started" button that intelligently handles both new users and returning users with seamless mode switching
+- **✨ Enhanced Animation System**: Replaced all slide-in animations with modern pop/bounce effects using popFadeIn, bounceFadeIn, and bounceIn keyframes with cubic-bezier timing
+- **🎯 Interactive Button Effects**: Added industry-standard hover effects including hover-scale, button-press, and hover-lift animations for professional user experience
+- **💬 Improved Tooltip System**: Implemented TooltipWrapper component providing professional popup boxes for better user guidance
+
 ### Comprehensive Feature Set
 - **📸 Photo Upload**: Drag-and-drop photo uploads with gallery display and image management
 - **📊 Analytics Dashboard**: Advanced search, weekly reflection summaries, and comprehensive mood analytics

@@ -144,7 +144,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
             {mode === 'login' ? (
               <>
                 <LogIn className="mr-2 h-5 w-5 text-primary" />
-                Welcome Back
+                Welcome Back to ParentJourney
               </>
             ) : (
               <>
@@ -155,8 +155,8 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
           </DialogTitle>
           <DialogDescription>
             {mode === 'login' 
-              ? "Sign in to continue your parenting journey"
-              : "Start documenting your parenting journey with AI-powered insights"
+              ? "Sign in to continue your parenting journey and access your entries"
+              : "Get started with your AI-powered parenting journal in seconds"
             }
           </DialogDescription>
         </DialogHeader>
@@ -173,7 +173,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
                     variant="outline"
                     onClick={() => handleSocialAuth(provider.name)}
                     disabled={isLoading}
-                    className={`${provider.color} transition-colors`}
+                    className={`${provider.color} transition-all hover-scale animate-pop-in`}
                   >
                     <IconComponent className="mr-2 h-4 w-4" />
                     {provider.name}
@@ -190,7 +190,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
                     variant="outline"
                     onClick={() => handleSocialAuth(provider.name)}
                     disabled={isLoading}
-                    className={`${provider.color} transition-colors`}
+                    className={`${provider.color} transition-all hover-scale animate-pop-in`}
                   >
                     <IconComponent className="mr-2 h-4 w-4" />
                     {provider.name}
@@ -206,7 +206,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-white px-2 text-muted-foreground">
-                Or continue with email
+                Or use email
               </span>
             </div>
           </div>
@@ -310,7 +310,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
                   className="w-full bg-primary hover:bg-primary/90" 
                   disabled={isLoading}
                 >
-                  {isLoading ? "Creating Account..." : "Create Account"}
+                  {isLoading ? "Getting you started..." : "Get Started"}
                 </Button>
               </form>
             </Form>
@@ -372,7 +372,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
                   className="w-full bg-primary hover:bg-primary/90" 
                   disabled={isLoading}
                 >
-                  {isLoading ? "Signing In..." : "Sign In"}
+                  {isLoading ? "Signing you in..." : "Sign In"}
                 </Button>
               </form>
             </Form>
@@ -381,13 +381,13 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
           {/* Switch between login/signup */}
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
+              {mode === 'login' ? "New to ParentJourney? " : "Already have an account? "}
               <Button
                 variant="link"
-                className="px-0"
+                className="px-0 font-medium hover:text-primary animate-pop-in"
                 onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
               >
-                {mode === 'login' ? 'Sign up' : 'Sign in'}
+                {mode === 'login' ? 'Create account' : 'Sign in instead'}
               </Button>
             </p>
           </div>

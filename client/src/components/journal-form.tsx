@@ -30,6 +30,10 @@ const MOODS = [
   { emoji: "🤔", label: "Thoughtful", value: "🤔" },
   { emoji: "😅", label: "Overwhelmed", value: "😅" },
   { emoji: "🥰", label: "Grateful", value: "🥰" },
+  { emoji: "😔", label: "Sad", value: "😔" },
+  { emoji: "😤", label: "Frustrated", value: "😤" },
+  { emoji: "😌", label: "Calm", value: "😌" },
+  { emoji: "😕", label: "Worried", value: "😕" },
 ];
 
 
@@ -332,7 +336,7 @@ export function JournalForm({ triggerSignUpPrompt }: JournalFormProps) {
             </div>
           </div>
           
-          {/* Mood Selection - Moved to top */}
+          {/* Mood Selection - Expanded range for better AI analysis */}
           <div className="flex flex-wrap justify-center gap-2 mb-6">
             {MOODS.map((mood) => (
               <button

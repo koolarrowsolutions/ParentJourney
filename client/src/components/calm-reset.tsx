@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Leaf, Heart, Brain, Volume2, Play, Pause, RotateCcw } from "lucide-react";
+import { Waves, Heart, Brain, Volume2, Play, Pause, RotateCcw } from "lucide-react";
 
 interface CalmResetProps {
   trigger?: 'inline' | 'standalone';
@@ -186,14 +186,14 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       size={trigger === 'inline' ? 'sm' : 'default'}
       className={`
         ${trigger === 'inline' 
-          ? 'border-emerald-200 text-emerald-700 hover:bg-emerald-50' 
-          : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white'
+          ? 'border-sky-200 text-sky-700 hover:bg-sky-50' 
+          : 'bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white'
         }
         transition-all duration-300 hover-lift
       `}
       onClick={() => setIsOpen(true)}
     >
-      <Leaf className="mr-2 h-4 w-4" />
+      <Waves className="mr-2 h-4 w-4" />
       {trigger === 'inline' ? 'Calm Reset' : 'Take a Moment to Breathe'}
     </Button>
   );
@@ -204,13 +204,13 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
   return (
     <>
       {trigger === 'standalone' ? (
-        <Card className="border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 hover-lift">
+        <Card className="border-2 border-sky-200 bg-gradient-to-br from-sky-50 to-blue-50 hover-lift">
           <CardHeader className="text-center pb-3">
-            <div className="mx-auto w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mb-3">
-              <Leaf className="h-6 w-6 text-white" />
+            <div className="mx-auto w-12 h-12 bg-gradient-to-br from-sky-500 to-blue-500 rounded-full flex items-center justify-center mb-3">
+              <Waves className="h-6 w-6 text-white" />
             </div>
-            <CardTitle className="text-emerald-800">Need a Calm Moment?</CardTitle>
-            <p className="text-emerald-700 text-sm">
+            <CardTitle className="text-sky-800">Need a Calm Moment?</CardTitle>
+            <p className="text-sky-700 text-sm">
               Quick breathing exercises and mindfulness techniques for overwhelming moments
             </p>
           </CardHeader>
@@ -225,8 +225,8 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center text-emerald-800">
-              <Leaf className="mr-2 h-5 w-5" />
+            <DialogTitle className="flex items-center text-sky-800">
+              <Waves className="mr-2 h-5 w-5" />
               Calm Reset
             </DialogTitle>
             <DialogDescription>
@@ -286,40 +286,92 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                             </Badge>
                           </div>
                           
-                          {/* Breathing visualization circle */}
-                          <div className="flex flex-col items-center space-y-4">
-                            <div className={`
-                              w-24 h-24 rounded-full border-4 border-sky-300 bg-gradient-to-br from-sky-100 to-blue-100 
-                              flex items-center justify-center transition-all duration-1000 ease-in-out shadow-inner
-                              ${breathingPhase === 'inhale' ? 'scale-125 border-sky-400' : 
-                                breathingPhase === 'hold' ? 'scale-125 border-sky-500' : 
-                                'scale-75 border-sky-300'}
-                            `}>
+                          {/* Enhanced breathing visualization */}
+                          <div className="flex flex-col items-center space-y-6">
+                            {/* Main breathing circle with ripple effect */}
+                            <div className="relative">
+                              {/* Outer ripple rings */}
                               <div className={`
-                                w-12 h-12 rounded-full bg-gradient-to-br from-sky-200 to-blue-200 
+                                absolute inset-0 w-32 h-32 rounded-full border-2 border-sky-300/30
                                 transition-all duration-1000 ease-in-out
-                                ${breathingPhase === 'inhale' ? 'scale-110' : 
-                                  breathingPhase === 'hold' ? 'scale-110' : 
-                                  'scale-50'}
+                                ${breathingPhase === 'inhale' ? 'scale-150 opacity-20' : 
+                                  breathingPhase === 'hold' ? 'scale-150 opacity-30' : 
+                                  'scale-100 opacity-10'}
                               `}></div>
+                              <div className={`
+                                absolute inset-0 w-32 h-32 rounded-full border-2 border-sky-400/20
+                                transition-all duration-1000 ease-in-out delay-150
+                                ${breathingPhase === 'inhale' ? 'scale-125 opacity-30' : 
+                                  breathingPhase === 'hold' ? 'scale-125 opacity-40' : 
+                                  'scale-100 opacity-15'}
+                              `}></div>
+                              
+                              {/* Main breathing circle */}
+                              <div className={`
+                                w-32 h-32 rounded-full border-4 bg-gradient-to-br from-sky-100 via-blue-50 to-sky-100 
+                                flex items-center justify-center transition-all duration-1000 ease-in-out shadow-2xl
+                                ${breathingPhase === 'inhale' ? 'scale-110 border-sky-400 shadow-sky-200/50' : 
+                                  breathingPhase === 'hold' ? 'scale-110 border-sky-500 shadow-sky-300/60' : 
+                                  'scale-90 border-sky-300 shadow-sky-100/40'}
+                              `}>
+                                {/* Inner circle with wave icon */}
+                                <div className={`
+                                  w-16 h-16 rounded-full bg-gradient-to-br from-sky-200 to-blue-200 
+                                  flex items-center justify-center transition-all duration-1000 ease-in-out
+                                  ${breathingPhase === 'inhale' ? 'scale-110' : 
+                                    breathingPhase === 'hold' ? 'scale-110' : 
+                                    'scale-80'}
+                                `}>
+                                  <Waves className={`h-6 w-6 text-sky-600 transition-all duration-1000
+                                    ${breathingPhase === 'inhale' ? 'scale-125' : 
+                                      breathingPhase === 'hold' ? 'scale-125' : 
+                                      'scale-75'}`} />
+                                </div>
+                              </div>
                             </div>
                             
-                            <div className="space-y-2">
-                              <h3 className="text-xl font-light text-sky-800 capitalize tracking-wide">
-                                {breathingPhase}
-                              </h3>
-                              <p className="text-sky-700 text-sm max-w-xs leading-relaxed">
+                            {/* Phase indicator and instructions */}
+                            <div className="space-y-3 text-center">
+                              <div className="flex items-center justify-center space-x-2">
+                                <div className={`w-2 h-2 rounded-full transition-all duration-500
+                                  ${breathingPhase === 'inhale' ? 'bg-sky-500 scale-150' : 'bg-sky-300'}`}></div>
+                                <h3 className="text-2xl font-light text-sky-800 capitalize tracking-wider min-w-[100px]">
+                                  {breathingPhase}
+                                </h3>
+                                <div className={`w-2 h-2 rounded-full transition-all duration-500
+                                  ${breathingPhase === 'exhale' ? 'bg-sky-500 scale-150' : 'bg-sky-300'}`}></div>
+                              </div>
+                              <p className="text-sky-700 text-base max-w-sm leading-relaxed font-light">
                                 {exercise.phases.find(p => p.name === breathingPhase)?.instruction}
                               </p>
                             </div>
                           </div>
 
                           <div className="space-y-4">
-                            <div className="w-full bg-sky-100 rounded-full h-2 overflow-hidden">
-                              <div 
-                                className="h-full bg-gradient-to-r from-sky-300 to-blue-400 rounded-full transition-all duration-300 ease-out"
-                                style={{ width: `${progress}%` }}
-                              ></div>
+                            {/* Enhanced progress visualization */}
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-xs text-sky-600 font-medium">
+                                <span>Phase Progress</span>
+                                <span>{Math.round(progress)}%</span>
+                              </div>
+                              <div className="w-full bg-sky-100 rounded-full h-3 overflow-hidden shadow-inner">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-sky-400 via-blue-400 to-sky-500 rounded-full transition-all duration-300 ease-out shadow-sm"
+                                  style={{ width: `${progress}%` }}
+                                ></div>
+                              </div>
+                              {/* Phase dots indicator */}
+                              <div className="flex justify-center space-x-1 mt-3">
+                                {exercise.phases.map((phase, index) => (
+                                  <div 
+                                    key={index}
+                                    className={`w-2 h-2 rounded-full transition-all duration-300
+                                      ${phase.name === breathingPhase 
+                                        ? 'bg-sky-500 scale-125' 
+                                        : 'bg-sky-200'}`}
+                                  ></div>
+                                ))}
+                              </div>
                             </div>
                             <div className="flex justify-center space-x-3">
                               <Button

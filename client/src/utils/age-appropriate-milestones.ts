@@ -244,6 +244,202 @@ export const DEVELOPMENTAL_MILESTONES: Milestone[] = [
     ageRange: { min: 54, max: 72 },
     category: 'cognitive',
     priority: 'high'
+  },
+
+  // 6-8 years (Elementary School)
+  {
+    id: 'reads-independently',
+    title: 'Reads Simple Books Independently',
+    description: 'Can read age-appropriate books without help',
+    ageRange: { min: 72, max: 96 },
+    category: 'cognitive',
+    priority: 'high'
+  },
+  {
+    id: 'basic-math',
+    title: 'Basic Math Skills',
+    description: 'Can add and subtract simple numbers',
+    ageRange: { min: 72, max: 96 },
+    category: 'cognitive',
+    priority: 'high'
+  },
+  {
+    id: 'rides-bike-no-training',
+    title: 'Rides Bike Without Training Wheels',
+    description: 'Can balance and ride a two-wheel bicycle',
+    ageRange: { min: 72, max: 108 },
+    category: 'physical',
+    priority: 'medium'
+  },
+  {
+    id: 'team-sports',
+    title: 'Participates in Team Sports',
+    description: 'Can follow rules and work as part of a team',
+    ageRange: { min: 84, max: 120 },
+    category: 'social',
+    priority: 'medium'
+  },
+
+  // 8-10 years (Middle Elementary)
+  {
+    id: 'multiplication-tables',
+    title: 'Knows Multiplication Tables',
+    description: 'Can recite basic multiplication facts',
+    ageRange: { min: 96, max: 120 },
+    category: 'cognitive',
+    priority: 'high'
+  },
+  {
+    id: 'complex-friendships',
+    title: 'Forms Complex Friendships',
+    description: 'Develops deeper friendships with shared interests',
+    ageRange: { min: 96, max: 132 },
+    category: 'social',
+    priority: 'high'
+  },
+  {
+    id: 'household-responsibilities',
+    title: 'Takes on Household Responsibilities',
+    description: 'Can complete age-appropriate chores independently',
+    ageRange: { min: 96, max: 144 },
+    category: 'emotional',
+    priority: 'medium'
+  },
+
+  // 10-12 years (Pre-adolescence)
+  {
+    id: 'abstract-thinking',
+    title: 'Develops Abstract Thinking',
+    description: 'Can understand concepts beyond concrete experiences',
+    ageRange: { min: 120, max: 144 },
+    category: 'cognitive',
+    priority: 'high'
+  },
+  {
+    id: 'peer-acceptance',
+    title: 'Seeks Peer Acceptance',
+    description: 'Shows increased concern about fitting in with peers',
+    ageRange: { min: 120, max: 156 },
+    category: 'social',
+    priority: 'high'
+  },
+  {
+    id: 'body-changes-awareness',
+    title: 'Awareness of Body Changes',
+    description: 'Begins to notice and understand physical development',
+    ageRange: { min: 120, max: 156 },
+    category: 'physical',
+    priority: 'high'
+  },
+
+  // 12-14 years (Early Adolescence)
+  {
+    id: 'identity-exploration',
+    title: 'Identity Exploration',
+    description: 'Begins exploring personal identity and values',
+    ageRange: { min: 144, max: 168 },
+    category: 'emotional',
+    priority: 'high'
+  },
+  {
+    id: 'peer-influence',
+    title: 'Strong Peer Influence',
+    description: 'Peer opinions become very important in decision-making',
+    ageRange: { min: 144, max: 180 },
+    category: 'social',
+    priority: 'high'
+  },
+  {
+    id: 'puberty-changes',
+    title: 'Puberty Development',
+    description: 'Experiences significant physical and hormonal changes',
+    ageRange: { min: 132, max: 180 },
+    category: 'physical',
+    priority: 'high'
+  },
+  {
+    id: 'emotional-intensity',
+    title: 'Emotional Intensity',
+    description: 'Experiences heightened emotions and mood swings',
+    ageRange: { min: 144, max: 180 },
+    category: 'emotional',
+    priority: 'high'
+  },
+
+  // 14-16 years (Mid Adolescence)
+  {
+    id: 'independence-seeking',
+    title: 'Seeks Independence',
+    description: 'Strong desire for autonomy and independence from parents',
+    ageRange: { min: 168, max: 192 },
+    category: 'emotional',
+    priority: 'high'
+  },
+  {
+    id: 'romantic-interests',
+    title: 'Romantic Interests',
+    description: 'Develops interest in romantic relationships',
+    ageRange: { min: 156, max: 204 },
+    category: 'social',
+    priority: 'medium'
+  },
+  {
+    id: 'future-planning',
+    title: 'Future Planning',
+    description: 'Begins thinking seriously about future goals and careers',
+    ageRange: { min: 168, max: 204 },
+    category: 'cognitive',
+    priority: 'high'
+  },
+  {
+    id: 'risk-taking-behavior',
+    title: 'Risk-Taking Awareness',
+    description: 'May engage in risk-taking behaviors while developing judgment',
+    ageRange: { min: 168, max: 204 },
+    category: 'emotional',
+    priority: 'high'
+  },
+
+  // 16-18 years (Late Adolescence)
+  {
+    id: 'adult-responsibilities',
+    title: 'Adult Responsibilities',
+    description: 'Takes on more adult-like responsibilities and decision-making',
+    ageRange: { min: 192, max: 216 },
+    category: 'emotional',
+    priority: 'high'
+  },
+  {
+    id: 'driving-independence',
+    title: 'Driving Independence',
+    description: 'Learns to drive and gains transportation independence',
+    ageRange: { min: 192, max: 216 },
+    category: 'physical',
+    priority: 'medium'
+  },
+  {
+    id: 'college-preparation',
+    title: 'College/Career Preparation',
+    description: 'Actively prepares for post-secondary education or career',
+    ageRange: { min: 192, max: 216 },
+    category: 'cognitive',
+    priority: 'high'
+  },
+  {
+    id: 'value-system',
+    title: 'Personal Value System',
+    description: 'Develops a more stable personal value system and beliefs',
+    ageRange: { min: 192, max: 216 },
+    category: 'emotional',
+    priority: 'high'
+  },
+  {
+    id: 'transition-adulthood',
+    title: 'Transition to Adulthood',
+    description: 'Prepares for the transition from adolescence to young adulthood',
+    ageRange: { min: 204, max: 216 },
+    category: 'emotional',
+    priority: 'high'
   }
 ];
 

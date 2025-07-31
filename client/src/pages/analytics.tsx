@@ -32,7 +32,7 @@ export default function Analytics({ triggerSignUpPrompt }: AnalyticsProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-purple-75 animate-fade-in">
       <div className="container mx-auto p-6 max-w-6xl">
         {/* Header */}
         <div className="mb-8">

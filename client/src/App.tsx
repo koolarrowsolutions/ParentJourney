@@ -9,6 +9,7 @@ import Analytics from "@/pages/analytics";
 import Milestones from "@/pages/milestones";
 import Settings from "@/pages/settings";
 import ChildEntries from "@/pages/child-entries";
+import JournalHistory from "@/pages/journal-history";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/milestones" component={Milestones} />
       <Route path="/settings" component={Settings} />
       <Route path="/child-entries" component={ChildEntries} />
+      <Route path="/journal-history" component={JournalHistory} />
       <Route component={NotFound} />
     </Switch>
   );

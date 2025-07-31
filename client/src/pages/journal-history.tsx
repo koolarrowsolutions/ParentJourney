@@ -1,0 +1,316 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  BookOpen, 
+  Calendar, 
+  Baby, 
+  Bot, 
+  Heart, 
+  Lightbulb, 
+  Star,
+  Clock,
+  Search,
+  Filter,
+  Archive
+} from "lucide-react";
+import { format } from "date-fns";
+import type { JournalEntry, ChildProfile } from "@shared/schema";
+
+export default function JournalHistory() {
+  const [selectedChildId, setSelectedChildId] = useState<string>("");
+
+  // Fetch all child profiles
+  const { data: childProfiles, isLoading: profilesLoading } = useQuery<ChildProfile[]>({
+    queryKey: ["/api/child-profiles"],
+    queryFn: async () => {
+      const response = await fetch("/api/child-profiles");
+      if (!response.ok) throw new Error("Failed to fetch profiles");
+      return response.json();
+    },
+  });
+
+  // Fetch journal entries for selected child
+  const { data: entries, isLoading: entriesLoading } = useQuery<JournalEntry[]>({
+    queryKey: ["/api/journal-entries", selectedChildId],
+    queryFn: async () => {
+      const url = selectedChildId 
+        ? `/api/journal-entries?childId=${selectedChildId}`
+        : "/api/journal-entries";
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch entries");
+      return response.json();
+    },
+    enabled: !!selectedChildId,
+  });
+
+  const selectedChild = childProfiles?.find(child => child.id === selectedChildId);
+
+  function AiFeedbackDisplay({ feedback }: { feedback: string }) {
+    const sections = feedback.split('\n\n').filter(section => section.trim());
+    
+    return (
+      <div className="mt-4 space-y-3">
+        <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
+          <Bot className="h-4 w-4 text-primary" />
+          AI Parenting Coach
+        </div>
+        
+        <div className="space-y-3">
+          {sections.map((section, index) => {
+            if (!section.includes(':')) return null;
+            
+            const [title, ...contentParts] = section.split(':');
+            const content = contentParts.join(':').trim();
+            
+            let icon, bgColor, borderColor;
+            if (title.includes('Encouragement')) {
+              icon = <Heart className="text-pink-600 h-3 w-3" />;
+              bgColor = "bg-pink-50";
+              borderColor = "border-l-pink-400";
+            } else if (title.includes('Insight')) {
+              icon = <Lightbulb className="text-amber-600 h-3 w-3" />;
+              bgColor = "bg-amber-50";
+              borderColor = "border-l-amber-400";
+            } else if (title.includes('Suggestion')) {
+              icon = <Star className="text-blue-600 h-3 w-3" />;
+              bgColor = "bg-blue-50";
+              borderColor = "border-l-blue-400";
+            } else {
+              icon = <Bot className="text-neutral-600 h-3 w-3" />;
+              bgColor = "bg-neutral-50";
+              borderColor = "border-l-neutral-400";
+            }
+            
+            return (
+              <div key={index} className={`p-3 ${bgColor} rounded-md border-l-4 ${borderColor}`}>
+                <div className="flex items-start gap-2">
+                  {icon}
+                  <div className="flex-1">
+                    <h5 className="text-sm font-medium text-neutral-800 mb-1">
+                      {title.replace(/\*\*/g, '').trim()}
+                    </h5>
+                    <p className="text-sm text-neutral-700 leading-relaxed">
+                      {content}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  function JournalEntryCard({ entry }: { entry: JournalEntry }) {
+    return (
+      <Card className="hover-lift animate-fade-in">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-neutral-500" />
+              <span className="text-sm text-neutral-600">
+                {format(new Date(entry.createdAt), 'MMMM d, yyyy')}
+              </span>
+              <span className="text-xs text-neutral-400">
+                {format(new Date(entry.createdAt), 'h:mm a')}
+              </span>
+            </div>
+            {entry.mood && (
+              <Badge variant="outline" className="text-xs">
+                {entry.mood}
+              </Badge>
+            )}
+          </div>
+          {entry.title && (
+            <CardTitle className="text-lg text-neutral-800 mt-2">
+              {entry.title}
+            </CardTitle>
+          )}
+        </CardHeader>
+        
+        <CardContent className="pt-0">
+          <div className="prose prose-sm max-w-none">
+            <p className="text-neutral-700 leading-relaxed whitespace-pre-wrap">
+              {entry.content}
+            </p>
+          </div>
+          
+          {entry.photos && entry.photos.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2">
+              {entry.photos.map((photo, index) => (
+                <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-neutral-100">
+                  <img
+                    src={photo}
+                    alt={`Entry photo ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {entry.aiFeedback && (
+            <AiFeedbackDisplay feedback={entry.aiFeedback} />
+          )}
+          
+          {entry.hasAiFeedback && !entry.aiFeedback && (
+            <div className="mt-4 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
+              <div className="flex items-center gap-2 text-sm text-neutral-600">
+                <Clock className="h-4 w-4" />
+                Don't see AI feedback? It may take a moment to appear after entry is submitted.
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-primary/5">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+              <Archive className="text-white h-5 w-5" />
+            </div>
+            <h1 className="text-3xl font-bold text-neutral-800">Journal History</h1>
+          </div>
+          <p className="text-neutral-600">
+            Browse through your parenting journey entries and AI insights
+          </p>
+        </div>
+
+        {/* Child Selection */}
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Baby className="h-5 w-5 text-primary" />
+                <h2 className="text-lg font-semibold text-neutral-800">Select Child</h2>
+              </div>
+              
+              {profilesLoading ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <Select value={selectedChildId} onValueChange={setSelectedChildId}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Choose a child to view their journal entries" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {childProfiles?.map((child) => (
+                      <SelectItem key={child.id} value={child.id}>
+                        <div className="flex items-center gap-2">
+                          <Baby className="h-4 w-4 text-primary" />
+                          {child.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              
+              {childProfiles?.length === 0 && !profilesLoading && (
+                <div className="text-center py-4">
+                  <p className="text-neutral-600 mb-3">No child profiles found.</p>
+                  <Button variant="outline" onClick={() => window.history.back()}>
+                    <Baby className="h-4 w-4 mr-2" />
+                    Add Child Profile
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Future Enhancement Placeholder */}
+        {selectedChild && (
+          <Card className="mb-6 border-dashed border-2 border-neutral-200">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-sm text-neutral-500">
+                <Filter className="h-4 w-4" />
+                <span>Future enhancements: Filter by mood, keyword search, emotion trends</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Journal Entries */}
+        {selectedChild && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-neutral-800">
+                Journal Entries for {selectedChild.name}
+              </h2>
+              {entries && entries.length > 0 && (
+                <Badge variant="secondary">
+                  {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
+                </Badge>
+              )}
+            </div>
+
+            {entriesLoading ? (
+              <div className="space-y-6">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i}>
+                    <CardHeader>
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-6 w-64" />
+                    </CardHeader>
+                    <CardContent>
+                      <Skeleton className="h-20 w-full" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : entries && entries.length > 0 ? (
+              <div className="space-y-6">
+                {entries.map((entry) => (
+                  <JournalEntryCard key={entry.id} entry={entry} />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <BookOpen className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-neutral-800 mb-2">
+                    No journal entries yet
+                  </h3>
+                  <p className="text-neutral-600 mb-4">
+                    Start documenting your parenting journey with {selectedChild.name}
+                  </p>
+                  <Button onClick={() => window.history.back()}>
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Write First Entry
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* No Child Selected State */}
+        {!selectedChildId && !profilesLoading && childProfiles && childProfiles.length > 0 && (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <Baby className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-neutral-800 mb-2">
+                Select a child to view their journal history
+              </h3>
+              <p className="text-neutral-600">
+                Choose a child from the dropdown above to see their past journal entries and AI insights
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}

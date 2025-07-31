@@ -1,4 +1,4 @@
-import { Heart, Settings, User, BarChart3, Trophy } from "lucide-react";
+import { Heart, Settings, User, BarChart3, Trophy, Archive } from "lucide-react";
 import { Link } from "wouter";
 
 export function Header() {
@@ -24,6 +24,12 @@ export function Header() {
           </div>
           <div className="flex items-center space-x-1 ml-2">
             <div className="hidden sm:flex items-center space-x-1">
+              <Link href="/journal-history">
+                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
+                  <Archive className="h-4 w-4 mr-1 inline" />
+                  History
+                </button>
+              </Link>
               <Link href="/analytics">
                 <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
                   <BarChart3 className="h-4 w-4 mr-1 inline" />
@@ -46,6 +52,11 @@ export function Header() {
             
             {/* Mobile Navigation */}
             <div className="sm:hidden flex items-center space-x-1">
+              <Link href="/journal-history">
+                <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100 button-press hover-scale">
+                  <Archive className="h-5 w-5" />
+                </button>
+              </Link>
               <Link href="/analytics">
                 <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100 button-press hover-scale">
                   <BarChart3 className="h-5 w-5" />

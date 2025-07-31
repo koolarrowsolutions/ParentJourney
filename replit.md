@@ -32,17 +32,19 @@ The application follows a modern full-stack architecture with a clear separation
 - **📈 Weekly Reflections**: Automated weekly summaries with pattern analysis and insights
 - **💕 Mood Analytics**: Visual mood tracking with trends, streaks, and distribution charts
 - **⚙️ Settings Dashboard**: Notification preferences and customization options
+- **📚 Journal History**: Complete history view with child-specific filtering and AI feedback display
 
 ### Navigation Enhancement
-- **Multi-page Application**: Home, Analytics, Milestones, and Settings pages with header navigation
+- **Multi-page Application**: Home, Analytics, Milestones, Settings, and Journal History pages with header navigation
 - **Responsive Navigation**: Mobile-optimized header with icon-based navigation
 - **Contextual Navigation**: Back buttons and breadcrumbs for better user experience
+- **Journal History Screen**: Dedicated page for viewing past entries organized by child
 
 ## Key Components
 
 ### Frontend Architecture
 - **Framework**: React 18 with TypeScript
-- **Routing**: Wouter for client-side routing with multi-page navigation (Analytics, Milestones, Settings)
+- **Routing**: Wouter for client-side routing with multi-page navigation (Analytics, Milestones, Settings, Journal History)
 - **State Management**: TanStack Query (React Query) for server state management
 - **Form Handling**: React Hook Form with Zod validation
 - **UI Components**: shadcn/ui component library built on Radix UI primitives
@@ -51,6 +53,7 @@ The application follows a modern full-stack architecture with a clear separation
 - **Photo Management**: Drag-and-drop photo upload with gallery display
 - **Analytics Dashboard**: Advanced search, weekly reflections, and mood analytics
 - **Notification System**: Browser notifications for journaling reminders and milestone alerts
+- **Journal History**: Child-specific entry browsing with AI feedback visualization
 
 ### Backend Architecture
 - **Server**: Express.js with TypeScript

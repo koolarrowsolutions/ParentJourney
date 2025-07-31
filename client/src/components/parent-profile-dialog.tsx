@@ -221,34 +221,37 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
         {/* Personality Traits */}
         <Card className="border-sky-200">
           <CardContent className="p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-sky-800 flex items-center">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Your Personality Traits
-              </h3>
-              <Badge variant="outline" className="text-xs">
-                {selectedTraits.length}/7 selected
-              </Badge>
+            <h3 className="font-medium text-sky-800 flex items-center">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Your Personality Traits
+            </h3>
+
+            {/* Step 1: Category Selection */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-neutral-700">
+                Step 1: Please select a category below
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {PARENT_TRAIT_CATEGORIES.map((category) => (
+                  <Button
+                    key={category}
+                    type="button"
+                    variant={activeCategory === category ? "default" : "outline"}
+                    onClick={() => setActiveCategory(category)}
+                    className="text-xs"
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
             </div>
 
-            {/* Category Tabs */}
-            <div className="flex flex-wrap gap-2">
-              {PARENT_TRAIT_CATEGORIES.map((category) => (
-                <Button
-                  key={category}
-                  type="button"
-                  variant={activeCategory === category ? "default" : "outline"}
-                  
-                  onClick={() => setActiveCategory(category)}
-                  className="text-xs"
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-
-            {/* Traits for Selected Category */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {/* Step 2: Trait Selection */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-neutral-700">
+                Step 2: Choose the ones that most closely fit your personality
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {categoryTraits.map((trait) => {
                 const isSelected = selectedTraits.includes(trait.key);
                 return (

@@ -104,10 +104,9 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       
       // Invalidate auth queries and wait for refetch to ensure state is properly updated
       await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
-      await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
       
-      // Use window.location.href for more reliable mobile navigation
-      window.location.href = '/';
+      // Force immediate refetch to update auth state
+      await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
     } catch (error) {
       console.error('Signup error:', error); // Debug log
       toast({
@@ -138,10 +137,9 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
         
         // Invalidate auth queries and wait for refetch to ensure state is properly updated
         await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
-        await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
         
-        // Use window.location.href for more reliable mobile navigation
-        window.location.href = '/';
+        // Force immediate refetch to update auth state
+        await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
       } else {
         throw new Error(result.error || 'Failed to log in');
       }

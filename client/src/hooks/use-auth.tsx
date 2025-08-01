@@ -35,7 +35,7 @@ export function useAuth(): AuthState {
     retry: 1, // Allow one retry for network issues
     refetchOnWindowFocus: true, // Allow refetch on focus to catch state changes
     staleTime: 0, // Always fresh to prevent auth state confusion
-    refetchInterval: 2000, // Polling every 2 seconds to catch auth changes quickly
+    refetchInterval: false, // Disable polling to reduce server load
   });
 
   useEffect(() => {

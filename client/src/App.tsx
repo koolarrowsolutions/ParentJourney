@@ -70,8 +70,16 @@ function AppRouter() {
     }
   };
 
-  // Expose test function globally for debugging
+  // Expose test functions globally for debugging
   (window as any).testLogin = testLogin;
+  (window as any).simulateMobile = () => {
+    // Override user agent detection for testing
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+      writable: false
+    });
+    console.log('Mobile simulation enabled - refresh page to see mobile features');
+  };
 
   return (
     <>

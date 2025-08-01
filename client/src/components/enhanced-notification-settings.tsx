@@ -19,7 +19,8 @@ import {
   Monitor,
   TestTube,
   Shield,
-  Settings
+  Settings,
+  Smartphone
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -503,32 +504,53 @@ export function EnhancedNotificationSettings() {
             </div>
           </div>
 
-          {/* Combined Mobile Browser Information */}
+          {/* Combined Mobile Information - Browser Detection & User Recommendations */}
           {isMobileDevice() && (
-            <div className="space-y-3 p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200">
+            <div className="space-y-3 p-3 sm:p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-200">
               <div className="flex items-start gap-2 sm:gap-3">
-                <Monitor className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 flex-shrink-0 text-orange-600" />
+                <div className="flex items-center gap-1 mt-0.5">
+                  <Smartphone className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-orange-600" />
+                  <Monitor className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 text-orange-500" />
+                </div>
                 <div className="flex-1 min-w-0">
                   <Label className="font-medium text-sm sm:text-base block text-orange-900">
-                    Browser Notifications
+                    Mobile Device Guidance
                   </Label>
                   <p className="text-xs sm:text-sm leading-relaxed mt-1 text-orange-700">
-                    Limited support on mobile browsers - use email/SMS instead
+                    Optimized notification recommendations for mobile users
                   </p>
                 </div>
                 <Badge variant="outline" className="text-orange-600 border-orange-300 text-xs whitespace-nowrap self-start">
-                  {isMobileChrome() ? 'Chrome mobile - Limited Support' : 'Mobile browser - Limited Support'}
+                  {isMobileChrome() ? 'Chrome Mobile' : 'Mobile Browser'}
                 </Badge>
               </div>
               
-              <div className="bg-orange-100 border border-orange-200 rounded-lg p-3">
-                <p className="text-xs sm:text-sm text-orange-800 mb-2 leading-relaxed">
-                  <strong>Mobile Browser Detected:</strong> {isMobileChrome() ? 'Chrome mobile' : 'Mobile browser'} has very limited notification support.
-                </p>
-                <p className="text-xs text-orange-700 leading-relaxed">
-                  For reliable reminders, please use <strong>Email</strong> or <strong>SMS notifications</strong> above. 
-                  These work much better on mobile devices and won't drain your battery.
-                </p>
+              <div className="bg-gradient-to-r from-orange-100 to-amber-100 border border-orange-200 rounded-lg p-3 space-y-3">
+                <div className="space-y-2">
+                  <p className="text-xs sm:text-sm text-orange-800 font-medium">
+                    🔍 <strong>Browser Detection:</strong> {isMobileChrome() ? 'Chrome mobile browser' : 'Mobile browser'} detected
+                  </p>
+                  <p className="text-xs text-orange-700 leading-relaxed">
+                    Mobile browsers have very limited push notification support and may not work reliably.
+                  </p>
+                </div>
+                
+                <div className="border-t border-orange-300 pt-2 space-y-2">
+                  <p className="text-xs sm:text-sm text-amber-800 font-medium">
+                    💡 <strong>Recommendations for Mobile Users:</strong>
+                  </p>
+                  <ul className="text-xs text-amber-700 leading-relaxed space-y-1 pl-4">
+                    <li>• <strong>Email notifications</strong> - Most reliable, works across all devices</li>
+                    <li>• <strong>SMS notifications</strong> - Instant delivery, no internet required</li>
+                    <li>• <strong>Avoid browser notifications</strong> - Poor mobile support, battery drain</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-white/50 border border-orange-300 rounded p-2">
+                  <p className="text-xs text-orange-600 text-center leading-relaxed">
+                    <strong>Best Practice:</strong> Use Email + SMS for the most reliable mobile experience
+                  </p>
+                </div>
               </div>
             </div>
           )}

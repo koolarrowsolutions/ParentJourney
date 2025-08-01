@@ -1390,7 +1390,11 @@ Provide your analysis in this exact JSON format:
   // Notification Settings Routes
   app.get("/api/notification-settings", requireAuth, async (req, res) => {
     try {
-      const settings = await storage.getUserNotificationSettings(req.session.userId);
+      const userId = req.session.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      const settings = await storage.getUserNotificationSettings(userId);
       if (!settings) {
         // Return default settings if none exist
         const defaultSettings = {
@@ -1415,17 +1419,22 @@ Provide your analysis in this exact JSON format:
 
   app.post("/api/notification-settings", requireAuth, async (req, res) => {
     try {
+      const userId = req.session.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
       const settingsData = {
-        userId: req.session.userId,
+        userId: userId,
         ...req.body
       };
       
       // Check if settings already exist
-      const existingSettings = await storage.getUserNotificationSettings(req.session.userId);
+      const existingSettings = await storage.getUserNotificationSettings(userId);
       
       let settings;
       if (existingSettings) {
-        settings = await storage.updateUserNotificationSettings(req.session.userId, req.body);
+        settings = await storage.updateUserNotificationSettings(userId, req.body);
       } else {
         settings = await storage.createUserNotificationSettings(settingsData);
       }

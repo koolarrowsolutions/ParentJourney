@@ -123,42 +123,28 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
   const onLogin = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      console.log('Attempting login with:', { identifier: data.identifier }); // Debug log
-      
-      const response = await fetch('/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // Ensure cookies are included
-        body: JSON.stringify({
-          identifier: data.identifier,
-          password: data.password,
-        }),
-      });
+      const { performLogin } = await import('@/utils/auth-persistence');
+      const result = await performLogin(data.identifier, data.password);
 
-      const result = await response.json();
-      console.log('Login response:', { status: response.status, result }); // Debug log
-
-      if (!response.ok) {
+      if (result.success) {
+        toast({
+          title: "Login Successful!",
+          description: "Welcome back to ParentJourney!",
+        });
+        loginForm.reset();
+        
+        // Close dialog first to avoid visual issues
+        setOpen(false);
+        
+        // Invalidate auth queries and wait for refetch to ensure state is properly updated
+        await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
+        await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
+        
+        // Use window.location.href for more reliable mobile navigation
+        window.location.href = '/';
+      } else {
         throw new Error(result.error || 'Failed to log in');
       }
-
-      toast({
-        title: "Welcome Back!",
-        description: "You've been logged in successfully.",
-      });
-      loginForm.reset();
-      
-      // Close dialog first to avoid visual issues
-      setOpen(false);
-      
-      // Invalidate auth queries and wait for refetch to ensure state is properly updated
-      await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
-      await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
-      
-      // Use window.location.href for more reliable mobile navigation
-      window.location.href = '/';
     } catch (error) {
       console.error('Login error:', error); // Debug log
       toast({

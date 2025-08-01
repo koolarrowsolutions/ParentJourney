@@ -9,14 +9,34 @@ import { storage } from './storage';
 
 // Configure session middleware
 export function configureSession(app: Express) {
+  // CORS middleware for session cookies
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Accept');
+    
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+    } else {
+      next();
+    }
+  });
+
   app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
-    resave: false,
-    saveUninitialized: false,
+    resave: true, // Force session save for iframe compatibility
+    saveUninitialized: true, // Create sessions for anonymous users
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
+      secure: false, // Never use secure in development/iframe
+      httpOnly: false, // Allow JavaScript access for iframe environments
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'none' // Required for iframe/cross-origin scenarios
+    },
+    name: 'parentjourney.sid'
   }));
 }
 

@@ -35,9 +35,7 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
         {/* Total Entries */}
         <div className="bg-primary/5 rounded-lg p-3 sm:p-4 text-center border border-primary/20 animate-pop-in stagger-1">
           <div className="relative">
-          <div className={`text-xl sm:text-2xl font-bold text-primary transition-all duration-700 ${
-            animateNumbers ? 'scale-110 animate-pulse-glow' : 'scale-100'
-          }`}>
+          <div className="text-xl sm:text-2xl font-bold text-primary">
             {totalEntries || 0}
           </div>
           {showMilestone && totalEntries % 5 === 0 && totalEntries > 0 && (
@@ -67,9 +65,7 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
         {/* This Week */}
         <div className="bg-primary/5 rounded-lg p-3 sm:p-4 text-center border border-primary/20 animate-bounce-in stagger-2">
           <div className="relative">
-          <div className={`text-xl sm:text-2xl font-bold text-primary transition-all duration-700 ${
-            animateNumbers ? 'scale-110' : 'scale-100'
-          }`}>
+          <div className="text-xl sm:text-2xl font-bold text-primary">
             {weekEntries || 0}
           </div>
           {weekEntries >= 5 && (
@@ -99,9 +95,7 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
         {/* Streak */}
         <div className="bg-primary/5 rounded-lg p-3 sm:p-4 text-center border border-primary/20 animate-pop-fade stagger-3">
           <div className="relative">
-          <div className={`text-xl sm:text-2xl font-bold text-primary transition-all duration-700 ${
-            animateNumbers ? 'scale-110' : 'scale-100'
-          }`}>
+          <div className="text-xl sm:text-2xl font-bold text-primary">
             {longestStreak || 0}
           </div>
           {showMilestone && longestStreak >= 7 && (

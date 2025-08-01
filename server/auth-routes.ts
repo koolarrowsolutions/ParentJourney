@@ -192,11 +192,24 @@ export function setupAuthRoutes(app: Express) {
 
   // Logout route
   app.post('/auth/logout', (req, res) => {
+    console.log('Logout request - session userId:', req.session?.userId);
+    
+    // Revoke auth token if present
+    const token = extractToken(req);
+    if (token) {
+      revokeAuthToken(token);
+      console.log('Revoked auth token on logout');
+    }
+    
     req.session.destroy((err) => {
       if (err) {
         console.error('Logout error:', err);
         return res.status(500).json({ error: 'Failed to log out' });
-      }  
+      }
+      
+      // Clear cookie
+      res.clearCookie('parentjourney.sid');
+      console.log('Logout successful - session destroyed');
       res.json({ success: true, message: 'Logged out successfully' });
     });
   });

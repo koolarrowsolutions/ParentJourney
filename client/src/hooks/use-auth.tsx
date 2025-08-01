@@ -74,13 +74,31 @@ export function useLogout() {
   
   return async () => {
     try {
-      await fetch('/auth/logout', { method: 'POST' });
+      // Clear all local storage auth data first
+      localStorage.removeItem('authState');
+      localStorage.removeItem('parentjourney_auth');
+      localStorage.removeItem('parentjourney_token');
+      
+      // Call server logout
+      await fetch('/auth/logout', { 
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      // Clear query cache
       queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
-      // Use location.href for more reliable mobile navigation
-      window.location.href = '/';
+      queryClient.clear(); // Clear all cached data
+      
+      // Force page reload to ensure clean state
+      window.location.reload();
     } catch (error) {
       console.error('Logout error:', error);
-      window.location.href = '/';
+      // Still clear local data even if server request fails
+      localStorage.removeItem('authState');
+      localStorage.removeItem('parentjourney_auth');
+      localStorage.removeItem('parentjourney_token');
+      queryClient.clear();
+      window.location.reload();
     }
   };
 }

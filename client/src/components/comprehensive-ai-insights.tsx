@@ -322,12 +322,12 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
   return (
     <>
-      <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 animate-pop-fade">
-        <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
+      <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-4 animate-pop-fade">
+        <h3 className="text-lg font-semibold text-neutral-800 mb-2 flex items-center">
           <Sparkles className="mr-2 h-5 w-5 text-primary" />
           AI Insights & Guidance
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {insights.map((insight) => (
             <div
               key={insight.id}

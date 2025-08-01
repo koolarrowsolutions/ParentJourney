@@ -128,8 +128,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         )}
 
-        {/* AI Insights Section - Minimal margin */}
-        <div className="mb-1">
+        {/* AI Insights Section - Zero margin for gap debugging */}
+        <div className="">
           <ComprehensiveAIInsights />
         </div>
 

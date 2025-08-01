@@ -5,15 +5,22 @@ import { insertUserSchema } from "@shared/schema";
 import { generateAuthToken, validateAuthToken, revokeAuthToken, extractToken } from "./auth-token";
 
 export function setupAuthRoutes(app: Express) {
-  // Check auth status - supports both session and token auth
+  // Check auth status - supports both session and token auth with mobile browser compatibility
   app.get('/auth/user', async (req, res) => {
-    console.log('Auth check - session userId:', req.session?.userId);
+    const userAgent = req.headers['user-agent'] || '';
+    console.log('Auth check - session userId:', req.session?.userId, 'User-Agent:', userAgent.substring(0, 100));
     
     // Try session-based auth first
-    if (req.session.userId) {
+    if (req.session?.userId) {
       const user = await storage.getUserById(req.session.userId);
       if (user) {
         console.log('Session auth successful for user:', user.username);
+        
+        // Ensure session is properly saved for mobile browsers
+        req.session.save((err) => {
+          if (err) console.error('Session save error:', err);
+        });
+        
         return res.json({ 
           success: true, 
           user: { 
@@ -25,11 +32,14 @@ export function setupAuthRoutes(app: Express) {
           hasJustSignedUp: req.session.hasJustSignedUp || false
         });
       } else {
-        req.session.destroy((err) => {});
+        // Clean up invalid session
+        req.session.destroy((err) => {
+          if (err) console.error('Session destroy error:', err);
+        });
       }
     }
     
-    // Try token-based auth for iframe environments
+    // Try token-based auth for iframe environments and mobile browser fallback
     const token = extractToken(req);
     console.log('Checking token auth, token present:', !!token);
     
@@ -101,10 +111,16 @@ export function setupAuthRoutes(app: Express) {
     }
   });
 
-  // Login route  
+  // Login route with enhanced mobile browser support
   app.post('/auth/login', async (req, res) => {
     try {
       const { identifier, password } = req.body; // identifier can be username or email
+      const userAgent = req.headers['user-agent'] || '';
+      const isMobileBrowser = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      const isFirefoxMobile = /Firefox.*Mobile/i.test(userAgent);
+      const isEdgeMobile = /Edge.*Mobile/i.test(userAgent);
+      
+      console.log('Login attempt - Mobile:', isMobileBrowser, 'Firefox:', isFirefoxMobile, 'Edge:', isEdgeMobile);
       
       if (!identifier || !password) {
         return res.status(400).json({ error: 'Username/email and password are required' });
@@ -122,11 +138,26 @@ export function setupAuthRoutes(app: Express) {
         return res.status(401).json({ error: 'Invalid username/email or password' });
       }
       
-      // Set session (for environments that support cookies)
+      // Set session with mobile browser compatibility
       req.session.userId = user.id;
       req.session.hasJustSignedUp = false;
       
-      // Generate auth token (for iframe environments)
+      // Force session save for mobile browsers (especially Firefox and Edge)
+      if (isMobileBrowser) {
+        await new Promise((resolve, reject) => {
+          req.session.save((err) => {
+            if (err) {
+              console.error('Session save error for mobile browser:', err);
+              reject(err);
+            } else {
+              console.log('Session saved successfully for mobile browser:', userAgent.substring(0, 50));
+              resolve(true);
+            }
+          });
+        });
+      }
+      
+      // Generate auth token (for iframe environments and mobile browser fallback)
       const authToken = generateAuthToken({
         userId: user.id,
         username: user.username,
@@ -135,13 +166,23 @@ export function setupAuthRoutes(app: Express) {
         hasJustSignedUp: false
       });
       
-      console.log('Login successful for user:', user.username, 'Token generated');
+      console.log('Login successful for user:', user.username, 'Mobile browser:', isMobileBrowser);
+      
+      // Set mobile-specific headers for better compatibility
+      if (isMobileBrowser) {
+        res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.header('Pragma', 'no-cache');
+        res.header('Expires', '0');
+        res.header('Set-Cookie', `parentjourney.sid=${req.sessionID}; Path=/; HttpOnly=false; SameSite=none`);
+      }
       
       res.json({ 
         success: true, 
         message: 'Logged in successfully',
         user: { id: user.id, username: user.username, name: user.name, email: user.email },
-        authToken: authToken // Include token for iframe compatibility
+        authToken: authToken, // Include token for iframe compatibility
+        sessionId: req.sessionID, // Include session ID for debugging
+        mobileBrowser: isMobileBrowser
       });
     } catch (error) {
       console.error('Login error:', error);

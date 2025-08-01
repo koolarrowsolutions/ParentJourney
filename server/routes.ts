@@ -17,19 +17,48 @@ import { generateParentingFeedback, analyzeMood, openai } from "./services/opena
 import { generateDevelopmentalInsight, calculateAgeInMonths } from "./services/developmental-insights";
 import { z, ZodError } from "zod";
 
-// Configure session
+// Configure session with enhanced mobile browser compatibility
 function configureSession(app: Express) {
+  // Add CORS headers for mobile browsers
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    const userAgent = req.headers['user-agent'] || '';
+    
+    // Allow credentials for all mobile browsers
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
+    // Set origin based on environment
+    if (origin) {
+      res.header('Access-Control-Allow-Origin', origin);
+    } else {
+      // Fallback for mobile browsers that don't send origin header
+      res.header('Access-Control-Allow-Origin', '*');
+    }
+    
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, Set-Cookie');
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(200);
+    }
+    
+    next();
+  });
+
   app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-for-parenting-journal',
-    resave: false,
-    saveUninitialized: false,
+    resave: true, // Force save for mobile browser compatibility
+    saveUninitialized: true, // Allow anonymous sessions
     cookie: { 
-      secure: false, // Set to true in production with HTTPS
-      httpOnly: true,
+      secure: false, // Never secure in development
+      httpOnly: false, // Allow JavaScript access for mobile compatibility
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax' // Important for cross-origin requests
+      sameSite: 'none' // Required for mobile cross-origin compatibility
     },
-    name: 'parentjourney.sid' // Custom cookie name
+    name: 'parentjourney.sid', // Custom cookie name
+    // Force session store to handle mobile browser quirks
+    rolling: true // Refresh session on each request
   }));
 }
 

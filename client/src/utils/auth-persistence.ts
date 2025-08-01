@@ -56,19 +56,23 @@ export function clearAuthData(): void {
   console.log('Cleared auth data');
 }
 
-// Perform login with iframe-compatible persistence
+// Perform login with mobile browser compatibility
 export async function performLogin(identifier: string, password: string): Promise<{ success: boolean; user?: any; error?: string; authToken?: string }> {
   try {
     // Trim whitespace from identifier to prevent login issues
     const trimmedIdentifier = identifier.trim();
-    console.log('Attempting login with:', { identifier: trimmedIdentifier });
+    const userAgent = navigator.userAgent;
+    const isMobileBrowser = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    
+    console.log('Attempting login with:', { identifier: trimmedIdentifier, mobile: isMobileBrowser });
     
     const response = await fetch('/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': userAgent, // Ensure user agent is sent
       },
-      credentials: 'include',
+      credentials: 'include', // Always include credentials for session support
       body: JSON.stringify({ identifier: trimmedIdentifier, password }),
     });
 

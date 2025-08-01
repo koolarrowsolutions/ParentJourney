@@ -61,13 +61,16 @@ Key tables with relationships:
 ### AI Integration (Optional - for journal insights)
 - `OPENAI_API_KEY` - OpenAI GPT-4 API key for AI-powered insights
 
-### Email Notifications (For test notifications)
-- `SENDGRID_API_KEY` - SendGrid API key for email delivery
+### Email Notifications (FREE via Brevo)
+- `BREVO_API_KEY` - Brevo (SendinBlue) API key for FREE email delivery (300 emails/day free)
+  - Sign up at: https://brevo.com
+  - Navigate to Settings → API Keys → Create API Key
+  - Free tier provides 300 emails per day
 
-### SMS Notifications (For test notifications)
-- `TWILIO_ACCOUNT_SID` - Twilio Account SID
-- `TWILIO_AUTH_TOKEN` - Twilio Auth Token
-- `TWILIO_PHONE_NUMBER` - Twilio phone number (e.g., +15551234567)
+### SMS Notifications (Replaced with Browser Notifications)
+- **Recommendation**: Use browser notifications instead of SMS for free instant alerts
+- SMS services (Twilio, etc.) require paid subscriptions
+- Browser notifications work perfectly on desktop devices at no cost
 
 ## 📁 **Project Structure**
 

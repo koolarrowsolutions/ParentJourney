@@ -383,7 +383,8 @@ export function EnhancedNotificationSettings() {
           <div className="space-y-3 p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200">
             <div className="flex items-center gap-2 sm:gap-3 mb-2">
               <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600 flex-shrink-0" />
-              <Label className="font-medium text-orange-900 text-sm sm:text-base">SMS Notifications (Optional)</Label>
+              <Label className="font-medium text-orange-900 text-sm sm:text-base">SMS Notifications</Label>
+              <Badge variant="outline" className="text-xs bg-orange-100 text-orange-800">Use Browser Instead</Badge>
             </div>
             
             <div className="space-y-2 sm:space-y-3">
@@ -502,10 +503,10 @@ export function EnhancedNotificationSettings() {
               <span>Mobile User Recommendations:</span>
             </h4>
             <ul className="text-xs sm:text-sm text-blue-800 space-y-1 leading-relaxed">
-              <li>• <strong>Email notifications</strong> work reliably on all mobile devices</li>
-              <li>• <strong>SMS notifications</strong> are instant and don't require internet</li>
-              <li>• Browser notifications on mobile are often blocked or unreliable</li>
-              <li>• Consider adding your email for the best experience</li>
+              <li>• <strong>Email notifications</strong> work reliably on all mobile devices (FREE via Brevo)</li>
+              <li>• <strong>Browser notifications</strong> are recommended for desktop users (FREE)</li>
+              <li>• SMS services require paid subscriptions - email is the better free option</li>
+              <li>• Consider adding your email for the best mobile experience</li>
             </ul>
           </div>
         )}

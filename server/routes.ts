@@ -1514,13 +1514,71 @@ Provide your analysis in this exact JSON format:
             break;
           }
           
-          // In a real app, you would integrate with email service like SendGrid, AWS SES, etc.
-          // For now, provide clear feedback about what would happen
-          result = { 
-            success: true, 
-            message: `✓ Test email sent to ${recipient}` 
-          };
-          console.log(`Test email configured for: ${recipient}`);
+          // Use Brevo (SendinBlue) for free email notifications
+          const brevoApiKey = process.env.BREVO_API_KEY;
+          
+          if (!brevoApiKey) {
+            result = { 
+              success: false, 
+              message: "Email service not configured. Get your free BREVO_API_KEY from brevo.com (300 emails/day free). Visit https://brevo.com to get your free API key."
+            };
+            break;
+          }
+
+          try {
+            // Send real email via Brevo API
+            const emailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'api-key': brevoApiKey
+              },
+              body: JSON.stringify({
+                sender: {
+                  name: "ParentJourney",
+                  email: "noreply@parentjourney.app"
+                },
+                to: [{
+                  email: recipient,
+                  name: "Parent"
+                }],
+                subject: "ParentJourney Test Notification ✅",
+                htmlContent: `
+                  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #4F46E5;">🎉 Test Email Successful!</h2>
+                    <p>Hello!</p>
+                    <p>This is a test notification from your ParentJourney app. If you're seeing this, your email notifications are working perfectly!</p>
+                    <div style="background-color: #F0F9FF; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                      <p style="margin: 0; color: #0C4A6E;"><strong>✅ Email notifications are now active</strong></p>
+                      <p style="margin: 10px 0 0 0; color: #0C4A6E;">You'll receive gentle reminders and updates about your parenting journey.</p>
+                    </div>
+                    <p>Keep up the great work documenting your parenting journey!</p>
+                    <p style="color: #6B7280; font-size: 14px;">- The ParentJourney Team</p>
+                  </div>
+                `
+              })
+            });
+
+            if (emailResponse.ok) {
+              result = { 
+                success: true, 
+                message: `✅ Real test email sent successfully to ${recipient} via Brevo (free service)`
+              };
+            } else {
+              const errorText = await emailResponse.text();
+              result = { 
+                success: false, 
+                message: `Failed to send email: ${errorText}`
+              };
+            }
+          } catch (emailError) {
+            console.error("Brevo email error:", emailError);
+            result = { 
+              success: false, 
+              message: `Email service error: ${(emailError as Error).message}`
+            };
+          }
           break;
           
         case 'sms':
@@ -1529,13 +1587,11 @@ Provide your analysis in this exact JSON format:
             break;
           }
           
-          // In a real app, you would integrate with SMS service like Twilio, AWS SNS, etc.
-          // For now, provide clear feedback about what would happen  
+          // Recommend free browser notifications instead of paid SMS
           result = { 
             success: true, 
-            message: `✓ Test SMS sent to ${recipient}` 
+            message: "💡 Free Alternative: Use browser notifications instead of SMS! They're instant and completely free on desktop devices. Enable browser notifications above for free instant alerts - no paid SMS service needed!"
           };
-          console.log(`Test SMS configured for: ${recipient}`);
           break;
           
         default:

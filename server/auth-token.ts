@@ -38,18 +38,27 @@ export function generateAuthToken(userData: {
 
 // Validate and retrieve user data from token
 export function validateAuthToken(token: string): TokenData | null {
-  if (!token) return null;
+  if (!token) {
+    console.log('Token validation failed: no token provided');
+    return null;
+  }
   
   const tokenData = tokenStore.get(token);
-  if (!tokenData) return null;
+  if (!tokenData) {
+    console.log('Token validation failed: token not found in store');
+    console.log('Available tokens:', Array.from(tokenStore.keys()).length);
+    return null;
+  }
   
   // Check if token is expired (24 hours)
   const maxAge = 24 * 60 * 60 * 1000;
   if (Date.now() - tokenData.timestamp > maxAge) {
     tokenStore.delete(token);
+    console.log('Token validation failed: token expired');
     return null;
   }
   
+  console.log('Token validation successful for user:', tokenData.username);
   return tokenData;
 }
 

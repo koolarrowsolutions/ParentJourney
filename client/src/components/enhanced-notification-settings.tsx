@@ -115,6 +115,21 @@ export function EnhancedNotificationSettings() {
         setValidationErrors(prev => ({ ...prev, email: result.message }));
       }
     },
+    onError: (error: Error) => {
+      if (error.message.includes('401')) {
+        toast({
+          title: "Authentication Error", 
+          description: "Please logout and login again to refresh your session.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Validation Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    },
   });
 
   // Phone validation mutation
@@ -134,6 +149,21 @@ export function EnhancedNotificationSettings() {
         setValidationErrors(prev => ({ ...prev, phone: result.message }));
       }
     },
+    onError: (error: Error) => {
+      if (error.message.includes('401')) {
+        toast({
+          title: "Authentication Error",
+          description: "Please logout and login again to refresh your session.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Validation Failed", 
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    },
   });
 
   // Test notification mutation
@@ -148,6 +178,21 @@ export function EnhancedNotificationSettings() {
         description: result.message,
         variant: result.success ? "default" : "destructive",
       });
+    },
+    onError: (error: Error) => {
+      if (error.message.includes('401')) {
+        toast({
+          title: "Authentication Error",
+          description: "Please logout and login again to refresh your session.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Test Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     },
   });
 

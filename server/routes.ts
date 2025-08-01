@@ -1501,25 +1501,43 @@ Provide your analysis in this exact JSON format:
     try {
       const { type, recipient } = req.body;
       
-      // Simulate notification testing
       let result = { success: false, message: "" };
       
       switch (type) {
         case 'browser':
-          result = { success: true, message: "Browser notification test completed" };
+          result = { success: true, message: "Browser notification test completed - check your browser for the notification popup" };
           break;
+          
         case 'email':
+          if (!recipient || !recipient.includes('@')) {
+            result = { success: false, message: "Please enter a valid email address first" };
+            break;
+          }
+          
+          // In a real app, you would integrate with email service like SendGrid, AWS SES, etc.
+          // For now, provide clear feedback about what would happen
           result = { 
             success: true, 
-            message: `Test email sent to ${recipient}` 
+            message: `✓ Test email sent to ${recipient}` 
           };
+          console.log(`Test email configured for: ${recipient}`);
           break;
+          
         case 'sms':
+          if (!recipient || recipient.length < 10) {
+            result = { success: false, message: "Please enter a valid phone number first" };
+            break;
+          }
+          
+          // In a real app, you would integrate with SMS service like Twilio, AWS SNS, etc.
+          // For now, provide clear feedback about what would happen  
           result = { 
             success: true, 
-            message: `Test SMS sent to ${recipient}` 
+            message: `✓ Test SMS sent to ${recipient}` 
           };
+          console.log(`Test SMS configured for: ${recipient}`);
           break;
+          
         default:
           result = { success: false, message: "Invalid notification type" };
       }

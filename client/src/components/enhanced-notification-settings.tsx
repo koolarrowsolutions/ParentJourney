@@ -11,7 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 import { 
   Bell, 
   Save, 
-  Check, 
   AlertCircle, 
   Clock,
   Mail,
@@ -54,7 +53,6 @@ export function EnhancedNotificationSettings() {
   
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [browserPermission, setBrowserPermission] = useState<NotificationPermission>("default");
-  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -98,73 +96,7 @@ export function EnhancedNotificationSettings() {
     },
   });
 
-  // Email validation mutation
-  const validateEmailMutation = useMutation({
-    mutationFn: async (email: string) => {
-      const response = await apiRequest("POST", "/api/validate-email", { email });
-      return response.json() as Promise<ValidationResult>;
-    },
-    onSuccess: (result, email) => {
-      if (result.valid) {
-        setValidationErrors(prev => ({ ...prev, email: "" }));
-        toast({
-          title: "Email Validated",
-          description: result.message,
-        });
-      } else {
-        setValidationErrors(prev => ({ ...prev, email: result.message }));
-      }
-    },
-    onError: (error: Error) => {
-      if (error.message.includes('401')) {
-        toast({
-          title: "Authentication Error", 
-          description: "Please logout and login again to refresh your session.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Validation Failed",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    },
-  });
 
-  // Phone validation mutation
-  const validatePhoneMutation = useMutation({
-    mutationFn: async (phone: string) => {
-      const response = await apiRequest("POST", "/api/validate-phone", { phone });
-      return response.json() as Promise<ValidationResult>;
-    },
-    onSuccess: (result, phone) => {
-      if (result.valid) {
-        setValidationErrors(prev => ({ ...prev, phone: "" }));
-        toast({
-          title: "Phone Validated",
-          description: result.message,
-        });
-      } else {
-        setValidationErrors(prev => ({ ...prev, phone: result.message }));
-      }
-    },
-    onError: (error: Error) => {
-      if (error.message.includes('401')) {
-        toast({
-          title: "Authentication Error",
-          description: "Please logout and login again to refresh your session.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Validation Failed", 
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    },
-  });
 
   // Test notification mutation
   const testNotificationMutation = useMutation({
@@ -285,17 +217,7 @@ export function EnhancedNotificationSettings() {
     }
   };
 
-  const validateEmail = () => {
-    if (settings.notificationEmail) {
-      validateEmailMutation.mutate(settings.notificationEmail);
-    }
-  };
 
-  const validatePhone = () => {
-    if (settings.notificationPhone) {
-      validatePhoneMutation.mutate(settings.notificationPhone);
-    }
-  };
 
   const sendTestNotification = (type: string) => {
     const recipient = type === 'email' ? settings.notificationEmail : 
@@ -461,30 +383,18 @@ export function EnhancedNotificationSettings() {
                 </p>
               )}
               
-              <div className="flex flex-col sm:flex-row gap-2">
+              {settings.notificationEmail && (
                 <Button 
-                  onClick={validateEmail} 
+                  onClick={() => sendTestNotification('email')} 
                   size="sm" 
                   variant="outline"
-                  disabled={!settings.notificationEmail || validateEmailMutation.isPending}
-                  className="text-xs sm:text-sm flex-1 sm:flex-none"
+                  disabled={testNotificationMutation.isPending}
+                  className="text-xs sm:text-sm w-full sm:w-auto"
                 >
-                  <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  Validate Email
+                  <TestTube className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Send Test Email
                 </Button>
-                {settings.notificationEmail && (
-                  <Button 
-                    onClick={() => sendTestNotification('email')} 
-                    size="sm" 
-                    variant="outline"
-                    disabled={testNotificationMutation.isPending}
-                    className="text-xs sm:text-sm flex-1 sm:flex-none"
-                  >
-                    <TestTube className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    Send Test Email
-                  </Button>
-                )}
-              </div>
+              )}
             </div>
           </div>
 
@@ -510,30 +420,18 @@ export function EnhancedNotificationSettings() {
                 </p>
               )}
               
-              <div className="flex flex-col sm:flex-row gap-2">
+              {settings.notificationPhone && (
                 <Button 
-                  onClick={validatePhone} 
+                  onClick={() => sendTestNotification('sms')} 
                   size="sm" 
                   variant="outline"
-                  disabled={!settings.notificationPhone || validatePhoneMutation.isPending}
-                  className="text-xs sm:text-sm flex-1 sm:flex-none"
+                  disabled={testNotificationMutation.isPending}
+                  className="text-xs sm:text-sm w-full sm:w-auto"
                 >
-                  <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  Validate Phone
+                  <TestTube className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  Send Test SMS
                 </Button>
-                {settings.notificationPhone && (
-                  <Button 
-                    onClick={() => sendTestNotification('sms')} 
-                    size="sm" 
-                    variant="outline"
-                    disabled={testNotificationMutation.isPending}
-                    className="text-xs sm:text-sm flex-1 sm:flex-none"
-                  >
-                    <TestTube className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    Send Test SMS
-                  </Button>
-                )}
-              </div>
+              )}
             </div>
           </div>
 

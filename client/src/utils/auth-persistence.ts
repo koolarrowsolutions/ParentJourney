@@ -58,7 +58,9 @@ export function clearAuthData(): void {
 // Perform login with iframe-compatible persistence
 export async function performLogin(identifier: string, password: string): Promise<{ success: boolean; user?: any; error?: string; authToken?: string }> {
   try {
-    console.log('Attempting login with:', { identifier });
+    // Trim whitespace from identifier to prevent login issues
+    const trimmedIdentifier = identifier.trim();
+    console.log('Attempting login with:', { identifier: trimmedIdentifier });
     
     const response = await fetch('/auth/login', {
       method: 'POST',
@@ -66,7 +68,7 @@ export async function performLogin(identifier: string, password: string): Promis
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ identifier, password }),
+      body: JSON.stringify({ identifier: trimmedIdentifier, password }),
     });
 
     const result = await response.json();

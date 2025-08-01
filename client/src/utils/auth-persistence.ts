@@ -5,7 +5,7 @@ export interface AuthData {
     username: string;
     name: string;
     email: string;
-  };
+  } | null;
   isAuthenticated: boolean;
   hasJustSignedUp: boolean;
   timestamp: number;

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { CelebrationAnimation } from "./celebration-animation";
 
 export interface DailyCheckInData {
   energyLevel: string;
@@ -178,6 +179,7 @@ const checkInQuestions = [
 export function DailyCheckIn({ onComplete, onCancel }: DailyCheckInProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [responses, setResponses] = useState<Partial<DailyCheckInData>>({});
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const currentQuestion = checkInQuestions[currentStep];
   const totalSteps = checkInQuestions.length;
@@ -195,8 +197,8 @@ export function DailyCheckIn({ onComplete, onCancel }: DailyCheckInProps) {
       if (currentStep < totalSteps - 1) {
         setCurrentStep(currentStep + 1);
       } else {
-        // Complete the check-in
-        onComplete(newResponses as DailyCheckInData);
+        // Show celebration animation first
+        setShowCelebration(true);
       }
     }, 500);
   };
@@ -213,7 +215,18 @@ export function DailyCheckIn({ onComplete, onCancel }: DailyCheckInProps) {
     }
   };
 
+  const handleCelebrationClose = () => {
+    setShowCelebration(false);
+    // Complete the check-in after celebration
+    onComplete(responses as DailyCheckInData);
+  };
+
   const isCurrentAnswered = responses[currentQuestion.key as keyof DailyCheckInData];
+
+  // Show celebration animation when completed
+  if (showCelebration) {
+    return <CelebrationAnimation onClose={handleCelebrationClose} />;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

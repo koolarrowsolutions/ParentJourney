@@ -24,7 +24,7 @@ export function useAuth(): AuthState {
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['/api/auth/user'],
+    queryKey: ['/auth/user'],
     queryFn: async () => {
       const response = await fetch('/auth/user', {
         credentials: 'same-origin' // Ensure cookies are included
@@ -67,7 +67,7 @@ export function useLogout() {
   return async () => {
     try {
       await fetch('/auth/logout', { method: 'POST' });
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
       // Use location.href for more reliable mobile navigation
       window.location.href = '/';
     } catch (error) {

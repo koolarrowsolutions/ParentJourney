@@ -101,7 +101,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       signUpForm.reset();
       
       // Invalidate auth queries to refresh authentication state
-      await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
       
       // Force a small delay to ensure state propagation on mobile
       setTimeout(() => {
@@ -151,7 +151,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       loginForm.reset();
       
       // Invalidate auth queries to refresh authentication state
-      await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
       
       // Force a small delay to ensure state propagation on mobile
       setTimeout(() => {

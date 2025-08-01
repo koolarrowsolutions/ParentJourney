@@ -52,6 +52,7 @@ export function getStoredAuthData(): AuthData | null {
 // Clear authentication data
 export function clearAuthData(): void {
   localStorage.removeItem('parentjourney_auth');
+  localStorage.removeItem('parentjourney_token');
   console.log('Cleared auth data');
 }
 
@@ -91,7 +92,8 @@ export async function performLogin(identifier: string, password: string): Promis
       return { 
         success: true, 
         user: result.user, 
-        authToken: result.authToken 
+        authToken: result.authToken,
+        hasJustSignedUp: result.hasJustSignedUp || false
       };
     } else {
       return { success: false, error: result.error || 'Login failed' };

@@ -18,8 +18,10 @@ interface AuthState {
 
 export function useAuth(): AuthState {
   const [authState, setAuthState] = useState<AuthState>(() => {
-    // Clear old cached auth state to prevent confusion
+    // Clear ALL cached auth data to prevent confusion
     localStorage.removeItem('authState');
+    localStorage.removeItem('parentjourney_auth');
+    localStorage.removeItem('parentjourney_token');
     
     return {
       user: null,

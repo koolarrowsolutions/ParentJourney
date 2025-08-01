@@ -1537,7 +1537,7 @@ Provide your analysis in this exact JSON format:
               body: JSON.stringify({
                 sender: {
                   name: "ParentJourney",
-                  email: "noreply@parentjourney.app"
+                  email: "noreply@gmail.com"
                 },
                 to: [{
                   email: recipient,

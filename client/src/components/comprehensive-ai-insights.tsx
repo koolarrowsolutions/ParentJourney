@@ -6,14 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
-  Brain, 
   TrendingUp, 
   Lightbulb, 
   Heart, 
   Target, 
   Baby, 
   User, 
-  Bot,
   Sparkles,
   MessageSquare,
   CheckCircle,
@@ -326,7 +324,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     <>
       <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 animate-pop-fade">
         <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
-          <Brain className="mr-2 h-5 w-5 text-primary" />
+          <Sparkles className="mr-2 h-5 w-5 text-primary" />
           AI Insights & Guidance
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

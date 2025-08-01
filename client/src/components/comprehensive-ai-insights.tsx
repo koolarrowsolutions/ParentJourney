@@ -403,7 +403,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
             
             <div className="pr-12 pb-4" style={{paddingRight: '48px', paddingBottom: '16px'}}>
               <h2 className="flex items-center gap-2 text-lg font-bold text-neutral-900" style={{fontSize: '18px', fontWeight: 'bold', color: '#171717', display: 'flex', alignItems: 'center', gap: '8px'}}>
-                <Brain className="h-5 w-5 text-primary" />
+                <Sparkles className="h-5 w-5 text-primary" />
                 {insights.find(i => i.id === selectedInsight)?.title}
               </h2>
               <p className="text-sm text-neutral-600 mt-2" style={{fontSize: '14px', color: '#525252', marginTop: '8px'}}>

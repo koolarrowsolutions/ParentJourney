@@ -5,10 +5,9 @@ interface InteractiveProgressProps {
   totalEntries: number;
   weekEntries: number;
   longestStreak: number;
-  onMoodAnalyticsClick?: () => void;
 }
 
-export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, onMoodAnalyticsClick }: InteractiveProgressProps) {
+export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }: InteractiveProgressProps) {
   const [animateNumbers, setAnimateNumbers] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
 
@@ -128,17 +127,7 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, 
         </div>
       </div>
 
-      {/* Mood Analytics - Full width button below */}
-      <div 
-        className="bg-secondary/5 rounded-lg p-3 sm:p-4 text-center border border-secondary/20 interactive-card hover-lift button-press animate-bounce-in stagger-4 cursor-pointer hover:border-secondary hover:bg-secondary/10 hover:shadow-md transition-all duration-200"
-        onClick={onMoodAnalyticsClick}
-      >
-        <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3">
-          <BarChart3 className="h-6 w-6 sm:h-7 sm:w-7 text-secondary" />
-          <div className="text-base sm:text-lg font-semibold text-secondary">Mood Analytics</div>
-          <span className="text-xs sm:text-sm text-neutral-700 font-medium hidden sm:block">View emotional patterns and insights</span>
-        </div>
-      </div>
+
 
       {/* Milestone Celebration */}
       {showMilestone && (

@@ -111,28 +111,15 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                 totalEntries={stats?.totalEntries || 0}
                 weekEntries={stats?.weekEntries || 0}
                 longestStreak={stats?.longestStreak || 0}
-                onMoodAnalyticsClick={() => setShowMoodAnalytics(!showMoodAnalytics)}
               />
             )}
           </div>
         </div>
 
-        {/* Mood Analytics Results - Shows between welcome and AI insights */}
-        {showMoodAnalytics && (
-          <div className="mb-4 sm:mb-6">
-            <div className="bg-white rounded-xl sm:rounded-2xl border border-neutral-200 shadow-sm p-4 sm:p-6 animate-slide-in-down">
-              <h3 className="text-base sm:text-lg font-semibold text-neutral-800 mb-3 sm:mb-4">Mood Analytics</h3>
-              <p className="text-neutral-600 text-xs sm:text-sm mb-3 sm:mb-4">
-                Your emotional patterns and insights from journal entries.
-              </p>
-              <div className="bg-neutral-50 rounded-lg p-3 sm:p-4 text-center">
-                <p className="text-neutral-500 text-xs sm:text-sm">
-                  Add more journal entries to see detailed mood analytics and patterns.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Easy Daily Check-In - Between welcome and AI insights */}
+        <div className="mb-4 sm:mb-6">
+          <MoodSelector />
+        </div>
 
         {/* AI Insights Section */}
         <div className="mb-4 sm:mb-6">
@@ -149,13 +136,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         </div>
 
-        {/* Mood Selection */}
-        <div className="mb-4">
-          <MoodSelector 
-            selectedMood={selectedMood} 
-            onMoodChange={setSelectedMood} 
-          />
-        </div>
+
 
         {/* Quick Actions Group */}
         <div className="mb-4">

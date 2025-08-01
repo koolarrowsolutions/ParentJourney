@@ -503,47 +503,24 @@ export function EnhancedNotificationSettings() {
             </div>
           </div>
 
-          {/* Save Button */}
-          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2 sm:pt-4">
-            <Button 
-              onClick={handleSave}
-              disabled={!hasUnsavedChanges || saveSettingsMutation.isPending}
-              className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm sm:text-base"
-            >
-              <Save className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span className="truncate">
-                {saveSettingsMutation.isPending ? "Saving..." : "Save Notification Settings"}
-              </span>
-            </Button>
-          </div>
-
-          {/* Browser Notifications */}
-          <div className={`space-y-3 p-3 sm:p-4 rounded-lg border ${
-            isMobileDevice() 
-              ? 'bg-orange-50 border-orange-200' 
-              : 'bg-green-50 border-green-200'
-          }`}>
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-              <div className="flex items-start gap-2 sm:gap-3 flex-1">
-                <Monitor className={`h-4 w-4 sm:h-5 sm:w-5 mt-0.5 flex-shrink-0 ${isMobileDevice() ? 'text-orange-600' : 'text-green-600'}`} />
+          {/* Combined Mobile Browser Information */}
+          {isMobileDevice() && (
+            <div className="space-y-3 p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200">
+              <div className="flex items-start gap-2 sm:gap-3">
+                <Monitor className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 flex-shrink-0 text-orange-600" />
                 <div className="flex-1 min-w-0">
-                  <Label className={`font-medium text-sm sm:text-base block ${isMobileDevice() ? 'text-orange-900' : 'text-green-900'}`}>
+                  <Label className="font-medium text-sm sm:text-base block text-orange-900">
                     Browser Notifications
                   </Label>
-                  <p className={`text-xs sm:text-sm leading-relaxed mt-1 ${isMobileDevice() ? 'text-orange-700' : 'text-green-700'}`}>
-                    {isMobileDevice() 
-                      ? 'Limited support on mobile browsers - use email/SMS instead' 
-                      : 'Instant pop-up reminders on this device'
-                    }
+                  <p className="text-xs sm:text-sm leading-relaxed mt-1 text-orange-700">
+                    Limited support on mobile browsers - use email/SMS instead
                   </p>
                 </div>
+                <Badge variant="outline" className="text-orange-600 border-orange-300 text-xs whitespace-nowrap self-start">
+                  {isMobileChrome() ? 'Chrome mobile - Limited Support' : 'Mobile browser - Limited Support'}
+                </Badge>
               </div>
-              <Badge variant="outline" className={`${browserStatus.color} text-xs whitespace-nowrap self-start`}>
-                {browserStatus.text}
-              </Badge>
-            </div>
-            
-            {isMobileDevice() ? (
+              
               <div className="bg-orange-100 border border-orange-200 rounded-lg p-3">
                 <p className="text-xs sm:text-sm text-orange-800 mb-2 leading-relaxed">
                   <strong>Mobile Browser Detected:</strong> {isMobileChrome() ? 'Chrome mobile' : 'Mobile browser'} has very limited notification support.
@@ -553,7 +530,29 @@ export function EnhancedNotificationSettings() {
                   These work much better on mobile devices and won't drain your battery.
                 </p>
               </div>
-            ) : (
+            </div>
+          )}
+
+          {/* Desktop Browser Notifications */}
+          {!isMobileDevice() && (
+            <div className="space-y-3 p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div className="flex items-start gap-2 sm:gap-3 flex-1">
+                  <Monitor className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5 flex-shrink-0 text-green-600" />
+                  <div className="flex-1 min-w-0">
+                    <Label className="font-medium text-sm sm:text-base block text-green-900">
+                      Browser Notifications
+                    </Label>
+                    <p className="text-xs sm:text-sm leading-relaxed mt-1 text-green-700">
+                      Instant pop-up reminders on this device
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="outline" className={`${browserStatus.color} text-xs whitespace-nowrap self-start`}>
+                  {browserStatus.text}
+                </Badge>
+              </div>
+              
               <div className="flex flex-wrap gap-2">
                 {browserPermission !== "granted" ? (
                   <Button onClick={requestBrowserPermission} size="sm" variant="outline" className="text-xs sm:text-sm">
@@ -573,7 +572,21 @@ export function EnhancedNotificationSettings() {
                   </Button>
                 )}
               </div>
-            )}
+            </div>
+          )}
+
+          {/* Save Button */}
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2 sm:pt-4">
+            <Button 
+              onClick={handleSave}
+              disabled={!hasUnsavedChanges || saveSettingsMutation.isPending}
+              className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm sm:text-base"
+            >
+              <Save className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span className="truncate">
+                {saveSettingsMutation.isPending ? "Saving..." : "Save Notification Settings"}
+              </span>
+            </Button>
           </div>
         </div>
 

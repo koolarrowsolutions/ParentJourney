@@ -56,7 +56,7 @@ export function clearAuthData(): void {
 }
 
 // Perform login with iframe-compatible persistence
-export async function performLogin(identifier: string, password: string): Promise<{ success: boolean; user?: any; error?: string }> {
+export async function performLogin(identifier: string, password: string): Promise<{ success: boolean; user?: any; error?: string; authToken?: string }> {
   try {
     console.log('Attempting login with:', { identifier });
     
@@ -80,7 +80,17 @@ export async function performLogin(identifier: string, password: string): Promis
         hasJustSignedUp: result.hasJustSignedUp || false
       });
       
-      return { success: true, user: result.user };
+      // Store auth token for API requests
+      if (result.authToken) {
+        localStorage.setItem('parentjourney_token', result.authToken);
+        console.log('Stored auth token for API requests');
+      }
+      
+      return { 
+        success: true, 
+        user: result.user, 
+        authToken: result.authToken 
+      };
     } else {
       return { success: false, error: result.error || 'Login failed' };
     }
@@ -95,12 +105,21 @@ export async function checkAuthStatus(): Promise<{ success: boolean; user?: any;
   try {
     console.log('Checking auth status...');
     
+    // Get auth token for iframe compatibility
+    const token = localStorage.getItem('parentjourney_token');
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch('/auth/user', {
       method: 'GET',
       credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      }
+      headers,
     });
 
     if (response.ok) {
@@ -114,6 +133,12 @@ export async function checkAuthStatus(): Promise<{ success: boolean; user?: any;
           isAuthenticated: true,
           hasJustSignedUp: result.hasJustSignedUp || false
         });
+        
+        // Store/update auth token if provided
+        if (result.authToken) {
+          localStorage.setItem('parentjourney_token', result.authToken);
+        }
+        
         return result;
       }
     }

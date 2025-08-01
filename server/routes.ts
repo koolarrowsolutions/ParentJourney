@@ -180,12 +180,28 @@ function setupOldAuthRoutes(app: Express) {
 
 }
 
-// Authentication middleware
+// Authentication middleware - supports both session and token auth
 function requireAuth(req: any, res: any, next: any) {
-  if (!req.session?.userId) {
-    return res.status(401).json({ message: "Authentication required" });
+  // Try session-based auth first
+  if (req.session?.userId) {
+    return next();
   }
-  next();
+  
+  // Try token-based auth for iframe environments
+  const { extractToken, validateAuthToken } = require('./auth-token');
+  const token = extractToken(req);
+  
+  if (token) {
+    const tokenData = validateAuthToken(token);
+    if (tokenData) {
+      // Set req.user for compatibility with existing code
+      req.user = { id: tokenData.userId };
+      req.session.userId = tokenData.userId; // Set session for compatibility
+      return next();
+    }
+  }
+  
+  return res.status(401).json({ message: "Authentication required" });
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {

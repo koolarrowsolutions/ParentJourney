@@ -2,14 +2,19 @@ import type { Express } from "express";
 import bcrypt from "bcryptjs";
 import { storage } from "./storage";
 import { insertUserSchema } from "@shared/schema";
+import { generateAuthToken, validateAuthToken, revokeAuthToken, extractToken } from "./auth-token";
 
 export function setupAuthRoutes(app: Express) {
-  // Check auth status
+  // Check auth status - supports both session and token auth
   app.get('/auth/user', async (req, res) => {
+    console.log('Auth check - session userId:', req.session?.userId);
+    
+    // Try session-based auth first
     if (req.session.userId) {
       const user = await storage.getUserById(req.session.userId);
       if (user) {
-        res.json({ 
+        console.log('Session auth successful for user:', user.username);
+        return res.json({ 
           success: true, 
           user: { 
             id: user.id, 
@@ -20,13 +25,34 @@ export function setupAuthRoutes(app: Express) {
           hasJustSignedUp: req.session.hasJustSignedUp || false
         });
       } else {
-        req.session.destroy((err) => {
-          res.json({ success: false, user: null });
+        req.session.destroy((err) => {});
+      }
+    }
+    
+    // Try token-based auth for iframe environments
+    const token = extractToken(req);
+    console.log('Checking token auth, token present:', !!token);
+    
+    if (token) {
+      const tokenData = validateAuthToken(token);
+      if (tokenData) {
+        console.log('Token auth successful for user:', tokenData.username);
+        return res.json({
+          success: true,
+          user: {
+            id: tokenData.userId,
+            username: tokenData.username,
+            name: tokenData.name,
+            email: tokenData.email
+          },
+          hasJustSignedUp: tokenData.hasJustSignedUp,
+          authToken: token // Return token for client persistence
         });
       }
-    } else {
-      res.json({ success: false, user: null });
     }
+    
+    console.log('Auth check failed - no valid session or token');
+    res.json({ success: false, user: null });
   });
 
   // Signup route
@@ -96,14 +122,26 @@ export function setupAuthRoutes(app: Express) {
         return res.status(401).json({ error: 'Invalid username/email or password' });
       }
       
-      // Set session
+      // Set session (for environments that support cookies)
       req.session.userId = user.id;
       req.session.hasJustSignedUp = false;
+      
+      // Generate auth token (for iframe environments)
+      const authToken = generateAuthToken({
+        userId: user.id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        hasJustSignedUp: false
+      });
+      
+      console.log('Login successful for user:', user.username, 'Token generated');
       
       res.json({ 
         success: true, 
         message: 'Logged in successfully',
-        user: { id: user.id, username: user.username, name: user.name, email: user.email }
+        user: { id: user.id, username: user.username, name: user.name, email: user.email },
+        authToken: authToken // Include token for iframe compatibility
       });
     } catch (error) {
       console.error('Login error:', error);

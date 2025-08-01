@@ -166,11 +166,19 @@ export function EnhancedNotificationSettings() {
   }, [loadedSettings]);
 
   useEffect(() => {
-    // Check browser notification permission
+    // Check browser notification permission and mobile compatibility
     if ('Notification' in window) {
       setBrowserPermission(Notification.permission);
     }
   }, []);
+
+  const isMobileDevice = () => {
+    return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
+  const isMobileChrome = () => {
+    return isMobileDevice() && /Chrome/i.test(navigator.userAgent) && !/Edge/i.test(navigator.userAgent);
+  };
 
   const updateSetting = (key: keyof NotificationSettings, value: string) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -182,6 +190,26 @@ export function EnhancedNotificationSettings() {
       toast({
         title: "Not Supported",
         description: "Browser notifications are not supported in this browser.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Special handling for mobile Chrome
+    if (isMobileChrome()) {
+      toast({
+        title: "Mobile Chrome Limitation",
+        description: "Mobile Chrome has limited notification support. Consider using email or SMS notifications for reliable reminders.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Additional mobile device warning
+    if (isMobileDevice()) {
+      toast({
+        title: "Mobile Device Detected",
+        description: "Mobile browsers have limited notification support. Email and SMS are more reliable options.",
         variant: "destructive",
       });
       return;
@@ -200,7 +228,7 @@ export function EnhancedNotificationSettings() {
         
         // Send a test notification
         new Notification("ParentJourney", {
-          body: "🌟 Browser notifications are now enabled! You'll receive gentle reminders for your journaling practice.",
+          body: "Browser notifications are now enabled! You'll receive gentle reminders for your journaling practice.",
           icon: "/favicon.ico",
         });
       } else {
@@ -263,6 +291,12 @@ export function EnhancedNotificationSettings() {
   };
 
   const getBrowserNotificationStatus = () => {
+    if (isMobileChrome()) {
+      return { text: "📱 Mobile Chrome - Limited Support", color: "text-orange-600" };
+    }
+    if (isMobileDevice()) {
+      return { text: "📱 Mobile - Limited Support", color: "text-orange-600" };
+    }
     switch (browserPermission) {
       case "granted": return { text: "✅ Enabled", color: "text-green-600" };
       case "denied": return { text: "❌ Blocked", color: "text-red-600" };
@@ -367,13 +401,24 @@ export function EnhancedNotificationSettings() {
           <h3 className="font-medium text-neutral-800">Notification Methods</h3>
           
           {/* Browser Notifications */}
-          <div className="space-y-3 p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className={`space-y-3 p-4 rounded-lg border ${
+            isMobileDevice() 
+              ? 'bg-orange-50 border-orange-200' 
+              : 'bg-green-50 border-green-200'
+          }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Monitor className="h-5 w-5 text-green-600" />
+                <Monitor className={`h-5 w-5 ${isMobileDevice() ? 'text-orange-600' : 'text-green-600'}`} />
                 <div>
-                  <Label className="font-medium text-green-900">Browser Notifications</Label>
-                  <p className="text-xs text-green-700">Instant pop-up reminders on this device</p>
+                  <Label className={`font-medium ${isMobileDevice() ? 'text-orange-900' : 'text-green-900'}`}>
+                    Browser Notifications
+                  </Label>
+                  <p className={`text-xs ${isMobileDevice() ? 'text-orange-700' : 'text-green-700'}`}>
+                    {isMobileDevice() 
+                      ? 'Limited support on mobile browsers - use email/SMS instead' 
+                      : 'Instant pop-up reminders on this device'
+                    }
+                  </p>
                 </div>
               </div>
               <Badge variant="outline" className={browserStatus.color}>
@@ -381,24 +426,36 @@ export function EnhancedNotificationSettings() {
               </Badge>
             </div>
             
-            <div className="flex gap-2">
-              {browserPermission !== "granted" ? (
-                <Button onClick={requestBrowserPermission} size="sm" variant="outline">
-                  <Shield className="h-4 w-4 mr-2" />
-                  Enable Browser Notifications
-                </Button>
-              ) : (
-                <Button 
-                  onClick={() => sendTestNotification('browser')} 
-                  size="sm" 
-                  variant="outline"
-                  disabled={testNotificationMutation.isPending}
-                >
-                  <TestTube className="h-4 w-4 mr-2" />
-                  Test Browser Notification
-                </Button>
-              )}
-            </div>
+            {isMobileDevice() ? (
+              <div className="bg-orange-100 border border-orange-200 rounded-lg p-3">
+                <p className="text-sm text-orange-800 mb-2">
+                  <strong>Mobile Browser Detected:</strong> {isMobileChrome() ? 'Chrome mobile' : 'Mobile browser'} has very limited notification support.
+                </p>
+                <p className="text-xs text-orange-700">
+                  For reliable reminders, please use <strong>Email</strong> or <strong>SMS notifications</strong> below. 
+                  These work much better on mobile devices and won't drain your battery.
+                </p>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                {browserPermission !== "granted" ? (
+                  <Button onClick={requestBrowserPermission} size="sm" variant="outline">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Enable Browser Notifications
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={() => sendTestNotification('browser')} 
+                    size="sm" 
+                    variant="outline"
+                    disabled={testNotificationMutation.isPending}
+                  >
+                    <TestTube className="h-4 w-4 mr-2" />
+                    Test Browser Notification
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Email Notifications */}
@@ -510,7 +567,19 @@ export function EnhancedNotificationSettings() {
           </Button>
         </div>
 
-        {/* Info Note */}
+        {/* Info Notes */}
+        {isMobileDevice() && (
+          <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <h4 className="font-medium text-blue-900 mb-2">📱 Mobile User Recommendations:</h4>
+            <ul className="text-sm text-blue-800 space-y-1">
+              <li>• <strong>Email notifications</strong> work reliably on all mobile devices</li>
+              <li>• <strong>SMS notifications</strong> are instant and don't require internet</li>
+              <li>• Browser notifications on mobile are often blocked or unreliable</li>
+              <li>• Consider adding your email for the best experience</li>
+            </ul>
+          </div>
+        )}
+        
         <div className="bg-neutral-50 rounded-lg p-4 border border-neutral-200">
           <p className="text-sm text-neutral-600 leading-relaxed">
             <strong>Privacy Note:</strong> We'll only send you the notifications you choose. 

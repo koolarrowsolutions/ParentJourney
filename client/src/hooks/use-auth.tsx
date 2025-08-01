@@ -41,17 +41,23 @@ export function useAuth(): AuthState {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/auth/user'],
     queryFn: async () => {
+      console.log('Fetching auth user...');
       const response = await fetch('/auth/user', {
         credentials: 'include' // Ensure cookies are included across all scenarios
       });
+      console.log('Auth response status:', response.status);
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.log('Auth error:', errorData);
         throw new Error('Not authenticated');
       }
-      return response.json();
+      const result = await response.json();
+      console.log('Auth result:', result);
+      return result;
     },
     retry: 1, // Allow one retry for network issues
-    refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes to avoid unnecessary refetches
+    refetchOnWindowFocus: true, // Allow refetch on focus to catch state changes
+    staleTime: 1000 * 30, // Reduce to 30 seconds for better responsiveness
   });
 
   useEffect(() => {

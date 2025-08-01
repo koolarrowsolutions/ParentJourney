@@ -44,7 +44,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
     queryFn: async () => {
-      const response = await fetch("/api/journal-stats");
+      const response = await fetch("/api/journal-stats", {
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error("Failed to fetch stats");
       return response.json();
     },
@@ -53,7 +55,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const { data: childProfiles } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
     queryFn: async () => {
-      const response = await fetch("/api/child-profiles");
+      const response = await fetch("/api/child-profiles", {
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },
@@ -62,7 +66,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const { data: entries } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal-entries"],
     queryFn: async () => {
-      const response = await fetch("/api/journal-entries");
+      const response = await fetch("/api/journal-entries", {
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },

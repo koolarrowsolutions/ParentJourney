@@ -13,7 +13,6 @@ import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { ComprehensiveAIInsights } from "@/components/comprehensive-ai-insights";
 import { LoginSuccessPopup } from "@/components/login-success-popup";
-import { FamilyLoadingDemos } from "@/components/family-loading-demos";
 
 import { OnboardingFlow } from "@/components/onboarding-flow";
 import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
@@ -139,11 +138,6 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         {/* Easy Daily Check-In - Between welcome and AI insights */}
         <div className="mb-4 sm:mb-6">
           <MoodSelector />
-        </div>
-
-        {/* Family Loading Demos */}
-        <div className="mb-4 sm:mb-6">
-          <FamilyLoadingDemos />
         </div>
 
         {/* AI Insights Section */}

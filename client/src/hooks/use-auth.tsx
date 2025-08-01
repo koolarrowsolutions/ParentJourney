@@ -16,45 +16,69 @@ interface AuthState {
 }
 
 export function useAuth(): AuthState {
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    hasJustSignedUp: false,
-    isLoading: true,
+  const [authState, setAuthState] = useState<AuthState>(() => {
+    // Try to restore auth state from localStorage for better persistence
+    try {
+      const savedAuth = localStorage.getItem('authState');
+      if (savedAuth) {
+        const parsed = JSON.parse(savedAuth);
+        return {
+          ...parsed,
+          isLoading: true, // Always start loading to verify with server
+        };
+      }
+    } catch (error) {
+      console.warn('Failed to parse saved auth state:', error);
+    }
+    return {
+      user: null,
+      isAuthenticated: false,
+      hasJustSignedUp: false,
+      isLoading: true,
+    };
   });
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['/auth/user'],
     queryFn: async () => {
       const response = await fetch('/auth/user', {
-        credentials: 'same-origin' // Ensure cookies are included
+        credentials: 'include' // Ensure cookies are included across all scenarios
       });
       if (!response.ok) {
         throw new Error('Not authenticated');
       }
       return response.json();
     },
-    retry: false,
+    retry: 1, // Allow one retry for network issues
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes to avoid unnecessary refetches
   });
 
   useEffect(() => {
     if (isLoading) {
       setAuthState(prev => ({ ...prev, isLoading: true }));
     } else if (error) {
-      setAuthState({
+      const newState = {
         user: null,
         isAuthenticated: false,
         hasJustSignedUp: false,
         isLoading: false,
-      });
+      };
+      setAuthState(newState);
+      // Clear saved auth state on error
+      localStorage.removeItem('authState');
     } else if (data) {
-      setAuthState({
+      const newState = {
         user: data.user || null,
         isAuthenticated: data.success || false,
         hasJustSignedUp: data.hasJustSignedUp || false,
         isLoading: false,
-      });
+      };
+      setAuthState(newState);
+      // Save successful auth state to localStorage
+      if (newState.isAuthenticated) {
+        localStorage.setItem('authState', JSON.stringify(newState));
+      }
     }
   }, [data, isLoading, error]);
 

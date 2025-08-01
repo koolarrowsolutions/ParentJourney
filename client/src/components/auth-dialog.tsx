@@ -77,7 +77,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'same-origin', // Ensure cookies are included
+        credentials: 'include', // Ensure cookies are included
         body: JSON.stringify({
           username: data.username,
           name: data.name,
@@ -130,7 +130,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'same-origin', // Ensure cookies are included
+        credentials: 'include', // Ensure cookies are included
         body: JSON.stringify({
           identifier: data.identifier,
           password: data.password,

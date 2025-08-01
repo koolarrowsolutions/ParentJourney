@@ -226,7 +226,8 @@ After setting up in new account:
 ### Current Status
 - All core features are implemented and functional
 - FREE email notification system working via Brevo API (verified working)
-- Browser notifications implemented as SMS alternative
+- Browser notifications implemented for desktop users
+- FREE SMS notifications via TextBelt API (1/day, region-limited)
 - AI insights require OpenAI API key
 - Database schema is stable and tested
 

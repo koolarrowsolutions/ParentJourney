@@ -1590,11 +1590,48 @@ Provide your analysis in this exact JSON format:
             break;
           }
           
-          // Recommend free browser notifications instead of paid SMS
-          result = { 
-            success: true, 
-            message: "💡 Free Alternative: Use browser notifications instead of SMS! They're instant and completely free on desktop devices. Enable browser notifications above for free instant alerts - no paid SMS service needed!"
-          };
+          try {
+            // Free SMS via TextBelt (1 per day)
+            const smsResponse = await fetch('https://textbelt.com/text', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                phone: recipient,
+                message: 'ParentJourney Test: Your FREE SMS notifications are working! This free service provides 1 test SMS per day. For unlimited alerts, enable browser notifications.',
+                key: 'textbelt' // Free key - 1 SMS per day
+              })
+            });
+
+            const smsData = await smsResponse.json();
+            
+            if (smsData.success) {
+              result = { 
+                success: true, 
+                message: `✅ FREE SMS sent to ${recipient}! (TextBelt: 1 SMS/day free limit - Message ID: ${smsData.textId})`
+              };
+            } else {
+              const errorMessage = smsData.error || 'Unknown error';
+              if (errorMessage.includes('disabled for this country') || errorMessage.includes('abuse')) {
+                result = { 
+                  success: false, 
+                  message: `Free SMS unavailable in your region due to service restrictions. Browser notifications work great as a free alternative!`
+                };
+              } else {
+                result = { 
+                  success: false, 
+                  message: `SMS delivery failed: ${errorMessage}. Try browser notifications for unlimited alerts.`
+                };
+              }
+            }
+          } catch (error) {
+            console.error('SMS API error:', error);
+            result = { 
+              success: false, 
+              message: 'SMS service temporarily unavailable. Use browser notifications for reliable alerts.'
+            };
+          }
           break;
           
         default:

@@ -40,7 +40,7 @@ The application employs a modern full-stack architecture with clear separation b
 - **AI Mood Analysis**: Automatic mood detection and quantification (1-10 scale) for every journal entry using OpenAI GPT-4o, creating emotional journey maps.
 - **AI-Powered Insights**: OpenAI GPT-4o generates warm, age-appropriate parenting feedback, structured for validation, suggestions, and growth insights.
 - **Milestone Tracking**: Age-appropriate and custom milestone tracking.
-- **Notifications**: FREE email notifications via Brevo API (300/day), browser notifications for desktop users, and cost-effective alternatives to paid SMS services.
+- **Notifications**: FREE email notifications via Brevo API (300/day), browser notifications for desktop users, and FREE SMS via TextBelt (1/day, region-limited).
 - **Search**: Advanced multi-filter search by keywords, mood, child, dates, and AI feedback.
 - **Weekly Reflections**: Automated summaries with pattern analysis.
 - **Developmental Insights**: Age-specific parenting insights based on child development research, personalized by child's selected personality traits.

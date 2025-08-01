@@ -128,13 +128,13 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         )}
 
-        {/* AI Insights Section */}
-        <div className="mb-4 sm:mb-6">
+        {/* AI Insights Section - Minimal margin */}
+        <div className="mb-1">
           <ComprehensiveAIInsights />
         </div>
 
-        {/* Feeling Overwhelmed Element - No gap to next section */}
-        <div className="mb-3 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
+        {/* Feeling Overwhelmed Element - Direct connection to next section */}
+        <div className="mb-1 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-emerald-800 font-medium">
               Feeling overwhelmed today? Take a moment to center yourself.
@@ -143,8 +143,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         </div>
 
-        {/* Mood Selection - Independent Element */}
-        <div className="mb-3">
+        {/* Mood Selection - Tight spacing */}
+        <div className="mb-1">
           <MoodSelector 
             selectedMood={selectedMood} 
             onMoodChange={setSelectedMood} 
@@ -152,7 +152,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         </div>
 
         {/* Quick Actions Group */}
-        <div className="mb-6">
+        <div className="mb-4">
           <QuickActionsGroup 
             selectedMood={selectedMood} 
             triggerSignUpPrompt={enhancedTriggerSignUpPrompt}

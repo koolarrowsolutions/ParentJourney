@@ -307,6 +307,39 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
           ) : (
             <Form {...loginForm}>
               <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
+                {/* Demo Login Helper */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-xs text-blue-700 mb-2">
+                    <strong>Quick Demo Access:</strong>
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => {
+                        loginForm.setValue('identifier', 'mobile');
+                        loginForm.setValue('password', 'mobile123');
+                      }}
+                    >
+                      Fill Mobile User
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => {
+                        loginForm.setValue('identifier', 'testuser');
+                        loginForm.setValue('password', 'password123');
+                      }}
+                    >
+                      Fill Test User
+                    </Button>
+                  </div>
+                </div>
+                
                 <FormField
                   control={loginForm.control}
                   name="identifier"

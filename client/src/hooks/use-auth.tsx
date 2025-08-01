@@ -18,15 +18,13 @@ interface AuthState {
 
 export function useAuth(): AuthState {
   const [authState, setAuthState] = useState<AuthState>(() => {
-    // Clear ALL cached auth data to prevent confusion
-    localStorage.removeItem('authState');
-    localStorage.removeItem('parentjourney_auth');
-    localStorage.removeItem('parentjourney_token');
+    // Check for existing auth data instead of clearing it
+    const storedAuth = getStoredAuthData();
     
     return {
-      user: null,
-      isAuthenticated: false,
-      hasJustSignedUp: false,
+      user: storedAuth?.user || null,
+      isAuthenticated: storedAuth?.isAuthenticated || false,
+      hasJustSignedUp: storedAuth?.hasJustSignedUp || false,
       isLoading: true,
     };
   });

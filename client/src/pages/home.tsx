@@ -13,6 +13,7 @@ import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { ComprehensiveAIInsights } from "@/components/comprehensive-ai-insights";
 import { LoginSuccessPopup } from "@/components/login-success-popup";
+import { GamifiedWellnessDashboard } from "@/components/gamified-wellness-dashboard";
 
 import { OnboardingFlow } from "@/components/onboarding-flow";
 import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
@@ -135,8 +136,27 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         </div>
 
-        {/* Easy Daily Check-In - Between welcome and AI insights */}
+        {/* Gamified Wellness Dashboard */}
         <div className="mb-4 sm:mb-6">
+          <GamifiedWellnessDashboard 
+            stats={{
+              weeklyCheckIns: stats?.weekEntries || 0,
+              currentStreak: stats?.longestStreak || 0,
+              totalEntries: stats?.totalEntries || 0,
+              wellnessScore: Math.min(((stats?.totalEntries || 0) / 10) * 100, 100)
+            }}
+            onStartCheckIn={() => {
+              // This will be implemented to trigger the mood selector
+              const moodSelector = document.querySelector('[data-mood-selector]');
+              if (moodSelector) {
+                moodSelector.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          />
+        </div>
+
+        {/* Easy Daily Check-In - Between welcome and AI insights */}
+        <div className="mb-4 sm:mb-6" data-mood-selector>
           <MoodSelector />
         </div>
 

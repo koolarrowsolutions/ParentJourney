@@ -1,66 +1,69 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Heart, BarChart3 } from "lucide-react";
+import { DailyCheckIn, type DailyCheckInData } from "./daily-checkin";
 
-const MOODS = [
-  { emoji: "😊", label: "Happy", value: "😊" },
-  { emoji: "😰", label: "Stressed", value: "😰" },
-  { emoji: "😴", label: "Tired", value: "😴" },
-  { emoji: "🤔", label: "Thoughtful", value: "🤔" },
-  { emoji: "😅", label: "Overwhelmed", value: "😅" },
-  { emoji: "🥰", label: "Grateful", value: "🥰" },
-  { emoji: "😔", label: "Sad", value: "😔" },
-  { emoji: "😤", label: "Frustrated", value: "😤" },
-  { emoji: "😌", label: "Calm", value: "😌" },
-  { emoji: "😕", label: "Worried", value: "😕" },
-];
-
-interface MoodSelectorProps {
-  selectedMood: string;
-  onMoodChange: (mood: string) => void;
+interface DailyCheckInSelectorProps {
+  onCheckInComplete?: (data: DailyCheckInData) => void;
 }
 
-export function MoodSelector({ selectedMood, onMoodChange }: MoodSelectorProps) {
+export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelectorProps) {
+  const [showCheckIn, setShowCheckIn] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+
+  const handleCheckInComplete = (data: DailyCheckInData) => {
+    console.log('Daily check-in completed:', data);
+    setShowCheckIn(false);
+    onCheckInComplete?.(data);
+    // TODO: Save to journal entry or separate endpoint
+  };
+
   return (
-    <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible">
-      <CardContent className="p-3 sm:p-4">
-        <div className="flex items-center mb-2 sm:mb-3">
-          <Heart className="text-blue-600 mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-          <h3 className="text-base sm:text-lg font-bold text-gray-900">
-            How are you feeling today?
-          </h3>
-        </div>
-        <p className="text-gray-700 mb-2 sm:mb-3 text-xs sm:text-sm font-medium">
-          Your emotions help our AI provide personalized insights and track your wellness journey.
-        </p>
-        
-        <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2">
-          {MOODS.map((mood) => (
-            <button
-              key={mood.value}
-              type="button"
-              onClick={() => onMoodChange(mood.value)}
-              className={`px-2 py-2 sm:px-3 rounded-full border text-xs sm:text-sm transition-all button-press hover-scale animate-wiggle hover:animate-bounce-subtle flex items-center justify-center ${
-                selectedMood === mood.value
-                  ? "border-primary bg-primary/10 text-primary animate-pulse-glow"
-                  : "border-neutral-200 hover:border-primary hover:bg-primary/5"
-              }`}
-            >
-              <span className="text-base sm:text-lg mr-1">{mood.emoji}</span>
-              <span className="hidden sm:inline">{mood.label}</span>
-              <span className="sm:hidden text-xs">{mood.label}</span>
-            </button>
-          ))}
-        </div>
-        
-        {selectedMood && (
-          <div className="mt-3 text-center">
-            <p className="text-xs text-neutral-500">
-              Selected: {MOODS.find(m => m.value === selectedMood)?.emoji} {MOODS.find(m => m.value === selectedMood)?.label}
-            </p>
+    <>
+      <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex items-center mb-2 sm:mb-3">
+            <Heart className="text-blue-600 mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+            <h3 className="text-base sm:text-lg font-bold text-gray-900">
+              Daily Check-In
+            </h3>
           </div>
-        )}
-      </CardContent>
-    </Card>
+          <p className="text-gray-700 mb-3 sm:mb-4 text-xs sm:text-sm font-medium">
+            Track your complete wellness journey with our comprehensive daily assessment covering energy, patience, connection, and more.
+          </p>
+          
+          <div className="space-y-2">
+            <Button 
+              onClick={() => setShowCheckIn(true)}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-medium text-sm sm:text-base py-2 sm:py-3 rounded-lg transition-all hover-scale button-press"
+            >
+              <Heart className="mr-2 h-4 w-4" />
+              Start Daily Check-In
+            </Button>
+            
+            <Button 
+              variant="outline"
+              onClick={() => setShowAnalytics(!showAnalytics)}
+              className="w-full border-primary/30 text-primary hover:bg-primary/5 font-medium text-xs sm:text-sm py-2 rounded-lg transition-all hover-scale button-press"
+            >
+              <BarChart3 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              ✨ View Parent Analytics
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Daily Check-In Modal */}
+      {showCheckIn && (
+        <DailyCheckIn
+          onComplete={handleCheckInComplete}
+          onCancel={() => setShowCheckIn(false)}
+        />
+      )}
+    </>
   );
 }
+
+// Legacy component name for backward compatibility
+export const MoodSelector = DailyCheckInSelector;

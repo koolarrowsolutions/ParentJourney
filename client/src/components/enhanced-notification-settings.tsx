@@ -226,26 +226,18 @@ export function EnhancedNotificationSettings() {
   };
 
   const handleSave = () => {
-    // Validate required fields if notifications are enabled
-    const errors: {[key: string]: string} = {};
-    
+    // Simple validation - require at least one notification method if reminders are enabled
     if (settings.dailyReminder === "true" || settings.weeklyProgress === "true") {
       if (!settings.notificationEmail && !settings.notificationPhone && settings.browserNotifications === "false") {
-        errors.general = "Please enable at least one notification method (email, SMS, or browser) to receive reminders.";
+        toast({
+          title: "Validation Error",
+          description: "Please enable at least one notification method (email, SMS, or browser) to receive reminders.",
+          variant: "destructive",
+        });
+        return;
       }
     }
 
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
-      toast({
-        title: "Validation Error",
-        description: "Please fix the errors before saving.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setValidationErrors({});
     saveSettingsMutation.mutate(settings);
   };
 
@@ -299,13 +291,7 @@ export function EnhancedNotificationSettings() {
       </CardHeader>
       
       <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
-        {/* General Validation Error */}
-        {validationErrors.general && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 flex items-start gap-2 sm:gap-3">
-            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mt-0.5 flex-shrink-0" />
-            <p className="text-red-700 text-xs sm:text-sm leading-relaxed">{validationErrors.general}</p>
-          </div>
-        )}
+
 
         {/* Reminder Settings */}
         <div className="space-y-3 sm:space-y-4">
@@ -374,14 +360,9 @@ export function EnhancedNotificationSettings() {
                 placeholder="your-email@example.com"
                 value={settings.notificationEmail}
                 onChange={(e) => updateSetting('notificationEmail', e.target.value)}
-                className={`text-sm sm:text-base ${validationErrors.email ? "border-red-300" : ""}`}
+                className="text-sm sm:text-base"
               />
-              {validationErrors.email && (
-                <p className="text-xs sm:text-sm text-red-600 flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3 flex-shrink-0" />
-                  <span>{validationErrors.email}</span>
-                </p>
-              )}
+
               
               {settings.notificationEmail && (
                 <Button 
@@ -411,14 +392,9 @@ export function EnhancedNotificationSettings() {
                 placeholder="+1 (555) 123-4567"
                 value={settings.notificationPhone}
                 onChange={(e) => updateSetting('notificationPhone', e.target.value)}
-                className={`text-sm sm:text-base ${validationErrors.phone ? "border-red-300" : ""}`}
+                className="text-sm sm:text-base"
               />
-              {validationErrors.phone && (
-                <p className="text-xs sm:text-sm text-red-600 flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3 flex-shrink-0" />
-                  <span>{validationErrors.phone}</span>
-                </p>
-              )}
+
               
               {settings.notificationPhone && (
                 <Button 

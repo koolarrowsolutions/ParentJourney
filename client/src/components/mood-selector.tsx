@@ -22,15 +22,15 @@ interface MoodSelectorProps {
 
 export function MoodSelector({ selectedMood, onMoodChange }: MoodSelectorProps) {
   return (
-    <Card className="shadow-sm border border-neutral-200 hover-lift animate-slide-in-left stagger-1">
+    <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible">
       <CardContent className="p-3 sm:p-4">
         <div className="flex items-center mb-2 sm:mb-3">
-          <Heart className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-          <h3 className="text-base sm:text-lg font-semibold text-neutral-800">
+          <Heart className="text-blue-600 mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+          <h3 className="text-base sm:text-lg font-bold text-gray-900">
             How are you feeling today?
           </h3>
         </div>
-        <p className="text-neutral-600 mb-2 sm:mb-3 text-xs sm:text-sm">
+        <p className="text-gray-700 mb-2 sm:mb-3 text-xs sm:text-sm font-medium">
           Your emotions help our AI provide personalized insights and track your wellness journey.
         </p>
         

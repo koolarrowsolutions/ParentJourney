@@ -132,11 +132,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         <div className="mb-4 sm:mb-6">
           <ComprehensiveAIInsights />
         </div>
-        
-
 
         {/* Feeling Overwhelmed Element - Reduced gap */}
-        <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
+        <div className="mb-2 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-emerald-800 font-medium">
               Feeling overwhelmed today? Take a moment to center yourself.
@@ -146,7 +144,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         </div>
 
         {/* Mood Selection - Independent Element */}
-        <div className="mb-6">
+        <div className="mb-4">
           <MoodSelector 
             selectedMood={selectedMood} 
             onMoodChange={setSelectedMood} 

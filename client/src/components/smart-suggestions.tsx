@@ -46,6 +46,7 @@ export function SmartSuggestions({ context, onSuggestionClick, className = "" }:
   const [isExpanded, setIsExpanded] = useState(false);
   const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
   const [clickedSuggestions, setClickedSuggestions] = useState<string[]>([]);
+  const [previewSuggestion, setPreviewSuggestion] = useState<string | null>(null);
 
   const allSuggestions: Suggestion[] = [
     {
@@ -145,7 +146,70 @@ export function SmartSuggestions({ context, onSuggestionClick, className = "" }:
 
   const handleSuggestionClick = (suggestionId: string) => {
     setClickedSuggestions(prev => [...prev, suggestionId]);
+    setPreviewSuggestion(suggestionId);
     onSuggestionClick?.(suggestionId);
+    
+    // Auto-hide preview after 5 seconds
+    setTimeout(() => setPreviewSuggestion(null), 5000);
+  };
+
+  const renderPreview = (suggestionId: string) => {
+    switch (suggestionId) {
+      case 'mood-palette':
+        return (
+          <div className="mt-3 p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg border border-pink-200">
+            <h4 className="font-medium text-pink-800 mb-2">Mood Color Palette Preview</h4>
+            <div className="flex space-x-2 mb-2">
+              <div className="w-6 h-6 rounded-full bg-yellow-400"></div>
+              <div className="w-6 h-6 rounded-full bg-blue-400"></div>
+              <div className="w-6 h-6 rounded-full bg-green-400"></div>
+              <div className="w-6 h-6 rounded-full bg-red-400"></div>
+            </div>
+            <p className="text-sm text-pink-700">Choose colors that match your feelings and watch your journal theme adapt</p>
+          </div>
+        );
+      case 'breathing-character':
+        return (
+          <div className="mt-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
+            <h4 className="font-medium text-blue-800 mb-2">Breathing Character Preview</h4>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-full bg-blue-200 animate-pulse flex items-center justify-center">
+                🌸
+              </div>
+              <p className="text-sm text-blue-700">Meet Blossom, your breathing buddy who guides you through calm exercises</p>
+            </div>
+          </div>
+        );
+      case 'photo-storytelling':
+        return (
+          <div className="mt-3 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+            <h4 className="font-medium text-indigo-800 mb-2">AI Photo Stories Preview</h4>
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <div className="w-full h-12 bg-indigo-200 rounded flex items-center justify-center text-xs">📸</div>
+              <div className="w-full h-12 bg-indigo-200 rounded flex items-center justify-center text-xs">🎂</div>
+              <div className="w-full h-12 bg-indigo-200 rounded flex items-center justify-center text-xs">🌟</div>
+            </div>
+            <p className="text-sm text-indigo-700">AI creates beautiful milestone stories from your uploaded photos</p>
+          </div>
+        );
+      case 'predictive-prompts':
+        return (
+          <div className="mt-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+            <h4 className="font-medium text-green-800 mb-2">Smart Prompts Preview</h4>
+            <div className="space-y-1 mb-2">
+              <p className="text-xs bg-green-100 px-2 py-1 rounded">💭 "How did bedtime go tonight?"</p>
+              <p className="text-xs bg-green-100 px-2 py-1 rounded">🎮 "What made you smile today?"</p>
+            </div>
+            <p className="text-sm text-green-700">Get personalized writing prompts based on your parenting patterns</p>
+          </div>
+        );
+      default:
+        return (
+          <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <p className="text-sm text-gray-600">This feature will enhance your ParentJourney experience with personalized tools and insights.</p>
+          </div>
+        );
+    }
   };
 
   const handleDismiss = (suggestionId: string, e: React.MouseEvent) => {
@@ -238,6 +302,9 @@ export function SmartSuggestions({ context, onSuggestionClick, className = "" }:
                   </div>
                 </div>
               </div>
+              
+              {/* Preview Section */}
+              {previewSuggestion === suggestion.id && renderPreview(suggestion.id)}
             </CardContent>
           </Card>
         ))}

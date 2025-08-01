@@ -22,6 +22,7 @@ export const parentProfiles = pgTable("parent_profiles", {
   stressors: text("stressors").array(), // Common parenting stressors
   supportSystems: text("support_systems"), // Family, friends, professionals, etc.
   notes: text("notes"), // Additional notes about parenting style/preferences
+  photoUrl: text("photo_url"), // Profile photo URL from object storage
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -35,6 +36,7 @@ export const childProfiles = pgTable("child_profiles", {
   developmentalStage: text("developmental_stage"), // Added developmental stage
   notes: text("notes"),
   personalityTraits: text("personality_traits").array(), // array of selected personality trait keys
+  photoUrl: text("photo_url"), // Profile photo URL from object storage
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

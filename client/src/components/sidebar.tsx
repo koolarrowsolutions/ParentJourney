@@ -85,28 +85,32 @@ export function Sidebar() {
                 <div className="text-xs text-neutral-500">Get guided prompts</div>
               </div>
             </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"
-              onClick={() => setShowDailyCheckIn(true)}
-            >
-              <Heart className="text-blue-500 mr-3 h-5 w-5" />
-              <div className="text-left">
-                <div className="font-medium text-neutral-800">Daily Check-In</div>
-                <div className="text-xs text-neutral-500">Track your wellness journey</div>
-              </div>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"
-              onClick={() => setShowParentAnalytics(!showParentAnalytics)}
-            >
-              <BarChart3 className="text-secondary mr-3 h-5 w-5" />
-              <div className="text-left">
-                <div className="font-medium text-neutral-800">✨ Parent Analytics</div>
-                <div className="text-xs text-neutral-500">View your wellness patterns</div>
-              </div>
-            </Button>
+            {/* Daily Check-In Section with Connected Analytics */}
+            <div className="space-y-2">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"
+                onClick={() => setShowDailyCheckIn(true)}
+              >
+                <Heart className="text-blue-500 mr-3 h-5 w-5" />
+                <div className="text-left">
+                  <div className="font-medium text-neutral-800">Daily Check-In</div>
+                  <div className="text-xs text-neutral-500">Track your wellness journey</div>
+                </div>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="w-full justify-start p-2 h-auto border-neutral-200 hover:border-secondary hover:bg-secondary/5 hover-lift button-press interactive-card ml-4"
+                onClick={() => setShowParentAnalytics(!showParentAnalytics)}
+              >
+                <BarChart3 className="text-secondary mr-3 h-4 w-4" />
+                <div className="text-left">
+                  <div className="font-medium text-neutral-800 text-sm">✨ View Analytics</div>
+                  <div className="text-xs text-neutral-500">See your wellness patterns</div>
+                </div>
+              </Button>
+            </div>
             <Button 
               variant="outline" 
               className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"

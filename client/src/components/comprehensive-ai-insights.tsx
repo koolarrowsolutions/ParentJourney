@@ -239,14 +239,153 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
   // Helper function to generate user-specific data for authenticated users
   const getUserSpecificData = (type: string, entries: any[], childProfiles: any[], parentProfile: any) => {
+    console.log(`Generating user-specific data for: ${type}`);
+    console.log(`Entries count: ${entries?.length || 0}`);
+    console.log(`Child profiles count: ${childProfiles?.length || 0}`);
+    console.log(`Parent profile exists: ${!!parentProfile}`);
+
+    // Ensure we have actual user data before proceeding
+    if (!entries || entries.length === 0) {
+      return {
+        noDataMessage: "Start journaling to unlock personalized AI insights based on your parenting experiences.",
+        isEmptyState: true
+      };
+    }
+
     switch (type) {
       case "parenting-progress":
-        return getProperFallbackData(type);
+        return generateParentingProgressAnalysis(entries, parentProfile);
       case "child-development":
-        return getProperFallbackData(type);
+        return generateChildDevelopmentAnalysis(entries, childProfiles);
+      case "personalized-tips":
+        return generatePersonalizedTips(entries, childProfiles, parentProfile);
+      case "considerations":
+        return generateConsiderations(entries, childProfiles, parentProfile);
       default:
-        return getProperFallbackData(type);
+        return {
+          noDataMessage: "Analysis not available yet. Continue journaling to unlock personalized insights.",
+          isEmptyState: true
+        };
     }
+  };
+
+  // Generate actual user-specific parenting progress analysis
+  const generateParentingProgressAnalysis = (entries: any[], parentProfile: any) => {
+    const recentEntries = entries.slice(0, 10); // Last 10 entries
+    const totalEntries = entries.length;
+    
+    // Analyze mood patterns from actual user data
+    const moods = entries.filter(e => e.mood).map(e => parseFloat(e.mood) || 5);
+    const averageMood = moods.length > 0 ? (moods.reduce((a, b) => a + b, 0) / moods.length).toFixed(1) : "Not tracked";
+    
+    // Count entries with AI feedback
+    const entriesWithFeedback = entries.filter(e => e.aiFeedback && e.aiFeedback.trim() !== '').length;
+    
+    return {
+      progressOverview: `Based on your ${totalEntries} journal entries, you're actively documenting your parenting journey. Your average mood rating is ${averageMood}/10, showing your emotional awareness and commitment to growth.`,
+      strengths: [
+        `Consistent journaling practice with ${totalEntries} documented experiences`,
+        `Active reflection on parenting situations and outcomes`,
+        entriesWithFeedback > 0 ? `Engaged with AI feedback on ${entriesWithFeedback} entries` : "Growing awareness through self-reflection",
+        "Commitment to understanding and improving your parenting approach"
+      ],
+      growthAreas: [
+        moods.length > 0 && averageMood < "7" ? "Focus on stress management and self-care strategies" : "Continue maintaining emotional balance",
+        "Explore new parenting strategies based on your documented experiences",
+        "Consider patterns in challenging situations from your journal entries",
+        "Celebrate progress and acknowledge your parenting wins"
+      ],
+      nextSteps: `Continue your journaling practice and focus on patterns you've documented. With ${totalEntries} entries, you have valuable insights to draw from. Consider what themes emerge from your recent experiences.`,
+      userStats: {
+        totalEntries,
+        averageMood,
+        entriesWithFeedback,
+        recentThemes: recentEntries.slice(0, 3).map(e => e.title || "Untitled entry")
+      }
+    };
+  };
+
+  // Generate actual child development analysis from user data
+  const generateChildDevelopmentAnalysis = (entries: any[], childProfiles: any[]) => {
+    const childEntries = entries.filter(e => e.childProfileId);
+    
+    return {
+      developmentOverview: `Based on your journal entries about your ${childProfiles?.length || 0} child${childProfiles?.length === 1 ? '' : 'ren'}, you're actively tracking their growth and development. You've documented ${childEntries.length} child-specific experiences.`,
+      children: childProfiles?.map(child => {
+        const childSpecificEntries = entries.filter(e => e.childProfileId === child.id);
+        return {
+          name: child.name,
+          age: calculateAge(child.dateOfBirth),
+          developmentalStage: getDevelopmentalStage(child.dateOfBirth),
+          milestones: getAgeAppropriateeMilestones(child.dateOfBirth),
+          focusAreas: getPersonalizedFocusAreas(child),
+          recommendations: getPersonalizedRecommendations(child),
+          entryCount: childSpecificEntries.length,
+          recentExperiences: childSpecificEntries.slice(0, 2).map(e => e.title || "Recent experience")
+        };
+      }) || [],
+      familyDynamics: childProfiles && childProfiles.length > 1 ? 
+        `With ${childProfiles.length} children, you're managing different developmental needs and personalities. Your journal shows attention to each child's individual journey.` : 
+        `You're focused on your child's individual development with ${childEntries.length} documented experiences specific to their growth.`
+    };
+  };
+
+  // Generate personalized tips from actual user data
+  const generatePersonalizedTips = (entries: any[], childProfiles: any[], parentProfile: any) => {
+    const recentChallenges = entries.slice(0, 5).filter(e => 
+      e.content && (e.content.toLowerCase().includes('difficult') || 
+                   e.content.toLowerCase().includes('challenge') || 
+                   e.content.toLowerCase().includes('struggle'))
+    );
+
+    return {
+      tips: [
+        {
+          category: "Based on Your Recent Entries",
+          tip: recentChallenges.length > 0 
+            ? "I notice you've documented some challenging moments. Consider creating a simple response plan for similar situations."
+            : "Your recent entries show thoughtful reflection. Try documenting what worked well to build on those successes.",
+          reason: "Your journal entries provide valuable insights into what strategies align with your family's needs."
+        },
+        {
+          category: "Child Development",
+          tip: childProfiles && childProfiles.length > 0 
+            ? `For ${childProfiles[0]?.name || 'your child'} at ${calculateAge(childProfiles[0]?.dateOfBirth)}, focus on age-appropriate independence activities.`
+            : "Create simple routines that support your child's current developmental stage.",
+          reason: "Your child profiles show specific developmental needs that can guide your approach."
+        },
+        {
+          category: "Self-Care",
+          tip: `With ${entries.length} journal entries, you're committed to growth. Now prioritize 10 minutes daily for personal reflection or relaxation.`,
+          reason: "Your journaling shows dedication to family - balancing this with self-care will support your long-term well-being."
+        }
+      ]
+    };
+  };
+
+  // Generate considerations from user data
+  const generateConsiderations = (entries: any[], childProfiles: any[], parentProfile: any) => {
+    return {
+      considerations: [
+        {
+          title: "Review Your Journal Patterns",
+          description: `With ${entries.length} entries, you might notice recurring themes. What patterns do you see in your most challenging or successful parenting moments?`,
+          actionStep: "Spend a few minutes reviewing your last 5 entries to identify what approaches work best for your family."
+        },
+        {
+          title: "Child-Specific Approaches",
+          description: childProfiles && childProfiles.length > 0 
+            ? `Each of your ${childProfiles.length} child${childProfiles.length === 1 ? '' : 'ren'} has unique needs. Are you adapting your parenting style for each personality?`
+            : "Consider how your child's personality traits influence the most effective parenting strategies.",
+          actionStep: "Document what works specifically for each child's personality and developmental stage."
+        },
+        {
+          title: "Celebrate Your Growth",
+          description: `Your ${entries.length} journal entries show real commitment to conscious parenting. Are you acknowledging your progress and wins?`,
+          actionStep: "Write about three parenting moments you handled well recently - big or small victories count."
+        }
+      ]
+    };
   };
 
   // Provide proper structured fallback data for each analysis type
@@ -522,6 +661,22 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
 function ParentingProgressAnalysis({ data }: { data: any }) {
   console.log("ParentingProgressAnalysis received data:", data);
+  
+  // Handle empty state for users without journal entries
+  if (!data || data.isEmptyState) {
+    return (
+      <div className="text-center py-8">
+        <div className="bg-neutral-50 rounded-lg p-6 mb-4">
+          <Target className="h-12 w-12 text-neutral-400 mx-auto mb-3" />
+          <h3 className="font-medium text-neutral-700 mb-2">No Journal Data Yet</h3>
+          <p className="text-sm text-neutral-600 leading-relaxed">
+            {data?.noDataMessage || "Start writing journal entries to see your personalized parenting progress analysis."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  
   if (!data) {
     console.log("ParentingProgressAnalysis: No data provided");
     return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
@@ -639,6 +794,21 @@ function ParentingProgressAnalysis({ data }: { data: any }) {
 }
 
 function ChildDevelopmentAnalysis({ data }: { data: any }) {
+  // Handle empty state for users without journal entries
+  if (!data || data.isEmptyState) {
+    return (
+      <div className="text-center py-8">
+        <div className="bg-neutral-50 rounded-lg p-6 mb-4">
+          <Baby className="h-12 w-12 text-neutral-400 mx-auto mb-3" />
+          <h3 className="font-medium text-neutral-700 mb-2">No Child Development Data</h3>
+          <p className="text-sm text-neutral-600 leading-relaxed">
+            {data?.noDataMessage || "Add child profiles and start journaling to see personalized development insights."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  
   if (!data) return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
   
   // Handle explainer content for unauthenticated users

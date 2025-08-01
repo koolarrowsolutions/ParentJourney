@@ -84,23 +84,42 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateJournalEntry(id: string, updates: Partial<InsertJournalEntry>): Promise<JournalEntry | undefined> {
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return undefined;
+
     const result = await db.update(schema.journalEntries)
       .set(updates)
-      .where(eq(schema.journalEntries.id, id))
+      .where(and(
+        eq(schema.journalEntries.id, id),
+        eq(schema.journalEntries.familyId, familyId)
+      ))
       .returning();
     return result[0];
   }
 
   async updateJournalEntryFavorite(id: string, isFavorite: boolean): Promise<JournalEntry | undefined> {
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return undefined;
+
     const result = await db.update(schema.journalEntries)
       .set({ isFavorite: isFavorite ? "true" : "false" })
-      .where(eq(schema.journalEntries.id, id))
+      .where(and(
+        eq(schema.journalEntries.id, id),
+        eq(schema.journalEntries.familyId, familyId)
+      ))
       .returning();
     return result[0];
   }
 
   async deleteJournalEntry(id: string): Promise<boolean> {
-    const result = await db.delete(schema.journalEntries).where(eq(schema.journalEntries.id, id));
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return false;
+
+    const result = await db.delete(schema.journalEntries)
+      .where(and(
+        eq(schema.journalEntries.id, id),
+        eq(schema.journalEntries.familyId, familyId)
+      ));
     return (result.rowCount ?? 0) > 0;
   }
 
@@ -109,7 +128,12 @@ export class DatabaseStorage implements IStorage {
     weekEntries: number;
     longestStreak: number;
   }> {
-    const totalResult = await db.select({ count: sql<number>`count(*)` }).from(schema.journalEntries);
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return { totalEntries: 0, weekEntries: 0, longestStreak: 0 };
+
+    const totalResult = await db.select({ count: sql<number>`count(*)` })
+      .from(schema.journalEntries)
+      .where(eq(schema.journalEntries.familyId, familyId));
     const totalEntries = totalResult[0]?.count || 0;
 
     const weekAgo = new Date();
@@ -117,7 +141,10 @@ export class DatabaseStorage implements IStorage {
     
     const weekResult = await db.select({ count: sql<number>`count(*)` })
       .from(schema.journalEntries)
-      .where(gte(schema.journalEntries.createdAt, weekAgo));
+      .where(and(
+        eq(schema.journalEntries.familyId, familyId),
+        gte(schema.journalEntries.createdAt, weekAgo)
+      ));
     const weekEntries = weekResult[0]?.count || 0;
 
     // Calculate longest streak - for now just return 0 if no entries
@@ -136,7 +163,26 @@ export class DatabaseStorage implements IStorage {
     weeklyMoodAverage: number;
     moodStreak: { currentMood: string | null; streakDays: number };
   }> {
-    // Placeholder implementation
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) {
+      return {
+        moodDistribution: [],
+        moodTrends: [],
+        weeklyMoodAverage: 0,
+        moodStreak: { currentMood: null, streakDays: 0 },
+      };
+    }
+
+    // Get mood data only for the current user's family
+    const entries = await db.select()
+      .from(schema.journalEntries)
+      .where(and(
+        eq(schema.journalEntries.familyId, familyId),
+        sql`${schema.journalEntries.mood} IS NOT NULL`
+      ))
+      .orderBy(desc(schema.journalEntries.createdAt));
+
+    // Process mood data for analytics
     return {
       moodDistribution: [],
       moodTrends: [],

@@ -225,7 +225,8 @@ After setting up in new account:
 
 ### Current Status
 - All core features are implemented and functional
-- Notification system requires external API keys for real delivery
+- FREE email notification system working via Brevo API (verified working)
+- Browser notifications implemented as SMS alternative
 - AI insights require OpenAI API key
 - Database schema is stable and tested
 

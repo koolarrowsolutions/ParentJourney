@@ -57,11 +57,8 @@ function setupOldAuthRoutes(app: Express) {
       const demoUser = await storage.createUser({
         name: 'Google User',
         email: 'user@gmail.com',
-        providerId: 'google_demo_' + Date.now(),
-        provider: 'google',
-        avatar: null,
-        accessToken: null,
-        refreshToken: null,
+        username: 'google_user_' + Date.now(),
+        passwordHash: 'google_oauth_user',
         familyId: null
       });
       
@@ -89,11 +86,8 @@ function setupOldAuthRoutes(app: Express) {
       const demoUser = await storage.createUser({
         name: 'Facebook User',
         email: 'user@facebook.com',
-        providerId: 'facebook_demo_' + Date.now(),
-        provider: 'facebook',
-        avatar: null,
-        accessToken: null,
-        refreshToken: null,
+        username: 'facebook_user_' + Date.now(),
+        passwordHash: 'facebook_oauth_user',
         familyId: null
       });
       
@@ -121,11 +115,8 @@ function setupOldAuthRoutes(app: Express) {
       const demoUser = await storage.createUser({
         name: 'GitHub User',
         email: 'user@github.com',
-        providerId: 'github_demo_' + Date.now(),
-        provider: 'github',
-        avatar: null,
-        accessToken: null,
-        refreshToken: null,
+        username: 'github_user_' + Date.now(),
+        passwordHash: 'github_oauth_user',
         familyId: null
       });
       
@@ -153,11 +144,8 @@ function setupOldAuthRoutes(app: Express) {
       const demoUser = await storage.createUser({
         name: 'Twitter User',
         email: 'user@twitter.com',
-        providerId: 'twitter_demo_' + Date.now(),
-        provider: 'twitter',
-        avatar: null,
-        accessToken: null,
-        refreshToken: null,
+        username: 'twitter_user_' + Date.now(),
+        passwordHash: 'twitter_oauth_user',
         familyId: null
       });
       
@@ -180,6 +168,9 @@ function setupOldAuthRoutes(app: Express) {
 
 }
 
+// Import auth token functions
+import { extractToken, validateAuthToken } from './auth-token';
+
 // Authentication middleware - supports both session and token auth
 function requireAuth(req: any, res: any, next: any) {
   // Try session-based auth first
@@ -188,7 +179,6 @@ function requireAuth(req: any, res: any, next: any) {
   }
   
   // Try token-based auth for iframe environments
-  const { extractToken, validateAuthToken } = require('./auth-token');
   const token = extractToken(req);
   
   if (token) {
@@ -817,7 +807,7 @@ Provide your analysis in this exact JSON format:
       const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
         req.body.photoURL,
         {
-          owner: userId,
+          owner: userId || 'anonymous',
           visibility: "public", // Profile photos are public
         },
       );
@@ -1265,7 +1255,7 @@ Provide your analysis in this exact JSON format:
 
       // Get user context data
       const parentProfile = await storage.getParentProfile() || null;
-      const childProfiles = await storage.getAllChildProfiles() || [];
+      const childProfiles = await storage.getChildProfiles() || [];
       const recentEntries = await storage.getJournalEntries(5) || [];
 
       const contextPrompt = `
@@ -1278,7 +1268,7 @@ Provide your analysis in this exact JSON format:
           parentingGoals: parentProfile.parentingGoals
         }) : "No parent profile available"}
         
-        Children: ${childProfiles.map(child => ({
+        Children: ${childProfiles.map((child: any) => ({
           name: child.name,
           age: Math.floor((Date.now() - new Date(child.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000)),
           personality: child.personalityTraits

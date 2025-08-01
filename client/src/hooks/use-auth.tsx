@@ -26,7 +26,7 @@ export function useAuth(): AuthState {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/auth/user'],
     queryFn: async () => {
-      const response = await fetch('/api/auth/user', {
+      const response = await fetch('/auth/user', {
         credentials: 'same-origin' // Ensure cookies are included
       });
       if (!response.ok) {
@@ -68,10 +68,11 @@ export function useLogout() {
     try {
       await fetch('/auth/logout', { method: 'POST' });
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      window.location.reload();
+      // Use location.href for more reliable mobile navigation
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
-      window.location.reload();
+      window.location.href = '/';
     }
   };
 }

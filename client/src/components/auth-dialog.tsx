@@ -10,6 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { LogIn, UserPlus, Mail, Eye, EyeOff } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 
 
 const signUpSchema = z.object({
@@ -43,6 +45,8 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   const signUpForm = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -96,9 +100,12 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       setOpen(false);
       signUpForm.reset();
       
-      // Wait a bit then reload to ensure cookie is set
+      // Invalidate auth queries to refresh authentication state
+      await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      
+      // Force a small delay to ensure state propagation on mobile
       setTimeout(() => {
-        window.location.reload();
+        setLocation('/');
       }, 100);
     } catch (error) {
       console.error('Signup error:', error); // Debug log
@@ -143,9 +150,12 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       setOpen(false);
       loginForm.reset();
       
-      // Wait a bit then reload to ensure cookie is set
+      // Invalidate auth queries to refresh authentication state
+      await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      
+      // Force a small delay to ensure state propagation on mobile
       setTimeout(() => {
-        window.location.reload();
+        setLocation('/');
       }, 100);
     } catch (error) {
       console.error('Login error:', error); // Debug log

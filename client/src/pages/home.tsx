@@ -84,9 +84,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       <Header />
       
       <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        {/* Welcome Section */}
-        <div className="mb-4 sm:mb-6 lg:mb-8">
-          <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
+        {/* Welcome Section - Reduced bottom margin */}
+        <div className="mb-2">
+          <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6">
             <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-2">
               Welcome back to your parenting journey
             </h2>
@@ -113,7 +113,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
         {/* Mood Analytics Results - Shows between welcome and AI insights */}
         {showMoodAnalytics && (
-          <div className="mb-4 sm:mb-6">
+          <div className="mb-1">
             <div className="bg-white rounded-xl sm:rounded-2xl border border-neutral-200 shadow-sm p-4 sm:p-6 animate-slide-in-down">
               <h3 className="text-base sm:text-lg font-semibold text-neutral-800 mb-3 sm:mb-4">Mood Analytics</h3>
               <p className="text-neutral-600 text-xs sm:text-sm mb-3 sm:mb-4">
@@ -128,13 +128,13 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         )}
 
-        {/* AI Insights Section - Temporarily commented out for gap debugging */}
-        {/* <div className="">
+        {/* AI Insights Section - Zero margin */}
+        <div className="">
           <ComprehensiveAIInsights />
-        </div> */}
+        </div>
 
-        {/* Feeling Overwhelmed Element - Direct connection to next section */}
-        <div className="mb-1 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
+        {/* Feeling Overwhelmed Element - Zero margin */}
+        <div className="mb-0 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-emerald-800 font-medium">
               Feeling overwhelmed today? Take a moment to center yourself.
@@ -143,8 +143,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         </div>
 
-        {/* Mood Selection - Tight spacing */}
-        <div className="mb-1">
+        {/* Mood Selection - Zero margin */}
+        <div className="mb-0">
           <MoodSelector 
             selectedMood={selectedMood} 
             onMoodChange={setSelectedMood} 

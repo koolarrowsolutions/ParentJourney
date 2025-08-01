@@ -18,16 +18,8 @@ interface AuthState {
 
 export function useAuth(): AuthState {
   const [authState, setAuthState] = useState<AuthState>(() => {
-    // Try to restore auth state from localStorage for better persistence
-    const storedAuth = getStoredAuthData();
-    if (storedAuth && storedAuth.isAuthenticated) {
-      return {
-        user: storedAuth.user,
-        isAuthenticated: true,
-        hasJustSignedUp: storedAuth.hasJustSignedUp,
-        isLoading: true, // Always start loading to verify with server
-      };
-    }
+    // Clear old cached auth state to prevent confusion
+    localStorage.removeItem('authState');
     
     return {
       user: null,
@@ -42,7 +34,7 @@ export function useAuth(): AuthState {
     queryFn: checkAuthStatus,
     retry: 1, // Allow one retry for network issues
     refetchOnWindowFocus: true, // Allow refetch on focus to catch state changes
-    staleTime: 1000 * 30, // Reduce to 30 seconds for better responsiveness
+    staleTime: 0, // Always fresh to prevent auth state confusion
   });
 
   useEffect(() => {

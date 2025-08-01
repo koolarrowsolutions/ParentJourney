@@ -72,7 +72,7 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
   return (
     <div className="mt-6 space-y-4 animate-fade-in">
       <div className="flex items-center gap-2 pb-2 border-b border-neutral-200">
-        <Bot className="h-5 w-5 text-primary" />
+        <Sparkles className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-semibold text-neutral-800">
           Your AI Parenting Coach
         </h3>
@@ -105,7 +105,7 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
             borderColor = "border-l-blue-400";
             description = "Actionable parenting guidance";
           } else {
-            icon = <Bot className="text-neutral-600 mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
+            icon = <Sparkles className="text-neutral-600 mr-2 mt-1 h-4 w-4 flex-shrink-0" />;
             bgColor = "bg-neutral-50";
             borderColor = "border-l-neutral-400";
             description = "AI guidance";
@@ -136,7 +136,7 @@ function AiFeedbackDisplay({ feedback }: AiFeedbackDisplayProps) {
       
       <div className="mt-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
         <p className="text-xs text-neutral-600 flex items-center">
-          <Bot className="h-3 w-3 mr-1" />
+          <Sparkles className="h-3 w-3 mr-1" />
           These insights are generated based on your entry and child's developmental stage. 
           Remember, you know your child best.
         </p>

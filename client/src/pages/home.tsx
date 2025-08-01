@@ -123,22 +123,22 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           <ComprehensiveAIInsights />
         </div>
 
-        {/* Mood Selection - Independent Element */}
-        <div className="mb-6">
-          <MoodSelector 
-            selectedMood={selectedMood} 
-            onMoodChange={setSelectedMood} 
-          />
-        </div>
-
-        {/* Feeling Overwhelmed Element */}
-        <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
+        {/* Feeling Overwhelmed Element - Reduced gap */}
+        <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-emerald-800 font-medium">
               Feeling overwhelmed today? Take a moment to center yourself.
             </p>
             <CalmReset trigger="inline" />
           </div>
+        </div>
+
+        {/* Mood Selection - Independent Element */}
+        <div className="mb-6">
+          <MoodSelector 
+            selectedMood={selectedMood} 
+            onMoodChange={setSelectedMood} 
+          />
         </div>
 
         {/* Quick Actions Group */}

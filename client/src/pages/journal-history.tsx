@@ -12,7 +12,7 @@ import {
   BookOpen, 
   Calendar, 
   Baby, 
-  Bot, 
+  Sparkles, 
   Heart, 
   Lightbulb, 
   Star,
@@ -159,7 +159,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
     return (
       <div className="mt-4 space-y-3">
         <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-          <Bot className="h-4 w-4 text-primary" />
+          <Sparkles className="h-4 w-4 text-primary" />
           AI Parenting Coach
         </div>
         
@@ -184,7 +184,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
               bgColor = "bg-blue-50";
               borderColor = "border-l-blue-400";
             } else {
-              icon = <Bot className="text-neutral-600 h-3 w-3" />;
+              icon = <Sparkles className="text-neutral-600 h-3 w-3" />;
               bgColor = "bg-neutral-50";
               borderColor = "border-l-neutral-400";
             }

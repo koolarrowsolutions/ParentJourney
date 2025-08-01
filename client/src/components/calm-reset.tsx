@@ -583,45 +583,54 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                               {/* Outer timer ring with progress indicator */}
                               <div className="absolute inset-0 w-40 h-40 sm:w-48 sm:h-48">
                                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                  {/* Background ring */}
+                                  {/* Background ring - Enhanced visibility */}
                                   <circle 
                                     cx="50" 
                                     cy="50" 
                                     r="45" 
                                     fill="none" 
-                                    stroke="rgb(125 211 252 / 0.3)" 
-                                    strokeWidth="2"
-                                  />
-                                  {/* Progress ring */}
-                                  <circle 
-                                    cx="50" 
-                                    cy="50" 
-                                    r="45" 
-                                    fill="none" 
-                                    stroke="rgb(255 255 255 / 0.9)"
+                                    stroke="rgb(147 197 253)" 
                                     strokeWidth="3"
+                                    opacity="0.4"
+                                  />
+                                  {/* Progress ring - Enhanced visibility */}
+                                  <circle 
+                                    cx="50" 
+                                    cy="50" 
+                                    r="45" 
+                                    fill="none" 
+                                    stroke="rgb(59 130 246)"
+                                    strokeWidth="4"
                                     strokeLinecap="round"
                                     strokeDasharray="283"
                                     strokeDashoffset={283 - (progress * 283) / 100}
-                                    className="transition-all duration-100 ease-linear drop-shadow-sm"
+                                    className="transition-all duration-300 ease-linear"
                                     style={{
-                                      filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.6))'
+                                      filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.8))',
+                                      opacity: 0.9
                                     }}
                                   />
                                 </svg>
                               </div>
                               
-                              {/* Outer ripple rings */}
+                              {/* Outer ripple rings - Enhanced visibility */}
                               <div className={`
-                                absolute inset-2 w-36 h-36 sm:w-44 sm:h-44 rounded-full border-2 border-sky-300/20
+                                absolute inset-2 w-36 h-36 sm:w-44 sm:h-44 rounded-full border-4 border-blue-400/60
                                 transition-all duration-1000 ease-in-out
-                                ${breathingPhase === 'inhale' ? 'scale-110 opacity-30' : 
-                                  breathingPhase === 'hold' ? 'scale-105 opacity-40' : 
-                                  'scale-100 opacity-20'}
-                              `}></div>
+                                ${breathingPhase === 'inhale' ? 'scale-125 opacity-70' : 
+                                  breathingPhase === 'hold' ? 'scale-115 opacity-80' : 
+                                  'scale-100 opacity-50'}
+                              `}
+                              style={{
+                                boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)'
+                              }}
+                              ></div>
                               
                               {/* Main breathing circle - outer container */}
-                              <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-sky-300 bg-gradient-to-br from-sky-50 via-blue-25 to-sky-50 flex items-center justify-center shadow-2xl overflow-hidden mx-auto mt-4 sm:mt-4">
+                              <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-blue-400 bg-gradient-to-br from-blue-50 via-sky-25 to-blue-50 flex items-center justify-center shadow-2xl overflow-hidden mx-auto mt-4 sm:mt-4"
+                                   style={{
+                                     boxShadow: '0 0 30px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.1)'
+                                   }}>
                                 {/* Inner circle with phase-specific behavior */}
                                 <div 
                                   className={`absolute inset-0 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 flex items-center justify-center transition-all duration-300 ease-out

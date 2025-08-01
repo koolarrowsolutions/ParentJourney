@@ -37,7 +37,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
   // Check authentication first
   const { data: authUser } = useQuery({
-    queryKey: ["/api/auth/user"],
+    queryKey: ["/auth/user"],
   });
 
   const isAuthenticated = (authUser as any)?.success && (authUser as any)?.user;

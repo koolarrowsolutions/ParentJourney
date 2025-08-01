@@ -97,16 +97,17 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
         title: "Account Created!",
         description: "Welcome to ParentJourney! Your account has been created successfully.",
       });
-      setOpen(false);
       signUpForm.reset();
       
-      // Invalidate auth queries to refresh authentication state
-      await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
+      // Close dialog first to avoid visual issues
+      setOpen(false);
       
-      // Force a small delay to ensure state propagation on mobile
-      setTimeout(() => {
-        setLocation('/');
-      }, 100);
+      // Invalidate auth queries and wait for refetch to ensure state is properly updated
+      await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
+      await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
+      
+      // Use window.location.href for more reliable mobile navigation
+      window.location.href = '/';
     } catch (error) {
       console.error('Signup error:', error); // Debug log
       toast({
@@ -147,16 +148,17 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
         title: "Welcome Back!",
         description: "You've been logged in successfully.",
       });
-      setOpen(false);
       loginForm.reset();
       
-      // Invalidate auth queries to refresh authentication state
-      await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
+      // Close dialog first to avoid visual issues
+      setOpen(false);
       
-      // Force a small delay to ensure state propagation on mobile
-      setTimeout(() => {
-        setLocation('/');
-      }, 100);
+      // Invalidate auth queries and wait for refetch to ensure state is properly updated
+      await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
+      await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
+      
+      // Use window.location.href for more reliable mobile navigation
+      window.location.href = '/';
     } catch (error) {
       console.error('Login error:', error); // Debug log
       toast({

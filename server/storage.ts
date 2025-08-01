@@ -12,7 +12,9 @@ import {
   type CommunityComment,
   type InsertCommunityComment,
   type User,
-  type InsertUser
+  type InsertUser,
+  type UserNotificationSettings,
+  type InsertUserNotificationSettings
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -70,6 +72,12 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(id: string, passwordHash: string): Promise<User | undefined>;
   updateUserEmail(id: string, email: string): Promise<User | undefined>;
+  
+  // Notification settings
+  getUserNotificationSettings(userId: string): Promise<UserNotificationSettings | undefined>;
+  createUserNotificationSettings(settings: InsertUserNotificationSettings): Promise<UserNotificationSettings>;
+  updateUserNotificationSettings(userId: string, updates: Partial<InsertUserNotificationSettings>): Promise<UserNotificationSettings | undefined>;
+  deleteUserNotificationSettings(userId: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -80,6 +88,7 @@ export class MemStorage implements IStorage {
   private communityPosts: Map<string, CommunityPost>;
   private communityComments: Map<string, CommunityComment>;
   private users: Map<string, User>;
+  private userNotificationSettings: Map<string, UserNotificationSettings>;
   private currentUserId?: string;
 
   constructor() {
@@ -90,6 +99,7 @@ export class MemStorage implements IStorage {
     this.communityPosts = new Map();
     this.communityComments = new Map();
     this.users = new Map();
+    this.userNotificationSettings = new Map();
   }
 
   setCurrentUser(userId: string): void {
@@ -540,6 +550,48 @@ export class MemStorage implements IStorage {
       return user;
     }
     return undefined;
+  }
+
+  // Notification settings methods
+  async getUserNotificationSettings(userId: string): Promise<UserNotificationSettings | undefined> {
+    return this.userNotificationSettings.get(userId);
+  }
+
+  async createUserNotificationSettings(settings: InsertUserNotificationSettings): Promise<UserNotificationSettings> {
+    const newSettings: UserNotificationSettings = {
+      id: randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      userId: settings.userId,
+      dailyReminder: settings.dailyReminder || "false",
+      weeklyProgress: settings.weeklyProgress || "false",
+      reminderTime: settings.reminderTime || "20:00",
+      notificationEmail: settings.notificationEmail || null,
+      notificationPhone: settings.notificationPhone || null,
+      browserNotifications: settings.browserNotifications || "false",
+      emailVerified: settings.emailVerified || "false",
+      phoneVerified: settings.phoneVerified || "false",
+    };
+    this.userNotificationSettings.set(newSettings.userId, newSettings);
+    return newSettings;
+  }
+
+  async updateUserNotificationSettings(userId: string, updates: Partial<InsertUserNotificationSettings>): Promise<UserNotificationSettings | undefined> {
+    const settings = this.userNotificationSettings.get(userId);
+    if (settings) {
+      const updatedSettings = {
+        ...settings,
+        ...updates,
+        updatedAt: new Date(),
+      };
+      this.userNotificationSettings.set(userId, updatedSettings);
+      return updatedSettings;
+    }
+    return undefined;
+  }
+
+  async deleteUserNotificationSettings(userId: string): Promise<boolean> {
+    return this.userNotificationSettings.delete(userId);
   }
 }
 

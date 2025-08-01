@@ -52,6 +52,22 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// User notification settings
+export const userNotificationSettings = pgTable("user_notification_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  dailyReminder: text("daily_reminder").notNull().default("false"),
+  weeklyProgress: text("weekly_progress").notNull().default("false"),
+  reminderTime: text("reminder_time").notNull().default("20:00"),
+  notificationEmail: text("notification_email"),
+  notificationPhone: text("notification_phone"),
+  browserNotifications: text("browser_notifications").notNull().default("false"),
+  emailVerified: text("email_verified").notNull().default("false"),
+  phoneVerified: text("phone_verified").notNull().default("false"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const communityPosts = pgTable("community_posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   parentId: varchar("parent_id").references(() => parentProfiles.id),
@@ -128,6 +144,12 @@ export const insertUserSchema = createInsertSchema(users).omit({
   updatedAt: true,
 });
 
+export const insertUserNotificationSettingsSchema = createInsertSchema(userNotificationSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const journalEntryWithAiSchema = insertJournalEntrySchema.extend({
   requestAiFeedback: z.boolean().default(false),
 });
@@ -147,3 +169,5 @@ export type InsertCommunityComment = z.infer<typeof insertCommunityCommentSchema
 export type CommunityComment = typeof communityComments.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type UserNotificationSettings = typeof userNotificationSettings.$inferSelect;
+export type InsertUserNotificationSettings = z.infer<typeof insertUserNotificationSettingsSchema>;

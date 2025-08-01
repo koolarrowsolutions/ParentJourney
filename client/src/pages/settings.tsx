@@ -41,6 +41,7 @@ import { Link } from "wouter";
 import { exportToJSON, exportToCSV, exportFavoritesToPDF, importFromJSON, validateImportData } from "@/utils/data-export";
 import { VoiceInputButton } from "@/components/voice-input";
 import { OnboardingTour } from "@/components/onboarding-tour";
+import { EnhancedNotificationSettings } from "@/components/enhanced-notification-settings";
 import { getSettings, saveSettings, resetSettings, clearAllAppData, type UserSettings } from "@/utils/settings-storage";
 import { shouldShowTour } from "@/utils/onboarding-storage";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
@@ -354,95 +355,29 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
         </div>
 
         <div className="space-y-6">
-          {/* Notifications & Reminders */}
-          <Card className="dark:bg-neutral-800 dark:border-neutral-700">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-neutral-800 dark:text-neutral-100">
-                <Bell className="h-5 w-5 text-primary" />
-                Reminders & Notifications
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Daily journaling reminder</Label>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">Get a gentle nudge to reflect on your day</p>
-                </div>
-                <Switch
-                  checked={settings.dailyReminder}
-                  onCheckedChange={(checked) => updateSetting('dailyReminder', checked)}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Weekly progress updates</Label>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">Receive weekly insights about your parenting journey</p>
-                </div>
-                <Switch
-                  checked={settings.weeklyProgress}
-                  onCheckedChange={(checked) => updateSetting('weeklyProgress', checked)}
-                />
-              </div>
-
-              {settings.dailyReminder && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="reminder-time" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      Reminder time
-                    </Label>
-                    <Input
-                      id="reminder-time"
-                      type="time"
-                      value={settings.reminderTime}
-                      onChange={(e) => updateSetting('reminderTime', e.target.value)}
-                      className="w-32 dark:bg-neutral-700 dark:border-neutral-600"
-                    />
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-2">
-                      <Mail className="h-4 w-4" />
-                      Email & SMS Settings
-                    </Label>
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <Label className="text-xs font-medium text-neutral-600 dark:text-neutral-300">Email Address for Reminders</Label>
-                        <Input
-                          type="email"
-                          placeholder="your-email@example.com"
-                          value={settings.notificationEmail || ""}
-                          onChange={(e) => updateSetting('notificationEmail', e.target.value)}
-                          className="mt-1 dark:bg-neutral-700 dark:border-neutral-600"
-                        />
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                          We'll send gentle reminders to help you maintain your journaling habit
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <Label className="text-xs font-medium text-neutral-600 dark:text-neutral-300">Phone Number for SMS (Optional)</Label>
-                        <Input
-                          type="tel"
-                          placeholder="+1 (555) 123-4567"
-                          value={settings.notificationPhone || ""}
-                          onChange={(e) => updateSetting('notificationPhone', e.target.value)}
-                          className="mt-1 dark:bg-neutral-700 dark:border-neutral-600"
-                        />
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                          Optional SMS reminders for important milestones and reflections
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Enhanced Notifications & Reminders */}
+          {isAuthenticated ? (
+            <EnhancedNotificationSettings />
+          ) : (
+            <Card className="dark:bg-neutral-800 dark:border-neutral-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-neutral-800 dark:text-neutral-100">
+                  <Bell className="h-5 w-5 text-primary" />
+                  Reminders & Notifications
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center py-8">
+                <p className="text-neutral-600 dark:text-neutral-400 mb-4">
+                  Sign in to customize your notification preferences and receive personalized reminders.
+                </p>
+                <Link href="/">
+                  <Button variant="outline">
+                    Sign In to Access Notifications
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Personal Goals */}
           <Card className="dark:bg-neutral-800 dark:border-neutral-700">

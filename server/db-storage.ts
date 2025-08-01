@@ -12,7 +12,9 @@ import {
   type CommunityComment,
   type InsertCommunityComment,
   type User,
-  type InsertUser
+  type InsertUser,
+  type UserNotificationSettings,
+  type InsertUserNotificationSettings
 } from "@shared/schema";
 import { db } from "./db";
 import * as schema from "@shared/schema";
@@ -353,5 +355,31 @@ export class DatabaseStorage implements IStorage {
       .where(eq(schema.users.id, id))
       .returning();
     return result[0];
+  }
+
+  // Notification settings methods
+  async getUserNotificationSettings(userId: string): Promise<UserNotificationSettings | undefined> {
+    const result = await db.select().from(schema.userNotificationSettings)
+      .where(eq(schema.userNotificationSettings.userId, userId));
+    return result[0];
+  }
+
+  async createUserNotificationSettings(settings: InsertUserNotificationSettings): Promise<UserNotificationSettings> {
+    const result = await db.insert(schema.userNotificationSettings).values(settings).returning();
+    return result[0];
+  }
+
+  async updateUserNotificationSettings(userId: string, updates: Partial<InsertUserNotificationSettings>): Promise<UserNotificationSettings | undefined> {
+    const result = await db.update(schema.userNotificationSettings)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(schema.userNotificationSettings.userId, userId))
+      .returning();
+    return result[0];
+  }
+
+  async deleteUserNotificationSettings(userId: string): Promise<boolean> {
+    const result = await db.delete(schema.userNotificationSettings)
+      .where(eq(schema.userNotificationSettings.userId, userId));
+    return (result.rowCount ?? 0) > 0;
   }
 }

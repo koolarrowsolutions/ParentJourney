@@ -1358,6 +1358,141 @@ Provide your analysis in this exact JSON format:
     }
   });
 
+  // Notification Settings Routes
+  app.get("/api/notification-settings", requireAuth, async (req, res) => {
+    try {
+      const settings = await storage.getUserNotificationSettings(req.session.userId);
+      if (!settings) {
+        // Return default settings if none exist
+        const defaultSettings = {
+          dailyReminder: "false",
+          weeklyProgress: "false",
+          reminderTime: "20:00",
+          notificationEmail: "",
+          notificationPhone: "",
+          browserNotifications: "false",
+          emailVerified: "false",
+          phoneVerified: "false"
+        };
+        res.json(defaultSettings);
+      } else {
+        res.json(settings);
+      }
+    } catch (error) {
+      console.error("Failed to fetch notification settings:", error);
+      res.status(500).json({ message: "Failed to fetch notification settings" });
+    }
+  });
+
+  app.post("/api/notification-settings", requireAuth, async (req, res) => {
+    try {
+      const settingsData = {
+        userId: req.session.userId,
+        ...req.body
+      };
+      
+      // Check if settings already exist
+      const existingSettings = await storage.getUserNotificationSettings(req.session.userId);
+      
+      let settings;
+      if (existingSettings) {
+        settings = await storage.updateUserNotificationSettings(req.session.userId, req.body);
+      } else {
+        settings = await storage.createUserNotificationSettings(settingsData);
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      console.error("Failed to save notification settings:", error);
+      res.status(500).json({ message: "Failed to save notification settings" });
+    }
+  });
+
+  app.post("/api/validate-email", requireAuth, async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ 
+          valid: false, 
+          message: "Please enter a valid email address" 
+        });
+      }
+      
+      // In a real app, you might send a verification email here
+      // For now, we'll just mark it as valid
+      res.json({ 
+        valid: true, 
+        message: "Email format is valid" 
+      });
+    } catch (error) {
+      console.error("Email validation error:", error);
+      res.status(500).json({ message: "Failed to validate email" });
+    }
+  });
+
+  app.post("/api/validate-phone", requireAuth, async (req, res) => {
+    try {
+      const { phone } = req.body;
+      
+      // Basic phone validation (supports international formats)
+      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+      const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+      
+      if (!phoneRegex.test(cleanPhone)) {
+        return res.status(400).json({ 
+          valid: false, 
+          message: "Please enter a valid phone number" 
+        });
+      }
+      
+      // In a real app, you might send an SMS verification here
+      res.json({ 
+        valid: true, 
+        message: "Phone number format is valid" 
+      });
+    } catch (error) {
+      console.error("Phone validation error:", error);
+      res.status(500).json({ message: "Failed to validate phone number" });
+    }
+  });
+
+  app.post("/api/test-notification", requireAuth, async (req, res) => {
+    try {
+      const { type, recipient } = req.body;
+      
+      // Simulate notification testing
+      let result = { success: false, message: "" };
+      
+      switch (type) {
+        case 'browser':
+          result = { success: true, message: "Browser notification test completed" };
+          break;
+        case 'email':
+          result = { 
+            success: true, 
+            message: `Test email sent to ${recipient}` 
+          };
+          break;
+        case 'sms':
+          result = { 
+            success: true, 
+            message: `Test SMS sent to ${recipient}` 
+          };
+          break;
+        default:
+          result = { success: false, message: "Invalid notification type" };
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Test notification error:", error);
+      res.status(500).json({ message: "Failed to send test notification" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

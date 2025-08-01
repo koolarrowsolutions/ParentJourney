@@ -578,48 +578,17 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                           
                           {/* Enhanced breathing visualization */}
                           <div className="flex flex-col items-center space-y-4 sm:space-y-6">
-                            {/* Main breathing circle with countdown animation */}
+                            {/* Main breathing circle */}
                             <div className="relative">
-                              {/* Countdown timer circle */}
-                              <div className="absolute inset-0 w-40 h-40 sm:w-48 sm:h-48">
-                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                  {/* Background ring */}
-                                  <circle 
-                                    cx="50" 
-                                    cy="50" 
-                                    r="45" 
-                                    fill="none" 
-                                    stroke="rgb(229 231 235)" 
-                                    strokeWidth="4"
-                                  />
-                                  {/* Progress ring - blue filling as time progresses */}
-                                  <circle 
-                                    cx="50" 
-                                    cy="50" 
-                                    r="45" 
-                                    fill="none" 
-                                    stroke="rgb(59 130 246)"
-                                    strokeWidth="4"
-                                    strokeLinecap="round"
-                                    strokeDasharray="283"
-                                    strokeDashoffset={283 - (progress * 283) / 100}
-                                    className="transition-all duration-200 ease-linear"
-                                    style={{
-                                      filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))'
-                                    }}
-                                  />
-                                </svg>
-                              </div>
-                              
                               {/* Main breathing circle - outer container */}
-                              <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-blue-50 via-sky-25 to-blue-50 flex items-center justify-center shadow-2xl overflow-hidden mx-auto mt-4 sm:mt-4"
+                              <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-gradient-to-br from-blue-50 via-sky-25 to-blue-50 flex items-center justify-center shadow-2xl overflow-hidden mx-auto"
                                    style={{
                                      border: `4px solid rgb(59 130 246)`,
                                      boxShadow: `0 0 30px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.1)`
                                    }}>
                                 {/* Inner circle with phase-specific behavior */}
                                 <div 
-                                  className={`absolute inset-6 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 flex items-center justify-center transition-all duration-300 ease-out
+                                  className={`absolute inset-4 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 flex items-center justify-center transition-all duration-300 ease-out
                                     ${breathingPhase === 'hold' ? 'animate-calm-hold' : ''}
                                   `}
                                   style={{ 

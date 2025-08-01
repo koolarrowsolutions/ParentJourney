@@ -128,10 +128,10 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         )}
 
-        {/* AI Insights Section - Zero margin for gap debugging */}
-        <div className="">
+        {/* AI Insights Section - Temporarily commented out for gap debugging */}
+        {/* <div className="">
           <ComprehensiveAIInsights />
-        </div>
+        </div> */}
 
         {/* Feeling Overwhelmed Element - Direct connection to next section */}
         <div className="mb-1 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">

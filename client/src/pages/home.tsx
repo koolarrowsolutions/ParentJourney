@@ -12,6 +12,7 @@ import { getDailyGreeting } from "@shared/greetings";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { ComprehensiveAIInsights } from "@/components/comprehensive-ai-insights";
+import { SmartSuggestions } from "@/components/smart-suggestions";
 import { OnboardingFlow } from "@/components/onboarding-flow";
 import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
 
@@ -54,6 +55,15 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     queryFn: async () => {
       const response = await fetch("/api/child-profiles");
       if (!response.ok) throw new Error("Failed to fetch profiles");
+      return response.json();
+    },
+  });
+
+  const { data: entries } = useQuery<JournalEntry[]>({
+    queryKey: ["/api/journal-entries"],
+    queryFn: async () => {
+      const response = await fetch("/api/journal-entries");
+      if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },
   });
@@ -121,6 +131,26 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         {/* AI Insights Section */}
         <div className="mb-4 sm:mb-6">
           <ComprehensiveAIInsights />
+        </div>
+        
+        {/* Smart Suggestions Section */}
+        <div className="mb-4 sm:mb-6">
+          <SmartSuggestions
+            context={{
+              currentPage: 'home',
+              hasChildren: childProfiles && childProfiles.length > 0,
+              entryCount: entries?.length || 0,
+              isFirstTime: !entries || entries.length === 0,
+              timeOfDay: new Date().getHours() < 12 ? 'morning' : 
+                        new Date().getHours() < 17 ? 'afternoon' : 
+                        new Date().getHours() < 21 ? 'evening' : 'night'
+            }}
+            onSuggestionClick={(suggestionId) => {
+              console.log('Suggestion clicked:', suggestionId);
+              // Handle suggestion clicks - could navigate to features, show modals, etc.
+            }}
+            className="animate-fade-in"
+          />
         </div>
 
         {/* Feeling Overwhelmed Element - Reduced gap */}

@@ -133,25 +133,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           <ComprehensiveAIInsights />
         </div>
         
-        {/* Smart Suggestions Section */}
-        <div className="mb-4 sm:mb-6">
-          <SmartSuggestions
-            context={{
-              currentPage: 'home',
-              hasChildren: childProfiles && childProfiles.length > 0,
-              entryCount: entries?.length || 0,
-              isFirstTime: !entries || entries.length === 0,
-              timeOfDay: new Date().getHours() < 12 ? 'morning' : 
-                        new Date().getHours() < 17 ? 'afternoon' : 
-                        new Date().getHours() < 21 ? 'evening' : 'night'
-            }}
-            onSuggestionClick={(suggestionId) => {
-              console.log('Suggestion clicked:', suggestionId);
-              // Handle suggestion clicks - could navigate to features, show modals, etc.
-            }}
-            className="animate-fade-in"
-          />
-        </div>
+
 
         {/* Feeling Overwhelmed Element - Reduced gap */}
         <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
@@ -199,6 +181,26 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             <h3 className="text-lg font-semibold text-neutral-800 mb-4">Recent Journal Entries</h3>
             <RecentEntries />
           </div>
+        </div>
+        
+        {/* Smart Suggestions Section - Bottom of page */}
+        <div className="mb-6 sm:mb-8">
+          <SmartSuggestions
+            context={{
+              currentPage: 'home',
+              hasChildren: childProfiles && childProfiles.length > 0,
+              entryCount: entries?.length || 0,
+              isFirstTime: !entries || entries.length === 0,
+              timeOfDay: new Date().getHours() < 12 ? 'morning' : 
+                        new Date().getHours() < 17 ? 'afternoon' : 
+                        new Date().getHours() < 21 ? 'evening' : 'night'
+            }}
+            onSuggestionClick={(suggestionId) => {
+              console.log('Suggestion clicked:', suggestionId);
+              // Handle suggestion clicks - could navigate to features, show modals, etc.
+            }}
+            className="animate-fade-in"
+          />
         </div>
       </main>
       

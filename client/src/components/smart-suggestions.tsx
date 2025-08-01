@@ -45,6 +45,7 @@ export function SmartSuggestions({ context, onSuggestionClick, className = "" }:
   const [visibleSuggestions, setVisibleSuggestions] = useState<Suggestion[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
+  const [clickedSuggestions, setClickedSuggestions] = useState<string[]>([]);
 
   const allSuggestions: Suggestion[] = [
     {
@@ -143,6 +144,7 @@ export function SmartSuggestions({ context, onSuggestionClick, className = "" }:
   }, [context, dismissedSuggestions, isExpanded]);
 
   const handleSuggestionClick = (suggestionId: string) => {
+    setClickedSuggestions(prev => [...prev, suggestionId]);
     onSuggestionClick?.(suggestionId);
   };
 
@@ -190,7 +192,11 @@ export function SmartSuggestions({ context, onSuggestionClick, className = "" }:
         {visibleSuggestions.map((suggestion) => (
           <Card
             key={suggestion.id}
-            className="hover-lift cursor-pointer transition-all duration-200 border-l-4 border-l-primary/30 hover:border-l-primary hover:shadow-md"
+            className={`hover-lift cursor-pointer transition-all duration-200 border-l-4 hover:shadow-md ${
+              clickedSuggestions.includes(suggestion.id) 
+                ? 'border-l-green-500 bg-green-50/50 ring-2 ring-green-200' 
+                : 'border-l-primary/30 hover:border-l-primary'
+            }`}
             onClick={() => handleSuggestionClick(suggestion.id)}
           >
             <CardContent className="p-4">

@@ -588,7 +588,7 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                                    }}>
                                 {/* Inner circle with phase-specific behavior */}
                                 <div 
-                                  className={`absolute inset-4 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 flex items-center justify-center transition-all duration-300 ease-out
+                                  className={`absolute inset-4 rounded-full bg-gradient-to-br from-sky-200/60 to-blue-300/60 flex items-center justify-center transition-all duration-500 ease-in-out
                                     ${breathingPhase === 'hold' ? 'animate-calm-hold' : ''}
                                   `}
                                   style={{ 
@@ -598,7 +598,8 @@ export function CalmReset({ trigger = 'standalone', onComplete }: CalmResetProps
                                       breathingPhase === 'exhale' ? 1.0 - (progress / 100) * 0.9 :
                                       0.1 + (progress / 100) * 0.9
                                     })`,
-                                    opacity: progress > 5 ? 0.8 : 0.2
+                                    opacity: progress > 5 ? 0.8 : 0.2,
+                                    transition: breathingPhase === 'hold' ? 'transform 0.5s ease-in-out' : 'transform 0.3s ease-in-out'
                                   }}
                                 >
                                   <Waves className="h-5 w-5 sm:h-6 sm:w-6 text-sky-700" />

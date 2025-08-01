@@ -17,7 +17,8 @@ import {
 } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { ParentProfileDialog } from "./parent-profile-dialog";
-import { MoodAnalytics } from "./mood-analytics";
+import { ParentAnalytics } from "./parent-analytics";
+import { DailyCheckIn, type DailyCheckInData } from "./daily-checkin";
 import { DailyReflection } from "./daily-reflection";
 import { CalmReset } from "./calm-reset";
 
@@ -28,7 +29,8 @@ interface JournalStats {
 }
 
 export function Sidebar() {
-  const [showMoodAnalytics, setShowMoodAnalytics] = useState(false);
+  const [showParentAnalytics, setShowParentAnalytics] = useState(false);
+  const [showDailyCheckIn, setShowDailyCheckIn] = useState(false);
   const [showDailyReflection, setShowDailyReflection] = useState(false);
   
   const { data: stats, isLoading } = useQuery<JournalStats>({
@@ -86,12 +88,23 @@ export function Sidebar() {
             <Button 
               variant="outline" 
               className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"
-              onClick={() => setShowMoodAnalytics(!showMoodAnalytics)}
+              onClick={() => setShowDailyCheckIn(true)}
+            >
+              <Heart className="text-blue-500 mr-3 h-5 w-5" />
+              <div className="text-left">
+                <div className="font-medium text-neutral-800">Daily Check-In</div>
+                <div className="text-xs text-neutral-500">Track your wellness journey</div>
+              </div>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start p-3 h-auto border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press interactive-card"
+              onClick={() => setShowParentAnalytics(!showParentAnalytics)}
             >
               <BarChart3 className="text-secondary mr-3 h-5 w-5" />
               <div className="text-left">
-                <div className="font-medium text-neutral-800">Mood Analytics</div>
-                <div className="text-xs text-neutral-500">View your emotional patterns</div>
+                <div className="font-medium text-neutral-800">✨ Parent Analytics</div>
+                <div className="text-xs text-neutral-500">View your wellness patterns</div>
               </div>
             </Button>
             <Button 
@@ -176,24 +189,37 @@ export function Sidebar() {
         <DailyReflection />
       )}
 
-      {/* Mood Analytics Section */}
-      {showMoodAnalytics && (
+      {/* Daily Check-In Modal */}
+      {showDailyCheckIn && (
+        <DailyCheckIn
+          onComplete={(data: DailyCheckInData) => {
+            // Handle saving the daily check-in data
+            console.log('Daily check-in completed:', data);
+            setShowDailyCheckIn(false);
+            // TODO: Save to journal entry or separate endpoint
+          }}
+          onCancel={() => setShowDailyCheckIn(false)}
+        />
+      )}
+
+      {/* Parent Analytics Section */}
+      {showParentAnalytics && (
         <Card className="shadow-sm border border-neutral-200">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-neutral-800 flex items-center">
                 <BarChart3 className="text-primary mr-2 h-5 w-5" />
-                📊 Mood Analytics
+                ✨ Parent Analytics
               </h3>
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => setShowMoodAnalytics(false)}
+                onClick={() => setShowParentAnalytics(false)}
               >
                 Hide
               </Button>
             </div>
-            <MoodAnalytics />
+            <ParentAnalytics />
           </CardContent>
         </Card>
       )}

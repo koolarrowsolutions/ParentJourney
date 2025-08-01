@@ -27,7 +27,10 @@ The application follows a modern full-stack architecture with a clear separation
 
 ## New Features Added
 
-### Recent Updates (July 2025)
+### Recent Updates (August 2025)
+- **📋 Daily Check-In System**: Transformed simple mood tracking into comprehensive 10-category wellness assessment including energy levels, patience, parent-child connection, parenting confidence, self-care, support system contact, arguments/tension, emotional regulation, discipline style, and daily wins
+- **🎯 Gallery-Style Interface**: Implemented step-by-step check-in flow with visual progress indicators, preventing user overwhelm while collecting detailed wellness data
+- **📊 Parent Analytics Dashboard**: Replaced "Mood Analytics" with comprehensive "Parent Analytics" incorporating all daily check-in categories with trend analysis, insights, and wellness pattern visualization
 - **🔐 Simplified Authentication System**: Replaced complex social login with streamlined username/email + password authentication for better user experience
 - **📊 PostgreSQL Database Migration**: Successfully migrated from MemStorage to PostgreSQL with Drizzle ORM for persistent data storage
 - **🔑 Session Management**: Implemented robust session handling with proper cookie configuration and cross-tab authentication support

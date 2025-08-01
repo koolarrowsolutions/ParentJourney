@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, json, date } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, json, jsonb, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -84,6 +84,7 @@ export const journalEntries = pgTable("journal_entries", {
   developmentalInsight: text("developmental_insight"),
   hasAiFeedback: text("has_ai_feedback").notNull().default("false"),
   photos: text("photos").array(),
+  dailyCheckIn: json("daily_check_in"), // Daily parent wellness check-in data
   isFavorite: text("is_favorite").notNull().default("false"), // Bookmarking support
   calmResetUsed: text("calm_reset_used").notNull().default("false"), // Track calm reset usage
   createdAt: timestamp("created_at").defaultNow().notNull(),

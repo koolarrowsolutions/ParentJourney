@@ -71,10 +71,13 @@ export function EnhancedNotificationSettings() {
   // Save notification settings mutation
   const saveSettingsMutation = useMutation({
     mutationFn: async (data: NotificationSettings) => {
-      return await apiRequest("/api/notification-settings", {
+      const response = await fetch("/api/notification-settings", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error("Failed to save settings");
+      return response.json();
     },
     onSuccess: () => {
       setHasUnsavedChanges(false);
@@ -306,15 +309,15 @@ export function EnhancedNotificationSettings() {
 
   if (isLoading) {
     return (
-      <Card className="animate-pulse">
-        <CardHeader>
-          <div className="h-6 bg-neutral-200 rounded w-48"></div>
+      <Card className="animate-pulse w-full max-w-none">
+        <CardHeader className="px-4 sm:px-6">
+          <div className="h-5 sm:h-6 bg-neutral-200 rounded w-full max-w-xs"></div>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="h-4 bg-neutral-200 rounded w-full"></div>
-            <div className="h-4 bg-neutral-200 rounded w-3/4"></div>
-            <div className="h-4 bg-neutral-200 rounded w-1/2"></div>
+        <CardContent className="px-4 sm:px-6">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="h-3 sm:h-4 bg-neutral-200 rounded w-full"></div>
+            <div className="h-3 sm:h-4 bg-neutral-200 rounded w-3/4"></div>
+            <div className="h-3 sm:h-4 bg-neutral-200 rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>
@@ -324,71 +327,73 @@ export function EnhancedNotificationSettings() {
   const browserStatus = getBrowserNotificationStatus();
 
   return (
-    <Card className="shadow-sm border border-neutral-200">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span className="flex items-center gap-2">
-            <Bell className="h-5 w-5 text-primary" />
-            Notification Management
+    <Card className="shadow-sm border border-neutral-200 w-full max-w-none">
+      <CardHeader className="px-4 sm:px-6">
+        <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <span className="flex items-center gap-2 text-lg sm:text-xl">
+            <Bell className="h-5 w-5 text-primary flex-shrink-0" />
+            <span className="break-words">Notification Management</span>
           </span>
           {hasUnsavedChanges && (
-            <Badge variant="outline" className="text-orange-600 border-orange-200">
+            <Badge variant="outline" className="text-orange-600 border-orange-200 text-xs sm:text-sm self-start sm:self-center">
               Unsaved Changes
             </Badge>
           )}
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
         {/* General Validation Error */}
         {validationErrors.general && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-            <p className="text-red-700 text-sm">{validationErrors.general}</p>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 flex items-start gap-2 sm:gap-3">
+            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <p className="text-red-700 text-xs sm:text-sm leading-relaxed">{validationErrors.general}</p>
           </div>
         )}
 
         {/* Reminder Settings */}
-        <div className="space-y-4">
-          <h3 className="font-medium text-neutral-800 flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            Reminder Preferences
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="font-medium text-neutral-800 flex items-center gap-2 text-base sm:text-lg">
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+            <span>Reminder Preferences</span>
           </h3>
           
-          <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-            <div className="space-y-1">
-              <Label className="text-sm font-medium text-blue-900">Daily Journaling Reminder</Label>
-              <p className="text-xs text-blue-700">Get a gentle nudge to reflect on your day</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 bg-blue-50 rounded-lg">
+            <div className="space-y-1 flex-1">
+              <Label className="text-sm sm:text-base font-medium text-blue-900">Daily Journaling Reminder</Label>
+              <p className="text-xs sm:text-sm text-blue-700 leading-relaxed">Get a gentle nudge to reflect on your day</p>
             </div>
             <Switch
               checked={settings.dailyReminder === "true"}
               onCheckedChange={(checked) => updateSetting('dailyReminder', checked ? "true" : "false")}
+              className="self-start sm:self-center"
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-            <div className="space-y-1">
-              <Label className="text-sm font-medium text-purple-900">Weekly Progress Updates</Label>
-              <p className="text-xs text-purple-700">Receive weekly insights about your parenting journey</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 bg-purple-50 rounded-lg">
+            <div className="space-y-1 flex-1">
+              <Label className="text-sm sm:text-base font-medium text-purple-900">Weekly Progress Updates</Label>
+              <p className="text-xs sm:text-sm text-purple-700 leading-relaxed">Receive weekly insights about your parenting journey</p>
             </div>
             <Switch
               checked={settings.weeklyProgress === "true"}
               onCheckedChange={(checked) => updateSetting('weeklyProgress', checked ? "true" : "false")}
+              className="self-start sm:self-center"
             />
           </div>
 
           {(settings.dailyReminder === "true" || settings.weeklyProgress === "true") && (
-            <div className="space-y-2 pl-4 border-l-2 border-neutral-200">
-              <Label htmlFor="reminder-time" className="text-sm font-medium flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Preferred Reminder Time
+            <div className="space-y-2 pl-3 sm:pl-4 border-l-2 border-neutral-200 ml-2 sm:ml-0">
+              <Label htmlFor="reminder-time" className="text-sm sm:text-base font-medium flex items-center gap-2">
+                <Clock className="h-4 w-4 flex-shrink-0" />
+                <span>Preferred Reminder Time</span>
               </Label>
               <Input
                 id="reminder-time"
                 type="time"
                 value={settings.reminderTime}
                 onChange={(e) => updateSetting('reminderTime', e.target.value)}
-                className="w-40"
+                className="w-full max-w-[160px] text-sm sm:text-base"
               />
             </div>
           )}
@@ -397,23 +402,23 @@ export function EnhancedNotificationSettings() {
         <Separator />
 
         {/* Notification Methods */}
-        <div className="space-y-4">
-          <h3 className="font-medium text-neutral-800">Notification Methods</h3>
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="font-medium text-neutral-800 text-base sm:text-lg">Notification Methods</h3>
           
           {/* Browser Notifications */}
-          <div className={`space-y-3 p-4 rounded-lg border ${
+          <div className={`space-y-3 p-3 sm:p-4 rounded-lg border ${
             isMobileDevice() 
               ? 'bg-orange-50 border-orange-200' 
               : 'bg-green-50 border-green-200'
           }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Monitor className={`h-5 w-5 ${isMobileDevice() ? 'text-orange-600' : 'text-green-600'}`} />
-                <div>
-                  <Label className={`font-medium ${isMobileDevice() ? 'text-orange-900' : 'text-green-900'}`}>
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              <div className="flex items-start gap-2 sm:gap-3 flex-1">
+                <Monitor className={`h-4 w-4 sm:h-5 sm:w-5 mt-0.5 flex-shrink-0 ${isMobileDevice() ? 'text-orange-600' : 'text-green-600'}`} />
+                <div className="flex-1 min-w-0">
+                  <Label className={`font-medium text-sm sm:text-base block ${isMobileDevice() ? 'text-orange-900' : 'text-green-900'}`}>
                     Browser Notifications
                   </Label>
-                  <p className={`text-xs ${isMobileDevice() ? 'text-orange-700' : 'text-green-700'}`}>
+                  <p className={`text-xs sm:text-sm leading-relaxed mt-1 ${isMobileDevice() ? 'text-orange-700' : 'text-green-700'}`}>
                     {isMobileDevice() 
                       ? 'Limited support on mobile browsers - use email/SMS instead' 
                       : 'Instant pop-up reminders on this device'
@@ -421,27 +426,27 @@ export function EnhancedNotificationSettings() {
                   </p>
                 </div>
               </div>
-              <Badge variant="outline" className={browserStatus.color}>
+              <Badge variant="outline" className={`${browserStatus.color} text-xs whitespace-nowrap self-start`}>
                 {browserStatus.text}
               </Badge>
             </div>
             
             {isMobileDevice() ? (
               <div className="bg-orange-100 border border-orange-200 rounded-lg p-3">
-                <p className="text-sm text-orange-800 mb-2">
+                <p className="text-xs sm:text-sm text-orange-800 mb-2 leading-relaxed">
                   <strong>Mobile Browser Detected:</strong> {isMobileChrome() ? 'Chrome mobile' : 'Mobile browser'} has very limited notification support.
                 </p>
-                <p className="text-xs text-orange-700">
+                <p className="text-xs text-orange-700 leading-relaxed">
                   For reliable reminders, please use <strong>Email</strong> or <strong>SMS notifications</strong> below. 
                   These work much better on mobile devices and won't drain your battery.
                 </p>
               </div>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {browserPermission !== "granted" ? (
-                  <Button onClick={requestBrowserPermission} size="sm" variant="outline">
-                    <Shield className="h-4 w-4 mr-2" />
-                    Enable Browser Notifications
+                  <Button onClick={requestBrowserPermission} size="sm" variant="outline" className="text-xs sm:text-sm">
+                    <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Enable Browser </span>Notifications
                   </Button>
                 ) : (
                   <Button 
@@ -449,9 +454,10 @@ export function EnhancedNotificationSettings() {
                     size="sm" 
                     variant="outline"
                     disabled={testNotificationMutation.isPending}
+                    className="text-xs sm:text-sm"
                   >
-                    <TestTube className="h-4 w-4 mr-2" />
-                    Test Browser Notification
+                    <TestTube className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Test Browser </span>Notification
                   </Button>
                 )}
               </div>
@@ -459,35 +465,36 @@ export function EnhancedNotificationSettings() {
           </div>
 
           {/* Email Notifications */}
-          <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="flex items-center gap-3 mb-2">
-              <Mail className="h-5 w-5 text-blue-600" />
-              <Label className="font-medium text-blue-900">Email Notifications</Label>
+          <div className="space-y-3 p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center gap-2 sm:gap-3 mb-2">
+              <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+              <Label className="font-medium text-blue-900 text-sm sm:text-base">Email Notifications</Label>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 sm:space-y-3">
               <Input
                 type="email"
                 placeholder="your-email@example.com"
                 value={settings.notificationEmail}
                 onChange={(e) => updateSetting('notificationEmail', e.target.value)}
-                className={validationErrors.email ? "border-red-300" : ""}
+                className={`text-sm sm:text-base ${validationErrors.email ? "border-red-300" : ""}`}
               />
               {validationErrors.email && (
-                <p className="text-xs text-red-600 flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  {validationErrors.email}
+                <p className="text-xs sm:text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                  <span>{validationErrors.email}</span>
                 </p>
               )}
               
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button 
                   onClick={validateEmail} 
                   size="sm" 
                   variant="outline"
                   disabled={!settings.notificationEmail || validateEmailMutation.isPending}
+                  className="text-xs sm:text-sm flex-1 sm:flex-none"
                 >
-                  <Check className="h-4 w-4 mr-2" />
+                  <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   Validate Email
                 </Button>
                 {settings.notificationEmail && (
@@ -496,8 +503,9 @@ export function EnhancedNotificationSettings() {
                     size="sm" 
                     variant="outline"
                     disabled={testNotificationMutation.isPending}
+                    className="text-xs sm:text-sm flex-1 sm:flex-none"
                   >
-                    <TestTube className="h-4 w-4 mr-2" />
+                    <TestTube className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Send Test Email
                   </Button>
                 )}
@@ -506,35 +514,36 @@ export function EnhancedNotificationSettings() {
           </div>
 
           {/* SMS Notifications */}
-          <div className="space-y-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
-            <div className="flex items-center gap-3 mb-2">
-              <Phone className="h-5 w-5 text-orange-600" />
-              <Label className="font-medium text-orange-900">SMS Notifications (Optional)</Label>
+          <div className="space-y-3 p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200">
+            <div className="flex items-center gap-2 sm:gap-3 mb-2">
+              <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600 flex-shrink-0" />
+              <Label className="font-medium text-orange-900 text-sm sm:text-base">SMS Notifications (Optional)</Label>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 sm:space-y-3">
               <Input
                 type="tel"
                 placeholder="+1 (555) 123-4567"
                 value={settings.notificationPhone}
                 onChange={(e) => updateSetting('notificationPhone', e.target.value)}
-                className={validationErrors.phone ? "border-red-300" : ""}
+                className={`text-sm sm:text-base ${validationErrors.phone ? "border-red-300" : ""}`}
               />
               {validationErrors.phone && (
-                <p className="text-xs text-red-600 flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  {validationErrors.phone}
+                <p className="text-xs sm:text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                  <span>{validationErrors.phone}</span>
                 </p>
               )}
               
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button 
                   onClick={validatePhone} 
                   size="sm" 
                   variant="outline"
                   disabled={!settings.notificationPhone || validatePhoneMutation.isPending}
+                  className="text-xs sm:text-sm flex-1 sm:flex-none"
                 >
-                  <Check className="h-4 w-4 mr-2" />
+                  <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                   Validate Phone
                 </Button>
                 {settings.notificationPhone && (
@@ -543,8 +552,9 @@ export function EnhancedNotificationSettings() {
                     size="sm" 
                     variant="outline"
                     disabled={testNotificationMutation.isPending}
+                    className="text-xs sm:text-sm flex-1 sm:flex-none"
                   >
-                    <TestTube className="h-4 w-4 mr-2" />
+                    <TestTube className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Send Test SMS
                   </Button>
                 )}
@@ -556,22 +566,27 @@ export function EnhancedNotificationSettings() {
         <Separator />
 
         {/* Save Button */}
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2 sm:pt-4">
           <Button 
             onClick={handleSave}
             disabled={!hasUnsavedChanges || saveSettingsMutation.isPending}
-            className="bg-primary hover:bg-primary/90"
+            className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm sm:text-base"
           >
-            <Save className="h-4 w-4 mr-2" />
-            {saveSettingsMutation.isPending ? "Saving..." : "Save Notification Settings"}
+            <Save className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="truncate">
+              {saveSettingsMutation.isPending ? "Saving..." : "Save Notification Settings"}
+            </span>
           </Button>
         </div>
 
         {/* Info Notes */}
         {isMobileDevice() && (
-          <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-            <h4 className="font-medium text-blue-900 mb-2">📱 Mobile User Recommendations:</h4>
-            <ul className="text-sm text-blue-800 space-y-1">
+          <div className="bg-blue-50 rounded-lg p-3 sm:p-4 border border-blue-200">
+            <h4 className="font-medium text-blue-900 mb-2 text-sm sm:text-base flex items-center gap-2">
+              <span className="text-lg">📱</span>
+              <span>Mobile User Recommendations:</span>
+            </h4>
+            <ul className="text-xs sm:text-sm text-blue-800 space-y-1 leading-relaxed">
               <li>• <strong>Email notifications</strong> work reliably on all mobile devices</li>
               <li>• <strong>SMS notifications</strong> are instant and don't require internet</li>
               <li>• Browser notifications on mobile are often blocked or unreliable</li>
@@ -580,8 +595,8 @@ export function EnhancedNotificationSettings() {
           </div>
         )}
         
-        <div className="bg-neutral-50 rounded-lg p-4 border border-neutral-200">
-          <p className="text-sm text-neutral-600 leading-relaxed">
+        <div className="bg-neutral-50 rounded-lg p-3 sm:p-4 border border-neutral-200">
+          <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
             <strong>Privacy Note:</strong> We'll only send you the notifications you choose. 
             Your email and phone number are securely stored and never shared with third parties. 
             You can disable notifications at any time.

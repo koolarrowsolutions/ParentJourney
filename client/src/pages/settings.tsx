@@ -335,26 +335,26 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-primary/5 dark:from-neutral-900 dark:to-neutral-800">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-4xl">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-start justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-start justify-between mb-4">
             <Link href="/">
-              <Button variant="outline" className="hover-scale">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Main
+              <Button variant="outline" className="hover-scale text-xs sm:text-sm">
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden xs:inline">Back to </span>Main
               </Button>
             </Link>
           </div>
-          <div className="text-center mt-4">
-            <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100">⚙️ Settings</h1>
-            <p className="text-neutral-600 dark:text-neutral-300">
+          <div className="text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-800 dark:text-neutral-100">⚙️ Settings</h1>
+            <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-300 mt-2">
               Customize your ParentJourney experience
             </p>
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Enhanced Notifications & Reminders */}
           {isAuthenticated ? (
             <EnhancedNotificationSettings />
@@ -366,12 +366,12 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
                   Reminders & Notifications
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-center py-8">
-                <p className="text-neutral-600 dark:text-neutral-400 mb-4">
+              <CardContent className="text-center py-6 sm:py-8 px-4 sm:px-6">
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
                   Sign in to customize your notification preferences and receive personalized reminders.
                 </p>
                 <Link href="/">
-                  <Button variant="outline">
+                  <Button variant="outline" className="text-sm sm:text-base">
                     Sign In to Access Notifications
                   </Button>
                 </Link>

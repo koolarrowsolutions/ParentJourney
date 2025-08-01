@@ -131,95 +131,93 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             ) : (
               <div className="space-y-4">
                 {/* Balanced Stats and Wellness Row */}
-                <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
-                  {/* Compact Stats - Less Prominent */}
-                  <div className="flex-1">
-                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                      {/* Total Entries - Smaller */}
-                      <div className="bg-primary/5 rounded-lg p-2 sm:p-3 text-center border border-primary/20 animate-pop-in stagger-1">
-                        <div className="text-lg sm:text-xl font-semibold text-primary">
-                          {stats?.totalEntries || 0}
-                        </div>
-                        <div className="text-xs text-neutral-600 mt-1">Total Entries</div>
-                      </div>
-
-                      {/* Week Entries - Smaller */}
-                      <div className="bg-green-50 rounded-lg p-2 sm:p-3 text-center border border-green-200 animate-pop-in stagger-2">
-                        <div className="text-lg sm:text-xl font-semibold text-green-600">
-                          {stats?.weekEntries || 0}
-                        </div>
-                        <div className="text-xs text-neutral-600 mt-1">This Week</div>
-                      </div>
-
-                      {/* Longest Streak - Smaller */}
-                      <div className="bg-orange-50 rounded-lg p-2 sm:p-3 text-center border border-orange-200 animate-pop-in stagger-3">
-                        <div className="text-lg sm:text-xl font-semibold text-orange-600">
-                          {stats?.longestStreak || 0}
-                        </div>
-                        <div className="text-xs text-neutral-600 mt-1">Day Streak</div>
-                      </div>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+                  {/* Total Entries */}
+                  <div className="bg-primary/5 rounded-lg p-2 sm:p-3 text-center border border-primary/20 animate-pop-in stagger-1">
+                    <div className="text-lg sm:text-xl font-semibold text-primary">
+                      {stats?.totalEntries || 0}
                     </div>
+                    <div className="text-xs text-neutral-600 mt-1">Total Entries</div>
                   </div>
 
-                  {/* Wellness Journey Level - More Prominent */}
-                  <div className="flex-1 lg:flex-initial lg:ml-6">
-                    <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-3 sm:p-4 border border-purple-200">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-purple-100 rounded-full">
-                          <Award className="h-5 w-5 text-purple-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-purple-800">
-                            Level {(() => {
-                              const entries = stats?.totalEntries || 0;
-                              if (entries >= 100) return 15;
-                              if (entries >= 75) return 12;
-                              if (entries >= 50) return 9;
-                              if (entries >= 25) return 6;
-                              if (entries >= 10) return 3;
-                              return 1;
-                            })()}: {(() => {
-                              const entries = stats?.totalEntries || 0;
-                              if (entries >= 100) return "Mindful Master";
-                              if (entries >= 75) return "Wellness Warrior";
-                              if (entries >= 50) return "Balanced Parent";
-                              if (entries >= 25) return "Growing Guardian";
-                              if (entries >= 10) return "Aware Parent";
-                              return "Wellness Beginner";
-                            })()}
-                          </p>
-                          <p className="text-xs text-purple-600">Your parenting awareness journey</p>
-                          
-                          {/* Small Progress Indicators */}
-                          <div className="flex items-center space-x-3 mt-2">
-                            <TooltipWrapper 
-                              content="Your weekly check-ins help you stay connected with your wellness patterns"
-                              position="top"
-                            >
-                              <div className="text-center">
-                                <WellnessProgressRing 
-                                  progress={Math.min(((stats?.weekEntries || 0) / 7) * 100, 100)} 
-                                  size={35}
-                                  showPercentage={false}
-                                />
-                              </div>
-                            </TooltipWrapper>
-                            
-                            <TooltipWrapper 
-                              content="Consistency in self-reflection shows your commitment to growth"
-                              position="top"
-                            >
-                              <div className="text-center">
-                                <WellnessProgressRing 
-                                  progress={Math.min(((stats?.longestStreak || 0) / 21) * 100, 100)} 
-                                  size={35}
-                                  showPercentage={false}
-                                />
-                              </div>
-                            </TooltipWrapper>
-                          </div>
-                        </div>
+                  {/* Week Entries */}
+                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 text-center border border-green-200 animate-pop-in stagger-2">
+                    <div className="text-lg sm:text-xl font-semibold text-green-600">
+                      {stats?.weekEntries || 0}
+                    </div>
+                    <div className="text-xs text-neutral-600 mt-1">This Week</div>
+                  </div>
+
+                  {/* Longest Streak */}
+                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 text-center border border-orange-200 animate-pop-in stagger-3">
+                    <div className="text-lg sm:text-xl font-semibold text-orange-600">
+                      {stats?.longestStreak || 0}
+                    </div>
+                    <div className="text-xs text-neutral-600 mt-1">Day Streak</div>
+                  </div>
+
+                  {/* Wellness Level */}
+                  <div className="bg-purple-50 rounded-lg p-2 sm:p-3 text-center border border-purple-200 animate-pop-in stagger-4">
+                    <div className="flex items-center justify-center mb-1">
+                      <Award className="h-4 w-4 text-purple-600 mr-1" />
+                      <div className="text-lg sm:text-xl font-semibold text-purple-600">
+                        {(() => {
+                          const entries = stats?.totalEntries || 0;
+                          if (entries >= 100) return 15;
+                          if (entries >= 75) return 12;
+                          if (entries >= 50) return 9;
+                          if (entries >= 25) return 6;
+                          if (entries >= 10) return 3;
+                          return 1;
+                        })()}
                       </div>
+                    </div>
+                    <div className="text-xs text-neutral-600">
+                      Wellness Level
+                    </div>
+                  </div>
+                </div>
+
+                {/* Wellness Journey Description */}
+                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-3 border border-purple-200 mt-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="text-sm font-medium text-purple-800">
+                        {(() => {
+                          const entries = stats?.totalEntries || 0;
+                          if (entries >= 100) return "Mindful Master";
+                          if (entries >= 75) return "Wellness Warrior";
+                          if (entries >= 50) return "Balanced Parent";
+                          if (entries >= 25) return "Growing Guardian";
+                          if (entries >= 10) return "Aware Parent";
+                          return "Wellness Beginner";
+                        })()} - Your parenting awareness journey
+                      </div>
+                    </div>
+                    
+                    {/* Small Progress Indicators */}
+                    <div className="flex items-center space-x-2">
+                      <TooltipWrapper 
+                        content="Your weekly check-ins help you stay connected with your wellness patterns"
+                        position="top"
+                      >
+                        <WellnessProgressRing 
+                          progress={Math.min(((stats?.weekEntries || 0) / 7) * 100, 100)} 
+                          size={28}
+                          showPercentage={false}
+                        />
+                      </TooltipWrapper>
+                      
+                      <TooltipWrapper 
+                        content="Consistency in self-reflection shows your commitment to growth"
+                        position="top"
+                      >
+                        <WellnessProgressRing 
+                          progress={Math.min(((stats?.longestStreak || 0) / 21) * 100, 100)} 
+                          size={28}
+                          showPercentage={false}
+                        />
+                      </TooltipWrapper>
                     </div>
                   </div>
                 </div>

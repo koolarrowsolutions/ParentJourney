@@ -8,6 +8,8 @@ import { EmotionTrendsDashboard } from "@/components/emotion-trends-dashboard";
 import { MoodTrendsDashboard } from "@/components/mood-trends-dashboard";
 import { useState } from "react";
 import { JournalEntry } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
+import { GamifiedWellnessDashboard } from "@/components/gamified-wellness-dashboard";
 // Temporarily remove JournalEntryCard import until it's properly implemented
 // import { JournalEntryCard } from "@/components/journal-entry-card";
 
@@ -15,9 +17,26 @@ interface AnalyticsProps {
   triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
 }
 
+interface JournalStats {
+  totalEntries: number;
+  weekEntries: number;
+  longestStreak: number;
+}
+
 export default function Analytics({ triggerSignUpPrompt }: AnalyticsProps) {
   const [searchResults, setSearchResults] = useState<JournalEntry[] | null>(null);
   const [selectedChildId, setSelectedChildId] = useState<string>("all");
+
+  const { data: stats } = useQuery<JournalStats>({
+    queryKey: ["/api/journal-stats"],
+    queryFn: async () => {
+      const response = await fetch("/api/journal-stats", {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error("Failed to fetch stats");
+      return response.json();
+    },
+  });
 
   const handleSearchResults = (results: JournalEntry[]) => {
     setSearchResults(results);
@@ -104,15 +123,36 @@ export default function Analytics({ triggerSignUpPrompt }: AnalyticsProps) {
                 />
               </div>
 
+              {/* Achievements Section */}
+              {stats && (
+                <div className="space-y-6 animate-pop-in" style={{ animationDelay: '0.3s' }}>
+                  <h2 className="text-2xl font-bold text-neutral-800 border-b border-neutral-200 pb-2">
+                    🏆 Your Wellness Achievements
+                  </h2>
+                  <GamifiedWellnessDashboard 
+                    stats={{
+                      weeklyCheckIns: stats.weekEntries || 0,
+                      currentStreak: stats.longestStreak || 0,
+                      totalEntries: stats.totalEntries || 0,
+                      wellnessScore: Math.min(((stats.totalEntries || 0) / 10) * 100, 100)
+                    }}
+                    onStartCheckIn={() => {
+                      // Navigate back to home for check-in
+                      window.location.href = '/';
+                    }}
+                  />
+                </div>
+              )}
+
               {/* Analytics Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Weekly Reflection */}
-                <div className="animate-pop-in" style={{ animationDelay: '0.3s' }}>
+                <div className="animate-pop-in" style={{ animationDelay: '0.4s' }}>
                   <WeeklyReflection />
                 </div>
 
                 {/* Mood Analytics */}
-                <div className="animate-bounce-in" style={{ animationDelay: '0.4s' }}>
+                <div className="animate-bounce-in" style={{ animationDelay: '0.5s' }}>
                   <MoodAnalytics />
                 </div>
               </div>

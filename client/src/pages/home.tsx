@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Header } from "@/components/header";
 import { RecentEntries } from "@/components/recent-entries";
 import { InteractiveProgress } from "@/components/interactive-progress";
+import { Award } from "lucide-react";
 import { ChildEntryOverview } from "@/components/child-entry-overview";
 import { MoodSelector } from "@/components/mood-selector";
 import { QuickActionsGroup } from "@/components/quick-actions-group";
@@ -13,7 +14,8 @@ import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { ComprehensiveAIInsights } from "@/components/comprehensive-ai-insights";
 import { LoginSuccessPopup } from "@/components/login-success-popup";
-import { GamifiedWellnessDashboard } from "@/components/gamified-wellness-dashboard";
+import { TooltipWrapper } from "@/components/tooltip-wrapper";
+import { WellnessProgressRing } from "@/components/wellness-progress-ring";
 
 import { OnboardingFlow } from "@/components/onboarding-flow";
 import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
@@ -127,33 +129,81 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                 <Skeleton className="h-10 sm:h-12 rounded-lg animate-shimmer" />
               </div>
             ) : (
-              <InteractiveProgress 
-                totalEntries={stats?.totalEntries || 0}
-                weekEntries={stats?.weekEntries || 0}
-                longestStreak={stats?.longestStreak || 0}
-              />
+              <div className="space-y-4">
+                <InteractiveProgress 
+                  totalEntries={stats?.totalEntries || 0}
+                  weekEntries={stats?.weekEntries || 0}
+                  longestStreak={stats?.longestStreak || 0}
+                />
+                
+                {/* Integrated Wellness Status */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-primary/10">
+                  {/* Parent Level */}
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-purple-100 rounded-full">
+                      <Award className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-purple-800">
+                        Level {(() => {
+                          const entries = stats?.totalEntries || 0;
+                          if (entries >= 100) return 15;
+                          if (entries >= 75) return 12;
+                          if (entries >= 50) return 9;
+                          if (entries >= 25) return 6;
+                          if (entries >= 10) return 3;
+                          return 1;
+                        })()}: {(() => {
+                          const entries = stats?.totalEntries || 0;
+                          if (entries >= 100) return "Mindful Master";
+                          if (entries >= 75) return "Wellness Warrior";
+                          if (entries >= 50) return "Balanced Parent";
+                          if (entries >= 25) return "Growing Guardian";
+                          if (entries >= 10) return "Aware Parent";
+                          return "Wellness Beginner";
+                        })()}
+                      </p>
+                      <p className="text-xs text-purple-600">Your parenting awareness journey</p>
+                    </div>
+                  </div>
+
+                  {/* Quick Wellness Rings */}
+                  <div className="flex items-center space-x-4">
+                    <TooltipWrapper 
+                      content="Your weekly check-ins help you stay connected with your wellness patterns"
+                      position="top"
+                    >
+                      <div className="text-center">
+                        <WellnessProgressRing 
+                          progress={Math.min(((stats?.weekEntries || 0) / 7) * 100, 100)} 
+                          size={45}
+                          showPercentage={false}
+                        />
+                        <p className="text-xs text-gray-600 mt-1">This Week</p>
+                      </div>
+                    </TooltipWrapper>
+                    
+                    <TooltipWrapper 
+                      content="Consistency in self-reflection shows your commitment to growth"
+                      position="top"
+                    >
+                      <div className="text-center">
+                        <WellnessProgressRing 
+                          progress={Math.min(((stats?.longestStreak || 0) / 21) * 100, 100)} 
+                          size={45}
+                          showPercentage={false}
+                        />
+                        <p className="text-xs text-gray-600 mt-1">{stats?.longestStreak || 0} Day Streak</p>
+                      </div>
+                    </TooltipWrapper>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Gamified Wellness Dashboard */}
-        <div className="mb-4 sm:mb-6">
-          <GamifiedWellnessDashboard 
-            stats={{
-              weeklyCheckIns: stats?.weekEntries || 0,
-              currentStreak: stats?.longestStreak || 0,
-              totalEntries: stats?.totalEntries || 0,
-              wellnessScore: Math.min(((stats?.totalEntries || 0) / 10) * 100, 100)
-            }}
-            onStartCheckIn={() => {
-              // This will be implemented to trigger the mood selector
-              const moodSelector = document.querySelector('[data-mood-selector]');
-              if (moodSelector) {
-                moodSelector.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-          />
-        </div>
+
 
         {/* Easy Daily Check-In - Between welcome and AI insights */}
         <div className="mb-4 sm:mb-6" data-mood-selector>

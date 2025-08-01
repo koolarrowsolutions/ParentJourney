@@ -175,6 +175,8 @@ import { extractToken, validateAuthToken } from './auth-token';
 function requireAuth(req: any, res: any, next: any) {
   // Try session-based auth first
   if (req.session?.userId) {
+    // Set user context for storage isolation
+    storage.setCurrentUser(req.session.userId);
     return next();
   }
   
@@ -187,6 +189,8 @@ function requireAuth(req: any, res: any, next: any) {
       // Set req.user for compatibility with existing code
       req.user = { id: tokenData.userId };
       req.session.userId = tokenData.userId; // Set session for compatibility
+      // Set user context for storage isolation
+      storage.setCurrentUser(tokenData.userId);
       return next();
     }
   }
@@ -265,6 +269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const entries = await storage.getJournalEntries(limit, search, childId);
       res.json(entries);
     } catch (error) {
+      console.error("Journal entries error:", error);
       res.status(500).json({ message: "Failed to fetch journal entries" });
     }
   });

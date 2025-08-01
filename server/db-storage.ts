@@ -20,14 +20,45 @@ import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
-  // Journal entries
+  private currentUserId?: string;
+  private currentUserFamilyId?: string;
+
+  // Set current user context for data isolation
+  setCurrentUser(userId: string): void {
+    this.currentUserId = userId;
+    // We'll lazy-load the family ID when needed
+    this.currentUserFamilyId = undefined;
+  }
+
+  private async getCurrentUserFamilyId(): Promise<string | undefined> {
+    if (!this.currentUserId) return undefined;
+    
+    if (!this.currentUserFamilyId) {
+      const user = await db.select().from(schema.users).where(eq(schema.users.id, this.currentUserId));
+      this.currentUserFamilyId = user[0]?.familyId || undefined;
+    }
+    
+    return this.currentUserFamilyId;
+  }
+
+  // Journal entries with user isolation
   async getJournalEntry(id: string): Promise<JournalEntry | undefined> {
-    const result = await db.select().from(schema.journalEntries).where(eq(schema.journalEntries.id, id));
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return undefined;
+    
+    const result = await db.select().from(schema.journalEntries)
+      .where(and(
+        eq(schema.journalEntries.id, id),
+        eq(schema.journalEntries.familyId, familyId)
+      ));
     return result[0];
   }
 
   async getJournalEntries(limit?: number, search?: string, childId?: string): Promise<JournalEntry[]> {
-    const conditions = [];
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return [];
+
+    const conditions = [eq(schema.journalEntries.familyId, familyId)];
     
     if (childId) {
       conditions.push(eq(schema.journalEntries.childProfileId, childId));
@@ -37,16 +68,11 @@ export class DatabaseStorage implements IStorage {
       conditions.push(sql`${schema.journalEntries.content} ILIKE ${'%' + search + '%'}`);
     }
     
-    let query = db.select().from(schema.journalEntries);
-    
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-    
-    query = query.orderBy(desc(schema.journalEntries.createdAt));
+    let query = db.select().from(schema.journalEntries).where(and(...conditions))
+      .orderBy(desc(schema.journalEntries.createdAt));
     
     if (limit) {
-      query = query.limit(limit);
+      return await query.limit(limit);
     }
     
     return await query;
@@ -119,14 +145,26 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  // Child profiles
+  // Child profiles with user isolation
   async getChildProfile(id: string): Promise<ChildProfile | undefined> {
-    const result = await db.select().from(schema.childProfiles).where(eq(schema.childProfiles.id, id));
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return undefined;
+    
+    const result = await db.select().from(schema.childProfiles)
+      .where(and(
+        eq(schema.childProfiles.id, id),
+        eq(schema.childProfiles.familyId, familyId)
+      ));
     return result[0];
   }
 
   async getChildProfiles(): Promise<ChildProfile[]> {
-    return await db.select().from(schema.childProfiles).orderBy(desc(schema.childProfiles.createdAt));
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return [];
+    
+    return await db.select().from(schema.childProfiles)
+      .where(eq(schema.childProfiles.familyId, familyId))
+      .orderBy(desc(schema.childProfiles.createdAt));
   }
 
   async createChildProfile(profile: InsertChildProfile): Promise<ChildProfile> {
@@ -171,7 +209,12 @@ export class DatabaseStorage implements IStorage {
 
   // Parent profiles
   async getParentProfile(): Promise<ParentProfile | undefined> {
-    const result = await db.select().from(schema.parentProfiles).limit(1);
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return undefined;
+    
+    const result = await db.select().from(schema.parentProfiles)
+      .where(eq(schema.parentProfiles.familyId, familyId))
+      .limit(1);
     return result[0];
   }
 

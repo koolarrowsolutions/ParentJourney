@@ -17,6 +17,9 @@ import {
 import { randomUUID } from "crypto";
 
 export interface IStorage {
+  // User context for data isolation
+  setCurrentUser(userId: string): void;
+  
   // Journal entries
   getJournalEntry(id: string): Promise<JournalEntry | undefined>;
   getJournalEntries(limit?: number, search?: string, childId?: string): Promise<JournalEntry[]>;
@@ -77,6 +80,7 @@ export class MemStorage implements IStorage {
   private communityPosts: Map<string, CommunityPost>;
   private communityComments: Map<string, CommunityComment>;
   private users: Map<string, User>;
+  private currentUserId?: string;
 
   constructor() {
     this.journalEntries = new Map();
@@ -86,6 +90,10 @@ export class MemStorage implements IStorage {
     this.communityPosts = new Map();
     this.communityComments = new Map();
     this.users = new Map();
+  }
+
+  setCurrentUser(userId: string): void {
+    this.currentUserId = userId;
   }
 
   async getJournalEntry(id: string): Promise<JournalEntry | undefined> {
@@ -122,6 +130,7 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const entry: JournalEntry = {
       id,
+      familyId: insertEntry.familyId ?? null,
       title: insertEntry.title ?? null,
       content: insertEntry.content,
       mood: insertEntry.mood ?? null,
@@ -132,6 +141,7 @@ export class MemStorage implements IStorage {
       developmentalInsight: insertEntry.developmentalInsight ?? null,
       hasAiFeedback: insertEntry.hasAiFeedback ?? "false",
       photos: insertEntry.photos ?? null,
+      dailyCheckIn: insertEntry.dailyCheckIn ?? null,
       isFavorite: insertEntry.isFavorite ?? "false",
       calmResetUsed: insertEntry.calmResetUsed ?? "false",
       createdAt: new Date(),
@@ -346,6 +356,7 @@ export class MemStorage implements IStorage {
       developmentalStage: insertProfile.developmentalStage ?? null,
       notes: insertProfile.notes ?? null,
       personalityTraits: insertProfile.personalityTraits ?? null,
+      photoUrl: insertProfile.photoUrl ?? null,
       id,
       createdAt: new Date(),
     };
@@ -414,6 +425,7 @@ export class MemStorage implements IStorage {
       stressors: insertProfile.stressors ?? null,
       supportSystems: insertProfile.supportSystems ?? null,
       notes: insertProfile.notes ?? null,
+      photoUrl: insertProfile.photoUrl ?? null,
       id,
       createdAt: new Date(),
       updatedAt: new Date(),

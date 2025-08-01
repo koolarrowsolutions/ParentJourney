@@ -197,15 +197,7 @@ function requireAuth(req: any, res: any, next: any) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // CRITICAL: Health check routes must be first to ensure deployment health checks work
   // These routes handle deployment monitoring and must respond quickly with 200 status
-  
-  // Primary health check route for deployment systems
-  app.get('/', (req, res) => {
-    res.status(200).json({ 
-      status: 'healthy', 
-      timestamp: new Date().toISOString(),
-      service: 'parenting-wellness-app'
-    });
-  });
+  // Note: Root route (/) is handled by frontend serving, not health checks
 
   // Secondary health check endpoint
   app.get('/health', (req, res) => {

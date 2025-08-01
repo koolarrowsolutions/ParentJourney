@@ -40,22 +40,22 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     queryKey: ["/auth/user"],
   });
 
-  const isAuthenticated = (authUser as any)?.success && (authUser as any)?.user;
+  const isAuthenticated = Boolean((authUser as any)?.success && (authUser as any)?.user);
 
   // Fetch data for AI analysis only if authenticated
   const { data: entries } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal-entries"],
-    enabled: !!isAuthenticated,
+    enabled: isAuthenticated,
   });
 
   const { data: childProfiles } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
-    enabled: !!isAuthenticated,
+    enabled: isAuthenticated,
   });
 
   const { data: parentProfile } = useQuery<ParentProfile>({
     queryKey: ["/api/parent-profile"],
-    enabled: !!isAuthenticated,
+    enabled: isAuthenticated,
   });
 
   const handleInsightClick = async (insightType: string) => {

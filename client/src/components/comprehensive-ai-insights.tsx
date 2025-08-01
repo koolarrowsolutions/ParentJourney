@@ -45,17 +45,17 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
   // Fetch data for AI analysis only if authenticated
   const { data: entries } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal-entries"],
-    enabled: isAuthenticated,
+    enabled: !!isAuthenticated,
   });
 
   const { data: childProfiles } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
-    enabled: isAuthenticated,
+    enabled: !!isAuthenticated,
   });
 
   const { data: parentProfile } = useQuery<ParentProfile>({
     queryKey: ["/api/parent-profile"],
-    enabled: isAuthenticated,
+    enabled: !!isAuthenticated,
   });
 
   const handleInsightClick = async (insightType: string) => {
@@ -69,7 +69,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       } else {
         // Use actual user data for authenticated users
         console.log(`Loading AI analysis for: ${insightType}`);
-        const userData = getUserSpecificData(insightType, entries, childProfiles, parentProfile);
+        const userData = getUserSpecificData(insightType, entries || [], childProfiles || [], parentProfile);
         console.log(`User data structure:`, Object.keys(userData));
         setAnalysisData(userData);
       }
@@ -77,7 +77,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       console.error('Error setting AI analysis data:', error);
       // Fallback to appropriate content based on auth state
       setAnalysisData(isAuthenticated ? 
-        getUserSpecificData(insightType, entries, childProfiles, parentProfile) : 
+        getUserSpecificData(insightType, entries || [], childProfiles || [], parentProfile) : 
         getUnauthenticatedExplainer(insightType)
       );
     } finally {

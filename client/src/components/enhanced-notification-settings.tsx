@@ -101,11 +101,7 @@ export function EnhancedNotificationSettings() {
   // Email validation mutation
   const validateEmailMutation = useMutation({
     mutationFn: async (email: string) => {
-      const response = await fetch("/api/validate-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await apiRequest("POST", "/api/validate-email", { email });
       return response.json() as Promise<ValidationResult>;
     },
     onSuccess: (result, email) => {
@@ -124,11 +120,7 @@ export function EnhancedNotificationSettings() {
   // Phone validation mutation
   const validatePhoneMutation = useMutation({
     mutationFn: async (phone: string) => {
-      const response = await fetch("/api/validate-phone", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
-      });
+      const response = await apiRequest("POST", "/api/validate-phone", { phone });
       return response.json() as Promise<ValidationResult>;
     },
     onSuccess: (result, phone) => {
@@ -147,11 +139,7 @@ export function EnhancedNotificationSettings() {
   // Test notification mutation
   const testNotificationMutation = useMutation({
     mutationFn: async ({ type, recipient }: { type: string; recipient?: string }) => {
-      const response = await fetch("/api/test-notification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, recipient }),
-      });
+      const response = await apiRequest("POST", "/api/test-notification", { type, recipient });
       return response.json();
     },
     onSuccess: (result) => {

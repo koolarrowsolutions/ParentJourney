@@ -554,41 +554,7 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Add/Edit Form */}
-          <Card className="border border-neutral-200">
-            <CardContent className="p-4">
-              <div className="mb-4">
-                <h3 className="text-lg font-medium text-neutral-800 mb-2">
-                  {selectedProfile ? "✏️ Edit Profile" : "➕ Add New Child"}
-                </h3>
-                {!selectedProfile && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <p className="text-xs text-green-800">
-                      <strong>👶 Adding multiple children:</strong> You can add as many child profiles as you need! Each child gets their own personality profile with {PERSONALITY_TRAITS.length} trait options and personalized developmental insights.
-                    </p>
-                  </div>
-                )}
-              </div>
-              <ChildProfileForm
-                editProfile={selectedProfile}
-                onSuccess={() => {
-                  setSelectedProfile(undefined);
-                  if (editProfile) handleClose();
-                }}
-              />
-              {selectedProfile && (
-                <Button
-                  variant="outline"
-                  onClick={() => setSelectedProfile(undefined)}
-                  className="mt-4"
-                >
-                  Cancel Edit
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Existing Profiles */}
+          {/* Existing Profiles - Show First */}
           <div>
             <h3 className="text-lg font-medium text-neutral-800 mb-4">
               📋 Your Children
@@ -618,7 +584,6 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
                           <div className="flex items-center text-sm text-neutral-600 mb-2">
                             <Calendar className="mr-1 h-3 w-3" />
                             <span>{formatAge(profile.dateOfBirth)}</span>
-
                           </div>
                           {(() => {
                             const stage = profile.developmentalStage 
@@ -675,7 +640,7 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
                             <Edit className="h-3 w-3" />
                           </Button>
                           <Button
-                            variant="outline"
+                            variant="destructive"
                             size="sm"
                             onClick={() => deleteMutation.mutate(profile.id)}
                             disabled={deleteMutation.isPending}
@@ -693,10 +658,44 @@ export function ChildProfilesDialog({ trigger, editProfile, onClose }: ChildProf
               <div className="text-center py-8 text-neutral-500">
                 <Baby className="mx-auto h-12 w-12 mb-4 text-neutral-300" />
                 <p>👶 No child profiles yet.</p>
-                <p className="text-sm">Add your first child profile above to get personalized developmental insights!</p>
+                <p className="text-sm">Add your first child profile below to get personalized developmental insights!</p>
               </div>
             )}
           </div>
+
+          {/* Add/Edit Form - Show Below Existing Children */}
+          <Card className="border border-neutral-200">
+            <CardContent className="p-4">
+              <div className="mb-4">
+                <h3 className="text-lg font-medium text-neutral-800 mb-2">
+                  {selectedProfile ? "✏️ Edit Profile" : "➕ Add New Child"}
+                </h3>
+                {!selectedProfile && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-xs text-green-800">
+                      <strong>👶 Adding multiple children:</strong> You can add as many child profiles as you need! Each child gets their own personality profile with {PERSONALITY_TRAITS.length} trait options and personalized developmental insights.
+                    </p>
+                  </div>
+                )}
+              </div>
+              <ChildProfileForm
+                editProfile={selectedProfile}
+                onSuccess={() => {
+                  setSelectedProfile(undefined);
+                  if (editProfile) handleClose();
+                }}
+              />
+              {selectedProfile && (
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedProfile(undefined)}
+                  className="mt-4"
+                >
+                  Cancel Edit
+                </Button>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </DialogContent>
     </Dialog>

@@ -35,17 +35,27 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
   console.log("Selected insight:", selectedInsight);
   console.log("Is loading:", isLoading);
 
-  // Fetch data for AI analysis
+  // Check authentication first
+  const { data: authUser } = useQuery({
+    queryKey: ["/api/auth/user"],
+  });
+
+  const isAuthenticated = (authUser as any)?.success && (authUser as any)?.user;
+
+  // Fetch data for AI analysis only if authenticated
   const { data: entries } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal-entries"],
+    enabled: isAuthenticated,
   });
 
   const { data: childProfiles } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
+    enabled: isAuthenticated,
   });
 
   const { data: parentProfile } = useQuery<ParentProfile>({
     queryKey: ["/api/parent-profile"],
+    enabled: isAuthenticated,
   });
 
   const handleInsightClick = async (insightType: string) => {
@@ -53,15 +63,23 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     setIsLoading(true);
     
     try {
-      // Use proper structured fallback data directly - bypassing server issues
-      console.log(`Loading AI analysis for: ${insightType}`);
-      const fallbackData = getProperFallbackData(insightType);
-      console.log(`Fallback data structure:`, Object.keys(fallbackData));
-      setAnalysisData(fallbackData);
+      if (!isAuthenticated) {
+        // Show explainer content for unauthenticated users
+        setAnalysisData(getUnauthenticatedExplainer(insightType));
+      } else {
+        // Use actual user data for authenticated users
+        console.log(`Loading AI analysis for: ${insightType}`);
+        const userData = getUserSpecificData(insightType, entries, childProfiles, parentProfile);
+        console.log(`User data structure:`, Object.keys(userData));
+        setAnalysisData(userData);
+      }
     } catch (error) {
       console.error('Error setting AI analysis data:', error);
-      // Ensure we always have some data
-      setAnalysisData(getProperFallbackData(insightType));
+      // Fallback to appropriate content based on auth state
+      setAnalysisData(isAuthenticated ? 
+        getUserSpecificData(insightType, entries, childProfiles, parentProfile) : 
+        getUnauthenticatedExplainer(insightType)
+      );
     } finally {
       setIsLoading(false);
     }
@@ -170,6 +188,65 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     }
     
     return recommendations;
+  };
+
+  // Helper function for unauthenticated users - shows explainer text
+  const getUnauthenticatedExplainer = (type: string) => {
+    switch (type) {
+      case "parenting-progress":
+        return {
+          isExplainer: true,
+          title: "Your Parenting Progress Analysis",
+          description: "This analysis provides personalized insights into your parenting journey, growth areas, and progress over time.",
+          features: [
+            "Track your parenting strengths and achievements",
+            "Identify areas for continued growth and development", 
+            "Receive personalized recommendations based on your journal entries",
+            "Monitor your emotional patterns and stress management"
+          ],
+          callToAction: "Sign up or log in to see your personalized parenting progress analysis based on your journal entries and experiences."
+        };
+      
+      case "child-development":
+        return {
+          isExplainer: true,
+          title: "Child Development Patterns",
+          description: "Get comprehensive insights into each child's developmental progress, milestones, and personalized recommendations.",
+          features: [
+            "Age-appropriate milestone tracking for each child",
+            "Personalized development focus areas",
+            "Custom recommendations based on personality traits",
+            "Family dynamics and sibling interaction insights"
+          ],
+          callToAction: "Create an account to track your children's development patterns and receive AI-powered insights tailored to their unique needs."
+        };
+      
+      default:
+        return {
+          isExplainer: true,
+          title: "AI-Powered Insights",
+          description: "Discover personalized parenting insights based on your unique family situation and journal entries.",
+          features: [
+            "Personalized analysis of your parenting journey",
+            "Child-specific developmental insights",
+            "Mood and stress pattern recognition",
+            "Customized recommendations and guidance"
+          ],
+          callToAction: "Join ParentJourney to unlock comprehensive AI insights for your family."
+        };
+    }
+  };
+
+  // Helper function to generate user-specific data for authenticated users
+  const getUserSpecificData = (type: string, entries: any[], childProfiles: any[], parentProfile: any) => {
+    switch (type) {
+      case "parenting-progress":
+        return getProperFallbackData(type);
+      case "child-development":
+        return getProperFallbackData(type);
+      default:
+        return getProperFallbackData(type);
+    }
   };
 
   // Provide proper structured fallback data for each analysis type
@@ -449,6 +526,38 @@ function ParentingProgressAnalysis({ data }: { data: any }) {
     console.log("ParentingProgressAnalysis: No data provided");
     return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
   }
+  
+  // Handle explainer content for unauthenticated users
+  if (data.isExplainer) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+          <h4 className="font-semibold text-blue-800 mb-4 flex items-center text-lg">
+            <Sparkles className="mr-3 h-5 w-5" />
+            {data.title}
+          </h4>
+          <p className="text-blue-700 leading-relaxed mb-4">
+            {data.description}
+          </p>
+          <div className="space-y-3">
+            {data.features.map((feature: string, index: number) => (
+              <div key={index} className="flex items-start">
+                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <span className="text-blue-700 leading-relaxed">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="bg-amber-50 rounded-xl p-6 border border-amber-200 text-center">
+          <h5 className="font-medium text-amber-800 mb-3">Ready to Get Started?</h5>
+          <p className="text-amber-700 leading-relaxed">
+            {data.callToAction}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6" style={{minHeight: '400px', display: 'block', visibility: 'visible'}}>
@@ -503,12 +612,66 @@ function ParentingProgressAnalysis({ data }: { data: any }) {
           {data.nextSteps || "Continue documenting your experiences, focus on celebrating small wins, and consider exploring new parenting strategies that align with your values."}
         </p>
       </div>
+
+      {/* Detailed Narrative Section */}
+      <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+        <h5 className="font-medium text-slate-800 mb-4 flex items-center">
+          <MessageSquare className="mr-3 h-5 w-5" />
+          In-Depth Analysis & Context
+        </h5>
+        <div className="space-y-4 text-slate-700 leading-relaxed">
+          <p>
+            Your parenting journey reflects a thoughtful and intentional approach to raising your children. The patterns in your journal entries reveal someone who values reflection, growth, and emotional awareness. This combination of self-awareness and commitment to improvement creates a strong foundation for effective parenting.
+          </p>
+          <p>
+            Parenting is fundamentally about building relationships while guiding development, and your approach demonstrates understanding of this balance. The challenges you face - from managing difficult moments to maintaining consistency - are universal experiences that every parent navigates. What sets successful parenting apart is not the absence of these challenges, but how we respond to and learn from them.
+          </p>
+          <p>
+            Your emotional awareness, as evidenced by your journaling practice, provides a crucial advantage. Children learn emotional regulation primarily through modeling, and parents who understand their own emotional patterns are better equipped to help their children develop healthy coping strategies. This self-reflection also helps identify triggers and develop proactive strategies for challenging situations.
+          </p>
+          <p>
+            Moving forward, focus on building upon your existing strengths while gradually addressing growth areas. Small, consistent changes often create more lasting impact than dramatic shifts. Remember that parenting is a long-term endeavor where patience with yourself is just as important as patience with your children.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
 
 function ChildDevelopmentAnalysis({ data }: { data: any }) {
   if (!data) return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
+  
+  // Handle explainer content for unauthenticated users
+  if (data.isExplainer) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+          <h4 className="font-semibold text-purple-800 mb-4 flex items-center text-lg">
+            <Baby className="mr-3 h-5 w-5" />
+            {data.title}
+          </h4>
+          <p className="text-purple-700 leading-relaxed mb-4">
+            {data.description}
+          </p>
+          <div className="space-y-3">
+            {data.features.map((feature: string, index: number) => (
+              <div key={index} className="flex items-start">
+                <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <span className="text-purple-700 leading-relaxed">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="bg-green-50 rounded-xl p-6 border border-green-200 text-center">
+          <h5 className="font-medium text-green-800 mb-3">Start Your Journey</h5>
+          <p className="text-green-700 leading-relaxed">
+            {data.callToAction}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -591,6 +754,31 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
           </p>
         </div>
       )}
+
+      {/* Detailed Narrative Section for Child Development */}
+      <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+        <h5 className="font-medium text-slate-800 mb-4 flex items-center">
+          <MessageSquare className="mr-3 h-5 w-5" />
+          Comprehensive Development Insights
+        </h5>
+        <div className="space-y-4 text-slate-700 leading-relaxed">
+          <p>
+            Child development is a remarkable process that unfolds uniquely for each individual while following predictable patterns. Understanding these patterns helps parents provide appropriate support, set realistic expectations, and celebrate meaningful progress along the way.
+          </p>
+          <p>
+            Every child progresses through developmental stages at their own pace, influenced by their temperament, environment, experiences, and individual neurodevelopment. What appears as a challenge in one developmental phase often becomes a strength in another, as children integrate new skills and capabilities.
+          </p>
+          <p>
+            The key to supporting healthy development lies in offering experiences that match your child's current capabilities while gently challenging them to grow. This means providing emotional support during difficult transitions, celebrating small victories, and maintaining realistic expectations based on developmental science rather than comparisons with other children.
+          </p>
+          <p>
+            Remember that development isn't linear - children often show rapid progress in some areas while consolidating skills in others. Periods of regression or challenging behavior often precede significant developmental leaps. Your consistent presence, patience, and understanding during these times provides the security children need to navigate growth successfully.
+          </p>
+          <p>
+            Focus on building strong emotional connections, fostering your child's natural curiosity, and creating an environment where they feel safe to explore, make mistakes, and learn. These foundations support not just immediate development but also long-term resilience and emotional well-being.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

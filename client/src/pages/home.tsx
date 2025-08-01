@@ -12,11 +12,11 @@ import { getDailyGreeting } from "@shared/greetings";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { ComprehensiveAIInsights } from "@/components/comprehensive-ai-insights";
-import { SmartSuggestions } from "@/components/smart-suggestions";
+
 import { OnboardingFlow } from "@/components/onboarding-flow";
 import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
 
-import type { ChildProfile } from "@shared/schema";
+import type { ChildProfile, JournalEntry } from "@shared/schema";
 
 interface JournalStats {
   totalEntries: number;
@@ -133,8 +133,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           <ComprehensiveAIInsights />
         </div>
 
-        {/* Feeling Overwhelmed Element - Reduced gap */}
-        <div className="mb-2 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
+        {/* Feeling Overwhelmed Element - No gap to next section */}
+        <div className="mb-3 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-emerald-800 font-medium">
               Feeling overwhelmed today? Take a moment to center yourself.
@@ -144,7 +144,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         </div>
 
         {/* Mood Selection - Independent Element */}
-        <div className="mb-4">
+        <div className="mb-3">
           <MoodSelector 
             selectedMood={selectedMood} 
             onMoodChange={setSelectedMood} 
@@ -152,7 +152,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         </div>
 
         {/* Quick Actions Group */}
-        <div className="mb-8">
+        <div className="mb-6">
           <QuickActionsGroup 
             selectedMood={selectedMood} 
             triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
@@ -160,7 +160,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         </div>
 
         {/* Streamlined Content Layout */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Child-specific entries overview */}
           {childProfiles && childProfiles.length > 0 && (
             <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 animate-bounce-in stagger-3">
@@ -181,25 +181,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           </div>
         </div>
         
-        {/* Smart Suggestions Section - Bottom of page */}
-        <div className="mb-6 sm:mb-8">
-          <SmartSuggestions
-            context={{
-              currentPage: 'home',
-              hasChildren: childProfiles && childProfiles.length > 0,
-              entryCount: entries?.length || 0,
-              isFirstTime: !entries || entries.length === 0,
-              timeOfDay: new Date().getHours() < 12 ? 'morning' : 
-                        new Date().getHours() < 17 ? 'afternoon' : 
-                        new Date().getHours() < 21 ? 'evening' : 'night'
-            }}
-            onSuggestionClick={(suggestionId) => {
-              console.log('Suggestion clicked:', suggestionId);
-              // Handle suggestion clicks - could navigate to features, show modals, etc.
-            }}
-            className="animate-fade-in"
-          />
-        </div>
+
       </main>
       
       {/* Floating Parenting Chatbot */}

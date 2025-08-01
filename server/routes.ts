@@ -1543,14 +1543,15 @@ Provide your analysis in this exact JSON format:
                   email: recipient,
                   name: "Parent"
                 }],
-                subject: "ParentJourney Test Notification ✅",
+                subject: "ParentJourney Test Notification",
+                textContent: "This is a test notification from your ParentJourney app. If you're seeing this, your email notifications are working perfectly! Email notifications are now active and you'll receive gentle reminders and updates about your parenting journey. Keep up the great work documenting your parenting journey! - The ParentJourney Team",
                 htmlContent: `
                   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4F46E5;">🎉 Test Email Successful!</h2>
+                    <h2 style="color: #4F46E5;">Test Email Successful!</h2>
                     <p>Hello!</p>
                     <p>This is a test notification from your ParentJourney app. If you're seeing this, your email notifications are working perfectly!</p>
                     <div style="background-color: #F0F9FF; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                      <p style="margin: 0; color: #0C4A6E;"><strong>✅ Email notifications are now active</strong></p>
+                      <p style="margin: 0; color: #0C4A6E;"><strong>Email notifications are now active</strong></p>
                       <p style="margin: 10px 0 0 0; color: #0C4A6E;">You'll receive gentle reminders and updates about your parenting journey.</p>
                     </div>
                     <p>Keep up the great work documenting your parenting journey!</p>
@@ -1561,12 +1562,14 @@ Provide your analysis in this exact JSON format:
             });
 
             if (emailResponse.ok) {
+              const responseData = await emailResponse.json();
               result = { 
                 success: true, 
-                message: `✅ Real test email sent successfully to ${recipient} via Brevo (free service)`
+                message: `✅ Real test email sent successfully to ${recipient} via Brevo (Message ID: ${responseData.messageId})`
               };
             } else {
               const errorText = await emailResponse.text();
+              console.error("Brevo API error details:", errorText);
               result = { 
                 success: false, 
                 message: `Failed to send email: ${errorText}`

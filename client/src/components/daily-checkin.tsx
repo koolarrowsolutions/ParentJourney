@@ -28,9 +28,12 @@ const checkInQuestions = [
     title: 'Energy Level',
     question: 'How was your energy level today?',
     options: [
+      { value: 'completely_drained', label: 'Completely Drained', emoji: '🔋' },
       { value: 'exhausted', label: 'Exhausted', emoji: '😴' },
-      { value: 'drained', label: 'Drained', emoji: '😮‍💨' },
+      { value: 'very_tired', label: 'Very Tired', emoji: '😮‍💨' },
+      { value: 'tired', label: 'Tired', emoji: '😔' },
       { value: 'okay', label: 'Okay', emoji: '😐' },
+      { value: 'good', label: 'Good', emoji: '🙂' },
       { value: 'energetic', label: 'Energetic', emoji: '😊' },
       { value: 'vibrant', label: 'Vibrant', emoji: '⚡' }
     ]
@@ -40,9 +43,12 @@ const checkInQuestions = [
     title: 'Patience Level',
     question: 'How was your patience level today?',
     options: [
-      { value: 'short_fuse', label: 'Short Fuse', emoji: '😤' },
+      { value: 'explosive', label: 'Explosive', emoji: '🤬' },
+      { value: 'very_short_fuse', label: 'Very Short Fuse', emoji: '😤' },
+      { value: 'short_fuse', label: 'Short Fuse', emoji: '😠' },
       { value: 'impatient', label: 'Impatient', emoji: '😮‍💨' },
       { value: 'neutral', label: 'Neutral', emoji: '😐' },
+      { value: 'mostly_patient', label: 'Mostly Patient', emoji: '🙂' },
       { value: 'patient', label: 'Patient', emoji: '😌' },
       { value: 'zen', label: 'Zen', emoji: '🧘' }
     ]
@@ -52,11 +58,14 @@ const checkInQuestions = [
     title: 'Parent-Child Connection',
     question: 'How was your connection with your child today?',
     options: [
-      { value: 'distant', label: 'Distant', emoji: '😔' },
+      { value: 'completely_disconnected', label: 'Completely Disconnected', emoji: '💔' },
+      { value: 'very_distant', label: 'Very Distant', emoji: '😔' },
+      { value: 'distant', label: 'Distant', emoji: '😕' },
       { value: 'strained', label: 'Strained', emoji: '🤔' },
       { value: 'okay', label: 'Okay', emoji: '😐' },
+      { value: 'good', label: 'Good', emoji: '🙂' },
       { value: 'close', label: 'Close', emoji: '😊' },
-      { value: 'bonded', label: 'Bonded', emoji: '💕' }
+      { value: 'deeply_bonded', label: 'Deeply Bonded', emoji: '💕' }
     ]
   },
   {
@@ -64,11 +73,14 @@ const checkInQuestions = [
     title: 'Parenting Confidence',
     question: 'How confident did you feel in your parenting today?',
     options: [
-      { value: 'doubting', label: 'Doubting', emoji: '😰' },
+      { value: 'completely_lost', label: 'Completely Lost', emoji: '😵' },
+      { value: 'very_doubting', label: 'Very Doubting', emoji: '😰' },
+      { value: 'doubting', label: 'Doubting', emoji: '😟' },
       { value: 'unsure', label: 'Unsure', emoji: '😕' },
       { value: 'neutral', label: 'Neutral', emoji: '😐' },
+      { value: 'somewhat_confident', label: 'Somewhat Confident', emoji: '🙂' },
       { value: 'confident', label: 'Confident', emoji: '😊' },
-      { value: 'empowered', label: 'Empowered', emoji: '💪' }
+      { value: 'very_empowered', label: 'Very Empowered', emoji: '💪' }
     ]
   },
   {
@@ -76,11 +88,14 @@ const checkInQuestions = [
     title: 'Parent Self-Care',
     question: 'How did you take care of yourself today?',
     options: [
-      { value: 'neglected', label: 'Neglected', emoji: '😞' },
+      { value: 'completely_neglected', label: 'Completely Neglected', emoji: '💔' },
+      { value: 'very_neglected', label: 'Very Neglected', emoji: '😞' },
+      { value: 'neglected', label: 'Neglected', emoji: '😔' },
       { value: 'minimal', label: 'Minimal', emoji: '😕' },
       { value: 'basic', label: 'Basic', emoji: '😐' },
+      { value: 'decent', label: 'Decent', emoji: '🙂' },
       { value: 'good', label: 'Good', emoji: '😊' },
-      { value: 'nurtured', label: 'Nurtured', emoji: '🌸' }
+      { value: 'deeply_nurtured', label: 'Deeply Nurtured', emoji: '🌸' }
     ]
   },
   {
@@ -88,11 +103,14 @@ const checkInQuestions = [
     title: 'Support System Contact',
     question: 'How was your connection with your support system today?',
     options: [
-      { value: 'isolated', label: 'Isolated', emoji: '😔' },
+      { value: 'completely_isolated', label: 'Completely Isolated', emoji: '🏝️' },
+      { value: 'very_isolated', label: 'Very Isolated', emoji: '😔' },
+      { value: 'isolated', label: 'Isolated', emoji: '😞' },
       { value: 'alone', label: 'Alone', emoji: '😕' },
       { value: 'some_contact', label: 'Some Contact', emoji: '😐' },
+      { value: 'decent_contact', label: 'Decent Contact', emoji: '🙂' },
       { value: 'connected', label: 'Connected', emoji: '😊' },
-      { value: 'supported', label: 'Supported', emoji: '🤝' }
+      { value: 'very_supported', label: 'Very Supported', emoji: '🤝' }
     ]
   },
   {
@@ -100,11 +118,14 @@ const checkInQuestions = [
     title: 'Arguments or Tension in Home',
     question: 'How much tension or conflict was there at home today?',
     options: [
-      { value: 'high_conflict', label: 'High Conflict', emoji: '😤' },
-      { value: 'some_tension', label: 'Some Tension', emoji: '😮‍💨' },
-      { value: 'minor_issues', label: 'Minor Issues', emoji: '😐' },
+      { value: 'explosive_conflict', label: 'Explosive Conflict', emoji: '💥' },
+      { value: 'very_high_conflict', label: 'Very High Conflict', emoji: '😤' },
+      { value: 'high_conflict', label: 'High Conflict', emoji: '😠' },
+      { value: 'moderate_tension', label: 'Moderate Tension', emoji: '😮‍💨' },
+      { value: 'some_tension', label: 'Some Tension', emoji: '😐' },
+      { value: 'minor_issues', label: 'Minor Issues', emoji: '🙂' },
       { value: 'mostly_calm', label: 'Mostly Calm', emoji: '😌' },
-      { value: 'peaceful', label: 'Peaceful', emoji: '☮️' }
+      { value: 'completely_peaceful', label: 'Completely Peaceful', emoji: '☮️' }
     ]
   },
   {
@@ -112,11 +133,14 @@ const checkInQuestions = [
     title: 'Emotional Regulation',
     question: 'How well did you handle your emotions today?',
     options: [
-      { value: 'overwhelmed', label: 'Overwhelmed', emoji: '😰' },
+      { value: 'completely_overwhelmed', label: 'Completely Overwhelmed', emoji: '😵' },
+      { value: 'very_overwhelmed', label: 'Very Overwhelmed', emoji: '😰' },
+      { value: 'overwhelmed', label: 'Overwhelmed', emoji: '😟' },
       { value: 'struggled', label: 'Struggled', emoji: '😕' },
       { value: 'managed', label: 'Managed', emoji: '😐' },
+      { value: 'handled_well', label: 'Handled Well', emoji: '🙂' },
       { value: 'balanced', label: 'Balanced', emoji: '😊' },
-      { value: 'centered', label: 'Centered', emoji: '🎯' }
+      { value: 'completely_centered', label: 'Completely Centered', emoji: '🎯' }
     ]
   },
   {
@@ -124,9 +148,12 @@ const checkInQuestions = [
     title: 'Discipline Style Used Today',
     question: 'What discipline approach did you use most today?',
     options: [
+      { value: 'very_harsh', label: 'Very Harsh', emoji: '😡' },
       { value: 'too_harsh', label: 'Too Harsh', emoji: '😤' },
+      { value: 'harsh', label: 'Harsh', emoji: '😠' },
       { value: 'strict', label: 'Strict', emoji: '😐' },
-      { value: 'fair', label: 'Fair', emoji: '⚖️' },
+      { value: 'firm_but_fair', label: 'Firm but Fair', emoji: '⚖️' },
+      { value: 'gentle', label: 'Gentle', emoji: '🙂' },
       { value: 'kind', label: 'Kind', emoji: '😊' },
       { value: 'loving_guide', label: 'Loving Guide', emoji: '💕' }
     ]
@@ -136,11 +163,14 @@ const checkInQuestions = [
     title: 'Wins of the Day',
     question: 'What positive moments did you have today?',
     options: [
+      { value: 'very_rough_day', label: 'Very Rough Day', emoji: '💔' },
       { value: 'rough_day', label: 'Rough Day', emoji: '😔' },
-      { value: 'few_bright_spots', label: 'Few Bright Spots', emoji: '🙂' },
-      { value: 'some_wins', label: 'Some Wins', emoji: '😊' },
-      { value: 'great_moments', label: 'Great Moments', emoji: '😄' },
-      { value: 'amazing_day', label: 'Amazing Day', emoji: '🌟' }
+      { value: 'challenging_day', label: 'Challenging Day', emoji: '😞' },
+      { value: 'few_bright_spots', label: 'Few Bright Spots', emoji: '😕' },
+      { value: 'some_wins', label: 'Some Wins', emoji: '😐' },
+      { value: 'good_moments', label: 'Good Moments', emoji: '🙂' },
+      { value: 'great_moments', label: 'Great Moments', emoji: '😊' },
+      { value: 'absolutely_amazing', label: 'Absolutely Amazing', emoji: '🌟' }
     ]
   }
 ];
@@ -220,7 +250,7 @@ export function DailyCheckIn({ onComplete, onCancel }: DailyCheckInProps) {
           </div>
 
           {/* Options - Small buttons like original mood selector */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             {currentQuestion.options.map((option) => (
               <Button
                 key={option.value}

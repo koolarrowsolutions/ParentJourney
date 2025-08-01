@@ -29,7 +29,7 @@ export function WellnessProgressRing({
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDasharray = circumference;
-  const strokeDashoffset = circumference - (animatedProgress / 100) * circumference;
+  const strokeDashoffset = isNaN(animatedProgress) ? circumference : circumference - (animatedProgress / 100) * circumference;
 
   const getMotivationalColor = (progress: number) => {
     if (progress >= 80) return "#10B981"; // Green - excellent

@@ -195,6 +195,51 @@ function requireAuth(req: any, res: any, next: any) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // CRITICAL: Health check routes must be first to ensure deployment health checks work
+  // These routes handle deployment monitoring and must respond quickly with 200 status
+  
+  // Primary health check route for deployment systems
+  app.get('/', (req, res) => {
+    res.status(200).json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      service: 'parenting-wellness-app'
+    });
+  });
+
+  // Secondary health check endpoint
+  app.get('/health', (req, res) => {
+    res.status(200).json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      service: 'parenting-wellness-app'
+    });
+  });
+
+  // Readiness probe for advanced deployment monitoring
+  app.get('/ready', (req, res) => {
+    res.status(200).json({ 
+      status: 'ready', 
+      timestamp: new Date().toISOString(),
+      service: 'parenting-wellness-app'
+    });
+  });
+
+  // Liveness probe for Kubernetes-style deployments
+  app.get('/live', (req, res) => {
+    res.status(200).json({ 
+      status: 'alive', 
+      timestamp: new Date().toISOString(),
+      service: 'parenting-wellness-app'
+    });
+  });
+
+  // Simple status endpoint that bypasses all middleware
+  app.get('/status', (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end('{"status":"ok"}');
+  });
+
   // Configure CORS first to ensure credentials are handled properly
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Credentials', 'true');
@@ -593,9 +638,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
       // Build conversation context
-      const messages = [
+      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
         {
-          role: "system" as const,
+          role: "system",
           content: `You are a knowledgeable and supportive AI parenting assistant. You specialize in:
 
 - Child development stages and milestones (0-18 years)
@@ -637,7 +682,7 @@ Remember: You're supporting parents who are doing their best. Validate their eff
 
       // Add current message
       messages.push({
-        role: "user" as const,
+        role: "user",
         content: message
       });
 

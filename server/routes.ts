@@ -198,11 +198,13 @@ function setupOldAuthRoutes(app: Express) {
 
 }
 
-// Import auth token functions
-import { extractToken, validateAuthToken } from './auth-token';
+
 
 // Authentication middleware - supports both session and token auth
 function requireAuth(req: any, res: any, next: any) {
+  const userAgent = req.headers['user-agent'] || '';
+  console.log('Auth check - session userId:', req.session?.userId, 'User-Agent:', userAgent.substring(0, 100));
+  
   // Try session-based auth first
   if (req.session?.userId) {
     // Set user context for storage isolation
@@ -213,24 +215,21 @@ function requireAuth(req: any, res: any, next: any) {
   
   // Try token-based auth for iframe environments
   const token = extractToken(req);
+  console.log('Checking token auth, token present:', !!token);
   
   if (token) {
     const tokenData = validateAuthToken(token);
     if (tokenData) {
       // Set req.user for compatibility with existing code
       req.user = { id: tokenData.userId };
-      // Create a minimal session for compatibility but don't save it
-      if (!req.session) {
-        req.session = {};
-      }
-      req.session.userId = tokenData.userId; // Set session for compatibility
       // Set user context for storage isolation
       storage.setCurrentUser(tokenData.userId);
       return next();
     }
   }
   
-  return res.status(401).json({ message: "Authentication required" });
+  console.log('Auth check failed - no valid session or token');
+  return res.status(401).json({ message: 'Authentication required' });
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -324,7 +323,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
     
-    // Try token-based auth for iframe environments and mobile browser fallback
+    // Try token-based auth for iframe environments
     const token = extractToken(req);
     console.log('Checking token auth, token present:', !!token);
     
@@ -332,22 +331,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tokenData = validateAuthToken(token);
       if (tokenData) {
         console.log('Token auth successful for user:', tokenData.username);
-        return res.json({
-          success: true,
-          user: {
-            id: tokenData.userId,
+        return res.json({ 
+          success: true, 
+          user: { 
+            id: tokenData.userId, 
             username: tokenData.username,
-            name: tokenData.name,
-            email: tokenData.email
+            name: tokenData.name, 
+            email: tokenData.email 
           },
-          hasJustSignedUp: tokenData.hasJustSignedUp,
-          authToken: token // Return token for client persistence
+          hasJustSignedUp: tokenData.hasJustSignedUp || false
         });
       }
     }
     
     console.log('Auth check failed - no valid session or token');
-    res.json({ success: false, user: null });
+    return res.status(401).json({ success: false, user: null });
   });
 
   app.post('/api/auth/login', async (req, res) => {

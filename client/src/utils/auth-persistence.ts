@@ -29,14 +29,15 @@ export function setLoginFlag(): void {
   localStorage.setItem('parentjourney_just_logged_in', 'true');
 }
 
-// Check and clear login flag
-export function checkAndClearLoginFlag(): boolean {
+// Check login flag without clearing it
+export function checkLoginFlag(): boolean {
   const flag = localStorage.getItem('parentjourney_just_logged_in');
-  if (flag === 'true') {
-    localStorage.removeItem('parentjourney_just_logged_in');
-    return true;
-  }
-  return false;
+  return flag === 'true';
+}
+
+// Clear login flag
+export function clearLoginFlag(): void {
+  localStorage.removeItem('parentjourney_just_logged_in');
 }
 
 // Retrieve authentication data if still valid (within 24 hours)

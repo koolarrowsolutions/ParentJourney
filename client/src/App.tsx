@@ -116,6 +116,21 @@ function AppRouter() {
         userName={auth.user?.name || auth.user?.username}
       />
       
+      {/* Temporary test button */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 left-4 z-[10000]">
+          <button 
+            className="bg-blue-500 text-white p-2 rounded text-xs"
+            onClick={() => {
+              console.log('Manual test - setting login flag');
+              localStorage.setItem('parentjourney_just_logged_in', 'true');
+              window.location.reload();
+            }}
+          >
+            Test Modal
+          </button>
+        </div>
+      )}
 
     </>
   );

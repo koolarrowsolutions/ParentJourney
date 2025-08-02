@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { checkAuthStatus, getStoredAuthData, checkAndClearLoginFlag } from '@/utils/auth-persistence';
+import { checkAuthStatus, getStoredAuthData, checkLoginFlag, clearLoginFlag } from '@/utils/auth-persistence';
 
 interface AuthUser {
   id: string;
@@ -58,8 +58,8 @@ export function useAuth(): AuthState & { clearLoginStatus: () => void } {
       const wasAuthenticated = authState.isAuthenticated;
       const isNowAuthenticated = data.success || false;
       
-      // Check for login flag regardless of previous auth state
-      const justLoggedIn = checkAndClearLoginFlag();
+      // Check for login flag without clearing it immediately
+      const justLoggedIn = checkLoginFlag();
       console.log('Auth state transition:', { wasAuthenticated, isNowAuthenticated, justLoggedIn });
       
       const newState = {
@@ -78,6 +78,8 @@ export function useAuth(): AuthState & { clearLoginStatus: () => void } {
   }, [data, isLoading, error, authState.isAuthenticated]);
 
   const clearLoginStatus = () => {
+    console.log('Clearing login status...');
+    clearLoginFlag(); // Clear the localStorage flag
     setAuthState(prev => ({ ...prev, hasJustLoggedIn: false }));
   };
 

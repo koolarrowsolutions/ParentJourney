@@ -931,7 +931,7 @@ Focus on patterns in emotional responses, consistency, growth mindset, and posit
 
         analysisPrompt = `Based on these journal entries and family information, provide a comprehensive parenting progress analysis:
 
-Journal Entries: ${JSON.stringify(entries.slice(0, 20))}
+Journal Entries: ${JSON.stringify((entries || []).slice(0, 20))}
 Parent Profile: ${JSON.stringify(parentProfile)}
 Children: ${JSON.stringify(childProfiles)}
 
@@ -953,7 +953,7 @@ Focus on age-appropriate development, emotional growth, social skills, and learn
 
         analysisPrompt = `Based on this family data, provide child development insights:
 
-Journal Entries: ${JSON.stringify(entries.slice(0, 20))}
+Journal Entries: ${JSON.stringify((entries || []).slice(0, 20))}
 Children: ${JSON.stringify(childProfiles)}
 Parent Profile: ${JSON.stringify(parentProfile)}
 
@@ -1244,16 +1244,22 @@ Provide your analysis in this exact JSON format:
         
         CRITICAL REQUIREMENTS:
         1. You MUST mention each child by name (${contextData.childAges.map(c => c.name).join(', ')}) in your analysis
-        2. Include specific examples or quotes from the journal entries when possible
-        3. Reference actual situations or challenges the parent has written about
-        4. Make observations about the parent's relationship with each individual child
+        2. Include specific examples or quotes from the journal entries when possible - use exact phrases or situations described
+        3. Reference actual situations, challenges, or victories the parent has written about
+        4. Make observations about the parent's relationship with each individual child based on their entries
+        5. Use specific details from their journal entries to illustrate points (e.g., "In your entry where you mentioned...", "When you wrote about...")
+        
+        EXAMPLE FORMAT for incorporating journal content:
+        - "Based on your recent entry where you mentioned [specific content], this shows..."
+        - "In your reflection about [specific situation with child's name], you demonstrated..."
+        - "Your journal entry describing [specific challenge/success] with [child's name] reveals..."
         
         Return JSON with exactly this structure:
         {
-          "progressOverview": "Assessment mentioning the parent's growth with each child by name, referencing specific journal content and showing awareness of their actual parenting experiences",
-          "strengths": ["Specific strength illustrated by journal examples with ${contextData.childAges[0]?.name || 'child'}", "Strength with ${contextData.childAges[1]?.name || 'family'} shown through their entries", "Overall parenting strength demonstrated in their writing"],
-          "growthAreas": ["Development area with ${contextData.childAges[0]?.name || 'child'} based on journal patterns", "Growth opportunity with ${contextData.childAges[1]?.name || 'family'} from their reflections"],
-          "nextSteps": "Actionable recommendations mentioning each child by name with strategies based on what they've shared in their journal"
+          "progressOverview": "Assessment mentioning the parent's growth with each child by name, referencing specific journal content with examples like 'In your entry where you wrote about [specific content]' and showing awareness of their actual parenting experiences",
+          "strengths": ["Specific strength illustrated by direct journal examples such as 'When you described [specific situation] with ${contextData.childAges[0]?.name || 'child'}'", "Strength with ${contextData.childAges[1]?.name || 'family'} shown through specific entries like '[quote or situation]'", "Overall parenting strength demonstrated through specific examples from their writing"],
+          "growthAreas": ["Development area with ${contextData.childAges[0]?.name || 'child'} based on patterns like '[specific journal content or pattern]'", "Growth opportunity with ${contextData.childAges[1]?.name || 'family'} from their reflections such as '[specific example]'"],
+          "nextSteps": "Actionable recommendations mentioning each child by name with strategies based directly on what they've shared, such as 'Building on your experience with [specific situation they wrote about]'"
         }
         
         Use the parent's own words and experiences to create truly personalized insights.
@@ -1293,19 +1299,31 @@ Provide your analysis in this exact JSON format:
       `,
       
       "personalized-tips": `
-        Generate personalized parenting tips based on this family profile:
+        Generate personalized parenting tips based on this family profile and specific journal content:
         
         Parent: ${JSON.stringify(parentProfile || {})}
-        Children: ${JSON.stringify(contextData.childAges)}
-        Recent Challenges/Successes: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood })))}
+        Children: ${contextData.childAges.map(child => `${child.name} (${child.age} years old)`).join(', ')}
+        Journal Entries: ${contextData.entriesCount} total entries
+        Recent Challenges/Successes: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood, createdAt: e.createdAt })))}
         
-        Provide 3 specific, actionable tips that include:
+        CRITICAL REQUIREMENTS:
+        1. Mention each child by name (${contextData.childAges.map(c => c.name).join(', ')}) in relevant tips
+        2. Reference specific situations or challenges from their journal entries
+        3. Use actual examples from their parenting experiences
+        4. Connect tips directly to patterns observed in their entries
+        
+        Provide 3-4 specific, actionable tips that include:
         1. Category (Communication, Routine, Connection, Discipline, etc.)
-        2. Specific tip/strategy
-        3. Reason why this tip is relevant to their situation
+        2. Specific tip/strategy referencing their actual experiences
+        3. Reason why this tip is relevant to their specific situation with examples
+        4. How to implement this with their specific children by name
         
-        Make tips practical, evidence-based, and tailored to their specific family dynamics.
-        Consider the parent's personality traits and parenting style.
+        EXAMPLE FORMAT:
+        - "Based on your entry where you mentioned [specific situation] with [child's name]..."
+        - "When you described [specific challenge], this suggests..."
+        - "Your observation about [child's name]'s [specific behavior] indicates..."
+        
+        Make tips practical, evidence-based, and deeply tailored to their actual family dynamics and documented experiences.
       `,
       
       "considerations": `
@@ -1389,7 +1407,7 @@ Provide your analysis in this exact JSON format:
       case "parenting-progress":
         return data && typeof data.progressOverview === 'string' && Array.isArray(data.strengths) && Array.isArray(data.growthAreas);
       case "child-development":
-        return data && typeof data.developmentOverview === 'string' && Array.isArray(data.milestones) && Array.isArray(data.focusAreas);
+        return data && typeof data.developmentOverview === 'string' && Array.isArray(data.childrenInsights);
       case "personalized-tips":
         return data && Array.isArray(data.tips) && data.tips.every((tip: any) => tip.category && tip.tip && tip.reason);
       case "considerations":

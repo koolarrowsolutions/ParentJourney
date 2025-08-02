@@ -19,8 +19,8 @@ export function SparklyStarsLoader({
   const sparkleSize = sizeClasses[size];
 
   return (
-    <div className="flex flex-col items-center justify-center py-8 space-y-4">
-      <div className="relative">
+    <div className="flex flex-col items-center justify-center py-8">
+      <div className="relative mb-6">
         {/* Main central sparkle */}
         <Sparkles 
           className={`${sparkleSize} text-primary animate-pulse`} 

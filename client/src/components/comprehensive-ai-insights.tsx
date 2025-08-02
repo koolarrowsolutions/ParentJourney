@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
   const [selectedInsight, setSelectedInsight] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
+  const queryClient = useQueryClient();
   
   // Debug the analysis data state
   console.log("Current analysisData state:", analysisData);
@@ -101,11 +102,27 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     },
   });
 
+  // Force refresh all data before AI analysis
+  const refreshAllData = async () => {
+    const token = localStorage.getItem('parentjourney_token');
+    if (!token) return;
+
+    // Invalidate and refetch all queries with proper auth
+    await queryClient.invalidateQueries({ queryKey: ["/api/child-profiles"] });
+    await queryClient.invalidateQueries({ queryKey: ["/api/journal-entries"] }); 
+    await queryClient.invalidateQueries({ queryKey: ["/api/parent-profile"] });
+    
+    console.log('🔄 Forced refresh of all data queries');
+  };
+
   const handleInsightClick = async (insightType: string) => {
     setSelectedInsight(insightType);
     setIsLoading(true);
     
     try {
+      // Force refresh data first to ensure we have the latest information
+      await refreshAllData();
+      
       // Get the current auth token and verify authentication
       const token = localStorage.getItem('parentjourney_token');
       const authData = (authUser as any);
@@ -118,8 +135,18 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       console.log(`- hasValidAuth: ${hasValidAuth}`);
       console.log(`- Available data - entries: ${entries?.length || 0}, children: ${childProfiles?.length || 0}, parent: ${parentProfile ? 'present' : 'missing'}`);
       
+      // Wait a moment for the queries to refetch
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Get fresh data from cache after refresh
+      const freshChildProfiles = queryClient.getQueryData(["/api/child-profiles"]) as ChildProfile[] || [];
+      const freshEntries = queryClient.getQueryData(["/api/journal-entries"]) as JournalEntry[] || [];
+      const freshParentProfile = queryClient.getQueryData(["/api/parent-profile"]) as ParentProfile || null;
+      
+      console.log(`🔄 FRESH DATA CHECK - entries: ${freshEntries?.length || 0}, children: ${freshChildProfiles?.length || 0} (${freshChildProfiles?.map(c => c.name).join(', ') || 'none'}), parent: ${freshParentProfile?.name || 'missing'}`);
+      
       // Force authentication by checking if we have data AND a token
-      const hasDataAndToken = token && ((entries?.length ?? 0) > 0 || (childProfiles?.length ?? 0) > 0 || parentProfile);
+      const hasDataAndToken = token && ((freshEntries?.length ?? 0) > 0 || (freshChildProfiles?.length ?? 0) > 0 || freshParentProfile);
       
       if (!hasDataAndToken) {
         // Show explainer content for unauthenticated users or users without data
@@ -128,9 +155,9 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       } else {
         // We have data and a token - proceed with real AI analysis
         console.log('✅ DATA AND TOKEN FOUND - Proceeding with REAL AI analysis');
-        console.log(`- Children found: ${childProfiles?.map(c => c.name).join(', ') || 'none'}`);
-        console.log(`- Parent: ${parentProfile?.name || 'unknown'}`);
-        console.log(`- Journal entries: ${entries?.length || 0}`);
+        console.log(`- Children found: ${freshChildProfiles?.map(c => c.name).join(', ') || 'none'}`);
+        console.log(`- Parent: ${freshParentProfile?.name || 'unknown'}`);
+        console.log(`- Journal entries: ${freshEntries?.length || 0}`);
         
         // Make the auth test to validate token
         const authTestResponse = await fetch('/api/auth/user', {
@@ -147,14 +174,14 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
         if (!authTest.success) {
           console.log('❌ Auth test failed, using fallback with available data');
           // Use available data for personalized fallback
-          const personalizedData = getUserSpecificData(insightType, entries || [], childProfiles || [], parentProfile);
+          const personalizedData = getUserSpecificData(insightType, freshEntries || [], freshChildProfiles || [], freshParentProfile);
           setAnalysisData(personalizedData);
           return;
         }
         // Use actual user data for authenticated users - call real AI API
         console.log(`🚀 Making REAL AI analysis request for: ${insightType}`);
-        console.log(`🚀 Children: ${childProfiles?.map(c => c.name).join(', ') || 'none'}`);
-        console.log(`🚀 Parent: ${parentProfile?.name || 'unknown'}`);
+        console.log(`🚀 Children: ${freshChildProfiles?.map(c => c.name).join(', ') || 'none'}`);
+        console.log(`🚀 Parent: ${freshParentProfile?.name || 'unknown'}`);
         
         const response = await fetch(`/api/ai-analysis/${insightType}`, {
           method: 'POST',
@@ -164,9 +191,9 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
           },
           credentials: 'include',
           body: JSON.stringify({
-            entries: entries || [],
-            childProfiles: childProfiles || [],
-            parentProfile: parentProfile
+            entries: freshEntries || [],
+            childProfiles: freshChildProfiles || [],
+            parentProfile: freshParentProfile
           })
         });
         

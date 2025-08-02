@@ -102,17 +102,18 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         <div className="mb-4 sm:mb-6 lg:mb-8">
           <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
             <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-3">
-              Welcome back to your parenting journey...
+              Welcome back, {parentProfile?.name || 'there'}!
             </h2>
+            <p className="text-sm text-neutral-600 mb-4">
+              You're one step closer to better parenting self-awareness.
+            </p>
             
-            {/* Static descriptive text about AI participation */}
-            <div className="bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-300 rounded-lg p-4 mb-4 shadow-sm">
-              <p className="text-sm font-semibold text-blue-900 text-center leading-tight">
-                <span className="inline-flex items-center">
-                  ✨ <strong className="mx-1">Your active participation fuels personalized AI insights</strong> ✨
-                </span>
+            {/* Clearer messaging about AI insights */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <p className="text-sm text-blue-800 text-center leading-relaxed">
+                <span className="font-semibold">✨ The more you check in, the smarter your parenting support gets.</span>
                 <br />
-                <span className="text-blue-700 font-normal">{getDailyInsight()}</span>
+                <span className="text-blue-700">Every entry helps us tailor tips, patterns, and reminders just for you and your family.</span>
               </p>
             </div>
             
@@ -130,12 +131,12 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
               <div className="space-y-4">
                 {/* Balanced Stats and Wellness Row */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-                  {/* Total Entries */}
+                  {/* Total Entries - More encouraging */}
                   <div className="bg-primary/5 rounded-lg p-2 sm:p-3 text-center border border-primary/20 animate-pop-in stagger-1">
                     <div className="text-lg sm:text-xl font-semibold text-primary">
-                      {stats?.totalEntries || 0}
+                      ✅ {stats?.totalEntries || 0}
                     </div>
-                    <div className="text-xs text-neutral-600 mt-1">Total Entries</div>
+                    <div className="text-xs text-neutral-600 mt-1">Reflections logged</div>
                   </div>
 
                   {/* Week Entries */}
@@ -146,12 +147,14 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                     <div className="text-xs text-neutral-600 mt-1">This Week</div>
                   </div>
 
-                  {/* Longest Streak */}
+                  {/* Longest Streak - More motivational */}
                   <div className="bg-orange-50 rounded-lg p-2 sm:p-3 text-center border border-orange-200 animate-pop-in stagger-3">
                     <div className="text-lg sm:text-xl font-semibold text-orange-600">
-                      {stats?.longestStreak || 0}
+                      🔥 {stats?.longestStreak || 'New'}
                     </div>
-                    <div className="text-xs text-neutral-600 mt-1">Day Streak</div>
+                    <div className="text-xs text-neutral-600 mt-1">
+                      {(stats?.longestStreak || 0) > 1 ? 'Day streak!' : 'Streak started!'}
+                    </div>
                   </div>
 
                   {/* Wellness Level */}
@@ -176,21 +179,29 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                   </div>
                 </div>
 
-                {/* Wellness Journey Description */}
+                {/* Wellness Journey Description - More motivational */}
                 <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-3 border border-purple-200 mt-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className="text-sm font-medium text-purple-800">
-                        {(() => {
+                        🌱 {(() => {
                           const entries = stats?.totalEntries || 0;
                           if (entries >= 100) return "Mindful Master";
                           if (entries >= 75) return "Wellness Warrior";
                           if (entries >= 50) return "Balanced Parent";
                           if (entries >= 25) return "Growing Guardian";
                           if (entries >= 10) return "Aware Parent";
-                          return "Wellness Beginner";
-                        })()} - Your parenting awareness journey
+                          return "Beginner Level";
+                        })()} - Building awareness
                       </div>
+                    </div>
+                    <div className="text-xs text-purple-600">
+                      {(() => {
+                        const entries = stats?.totalEntries || 0;
+                        const nextLevel = entries < 10 ? 10 : entries < 25 ? 25 : entries < 50 ? 50 : entries < 75 ? 75 : 100;
+                        if (entries >= 100) return "🎉 Max level reached!";
+                        return `${nextLevel - entries} more to next level`;
+                      })()}
                     </div>
                     
                     {/* Small Progress Indicators */}

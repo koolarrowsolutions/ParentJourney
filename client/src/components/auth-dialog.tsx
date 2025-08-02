@@ -144,11 +144,19 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
         console.log('Login successful - clearing cache to reload with new token');
         queryClient.clear();
         
-        // Wait a moment, then refetch auth state
+        // Force immediate refetch of all data with new token
+        console.log('Login successful - refetching all queries with new authentication');
         setTimeout(async () => {
-          await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
-          console.log('Auth state refetched after login');
-        }, 100);
+          // Refetch all critical queries
+          await Promise.all([
+            queryClient.refetchQueries({ queryKey: ['/api/auth/user'] }),
+            queryClient.refetchQueries({ queryKey: ['/api/journal-entries'] }),
+            queryClient.refetchQueries({ queryKey: ['/api/child-profiles'] }),
+            queryClient.refetchQueries({ queryKey: ['/api/parent-profile'] }),
+            queryClient.refetchQueries({ queryKey: ['/api/journal-stats'] })
+          ]);
+          console.log('All queries refetched after login');
+        }, 300);
       } else {
         throw new Error(result.error || 'Failed to log in');
       }

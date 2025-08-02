@@ -13,8 +13,42 @@ interface TokenData {
 // In-memory token store (in production, use Redis or database)
 const tokenStore = new Map<string, TokenData>();
 
-// Initialize with empty persistent store - in production this would be Redis/database
-let persistentTokens: Record<string, TokenData> = {};
+// Use filesystem-based persistence for token recovery
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { join } from 'path';
+
+const TOKEN_FILE = join(process.cwd(), '.auth-tokens.json');
+
+// Load persistent tokens from file
+function loadPersistentTokens(): Record<string, TokenData> {
+  try {
+    if (existsSync(TOKEN_FILE)) {
+      const data = readFileSync(TOKEN_FILE, 'utf8');
+      const tokens = JSON.parse(data);
+      console.log('Loaded', Object.keys(tokens).length, 'persistent tokens from file');
+      return tokens;
+    }
+  } catch (error) {
+    console.warn('Failed to load persistent tokens:', error);
+  }
+  return {};
+}
+
+// Save persistent tokens to file
+function savePersistentTokens(tokens: Record<string, TokenData>) {
+  try {
+    const tokenData = JSON.stringify(tokens, null, 2);
+    writeFileSync(TOKEN_FILE, tokenData);
+    console.log('✓ Saved', Object.keys(tokens).length, 'tokens to persistent storage at', TOKEN_FILE);
+  } catch (error) {
+    console.error('✗ Failed to save persistent tokens:', error);
+    console.error('✗ TOKEN_FILE path:', TOKEN_FILE);
+    console.error('✗ Current working directory:', process.cwd());
+  }
+}
+
+// Initialize persistent tokens from file
+let persistentTokens: Record<string, TokenData> = loadPersistentTokens();
 
 // Generate a secure token
 export function generateAuthToken(userData: {
@@ -36,6 +70,7 @@ export function generateAuthToken(userData: {
   
   tokenStore.set(token, tokenData);
   persistentTokens[token] = tokenData; // Also store in persistent memory
+  savePersistentTokens(persistentTokens); // Save to file
   console.log('Generated auth token for user:', userData.username);
   return token;
 }
@@ -68,6 +103,7 @@ export function validateAuthToken(token: string): TokenData | null {
   if (Date.now() - tokenData.timestamp > maxAge) {
     tokenStore.delete(token);
     delete persistentTokens[token]; // Also remove from persistent store
+    savePersistentTokens(persistentTokens); // Update file
     console.log('Token validation failed: token expired');
     return null;
   }

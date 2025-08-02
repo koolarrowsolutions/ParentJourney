@@ -143,6 +143,7 @@ export async function checkAuthStatus(): Promise<{ success: boolean; user?: any;
     
     // Get auth token for iframe compatibility
     const token = localStorage.getItem('parentjourney_token');
+    console.log('Auth check - checking token from localStorage:', !!token, token ? token.substring(0, 20) + '...' : 'none');
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -150,6 +151,9 @@ export async function checkAuthStatus(): Promise<{ success: boolean; user?: any;
     
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+      console.log('Auth check - sending request with token');
+    } else {
+      console.log('Auth check - no token found in localStorage');
     }
     
     const response = await fetch('/api/auth/user', {

@@ -63,13 +63,13 @@ function configureSession(app: Express) {
     resave: true, // Force save for mobile browser compatibility
     saveUninitialized: true, // Allow anonymous sessions
     cookie: { 
-      secure: isProduction, // Secure in production (HTTPS)
+      secure: false, // Disable secure for better compatibility across environments
       httpOnly: false, // Allow JavaScript access for mobile compatibility
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: isProduction ? 'none' : 'lax', // 'none' for production cross-origin
-      domain: isProduction ? '.replit.app' : undefined // Set domain for replit.app
+      sameSite: 'lax', // Use 'lax' for better compatibility
+      domain: undefined // Remove domain restriction for better compatibility
     },
-    name: 'parentjourney.sid', // Custom cookie name
+    name: 'connect.sid', // Use standard session name for better compatibility
     // Force session store to handle mobile browser quirks
     rolling: true // Refresh session on each request
   }));

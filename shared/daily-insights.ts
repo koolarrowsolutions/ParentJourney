@@ -1,0 +1,60 @@
+export const dailyInsights = [
+  "Every entry you share helps our AI provide tailored feedback on your parenting journey and child's development.",
+  "Your honest reflections enable personalized insights that grow more valuable with each interaction.",
+  "The more you engage, the better our AI understands your unique parenting style and family dynamics.",
+  "Each journal entry deepens our AI's ability to offer relevant guidance for your specific situation.",
+  "Your consistent participation creates a rich foundation for meaningful, personalized parenting support.",
+  "Through your entries, our AI learns to recognize patterns and offer increasingly relevant advice.",
+  "The insights you receive become more precise as our AI understands your family's unique journey.",
+  "Your openness in journaling helps our AI provide feedback that truly resonates with your experience.",
+  "Each mood check-in and milestone adds depth to the personalized guidance you receive.",
+  "The data you share transforms into actionable insights tailored specifically to your parenting challenges.",
+  "Your regular engagement helps our AI identify what works best for your family's specific needs.",
+  "Through your participation, our AI develops a nuanced understanding of your parenting strengths and growth areas.",
+  "The more you document your journey, the more personalized and valuable your AI feedback becomes.",
+  "Your entries create a detailed picture that enables our AI to offer truly customized parenting insights.",
+  "Each interaction teaches our AI more about your values, helping tailor advice to your parenting philosophy.",
+  "Your consistent sharing allows our AI to track progress and celebrate your growth as a parent.",
+  "The patterns in your entries help our AI recognize opportunities for personalized encouragement and guidance.",
+  "Your honest documentation enables our AI to provide feedback that feels authentic to your experience.",
+  "Through your regular check-ins, our AI learns to offer support that matches your communication style.",
+  "The milestones you track help our AI understand your child's unique developmental timeline.",
+  "Your thoughtful entries enable our AI to recognize and reinforce your natural parenting instincts.",
+  "Each piece of information you share contributes to insights that feel personally crafted for your family.",
+  "Your participation helps our AI understand the complexity and beauty of your individual parenting story.",
+  "The emotions you track guide our AI in providing empathetic, situation-appropriate feedback.",
+  "Your detailed entries help our AI recognize when to offer encouragement versus practical suggestions.",
+  "Through your sharing, our AI learns to celebrate your successes in ways that feel meaningful to you.",
+  "The challenges you document help our AI provide support that addresses your real, lived experiences.",
+  "Your regular engagement creates a foundation for AI insights that evolve with your family's growth.",
+  "Each entry builds our AI's understanding of what motivates and inspires you as a parent.",
+  "Your openness allows our AI to offer guidance that honors your family's unique circumstances.",
+  "The goals you set help our AI provide encouragement and strategies aligned with your parenting vision.",
+  "Your consistent documentation enables our AI to recognize and highlight your parenting victories.",
+  "Through your entries, our AI develops sensitivity to your family's cultural and personal values.",
+  "The relationships you describe help our AI understand your family dynamics and offer relevant advice.",
+  "Your honest reflections teach our AI to provide feedback that feels supportive rather than judgmental.",
+  "Each interaction deepens our AI's ability to offer insights that feel like they come from a trusted friend.",
+  "Your participation helps our AI recognize the seasonal rhythms and patterns in your family life.",
+  "The struggles you share enable our AI to provide comfort and strategies during difficult parenting moments.",
+  "Your detailed entries help our AI understand when to offer gentle guidance versus confident reassurance.",
+  "Through your engagement, our AI learns to celebrate the small victories that matter most to you.",
+  "The questions you explore help our AI provide answers that align with your parenting curiosity and concerns.",
+  "Your thoughtful sharing enables our AI to recognize and validate your parenting intuition.",
+  "Each entry teaches our AI more about your child's personality, helping tailor developmental insights.",
+  "Your consistent participation allows our AI to track and acknowledge your personal growth journey.",
+  "The experiences you document help our AI understand your family's unique joys and challenges.",
+  "Your openness creates opportunities for our AI to provide support that feels deeply personal and relevant.",
+  "Through your entries, our AI develops an appreciation for your family's special traditions and moments.",
+  "The emotions you share guide our AI in offering empathy that matches your current emotional needs.",
+  "Your regular check-ins help our AI understand the ebb and flow of your parenting confidence.",
+  "Each piece of your story helps our AI provide insights that honor both your struggles and your strength."
+];
+
+export function getDailyInsight(): string {
+  // Use current date as seed for consistent daily insight
+  const today = new Date();
+  const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+  const insightIndex = dayOfYear % dailyInsights.length;
+  return dailyInsights[insightIndex];
+}

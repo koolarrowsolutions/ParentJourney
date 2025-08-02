@@ -10,6 +10,7 @@ import { ChildEntryOverview } from "@/components/child-entry-overview";
 import { MoodSelector } from "@/components/mood-selector";
 import { QuickActionsGroup } from "@/components/quick-actions-group";
 import { getLoginGreeting } from "@shared/greetings";
+import { getDailyInsight } from "@shared/daily-insights";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { ComprehensiveAIInsights } from "@/components/comprehensive-ai-insights";
@@ -126,7 +127,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                   ✨ <strong className="mx-1">Your active participation fuels personalized AI insights</strong> ✨
                 </span>
                 <br />
-                <span className="text-blue-700 font-normal">Every entry you share helps our AI provide tailored feedback on your parenting journey and child's development.</span>
+                <span className="text-blue-700 font-normal">{getDailyInsight()}</span>
               </p>
             </div>
             

@@ -70,7 +70,8 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
   const onSignUp = async (data: SignUpFormData) => {
     setIsLoading(true);
     try {
-      console.log('Attempting signup with:', { username: data.username, email: data.email }); // Debug log
+      console.log('Attempting signup with:', { username: data.username, email: data.email, passwordLength: data.password.length }); // Debug log
+      console.log('Form validation state:', signUpForm.formState.errors); // Debug form errors
       
       const response = await fetch('/auth/signup', {
         method: 'POST',
@@ -109,9 +110,19 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
     } catch (error) {
       console.error('Signup error:', error); // Debug log
+      const errorMessage = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      
+      // Provide helpful guidance for common errors
+      let description = errorMessage;
+      if (errorMessage.includes("already exists")) {
+        description = "An account with this email or username already exists. Please try logging in instead.";
+      } else if (errorMessage.includes("pattern") || errorMessage.includes("validation")) {
+        description = "Please check that all fields meet the requirements. Password must be at least 8 characters.";
+      }
+      
       toast({
         title: "Sign Up Failed",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        description: description,
         variant: "destructive",
       });
     } finally {
@@ -256,7 +267,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
                         <div className="relative">
                           <Input 
                             type={showPassword ? "text" : "password"} 
-                            placeholder="Create a password" 
+                            placeholder="Create a password (min. 8 characters)" 
                             {...field} 
                           />
                           <Button
@@ -275,6 +286,9 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
                         </div>
                       </FormControl>
                       <FormMessage />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Password must be at least 8 characters long
+                      </p>
                     </FormItem>
                   )}
                 />

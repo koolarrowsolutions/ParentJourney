@@ -921,49 +921,81 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
       let analysisPrompt = "";
 
       if (type === "parenting-progress") {
-        systemPrompt = `You are an expert parenting coach and child development specialist. Analyze the provided journal entries and family data to provide insights about parenting progress. Return your analysis in a structured format that includes:
-1. A progress overview paragraph
-2. An array of 3-4 specific strengths
-3. An array of 2-3 growth areas
-4. A next steps paragraph with actionable recommendations
+        // Get child ages for the prompt
+        const childAges = (childProfiles || []).map(child => ({ 
+          name: child.name, 
+          age: `${child.age} years old` 
+        }));
 
-Focus on patterns in emotional responses, consistency, growth mindset, and positive parenting practices.`;
+        systemPrompt = `You are an expert parenting coach and child development specialist. You must provide deeply personalized analysis based on the specific user data provided. Always mention children by name and reference specific journal entries.`;
 
-        analysisPrompt = `Based on these journal entries and family information, provide a comprehensive parenting progress analysis:
+        analysisPrompt = `Analyze parenting progress using specific examples from the user's actual data:
+        
+        Parent: ${JSON.stringify(parentProfile || {})}
+        Children: ${childAges.map(child => `${child.name} (${child.age})`).join(', ')}
+        Journal Entries: ${(entries || []).length} total entries
+        Recent Entries: ${JSON.stringify((entries || []).slice(0, 20).map(e => ({ content: e.content, mood: e.mood, createdAt: e.createdAt })))}
+        
+        CRITICAL REQUIREMENTS:
+        1. You MUST mention each child by name (${childAges.map(c => c.name).join(', ')}) in your analysis
+        2. Include specific examples or quotes from the journal entries when possible - use exact phrases or situations described
+        3. Reference actual situations, challenges, or victories the parent has written about
+        4. Make observations about the parent's relationship with each individual child based on their entries
+        5. Use specific details from their journal entries to illustrate points (e.g., "In your entry where you mentioned...", "When you wrote about...")
+        
+        EXAMPLE FORMAT for incorporating journal content:
+        - "Based on your recent entry where you mentioned [specific content], this shows..."
+        - "In your reflection about [specific situation with child's name], you demonstrated..."
+        - "Your journal entry describing [specific challenge/success] with [child's name] reveals..."
 
-Journal Entries: ${JSON.stringify((entries || []).slice(0, 20))}
-Parent Profile: ${JSON.stringify(parentProfile)}
-Children: ${JSON.stringify(childProfiles)}
-
-Provide your analysis in this exact JSON format:
-{
-  "progressOverview": "A 2-3 sentence overview of overall parenting journey progress",
-  "strengths": ["strength 1", "strength 2", "strength 3", "strength 4"],
-  "growthAreas": ["area 1", "area 2", "area 3"],
-  "nextSteps": "A paragraph with 2-3 specific, actionable recommendations for continued growth"
-}`;
+        Provide your analysis in this exact JSON format:
+        {
+          "progressOverview": "Assessment mentioning the parent's growth with each child by name, referencing specific journal content with examples like 'In your entry where you wrote about [specific content]' and showing awareness of their actual parenting experiences",
+          "strengths": ["Specific strength illustrated by direct journal examples such as 'When you described [specific situation] with ${childAges[0]?.name || 'child'}'", "Strength with ${childAges[1]?.name || 'family'} shown through specific entries like '[quote or situation]'", "Overall parenting strength demonstrated through specific examples from their writing"],
+          "growthAreas": ["Development area with ${childAges[0]?.name || 'child'} based on patterns like '[specific journal content or pattern]'", "Growth opportunity with ${childAges[1]?.name || 'family'} from their reflections such as '[specific example]'"],
+          "nextSteps": "Actionable recommendations mentioning each child by name with strategies based directly on what they've shared, such as 'Building on your experience with [specific situation they wrote about]'"
+        }
+        
+        Use the parent's own words and experiences to create truly personalized insights.`;
       } else if (type === "child-development") {
-        systemPrompt = `You are a child development expert. Analyze the provided data to give insights about child development patterns. Return your analysis in a structured format that includes:
-1. A development overview paragraph
-2. An array of recent milestones or positive developments
-3. An array of current development focus areas
-4. A recommendations paragraph
+        // Get child ages for the prompt
+        const childAges = (childProfiles || []).map(child => ({ 
+          name: child.name, 
+          age: `${child.age} years old` 
+        }));
 
-Focus on age-appropriate development, emotional growth, social skills, and learning patterns.`;
+        systemPrompt = `You are a child development expert. You must provide deeply personalized analysis based on specific user data. Always mention children by name and reference specific journal entries that show their development.`;
 
-        analysisPrompt = `Based on this family data, provide child development insights:
-
-Journal Entries: ${JSON.stringify((entries || []).slice(0, 20))}
-Children: ${JSON.stringify(childProfiles)}
-Parent Profile: ${JSON.stringify(parentProfile)}
-
-Provide your analysis in this exact JSON format:
-{
-  "developmentOverview": "A 2-3 sentence overview of child development patterns",
-  "milestones": ["recent milestone 1", "recent milestone 2", "recent milestone 3"],
-  "focusAreas": ["development focus 1", "development focus 2"],
-  "recommendations": "A paragraph with specific recommendations for supporting development"
-}`;
+        analysisPrompt = `Analyze child development patterns with specific insights for each child by name, using examples from the parent's journal entries:
+        
+        Children: ${childAges.map(child => `${child.name} (${child.age})`).join(', ')}
+        Parent Observations: ${(entries || []).length} journal entries
+        All Recent Entries: ${JSON.stringify((entries || []).slice(0, 20).map(e => ({ content: e.content, mood: e.mood, childProfileId: e.childProfileId, createdAt: e.createdAt })))}
+        Child Profiles: ${JSON.stringify(childProfiles)}
+        
+        MANDATORY REQUIREMENTS:
+        1. Mention each child individually by name: ${childAges.map(c => c.name).join(', ')}
+        2. Reference specific examples from journal entries that show each child's behavior or development
+        3. Use the child's personality traits and characteristics if mentioned in entries
+        4. Provide age-appropriate developmental insights for each child's current stage
+        5. Connect observations to real examples from the parent's writing
+        
+        Provide your analysis in this exact JSON format:
+        {
+          "developmentOverview": "Assessment of each child's development mentioning ${childAges.map(c => `${c.name} (${c.age})`).join(' and ')} with specific examples from journal entries showing their unique personalities and growth",
+          "childrenInsights": [
+            {
+              "childName": "${childAges[0]?.name || 'Child'}",
+              "age": "${childAges[0]?.age || 0}",
+              "milestones": ["Specific milestone for this child based on their age and journal mentions"],
+              "focusAreas": ["Development focus area with examples from journal entries"],
+              "recommendations": "Personalized recommendations for ${childAges[0]?.name || 'this child'} based on parent observations"
+            }
+          ],
+          "familyDynamics": "How the children interact and how family dynamics show in the journal entries, mentioning each child by name"
+        }
+        
+        Make each child's section deeply personalized using actual journal content and their individual characteristics.`;
       }
 
       const completion = await openai.chat.completions.create({
@@ -972,7 +1004,8 @@ Provide your analysis in this exact JSON format:
           { role: "system", content: systemPrompt },
           { role: "user", content: analysisPrompt }
         ],
-        max_tokens: 800,
+        response_format: { type: "json_object" },
+        max_tokens: 1500,
         temperature: 0.7,
       });
 

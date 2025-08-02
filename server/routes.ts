@@ -24,12 +24,26 @@ function configureSession(app: Express) {
   app.use((req, res, next) => {
     const origin = req.headers.origin;
     const userAgent = req.headers['user-agent'] || '';
+    const isProduction = process.env.NODE_ENV === 'production';
     
     // Allow credentials for all mobile browsers
     res.header('Access-Control-Allow-Credentials', 'true');
     
-    // Set origin based on environment - for local development
-    res.header('Access-Control-Allow-Origin', req.headers.origin || 'http://localhost:5000');
+    // Set origin based on environment
+    if (isProduction) {
+      // Allow deployed domain and any replit.app domains
+      const allowedOrigins = [
+        'https://parentapp.replit.app',
+        req.headers.origin // Allow the actual origin for replit apps
+      ].filter(Boolean);
+      
+      if (origin && (origin.includes('.replit.app') || allowedOrigins.includes(origin))) {
+        res.header('Access-Control-Allow-Origin', origin);
+      }
+    } else {
+      // Development mode - allow all origins
+      res.header('Access-Control-Allow-Origin', req.headers.origin || 'http://localhost:5000');
+    }
     
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, Set-Cookie');
@@ -42,15 +56,18 @@ function configureSession(app: Express) {
     next();
   });
 
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-for-parenting-journal',
     resave: true, // Force save for mobile browser compatibility
     saveUninitialized: true, // Allow anonymous sessions
     cookie: { 
-      secure: false, // Never secure in development
+      secure: isProduction, // Secure in production (HTTPS)
       httpOnly: false, // Allow JavaScript access for mobile compatibility
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax' // Changed from 'none' for better browser compatibility
+      sameSite: isProduction ? 'none' : 'lax', // 'none' for production cross-origin
+      domain: isProduction ? '.replit.app' : undefined // Set domain for replit.app
     },
     name: 'parentjourney.sid', // Custom cookie name
     // Force session store to handle mobile browser quirks
@@ -266,20 +283,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.end('{"status":"ok"}');
   });
 
-  // Configure CORS first to ensure credentials are handled properly
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-    
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-      res.sendStatus(200);
-    } else {
-      next();
-    }
-  });
+  // CORS is now handled in configureSession function above
 
   // Configure session and OAuth
   configureSession(app);

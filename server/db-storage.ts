@@ -382,4 +382,80 @@ export class DatabaseStorage implements IStorage {
       .where(eq(schema.userNotificationSettings.userId, userId));
     return (result.rowCount ?? 0) > 0;
   }
+
+  // Admin methods
+  async getAllUsers(searchTerm?: string): Promise<User[]> {
+    if (searchTerm) {
+      return await db.select().from(schema.users)
+        .where(sql`${schema.users.username} ILIKE ${'%' + searchTerm + '%'} OR ${schema.users.email} ILIKE ${'%' + searchTerm + '%'} OR ${schema.users.name} ILIKE ${'%' + searchTerm + '%'}`)
+        .orderBy(desc(schema.users.createdAt));
+    }
+    return await db.select().from(schema.users).orderBy(desc(schema.users.createdAt));
+  }
+
+  async getAdminStats(): Promise<{
+    totalUsers: number;
+    activeSubscriptions: number;
+    monthlyRevenue: number;
+    newUsersThisMonth: number;
+    churnRate: number;
+  }> {
+    const totalUsersResult = await db.select({ count: sql<number>`count(*)` }).from(schema.users);
+    const totalUsers = totalUsersResult[0]?.count || 0;
+
+    // For now, return demo stats since we don't have subscription schema
+    return {
+      totalUsers,
+      activeSubscriptions: 0,
+      monthlyRevenue: 0,
+      newUsersThisMonth: 0,
+      churnRate: 0,
+    };
+  }
+
+  async grantFreeAccess(userId: string, months: number): Promise<User | undefined> {
+    // For now, just update the user's updatedAt field as a placeholder
+    // In a real implementation, you'd update subscription fields
+    const result = await db.update(schema.users)
+      .set({ updatedAt: new Date() })
+      .where(eq(schema.users.id, userId))
+      .returning();
+    return result[0];
+  }
+
+  async addAdminNote(userId: string, note: string): Promise<User | undefined> {
+    // For now, just update the user's updatedAt field as a placeholder
+    // In a real implementation, you'd have an admin notes field or separate table
+    const result = await db.update(schema.users)
+      .set({ updatedAt: new Date() })
+      .where(eq(schema.users.id, userId))
+      .returning();
+    return result[0];
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<User | undefined> {
+    // For now, just update the user's updatedAt field as a placeholder
+    // In a real implementation, you'd have a role field
+    const result = await db.update(schema.users)
+      .set({ updatedAt: new Date() })
+      .where(eq(schema.users.id, userId))
+      .returning();
+    return result[0];
+  }
+
+  async updateUserSubscriptionStatus(userId: string, status: string, endDate?: Date): Promise<User | undefined> {
+    // For now, just update the user's updatedAt field as a placeholder
+    // In a real implementation, you'd have subscription status fields
+    const result = await db.update(schema.users)
+      .set({ updatedAt: new Date() })
+      .where(eq(schema.users.id, userId))
+      .returning();
+    return result[0];
+  }
+
+  async getUserByProvider(provider: string, providerId: string): Promise<User | undefined> {
+    // For now, return undefined since we don't have provider fields in the schema
+    // In a real implementation, you'd have provider and providerId fields
+    return undefined;
+  }
 }

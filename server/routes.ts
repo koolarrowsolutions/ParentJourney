@@ -320,7 +320,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Generate auth token for iframe and mobile browser environments
-      const authToken = generateAuthToken(user.id, user.username, user.name, user.email, false);
+      const authToken = generateAuthToken({
+        userId: user.id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        hasJustSignedUp: false
+      });
       console.log('Generated auth token for user:', user.username);
 
       // Set session
@@ -860,7 +866,7 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         'handled_well': 6, 'balanced': 7, 'completely_centered': 8
       };
 
-      const scores = Object.values(checkinData).map(value => moodMapping[value] || 5);
+      const scores = Object.values(checkinData).map(value => moodMapping[value as keyof typeof moodMapping] || 5);
       const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
       
       // Map average score to mood
@@ -1806,7 +1812,7 @@ Provide your analysis in this exact JSON format:
 
       const Stripe = (await import("stripe")).default;
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-        apiVersion: "2023-10-16",
+        apiVersion: "2025-07-30.basil",
       });
 
       const { amount } = req.body;

@@ -47,16 +47,58 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
   const { data: entries } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal-entries"],
     enabled: isAuthenticated,
+    queryFn: async () => {
+      const token = localStorage.getItem('parentjourney_token');
+      const response = await fetch('/api/journal-entries', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch journal entries');
+      }
+      return response.json();
+    },
   });
 
   const { data: childProfiles } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
     enabled: isAuthenticated,
+    queryFn: async () => {
+      const token = localStorage.getItem('parentjourney_token');
+      const response = await fetch('/api/child-profiles', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch child profiles');
+      }
+      return response.json();
+    },
   });
 
   const { data: parentProfile } = useQuery<ParentProfile>({
     queryKey: ["/api/parent-profile"],
     enabled: isAuthenticated,
+    queryFn: async () => {
+      const token = localStorage.getItem('parentjourney_token');
+      const response = await fetch('/api/parent-profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch parent profile');
+      }
+      return response.json();
+    },
   });
 
   const handleInsightClick = async (insightType: string) => {

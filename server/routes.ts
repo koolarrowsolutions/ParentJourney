@@ -1330,25 +1330,28 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         Child Profiles: ${JSON.stringify(childProfiles)}
         
         MANDATORY REQUIREMENTS:
-        1. Mention each child individually by name: ${contextData.childAges.map(c => c.name).join(', ')}
-        2. Reference specific examples from journal entries that show each child's behavior or development
-        3. Use the child's personality traits and characteristics if mentioned in entries
-        4. Provide age-appropriate developmental insights for each child's current stage
-        5. Connect observations to real examples from the parent's writing
+        1. ALWAYS mention each child individually by their EXACT name: ${contextData.childAges.map(c => c.name).join(', ')}
+        2. NEVER use generic names like "Emily", "Ava", "Lily" or placeholder names
+        3. Reference specific examples from journal entries that show each child's behavior or development
+        4. Use the child's personality traits and characteristics if mentioned in entries
+        5. Provide age-appropriate developmental insights for each child's current stage
+        6. Connect observations to real examples from the parent's writing
+        
+        CRITICAL: The children's names are ${contextData.childAges.map(c => c.name).join(' and ')} - use these EXACTLY.
         
         Return JSON with exactly this structure:
         {
           "developmentOverview": "Assessment of each child's development mentioning ${contextData.childAges.map(c => `${c.name} (${c.age} years)`).join(' and ')} with specific examples from journal entries showing their unique personalities and growth",
           "childrenInsights": [
-            {
-              "childName": "${contextData.childAges[0]?.name || 'Child'}",
-              "age": "${contextData.childAges[0]?.age || 0} years old",
-              "milestones": ["Specific milestone for this child based on their age and journal mentions"],
-              "focusAreas": ["Development focus area with examples from journal entries"],
-              "recommendations": "Personalized recommendations for ${contextData.childAges[0]?.name || 'this child'} based on parent observations"
-            }
+            ${contextData.childAges.map((child, index) => `{
+              "childName": "${child.name}",
+              "age": "${child.age} years old",
+              "milestones": ["Specific milestone for ${child.name} based on their age and journal mentions"],
+              "focusAreas": ["Development focus area for ${child.name} with examples from journal entries"],
+              "recommendations": "Personalized recommendations for ${child.name} based on parent observations"
+            }`).join(',')}
           ],
-          "familyDynamics": "How the children interact and how family dynamics show in the journal entries, mentioning each child by name"
+          "familyDynamics": "How ${contextData.childAges.map(c => c.name).join(' and ')} interact and how family dynamics show in the journal entries, mentioning each child by their exact name"
         }
         
         Make each child's section deeply personalized using actual journal content and their individual characteristics.

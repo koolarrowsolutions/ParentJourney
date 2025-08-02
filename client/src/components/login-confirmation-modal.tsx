@@ -10,10 +10,15 @@ interface LoginConfirmationModalProps {
 }
 
 export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginConfirmationModalProps) {
-  const [greeting] = useState(() => getLoginGreeting());
+  const [greeting] = useState(() => {
+    const welcomeMessage = getLoginGreeting();
+    console.log('Login modal greeting:', welcomeMessage);
+    return welcomeMessage;
+  });
 
   useEffect(() => {
     if (isVisible) {
+      console.log('Login confirmation modal is now visible with greeting:', greeting);
       // Auto-close after 5 seconds
       const timer = setTimeout(() => {
         onClose();
@@ -21,12 +26,12 @@ export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginCo
 
       return () => clearTimeout(timer);
     }
-  }, [isVisible, onClose]);
+  }, [isVisible, onClose, greeting]);
 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-8">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/20 backdrop-blur-sm animate-in fade-in-0 duration-300"
@@ -34,7 +39,7 @@ export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginCo
       />
       
       {/* Modal */}
-      <Card className="relative mx-4 w-full max-w-md animate-in zoom-in-95 fade-in-0 duration-300 shadow-2xl">
+      <Card className="relative mx-4 w-full max-w-md animate-in slide-in-from-top-4 fade-in-0 duration-500 shadow-2xl">
         <CardContent className="p-6">
           {/* Close button */}
           <button
@@ -53,13 +58,15 @@ export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginCo
             </div>
 
             {/* Welcome message */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               <h3 className="text-lg font-semibold text-neutral-800">
                 Welcome back{userName ? `, ${userName}` : ''}!
               </h3>
-              <p className="text-sm text-neutral-600 leading-relaxed px-2">
-                {greeting}
-              </p>
+              <div className="bg-blue-50/50 border border-blue-200/50 rounded-lg p-3">
+                <p className="text-sm text-blue-800 leading-relaxed font-medium">
+                  {greeting}
+                </p>
+              </div>
             </div>
 
             {/* Auto-close indicator */}

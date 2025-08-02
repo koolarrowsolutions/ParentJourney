@@ -1097,6 +1097,36 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
 function PersonalizedTipsAnalysis({ data }: { data: any }) {
   if (!data) return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
 
+  // Handle explainer content for unauthenticated users
+  if (data.isExplainer) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
+          <h4 className="font-semibold text-yellow-800 mb-4 flex items-center text-lg">
+            <Lightbulb className="mr-3 h-5 w-5" />
+            {data.title}
+          </h4>
+          <p className="text-yellow-700 leading-relaxed mb-4">
+            {data.description}
+          </p>
+          <div className="space-y-3">
+            {data.features.map((feature: string, index: number) => (
+              <div key={index} className="flex items-start">
+                <span className="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                <span className="text-yellow-700 text-sm">{feature}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 p-4 bg-yellow-100 rounded-lg">
+            <p className="text-yellow-800 font-medium text-center">
+              {data.callToAction}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-secondary/5 rounded-xl p-6 border border-secondary/20">
@@ -1105,23 +1135,12 @@ function PersonalizedTipsAnalysis({ data }: { data: any }) {
           Personalized Tips
         </h4>
         <p className="text-neutral-700 leading-relaxed">
-          Based on your parenting style, child's personality, and recent experiences, here are tailored suggestions for your family.
+          Based on your parenting style, children's personalities, and recent experiences, here are tailored suggestions for your family.
         </p>
       </div>
 
       <div className="space-y-4">
-        {(data.tips || [
-          {
-            category: "Communication",
-            tip: "Try using more descriptive praise when acknowledging your child's efforts.",
-            reason: "This builds their understanding of positive behaviors and encourages repetition."
-          },
-          {
-            category: "Connection",
-            tip: "Schedule 10 minutes of uninterrupted one-on-one time daily.",
-            reason: "This strengthens your bond and gives them a sense of agency while ensuring quality connection time."
-          }
-        ]).map((tip: any, index: number) => (
+        {(data.personalizedTips || []).map((tip: any, index: number) => (
           <div key={index} className="bg-white rounded-xl p-6 border border-neutral-200 shadow-sm">
             <div className="flex items-start">
               <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center mr-4 flex-shrink-0">
@@ -1136,9 +1155,14 @@ function PersonalizedTipsAnalysis({ data }: { data: any }) {
                 <p className="text-neutral-800 mb-3 font-medium leading-relaxed">
                   {tip.tip}
                 </p>
-                <p className="text-neutral-600 text-sm leading-relaxed">
-                  <strong>Why this helps:</strong> {tip.reason}
+                <p className="text-neutral-600 text-sm leading-relaxed mb-2">
+                  <strong>Why this helps:</strong> {tip.reasoning}
                 </p>
+                {tip.implementation && (
+                  <p className="text-neutral-500 text-xs leading-relaxed">
+                    <strong>How to implement:</strong> {tip.implementation}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -1151,6 +1175,36 @@ function PersonalizedTipsAnalysis({ data }: { data: any }) {
 function ConsiderationsAnalysis({ data }: { data: any }) {
   if (!data) return <div className="text-center py-6 text-neutral-500">No analysis available yet</div>;
 
+  // Handle explainer content for unauthenticated users
+  if (data.isExplainer) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200">
+          <h4 className="font-semibold text-purple-800 mb-4 flex items-center text-lg">
+            <MessageSquare className="mr-3 h-5 w-5" />
+            {data.title}
+          </h4>
+          <p className="text-purple-700 leading-relaxed mb-4">
+            {data.description}
+          </p>
+          <div className="space-y-3">
+            {data.features.map((feature: string, index: number) => (
+              <div key={index} className="flex items-start">
+                <span className="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                <span className="text-purple-700 text-sm">{feature}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 p-4 bg-purple-100 rounded-lg">
+            <p className="text-purple-800 font-medium text-center">
+              {data.callToAction}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
@@ -1159,7 +1213,7 @@ function ConsiderationsAnalysis({ data }: { data: any }) {
           Have You Considered...
         </h4>
         <p className="text-neutral-700 leading-relaxed">
-          These concepts might offer new perspectives on your parenting journey and family dynamics.
+          Research-backed concepts and strategies that could enhance your parenting approach and family dynamics based on your specific situation.
         </p>
       </div>
 

@@ -1310,7 +1310,7 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         - "In your reflection about [specific situation with child's name], you demonstrated..."
         - "Your journal entry describing [specific challenge/success] with [child's name] reveals..."
         
-        Return JSON with exactly this structure:
+        Please provide a JSON response with exactly this structure:
         {
           "progressOverview": "Assessment mentioning the parent's growth with each child by name, referencing specific journal content with examples like 'In your entry where you wrote about [specific content]' and showing awareness of their actual parenting experiences",
           "strengths": ["Specific strength illustrated by direct journal examples such as 'When you described [specific situation] with ${contextData.childAges[0]?.name || 'child'}'", "Strength with ${contextData.childAges[1]?.name || 'family'} shown through specific entries like '[quote or situation]'", "Overall parenting strength demonstrated through specific examples from their writing"],
@@ -1339,7 +1339,7 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         
         CRITICAL: The children's names are ${contextData.childAges.map(c => c.name).join(' and ')} - use these EXACTLY.
         
-        Return JSON with exactly this structure:
+        Please provide a JSON response with exactly this structure:
         {
           "developmentOverview": "Assessment of each child's development mentioning ${contextData.childAges.map(c => `${c.name} (${c.age} years)`).join(' and ')} with specific examples from journal entries showing their unique personalities and growth",
           "childrenInsights": [
@@ -1358,18 +1358,19 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
       `,
       
       "personalized-tips": `
-        Generate personalized parenting tips based on this family profile and specific journal content:
+        Generate personalized parenting tips specifically for ${parentProfile?.name || 'this parent'} based on their family profile and specific journal content:
         
-        Parent: ${JSON.stringify(parentProfile || {})}
+        Parent: ${parentProfile?.name || 'Parent'} (${JSON.stringify(parentProfile || {})})
         Children: ${contextData.childAges.map(child => `${child.name} (${child.age} years old)`).join(', ')}
         Journal Entries: ${contextData.entriesCount} total entries
         Recent Challenges/Successes: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood, createdAt: e.createdAt })))}
         
         CRITICAL REQUIREMENTS:
-        1. Mention each child by name (${contextData.childAges.map(c => c.name).join(', ')}) in relevant tips
-        2. Reference specific situations or challenges from their journal entries
-        3. Use actual examples from their parenting experiences
-        4. Connect tips directly to patterns observed in their entries
+        1. Address ${parentProfile?.name || 'the parent'} directly in your tips 
+        2. Mention each child by name (${contextData.childAges.map(c => c.name).join(', ')}) in relevant tips 
+        3. Reference specific situations or challenges from ${parentProfile?.name || 'the parent'}'s journal entries
+        4. Use actual examples from their parenting experiences with ${contextData.childAges.map(c => c.name).join(' and ')}
+        5. Connect tips directly to patterns observed in their entries
         
         Provide 3-4 specific, actionable tips that include:
         1. Category (Communication, Routine, Connection, Discipline, etc.)
@@ -1398,19 +1399,20 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
       `,
       
       "considerations": `
-        Suggest important parenting concepts for reflection based on this family's specific situation:
+        Suggest important parenting concepts specifically for ${parentProfile?.name || 'this parent'} based on their family's unique situation:
         
-        Parent: ${JSON.stringify(parentProfile || {})}
+        Parent: ${parentProfile?.name || 'Parent'} (${JSON.stringify(parentProfile || {})})
         Children: ${contextData.childAges.map(child => `${child.name} (${child.age} years old)`).join(', ')}
         Journal Context: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood, createdAt: e.createdAt })))}
         
         CRITICAL REQUIREMENTS:
-        1. Base suggestions on their specific journal entries and family dynamics
-        2. Reference their actual parenting experiences when relevant
-        3. Mention children by name (${contextData.childAges.map(c => c.name).join(', ')}) when applicable
+        1. Address ${parentProfile?.name || 'the parent'} directly in your suggestions 
+        2. Base suggestions on their specific journal entries and family dynamics with ${contextData.childAges.map(c => c.name).join(' and ')}
+        3. Reference their actual parenting experiences when relevant, using phrases like "Based on your entry where you mentioned..." or "Given your experience with ${contextData.childAges[0]?.name || 'your child'}..."
         4. Connect concepts to patterns observed in their journal entries
+        5. Make suggestions personal to ${parentProfile?.name || 'this parent'}'s specific situation with ${contextData.childAges.map(c => c.name).join(' and ')}
         
-        Provide thoughtful, evidence-based concepts that could enhance their specific family situation.
+        Provide thoughtful, evidence-based concepts that could enhance ${parentProfile?.name || 'this parent'}'s specific family situation.
         
         Please provide a JSON response with exactly this structure:
         {

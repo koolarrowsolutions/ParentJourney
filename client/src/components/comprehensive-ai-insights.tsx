@@ -20,6 +20,7 @@ import {
   X
 } from "lucide-react";
 import type { JournalEntry, ChildProfile, ParentProfile } from "@shared/schema";
+import { SparklyStarsLoader } from "@/components/ui/sparkly-stars-loader";
 
 interface ComprehensiveAIInsightsProps {
   onInsightClick?: (insightType: string) => void;
@@ -76,7 +77,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       console.log(`- Available data - entries: ${entries?.length || 0}, children: ${childProfiles?.length || 0}, parent: ${parentProfile ? 'present' : 'missing'}`);
       
       // Force authentication by checking if we have data AND a token
-      const hasDataAndToken = token && (entries?.length > 0 || childProfiles?.length > 0 || parentProfile);
+      const hasDataAndToken = token && ((entries?.length ?? 0) > 0 || (childProfiles?.length ?? 0) > 0 || parentProfile);
       
       if (!hasDataAndToken) {
         // Show explainer content for unauthenticated users or users without data
@@ -702,12 +703,10 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
             
             <div className="space-y-4" style={{marginTop: '16px'}}>
               {isLoading ? (
-                <div className="flex items-center justify-center py-8" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 0'}}>
-                  <div className="text-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-                    <p className="text-neutral-600">Analyzing your parenting journey...</p>
-                  </div>
-                </div>
+                <SparklyStarsLoader 
+                  message="AI is analyzing your parenting journey..." 
+                  size="lg" 
+                />
               ) : (
                 <div>
                   {selectedInsight === "parenting-progress" && (
@@ -929,15 +928,15 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
       </div>
 
       {/* Individual Child Analysis */}
-      {data.children && data.children.map((child: any, index: number) => (
+      {data.childrenInsights && data.childrenInsights.map((child: any, index: number) => (
         <div key={index} className="bg-white rounded-xl p-6 border border-neutral-200 shadow-sm">
           <div className="flex items-center mb-4">
             <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center mr-3">
               <User className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h5 className="font-semibold text-neutral-800 text-lg">{child.name}</h5>
-              <p className="text-sm text-neutral-600">{child.age} • {child.developmentalStage}</p>
+              <h5 className="font-semibold text-neutral-800 text-lg">{child.childName}</h5>
+              <p className="text-sm text-neutral-600">{child.age}</p>
             </div>
           </div>
 
@@ -945,10 +944,10 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
             <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
               <h6 className="font-medium text-purple-800 mb-3 flex items-center text-sm">
                 <CheckCircle className="mr-2 h-4 w-4" />
-                Key Milestones for {child.name}
+                Key Milestones for {child.childName}
               </h6>
               <div className="space-y-2">
-                {child.milestones.map((milestone: string, idx: number) => (
+                {child.milestones?.map((milestone: string, idx: number) => (
                   <div key={idx} className="flex items-start">
                     <div className="w-1.5 h-1.5 bg-purple-600 rounded-full mt-2 mr-2 flex-shrink-0"></div>
                     <span className="text-purple-700 text-sm leading-relaxed">{milestone}</span>
@@ -960,10 +959,10 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
             <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
               <h6 className="font-medium text-blue-800 mb-3 flex items-center text-sm">
                 <Target className="mr-2 h-4 w-4" />
-                Focus Areas for {child.name}
+                Focus Areas for {child.childName}
               </h6>
               <div className="space-y-2">
-                {child.focusAreas.map((area: string, idx: number) => (
+                {child.focusAreas?.map((area: string, idx: number) => (
                   <div key={idx} className="flex items-start">
                     <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-2 flex-shrink-0"></div>
                     <span className="text-blue-700 text-sm leading-relaxed">{area}</span>
@@ -976,7 +975,7 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
           <div className="mt-4 bg-green-50 rounded-lg p-4 border border-green-200">
             <h6 className="font-medium text-green-800 mb-2 flex items-center text-sm">
               <Lightbulb className="mr-2 h-4 w-4" />
-              Personalized Recommendations for {child.name}
+              Personalized Recommendations for {child.childName}
             </h6>
             <p className="text-green-700 text-sm leading-relaxed">
               {child.recommendations}

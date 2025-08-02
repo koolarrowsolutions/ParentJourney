@@ -21,6 +21,7 @@ import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Us
 import { ChildProfilesDialog } from "./child-profiles-dialog";
 import { CalmReset } from "./calm-reset";
 import { VoiceInput } from "./voice-input";
+import { SparklyStarsLoader } from "@/components/ui/sparkly-stars-loader";
 
 const MOODS = [
   { emoji: "😊", label: "Happy", value: "😊" },
@@ -614,12 +615,12 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
 
         {isSubmittingWithAI && (
           <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
-            <div className="flex items-center">
-              <Loader2 className="animate-spin h-5 w-5 text-primary mr-3" />
-              <span className="text-neutral-700">Getting AI coaching insights...</span>
-            </div>
-            <p className="text-xs text-neutral-500 mt-2">
-              This may take a few moments as your AI parenting coach analyzes your entry
+            <SparklyStarsLoader 
+              message="Your AI parenting coach is analyzing your entry..." 
+              size="md" 
+            />
+            <p className="text-xs text-neutral-500 text-center mt-2">
+              This may take a few moments to provide personalized insights
             </p>
           </div>
         )}

@@ -1235,44 +1235,61 @@ Provide your analysis in this exact JSON format:
 
     const prompts = {
       "parenting-progress": `
-        Analyze this parent's journey and provide comprehensive progress insights with specific mention of each child by name:
+        Analyze this parent's journey and provide comprehensive progress insights with specific mention of each child by name. Use real examples from their journal entries wherever possible:
         
         Parent Profile: ${JSON.stringify(parentProfile || {})}
         Children: ${contextData.childAges.map(child => `${child.name} (${child.age} years old)`).join(', ')}
         Journal Entries: ${contextData.entriesCount} total entries
         Recent Entries: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood, createdAt: e.createdAt })))}
         
-        CRITICAL: You MUST mention each child by name (${contextData.childAges.map(c => c.name).join(', ')}) in your analysis to prove this is personalized. Include specific observations about the parent's relationship with each child.
+        CRITICAL REQUIREMENTS:
+        1. You MUST mention each child by name (${contextData.childAges.map(c => c.name).join(', ')}) in your analysis
+        2. Include specific examples or quotes from the journal entries when possible
+        3. Reference actual situations or challenges the parent has written about
+        4. Make observations about the parent's relationship with each individual child
         
         Return JSON with exactly this structure:
         {
-          "progressOverview": "Assessment mentioning the parent's growth with each child by name and specific details about their parenting journey",
-          "strengths": ["Specific strength related to ${contextData.childAges[0]?.name || 'child'}", "Strength related to ${contextData.childAges[1]?.name || 'family'}", "Overall parenting strength"],
-          "growthAreas": ["Development area with ${contextData.childAges[0]?.name || 'child'}", "Growth opportunity with ${contextData.childAges[1]?.name || 'family'}"],
-          "nextSteps": "Actionable recommendations mentioning each child by name and age-appropriate strategies"
+          "progressOverview": "Assessment mentioning the parent's growth with each child by name, referencing specific journal content and showing awareness of their actual parenting experiences",
+          "strengths": ["Specific strength illustrated by journal examples with ${contextData.childAges[0]?.name || 'child'}", "Strength with ${contextData.childAges[1]?.name || 'family'} shown through their entries", "Overall parenting strength demonstrated in their writing"],
+          "growthAreas": ["Development area with ${contextData.childAges[0]?.name || 'child'} based on journal patterns", "Growth opportunity with ${contextData.childAges[1]?.name || 'family'} from their reflections"],
+          "nextSteps": "Actionable recommendations mentioning each child by name with strategies based on what they've shared in their journal"
         }
         
-        Make it obviously personalized by using the children's actual names throughout.
+        Use the parent's own words and experiences to create truly personalized insights.
       `,
       
       "child-development": `
-        Analyze child development patterns with specific insights for each child by name:
+        Analyze child development patterns with specific insights for each child by name, using examples from the parent's journal entries:
         
         Children: ${contextData.childAges.map(child => `${child.name} (${child.age} years old)`).join(', ')}
         Parent Observations: ${contextData.entriesCount} journal entries
-        Recent Child-Related Entries: ${JSON.stringify(contextData.recentEntries.filter(e => e.childProfileId).map(e => ({ content: e.content, childName: e.childProfileId })))}
+        All Recent Entries: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood, childProfileId: e.childProfileId, createdAt: e.createdAt })))}
+        Child Profiles: ${JSON.stringify(childProfiles)}
         
-        MANDATORY: Include specific analysis for each child by name: ${contextData.childAges.map(c => c.name).join(', ')}
+        MANDATORY REQUIREMENTS:
+        1. Mention each child individually by name: ${contextData.childAges.map(c => c.name).join(', ')}
+        2. Reference specific examples from journal entries that show each child's behavior or development
+        3. Use the child's personality traits and characteristics if mentioned in entries
+        4. Provide age-appropriate developmental insights for each child's current stage
+        5. Connect observations to real examples from the parent's writing
         
         Return JSON with exactly this structure:
         {
-          "developmentOverview": "Assessment of each child's development mentioning ${contextData.childAges.map(c => `${c.name} (${c.age} years)`).join(' and ')} with specific developmental observations",
-          "milestones": ["Milestone specific to ${contextData.childAges[0]?.name || 'first child'}", "Milestone for ${contextData.childAges[1]?.name || 'second child'}", "Family milestone"],
-          "focusAreas": ["Development focus for ${contextData.childAges[0]?.name || 'first child'}", "Growth area for ${contextData.childAges[1]?.name || 'second child'}"],
-          "recommendations": "Age-appropriate activities for each child by name with specific developmental strategies"
+          "developmentOverview": "Assessment of each child's development mentioning ${contextData.childAges.map(c => `${c.name} (${c.age} years)`).join(' and ')} with specific examples from journal entries showing their unique personalities and growth",
+          "childrenInsights": [
+            {
+              "childName": "${contextData.childAges[0]?.name || 'Child'}",
+              "age": "${contextData.childAges[0]?.age || 0} years old",
+              "milestones": ["Specific milestone for this child based on their age and journal mentions"],
+              "focusAreas": ["Development focus area with examples from journal entries"],
+              "recommendations": "Personalized recommendations for ${contextData.childAges[0]?.name || 'this child'} based on parent observations"
+            }
+          ],
+          "familyDynamics": "How the children interact and how family dynamics show in the journal entries, mentioning each child by name"
         }
         
-        Provide child-specific insights showing deep personalization.
+        Make each child's section deeply personalized using actual journal content and their individual characteristics.
       `,
       
       "personalized-tips": `

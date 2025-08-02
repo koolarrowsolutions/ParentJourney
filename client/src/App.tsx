@@ -7,6 +7,7 @@ import { SignUpPrompt } from "@/components/signup-prompt";
 import { OnboardingTour } from "@/components/onboarding-tour";
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { useAuth } from "@/hooks/use-auth";
+import { LoginConfirmationModal } from "@/components/login-confirmation-modal";
 import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
 import Analytics from "@/pages/analytics";
@@ -34,7 +35,8 @@ function AppRouter() {
     isAuthenticated: auth.isAuthenticated,
     isLoading: auth.isLoading,
     user: auth.user,
-    hasJustSignedUp: auth.hasJustSignedUp
+    hasJustSignedUp: auth.hasJustSignedUp,
+    hasJustLoggedIn: auth.hasJustLoggedIn
   });
 
   // Manual login test function
@@ -104,6 +106,12 @@ function AppRouter() {
       <OnboardingTour
         isOpen={showTour}
         onClose={handleTourComplete}
+      />
+      
+      <LoginConfirmationModal
+        isVisible={auth.hasJustLoggedIn}
+        onClose={auth.clearLoginStatus}
+        userName={auth.user?.name || auth.user?.username}
       />
     </>
   );

@@ -13,10 +13,11 @@ interface AuthState {
   user: AuthUser | null;
   isAuthenticated: boolean;
   hasJustSignedUp: boolean;
+  hasJustLoggedIn: boolean;
   isLoading: boolean;
 }
 
-export function useAuth(): AuthState {
+export function useAuth(): AuthState & { clearLoginStatus: () => void } {
   const [authState, setAuthState] = useState<AuthState>(() => {
     // Check for existing auth data instead of clearing it
     const storedAuth = getStoredAuthData();
@@ -25,6 +26,7 @@ export function useAuth(): AuthState {
       user: storedAuth?.user || null,
       isAuthenticated: storedAuth?.isAuthenticated || false,
       hasJustSignedUp: storedAuth?.hasJustSignedUp || false,
+      hasJustLoggedIn: false, // Always false on initial load
       isLoading: true,
     };
   });
@@ -46,16 +48,21 @@ export function useAuth(): AuthState {
         user: null,
         isAuthenticated: false,
         hasJustSignedUp: false,
+        hasJustLoggedIn: false,
         isLoading: false,
       };
       setAuthState(newState);
       // Clear saved auth state on error
       localStorage.removeItem('authState');
     } else if (data) {
+      const wasAuthenticated = authState.isAuthenticated;
+      const isNowAuthenticated = data.success || false;
+      
       const newState = {
         user: data.user || null,
-        isAuthenticated: data.success || false,
+        isAuthenticated: isNowAuthenticated,
         hasJustSignedUp: data.hasJustSignedUp || false,
+        hasJustLoggedIn: !wasAuthenticated && isNowAuthenticated, // Just logged in if wasn't auth before but is now
         isLoading: false,
       };
       setAuthState(newState);
@@ -64,9 +71,13 @@ export function useAuth(): AuthState {
         localStorage.setItem('authState', JSON.stringify(newState));
       }
     }
-  }, [data, isLoading, error]);
+  }, [data, isLoading, error, authState.isAuthenticated]);
 
-  return authState;
+  const clearLoginStatus = () => {
+    setAuthState(prev => ({ ...prev, hasJustLoggedIn: false }));
+  };
+
+  return { ...authState, clearLoginStatus };
 }
 
 export function useLogout() {

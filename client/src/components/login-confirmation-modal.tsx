@@ -1,0 +1,75 @@
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { CheckCircle, X } from "lucide-react";
+import { getLoginGreeting } from "@shared/greetings";
+
+interface LoginConfirmationModalProps {
+  isVisible: boolean;
+  onClose: () => void;
+  userName?: string;
+}
+
+export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginConfirmationModalProps) {
+  const [greeting] = useState(() => getLoginGreeting());
+
+  useEffect(() => {
+    if (isVisible) {
+      // Auto-close after 5 seconds
+      const timer = setTimeout(() => {
+        onClose();
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onClose]);
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm animate-in fade-in-0 duration-300"
+        onClick={onClose}
+      />
+      
+      {/* Modal */}
+      <Card className="relative mx-4 w-full max-w-md animate-in zoom-in-95 fade-in-0 duration-300 shadow-2xl">
+        <CardContent className="p-6">
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute right-3 top-3 rounded-full p-1 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+
+          {/* Success icon and content */}
+          <div className="text-center space-y-4">
+            {/* Success icon */}
+            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+
+            {/* Welcome message */}
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-neutral-800">
+                Welcome back{userName ? `, ${userName}` : ''}!
+              </h3>
+              <p className="text-sm text-neutral-600 leading-relaxed px-2">
+                {greeting}
+              </p>
+            </div>
+
+            {/* Auto-close indicator */}
+            <div className="flex items-center justify-center space-x-2 text-xs text-neutral-400">
+              <div className="w-2 h-2 bg-neutral-300 rounded-full animate-pulse" />
+              <span>Auto-closing in 5 seconds</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

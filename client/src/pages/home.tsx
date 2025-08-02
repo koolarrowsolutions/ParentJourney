@@ -102,7 +102,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 w-full">
       <Header />
       
-      <main className="w-full px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <main className="w-full px-0 py-4 sm:py-6 lg:py-8">
         {/* Welcome Section */}
         <div className="mb-4 sm:mb-6 lg:mb-8">
           <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
@@ -243,8 +243,8 @@ export default function Home() {
 
 
 
-        {/* Easy Daily Check-In - Between welcome and AI insights */}
-        <div className="mb-6 w-full">
+        <div className="px-3 sm:px-4 md:px-6 lg:px-8 w-full space-y-6">
+          {/* Easy Daily Check-In - Between welcome and AI insights */}
           <OnboardingTooltip
             title="Start Your Day with Check-In"
             content="Share how you're feeling today. This simple practice helps track your emotional wellness patterns and provides better AI insights."
@@ -256,10 +256,8 @@ export default function Home() {
               <MoodSelector />
             </div>
           </OnboardingTooltip>
-        </div>
 
-        {/* AI Insights Section */}
-        <div className="mb-6 w-full">
+          {/* AI Insights Section */}
           <OnboardingTooltip
             title="AI-Powered Parenting Guidance"
             content="These personalized insights are generated from your journal entries. Click any card to dive deeper into specific topics."
@@ -271,10 +269,8 @@ export default function Home() {
               <ComprehensiveAIInsights />
             </div>
           </OnboardingTooltip>
-        </div>
 
-        {/* Feeling Overwhelmed Element - Enhanced with clearer description */}
-        <div className="mb-6 w-full">
+          {/* Feeling Overwhelmed Element - Enhanced with clearer description */}
           <OnboardingTooltip
             title="Quick Stress Relief"
             content="When parenting feels overwhelming, this tool offers instant access to breathing exercises and mindfulness techniques."
@@ -298,10 +294,8 @@ export default function Home() {
               </div>
             </div>
           </OnboardingTooltip>
-        </div>
 
-        {/* Quick Actions Group */}
-        <div className="mb-6 w-full">
+          {/* Quick Actions Group */}
           <OnboardingTooltip
             title="Quick Actions Hub"
             content="Fast access to key features like writing entries, viewing analytics, and managing profiles. Hover over each button for specific details."
@@ -316,11 +310,9 @@ export default function Home() {
               />
             </div>
           </OnboardingTooltip>
-        </div>
 
-        {/* Child-specific entries overview */}
-        {childProfiles && childProfiles.length > 0 && (
-          <div className="mb-6 w-full">
+          {/* Child-specific entries overview */}
+          {childProfiles && childProfiles.length > 0 && (
             <OnboardingTooltip
               title="Track Each Child's Journey"
               content="View recent entries for each child. Click any card to see their full journal history and development insights."
@@ -346,11 +338,9 @@ export default function Home() {
                 </div>
               </div>
             </OnboardingTooltip>
-          </div>
-        )}
-        
-        {/* Recent Journal Entries */}
-        <div className="mb-6 w-full">
+          )}
+          
+          {/* Recent Journal Entries */}
           <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 p-4 hover-lift animate-pop-fade stagger-5 w-full">
             <h3 className="text-base font-semibold text-emerald-800 mb-3 flex items-center">
               📖 Recent Journal Entries

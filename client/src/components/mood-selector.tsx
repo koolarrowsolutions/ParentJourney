@@ -31,7 +31,7 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
   return (
     <>
       <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible w-full">
-        <CardContent className="p-4 sm:p-6">
+        <CardContent className="p-4 sm:p-6 w-full">
           {/* Mobile: Stack layout, Desktop: Horizontal layout */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 sm:space-x-4 w-full">
             <div className="flex items-center space-x-4 flex-1">

@@ -54,8 +54,8 @@ export function RecentEntries() {
 
   return (
     <Card className="shadow-sm border border-neutral-200">
-      <CardContent className="p-3 sm:p-4 md:p-6">
-        <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-3">
           <h3 className="text-base sm:text-lg md:text-xl font-semibold text-neutral-800 flex items-center">
             <History className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
             <span className="hidden sm:inline">📖 {searchQuery ? 'Search Results' : 'Recent Entries'}</span>
@@ -75,7 +75,7 @@ export function RecentEntries() {
         </div>
         
         {/* Search Bar */}
-        <div className="mb-4 sm:mb-6">
+        <div className="mb-3">
           <SearchBar
             onSearch={setSearchQuery}
             placeholder="🔍 Search entries by title, content, or mood..."
@@ -83,7 +83,7 @@ export function RecentEntries() {
           />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {isLoading ? (
             // Loading skeletons
             Array.from({ length: 3 }).map((_, index) => (
@@ -106,7 +106,7 @@ export function RecentEntries() {
           ) : entries && entries.length > 0 ? (
             <>
               {searchQuery && (
-                <div className="text-sm text-neutral-600 mb-4 p-3 bg-primary/5 rounded-lg border border-primary/10">
+                <div className="text-sm text-neutral-600 mb-3 p-2 bg-primary/5 rounded-lg border border-primary/10">
                   📊 Found {entries.length} {entries.length === 1 ? 'entry' : 'entries'} matching "{searchQuery}"
                 </div>
               )}

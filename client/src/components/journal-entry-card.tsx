@@ -55,11 +55,11 @@ export function JournalEntryCard({ entry, showChildInfo = true, onEdit, childPro
 
   return (
     <Card className="shadow-sm border border-neutral-200 hover-lift transition-all">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             {entry.title && (
-              <h3 className="font-semibold text-neutral-800 mb-2 line-clamp-2">
+              <h3 className="font-semibold text-neutral-800 mb-1 line-clamp-2 text-sm">
                 {entry.title}
               </h3>
             )}
@@ -76,7 +76,7 @@ export function JournalEntryCard({ entry, showChildInfo = true, onEdit, childPro
             </div>
 
             {/* Badges */}
-            <div className="flex flex-wrap gap-2 mt-3">
+            <div className="flex flex-wrap gap-2 mt-2">
               {entry.mood && (
                 <Badge variant="outline" className="text-xs">
                   {entry.mood}
@@ -124,7 +124,7 @@ export function JournalEntryCard({ entry, showChildInfo = true, onEdit, childPro
 
       <CardContent className="pt-0">
         {/* Content */}
-        <div className="mb-4">
+        <div className="mb-3">
           <p className="text-neutral-700 whitespace-pre-wrap">
             {isExpanded ? entry.content : getContentPreview(entry.content)}
           </p>

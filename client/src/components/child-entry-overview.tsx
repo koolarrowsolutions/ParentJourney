@@ -31,15 +31,15 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
 
   return (
     <Card className="hover-lift animate-fade-in">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-              <Baby className="text-primary h-6 w-6" />
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+              <Baby className="text-primary h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-neutral-800">{child.name}</h3>
-              <p className="text-sm text-neutral-600">
+              <h3 className="text-base font-semibold text-neutral-800">{child.name}</h3>
+              <p className="text-xs text-neutral-600">
                 {formatAge(child.dateOfBirth)}
                 {child.pronouns && <span className="ml-2">• {child.pronouns}</span>}
               </p>
@@ -78,7 +78,7 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
           ) : entries && entries.length > 0 ? (
             <div className="space-y-2">
               {entries.slice(0, 2).map((entry) => (
-                <div key={entry.id} className="p-3 bg-neutral-50 rounded-lg border border-neutral-100">
+                <div key={entry.id} className="p-2 bg-neutral-50 rounded-lg border border-neutral-100">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs text-neutral-500 flex items-center">
                       <Calendar className="mr-1 h-3 w-3" />

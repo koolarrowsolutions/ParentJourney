@@ -257,12 +257,12 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         </div>
 
         {/* Streamlined Content Layout */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Child-specific entries overview */}
           {childProfiles && childProfiles.length > 0 && (
-            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 animate-bounce-in stagger-3">
-              <h3 className="text-lg font-semibold text-neutral-800 mb-4">Your Children's Journey</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="bg-white rounded-xl border border-neutral-200 shadow-sm p-4 animate-bounce-in stagger-3">
+              <h3 className="text-base font-semibold text-neutral-800 mb-3">Your Children's Journey</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {childProfiles.map((child, index) => (
                   <div key={child.id} className={`animate-pop-in stagger-${index + 4}`}>
                     <ChildEntryOverview child={child} />
@@ -272,8 +272,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             </div>
           )}
           
-          <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 hover-lift animate-pop-fade stagger-5">
-            <h3 className="text-lg font-semibold text-neutral-800 mb-4">Recent Journal Entries</h3>
+          <div className="bg-white rounded-xl border border-neutral-200 shadow-sm p-4 hover-lift animate-pop-fade stagger-5">
+            <h3 className="text-base font-semibold text-neutral-800 mb-3">Recent Journal Entries</h3>
             <RecentEntries />
           </div>
         </div>

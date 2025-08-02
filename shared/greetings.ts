@@ -67,8 +67,7 @@ export function getDailyGreeting(): string {
 }
 
 export function getLoginGreeting(): string {
-  // Rotate through greetings on each login
-  const greeting = greetings[greetingCounter % greetings.length];
-  greetingCounter++;
-  return greeting;
+  // Get a random greeting for each login (different each time)
+  const randomIndex = Math.floor(Math.random() * greetings.length);
+  return greetings[randomIndex];
 }

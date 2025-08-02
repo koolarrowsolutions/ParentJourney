@@ -32,7 +32,7 @@ export function useAuth(): AuthState & { clearLoginStatus: () => void } {
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['/auth/user'],
+    queryKey: ['/api/auth/user'],
     queryFn: checkAuthStatus,
     retry: 1, // Allow one retry for network issues
     refetchOnWindowFocus: true, // Allow refetch on focus to catch state changes
@@ -97,13 +97,13 @@ export function useLogout() {
       localStorage.removeItem('parentjourney_token');
       
       // Call server logout
-      await fetch('/auth/logout', { 
+      await fetch('/api/auth/logout', { 
         method: 'POST',
         credentials: 'include'
       });
       
       // Clear query cache
-      queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
       queryClient.clear(); // Clear all cached data
       
       // Force page reload to ensure clean state

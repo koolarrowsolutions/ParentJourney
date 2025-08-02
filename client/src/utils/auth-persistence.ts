@@ -82,7 +82,7 @@ export async function performLogin(identifier: string, password: string): Promis
     
     console.log('Attempting login with:', { identifier: trimmedIdentifier, mobile: isMobileBrowser });
     
-    const response = await fetch('/auth/login', {
+    const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export async function checkAuthStatus(): Promise<{ success: boolean; user?: any;
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch('/auth/user', {
+    const response = await fetch('/api/auth/user', {
       method: 'GET',
       credentials: 'include',
       headers,

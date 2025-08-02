@@ -134,10 +134,10 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
         setOpen(false);
         
         // Invalidate auth queries and wait for refetch to ensure state is properly updated
-        await queryClient.invalidateQueries({ queryKey: ['/auth/user'] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
         
         // Force immediate refetch to update auth state
-        await queryClient.refetchQueries({ queryKey: ['/auth/user'] });
+        await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
       } else {
         throw new Error(result.error || 'Failed to log in');
       }
@@ -315,23 +315,11 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
                       size="sm"
                       className="text-xs"
                       onClick={() => {
-                        loginForm.setValue('identifier', 'mobile');
-                        loginForm.setValue('password', 'mobile123');
+                        loginForm.setValue('identifier', 'esanjosechicano');
+                        loginForm.setValue('password', '123456');
                       }}
                     >
-                      Fill Mobile User
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="text-xs"
-                      onClick={() => {
-                        loginForm.setValue('identifier', 'testuser');
-                        loginForm.setValue('password', 'password123');
-                      }}
-                    >
-                      Fill Test User
+                      Fill Demo User
                     </Button>
                   </div>
                 </div>

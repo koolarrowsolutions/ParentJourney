@@ -117,7 +117,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         <div className="mb-4 sm:mb-6 lg:mb-8">
           <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
             <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-3">
-              Welcome back to your parenting journey
+              Welcome back to your parenting journey...
             </h2>
             
             {/* Static descriptive text about AI participation */}

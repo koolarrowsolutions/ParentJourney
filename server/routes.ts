@@ -64,6 +64,7 @@ function configureSession(app: Express) {
 
 import { setupAuthRoutes } from "./auth-routes";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { generateAuthToken, validateAuthToken, revokeAuthToken, extractToken } from './auth-token';
 
 // Legacy function - now using imported setupAuthRoutes
 function setupOldAuthRoutes(app: Express) {
@@ -284,6 +285,140 @@ export async function registerRoutes(app: Express): Promise<Server> {
   configureSession(app);
   setupAuthRoutes(app);
   
+  // Map the auth routes to API endpoints
+  app.get('/api/auth/user', async (req, res) => {
+    const userAgent = req.headers['user-agent'] || '';
+    console.log('Auth check - session userId:', req.session?.userId, 'User-Agent:', userAgent.substring(0, 100));
+    
+    // Try session-based auth first
+    if (req.session?.userId) {
+      const user = await storage.getUserById(req.session.userId);
+      if (user) {
+        console.log('Session auth successful for user:', user.username);
+        
+        // Ensure session is properly saved for mobile browsers
+        req.session.save((err) => {
+          if (err) console.error('Session save error:', err);
+        });
+        
+        return res.json({ 
+          success: true, 
+          user: { 
+            id: user.id, 
+            username: user.username,
+            name: user.name, 
+            email: user.email 
+          },
+          hasJustSignedUp: req.session.hasJustSignedUp || false
+        });
+      } else {
+        // Clean up invalid session
+        req.session.destroy((err) => {
+          if (err) console.error('Session destroy error:', err);
+        });
+      }
+    }
+    
+    // Try token-based auth for iframe environments and mobile browser fallback
+    const token = extractToken(req);
+    console.log('Checking token auth, token present:', !!token);
+    
+    if (token) {
+      const tokenData = validateAuthToken(token);
+      if (tokenData) {
+        console.log('Token auth successful for user:', tokenData.username);
+        return res.json({
+          success: true,
+          user: {
+            id: tokenData.userId,
+            username: tokenData.username,
+            name: tokenData.name,
+            email: tokenData.email
+          },
+          hasJustSignedUp: tokenData.hasJustSignedUp,
+          authToken: token // Return token for client persistence
+        });
+      }
+    }
+    
+    console.log('Auth check failed - no valid session or token');
+    res.json({ success: false, user: null });
+  });
+
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { identifier, password } = req.body; // identifier can be username or email
+      const userAgent = req.headers['user-agent'] || '';
+      const isMobileBrowser = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      const isFirefoxMobile = /Firefox.*Mobile/i.test(userAgent);
+      const isEdgeMobile = /Edge.*Mobile/i.test(userAgent);
+      
+      console.log('Login attempt - Mobile:', isMobileBrowser, 'Firefox:', isFirefoxMobile, 'Edge:', isEdgeMobile);
+      
+      if (!identifier || !password) {
+        return res.status(400).json({ error: 'Username/email and password are required' });
+      }
+
+      // Find user by email or username
+      const user = await storage.getUserByEmailOrUsername(identifier);
+      if (!user) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Verify password
+      const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!passwordMatch) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Generate auth token for iframe and mobile browser environments
+      const authToken = generateAuthToken(user.id, user.username, user.name, user.email, false);
+      console.log('Generated auth token for user:', user.username);
+
+      // Set session
+      req.session.userId = user.id;
+      req.session.hasJustSignedUp = false;
+      
+      // Enhanced session saving for mobile browsers with fallback
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error('Session save error during login:', saveErr);
+        }
+        
+        console.log('Login successful for user:', user.username, 'Mobile browser:', isMobileBrowser);
+        
+        res.json({ 
+          success: true, 
+          message: 'Login successful',
+          user: { id: user.id, username: user.username, name: user.name, email: user.email },
+          authToken: authToken // Include token for iframe/mobile fallback
+        });
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ error: 'Login failed' });
+    }
+  });
+
+  app.post('/api/auth/logout', (req, res) => {
+    console.log('Logout request - session userId:', req.session?.userId);
+    
+    // Revoke auth token if present
+    const token = extractToken(req);
+    if (token) {
+      revokeAuthToken(token);
+    }
+    
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Session destroy error:', err);
+        return res.status(500).json({ error: 'Failed to logout' });
+      }
+      console.log('Logout successful - session destroyed');
+      res.json({ success: true, message: 'Logged out successfully' });
+    });
+  });
+
   // Add a test route to verify auth is working
   app.get('/api/test-auth', (req, res) => {
     res.json({ session: req.session, userId: req.session?.userId });

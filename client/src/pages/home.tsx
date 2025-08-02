@@ -19,6 +19,7 @@ import { WellnessProgressRing } from "@/components/wellness-progress-ring";
 
 import { OnboardingFlow } from "@/components/onboarding-flow";
 import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
+import { authenticatedFetch } from "@/utils/api-client";
 
 import type { ChildProfile, JournalEntry } from "@shared/schema";
 
@@ -48,9 +49,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
     queryFn: async () => {
-      const response = await fetch("/api/journal-stats", {
-        credentials: 'include'
-      });
+      const response = await authenticatedFetch("/api/journal-stats");
       if (!response.ok) throw new Error("Failed to fetch stats");
       return response.json();
     },
@@ -59,9 +58,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const { data: childProfiles } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
     queryFn: async () => {
-      const response = await fetch("/api/child-profiles", {
-        credentials: 'include'
-      });
+      const response = await authenticatedFetch("/api/child-profiles");
       if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },
@@ -70,9 +67,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const { data: entries } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal-entries"],
     queryFn: async () => {
-      const response = await fetch("/api/journal-entries", {
-        credentials: 'include'
-      });
+      const response = await authenticatedFetch("/api/journal-entries");
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },

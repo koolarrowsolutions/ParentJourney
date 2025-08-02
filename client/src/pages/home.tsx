@@ -278,9 +278,14 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           {/* Child-specific entries overview */}
           {childProfiles && childProfiles.length > 0 && (
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-3 animate-bounce-in stagger-3">
-              <h3 className="text-sm font-semibold text-blue-800 mb-2 flex items-center">
-                👶 Your Children's Journey
-              </h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-blue-800 flex items-center">
+                  👶 Your Children's Journey
+                </h3>
+                <div className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                  💡 Regular reflections help you notice patterns in moods and needs
+                </div>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 {childProfiles.map((child, index) => (
                   <div key={child.id} className={`animate-pop-in stagger-${index + 4}`}>

@@ -37,7 +37,7 @@ export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginCo
       />
       
       {/* Modal */}
-      <Card className="relative mx-4 w-full max-w-md animate-in slide-in-from-top-4 fade-in-0 duration-500 shadow-2xl">
+      <Card className="relative mx-4 w-full max-w-md animate-in slide-in-from-top-4 fade-in-0 duration-500 shadow-2xl animate-out fade-out-0 duration-1000" style={{ animationDelay: '6s' }}>
         <CardContent className="p-6">
           {/* Close button */}
           <button

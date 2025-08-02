@@ -126,10 +126,8 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       const result = await performLogin(data.identifier, data.password);
 
       if (result.success) {
-        toast({
-          title: "Login Successful!",
-          description: "Welcome back to ParentJourney!",
-        });
+        // Note: Login success feedback is now handled by LoginConfirmationModal
+        // which appears at the top center with rotating parenting quotes
         loginForm.reset();
         
         // Close dialog first to avoid visual issues

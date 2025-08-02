@@ -39,8 +39,7 @@ function AppRouter() {
     hasJustLoggedIn: auth.hasJustLoggedIn
   });
   
-  // Additional debugging for login modal visibility
-  console.log('Login modal should be visible:', auth.hasJustLoggedIn);
+
 
   // Manual login test function
   const testLogin = async () => {
@@ -117,21 +116,7 @@ function AppRouter() {
         userName={auth.user?.name || auth.user?.username}
       />
       
-      {/* Temporary test button */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 right-4 z-[10000]">
-          <button 
-            className="bg-red-500 text-white p-2 rounded text-xs"
-            onClick={() => {
-              console.log('Test button clicked - triggering login modal');
-              localStorage.setItem('parentjourney_just_logged_in', 'true');
-              window.location.reload();
-            }}
-          >
-            Test Login Modal
-          </button>
-        </div>
-      )}
+
     </>
   );
 }

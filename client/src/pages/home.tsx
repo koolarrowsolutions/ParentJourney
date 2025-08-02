@@ -31,12 +31,7 @@ interface JournalStats {
   longestStreak: number;
 }
 
-interface HomeProps {
-  triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
-  onProfileAccessAttempt?: () => boolean;
-}
-
-export default function Home({ triggerSignUpPrompt }: HomeProps) {
+export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
   
@@ -99,15 +94,15 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       return true; // Block the action, onboarding will show
     }
     
-    // Otherwise use the original trigger function
-    return triggerSignUpPrompt ? triggerSignUpPrompt(trigger) : false;
+    // No external trigger function available in simplified setup
+    return false;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 w-full">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full">
         {/* Welcome Section */}
         <div className="mb-4 sm:mb-6 lg:mb-8">
           <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">

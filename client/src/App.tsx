@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SignUpPrompt } from "@/components/signup-prompt";
 import { OnboardingTour } from "@/components/onboarding-tour";
-import { useOnboarding } from "@/hooks/use-onboarding";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginConfirmationModal } from "@/components/login-confirmation-modal";
 import Home from "@/pages/home";
@@ -18,15 +17,6 @@ import JournalHistory from "@/pages/journal-history";
 import { Community } from "@/pages/community";
 
 function AppRouter() {
-  const {
-    showSignUpPrompt,
-    setShowSignUpPrompt,
-    showTour,
-    signUpTrigger,
-    handleSignUp,
-    handleTourComplete,
-    triggerSignUpPrompt
-  } = useOnboarding();
 
   const auth = useAuth();
   
@@ -76,48 +66,28 @@ function AppRouter() {
 
   // Expose test functions globally for debugging
   (window as any).testLogin = testLogin;
-  (window as any).simulateMobile = () => {
-    // Override user agent detection for testing
-    Object.defineProperty(navigator, 'userAgent', {
-      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
-      writable: false
-    });
-    console.log('Mobile simulation enabled - refresh page to see mobile features');
-  };
 
   return (
     <>
+      {/* Show login confirmation modal for successful logins */}
+      {auth.hasJustLoggedIn && (
+        <LoginConfirmationModal 
+          isVisible={true}
+          onClose={auth.clearLoginStatus}
+          userName={auth.user?.name || auth.user?.username}
+        />
+      )}
+      
       <Switch>
-        <Route path="/" component={() => <Home triggerSignUpPrompt={triggerSignUpPrompt} />} />
-        <Route path="/analytics" component={() => <Analytics triggerSignUpPrompt={triggerSignUpPrompt} />} />
+        <Route path="/" component={Home} />
+        <Route path="/analytics" component={Analytics} />
         <Route path="/milestones" component={Milestones} />
-        <Route path="/settings" component={() => <Settings triggerSignUpPrompt={triggerSignUpPrompt} />} />
-        <Route path="/child-entries" component={ChildEntries} />
-        <Route path="/journal-history" component={() => <JournalHistory triggerSignUpPrompt={triggerSignUpPrompt} />} />
+        <Route path="/settings" component={Settings} />
+        <Route path="/child/:childId" component={ChildEntries} />
+        <Route path="/journal-history" component={JournalHistory} />
         <Route path="/community" component={Community} />
         <Route component={NotFound} />
       </Switch>
-      
-      <SignUpPrompt
-        isOpen={showSignUpPrompt}
-        onClose={() => setShowSignUpPrompt(false)}
-        onSignUp={handleSignUp}
-        trigger={signUpTrigger}
-      />
-      
-      <OnboardingTour
-        isOpen={showTour}
-        onClose={handleTourComplete}
-      />
-      
-      <LoginConfirmationModal
-        isVisible={auth.hasJustLoggedIn}
-        onClose={auth.clearLoginStatus}
-        userName={auth.user?.name || auth.user?.username}
-      />
-      
-
-
     </>
   );
 }

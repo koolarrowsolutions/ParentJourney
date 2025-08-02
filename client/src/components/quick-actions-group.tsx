@@ -28,13 +28,13 @@ export function QuickActionsGroup({ selectedMood, triggerSignUpPrompt }: QuickAc
             Hover over any action for more details
           </p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Write Reflection - More specific title */}
           <Dialog open={showJournalDialog} onOpenChange={setShowJournalDialog}>
             <DialogTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-auto p-3 sm:p-4 flex flex-col items-center justify-center space-y-1 sm:space-y-2 border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press relative group"
+                className="h-auto p-4 flex flex-col items-center justify-center space-y-2 border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press relative group min-h-[80px] w-full"
               >
                 <PenTool className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 <div className="text-center">
@@ -67,7 +67,7 @@ export function QuickActionsGroup({ selectedMood, triggerSignUpPrompt }: QuickAc
             <DialogTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-auto p-3 sm:p-4 flex flex-col items-center justify-center space-y-1 sm:space-y-2 border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press relative group"
+                className="h-auto p-4 flex flex-col items-center justify-center space-y-2 border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press relative group min-h-[80px] w-full"
               >
                 <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                 <div className="text-center">
@@ -97,7 +97,7 @@ export function QuickActionsGroup({ selectedMood, triggerSignUpPrompt }: QuickAc
             trigger={
               <Button 
                 variant="outline" 
-                className="h-auto p-3 sm:p-4 flex flex-col items-center justify-center space-y-1 sm:space-y-2 border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press relative group"
+                className="h-auto p-4 flex flex-col items-center justify-center space-y-2 border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press relative group min-h-[80px] w-full"
               >
                 <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 <div className="text-center">
@@ -118,7 +118,7 @@ export function QuickActionsGroup({ selectedMood, triggerSignUpPrompt }: QuickAc
             trigger={
               <Button 
                 variant="outline" 
-                className="h-auto p-3 sm:p-4 flex flex-col items-center justify-center space-y-1 sm:space-y-2 border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press relative group"
+                className="h-auto p-4 flex flex-col items-center justify-center space-y-2 border-neutral-200 hover:border-primary hover:bg-primary/5 hover-lift button-press relative group min-h-[80px] w-full"
               >
                 <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 <div className="text-center">

@@ -147,7 +147,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
         <Button
           onClick={() => setIsOpen(true)}
           className={cn(
-            "fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-50 animate-bounce-in",
+            "fixed bottom-6 left-6 w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-50 animate-bounce-in",
             className
           )}
         >

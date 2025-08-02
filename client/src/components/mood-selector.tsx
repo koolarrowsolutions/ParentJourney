@@ -30,17 +30,17 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
 
   return (
     <>
-      <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible">
-        <CardContent className="p-3 sm:p-4">
+      <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible w-full">
+        <CardContent className="p-4 sm:p-6">
           {/* Mobile: Stack layout, Desktop: Horizontal layout */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-            <div className="flex items-center space-x-3 flex-1">
-              <Heart className="text-blue-600 h-5 w-5 flex-shrink-0" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 sm:space-x-4">
+            <div className="flex items-center space-x-4 flex-1">
+              <Heart className="text-blue-600 h-6 w-6 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight mb-2">
                   How are you really doing today?
                 </h3>
-                <p className="text-gray-600 text-xs sm:text-sm leading-tight mt-0.5">
+                <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
                   Take a 2-minute check-in across 10 key areas of your life.
                 </p>
                 <div className="flex items-center mt-1 text-xs text-amber-600 flex-wrap">
@@ -52,10 +52,10 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
               </div>
             </div>
             
-            <div className="flex items-center justify-center sm:justify-end space-x-2 flex-shrink-0">
+            <div className="flex items-center justify-center sm:justify-end space-x-3 flex-shrink-0">
               <Button 
                 onClick={() => setShowCheckIn(true)}
-                className="bg-primary hover:bg-primary/90 text-white font-medium text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition-all hover-scale button-press flex-1 sm:flex-initial"
+                className="bg-primary hover:bg-primary/90 text-white font-medium text-sm px-6 py-3 rounded-lg transition-all hover-scale button-press flex-1 sm:flex-initial"
               >
                 <span className="sm:hidden">📝 Check-In</span>
                 <span className="hidden sm:inline">📝 Begin My Check-In</span>

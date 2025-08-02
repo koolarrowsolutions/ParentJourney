@@ -980,7 +980,7 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         4. Provide age-appropriate developmental insights for each child's current stage
         5. Connect observations to real examples from the parent's writing
         
-        Return your analysis in this exact JSON format. Create one object in the childrenInsights array for each child mentioned:
+        Please provide a JSON response in this exact format. Create one object in the childrenInsights array for each child mentioned:
         {
           "developmentOverview": "Assessment mentioning each child by name with specific examples from journal entries",
           "childrenInsights": [
@@ -1382,16 +1382,37 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         - "When you described [specific challenge], this suggests..."
         - "Your observation about [child's name]'s [specific behavior] indicates..."
         
+        Please provide a JSON response in this exact format:
+        {
+          "personalizedTips": [
+            {
+              "category": "Communication/Routine/Connection/etc",
+              "tip": "Specific actionable tip referencing their journal entries and child's name",
+              "reasoning": "Why this is relevant based on their documented experiences with examples like 'Based on your entry where you mentioned...'",
+              "implementation": "How to implement this specifically with [child's name] and/or [other child's name]"
+            }
+          ]
+        }
+        
         Make tips practical, evidence-based, and deeply tailored to their actual family dynamics and documented experiences.
       `,
       
       "considerations": `
-        Suggest important parenting concepts for reflection in JSON format:
+        Suggest important parenting concepts for reflection based on this family's specific situation:
         
-        Current Context: ${JSON.stringify(contextData)}
-        Parent Profile: ${JSON.stringify(parentProfile || {})}
+        Parent: ${JSON.stringify(parentProfile || {})}
+        Children: ${contextData.childAges.map(child => `${child.name} (${child.age} years old)`).join(', ')}
+        Journal Context: ${JSON.stringify(contextData.recentEntries.map(e => ({ content: e.content, mood: e.mood, createdAt: e.createdAt })))}
         
-        Return JSON with exactly this structure:
+        CRITICAL REQUIREMENTS:
+        1. Base suggestions on their specific journal entries and family dynamics
+        2. Reference their actual parenting experiences when relevant
+        3. Mention children by name (${contextData.childAges.map(c => c.name).join(', ')}) when applicable
+        4. Connect concepts to patterns observed in their journal entries
+        
+        Provide thoughtful, evidence-based concepts that could enhance their specific family situation.
+        
+        Please provide a JSON response with exactly this structure:
         {
           "considerations": [
             {

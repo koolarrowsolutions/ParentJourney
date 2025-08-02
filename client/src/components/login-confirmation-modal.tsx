@@ -10,15 +10,10 @@ interface LoginConfirmationModalProps {
 }
 
 export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginConfirmationModalProps) {
-  const [greeting] = useState(() => {
-    const welcomeMessage = getLoginGreeting();
-    console.log('Login modal greeting:', welcomeMessage);
-    return welcomeMessage;
-  });
+  const [greeting] = useState(() => getLoginGreeting());
 
   useEffect(() => {
     if (isVisible) {
-      console.log('Login confirmation modal is now visible with greeting:', greeting);
       // Auto-close after 5 seconds
       const timer = setTimeout(() => {
         onClose();
@@ -26,7 +21,7 @@ export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginCo
 
       return () => clearTimeout(timer);
     }
-  }, [isVisible, onClose, greeting]);
+  }, [isVisible, onClose]);
 
   if (!isVisible) return null;
 

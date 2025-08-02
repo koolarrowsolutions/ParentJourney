@@ -46,7 +46,7 @@ The application employs a modern full-stack architecture with clear separation b
 - **Developmental Insights**: Age-specific parenting insights based on child development research, personalized by child's selected personality traits.
 - **Child Profile Management**: Comprehensive dialog system for managing multiple child profiles, including age calculation and personality trait selection with periodic update options.
 - **Journal History**: Dedicated screen for viewing past entries, filterable by child, with AI feedback display.
-- **Welcome System**: Expanded from 19 to 50 rotating motivational messages that change on every login (not daily), with static explanatory text emphasizing user participation drives AI personalization.
+- **Welcome System**: Complete three-tier welcome messaging system: (1) Static explanatory text about AI personalization, (2) 50 daily rotating insights, and (3) 50 per-login rotating welcome messages in login confirmation modal positioned at top of screen with 5-second auto-close.
 
 **System Design Choices:**
 - **Frontend**: React 18, Wouter for routing, TanStack Query for server state, React Hook Form with Zod for forms, shadcn/ui for components, Tailwind CSS for styling, date-fns for date handling.

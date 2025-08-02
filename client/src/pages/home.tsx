@@ -9,7 +9,6 @@ import { Award } from "lucide-react";
 import { ChildEntryOverview } from "@/components/child-entry-overview";
 import { MoodSelector } from "@/components/mood-selector";
 import { QuickActionsGroup } from "@/components/quick-actions-group";
-import { getLoginGreeting } from "@shared/greetings";
 import { getDailyInsight } from "@shared/daily-insights";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
@@ -131,7 +130,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
               </p>
             </div>
             
-            <p className="text-sm sm:text-base text-neutral-600 mb-3 sm:mb-4 font-medium">{getLoginGreeting()}</p>
+
             {isLoading ? (
               <div className="space-y-3 sm:space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">

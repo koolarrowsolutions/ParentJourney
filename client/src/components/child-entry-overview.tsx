@@ -30,40 +30,33 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
     : null;
 
   return (
-    <Card className="hover-lift animate-fade-in">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-3">
+    <div className="bg-white/70 rounded-lg border border-blue-100 p-3 hover-lift animate-fade-in">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-              <Baby className="text-primary h-5 w-5" />
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+              <Baby className="text-primary h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-neutral-800">{child.name}</h3>
+              <h3 className="text-sm font-semibold text-neutral-800">{child.name}</h3>
               <p className="text-xs text-neutral-600">
                 {formatAge(child.dateOfBirth)}
-                {child.pronouns && <span className="ml-2">• {child.pronouns}</span>}
               </p>
-              {developmentalStage && (
-                <Badge variant="secondary" className="text-xs mt-1">
-                  {developmentalStage.label} Stage
-                </Badge>
-              )}
             </div>
           </div>
           <Button 
-            variant="outline" 
+            variant="ghost" 
             size="sm" 
             onClick={() => navigate(`/child-entries?childId=${child.id}`)}
-            className="hover-lift button-press"
+            className="text-xs px-2 py-1 h-6"
           >
-            View All <ArrowRight className="ml-1 h-3 w-3" />
+            <ArrowRight className="h-3 w-3" />
           </Button>
         </div>
 
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium text-neutral-700 flex items-center">
-            <BookOpen className="mr-2 h-4 w-4" />
-            Recent Entries
+        <div className="space-y-2">
+          <h4 className="text-xs font-medium text-neutral-600 flex items-center">
+            <BookOpen className="mr-1 h-3 w-3" />
+            Latest
           </h4>
 
           {isLoading ? (
@@ -76,9 +69,9 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
               ))}
             </div>
           ) : entries && entries.length > 0 ? (
-            <div className="space-y-2">
-              {entries.slice(0, 2).map((entry) => (
-                <div key={entry.id} className="p-2 bg-neutral-50 rounded-lg border border-neutral-100">
+            <div className="space-y-1">
+              {entries.slice(0, 1).map((entry) => (
+                <div key={entry.id} className="p-2 bg-white/50 rounded border border-neutral-100">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs text-neutral-500 flex items-center">
                       <Calendar className="mr-1 h-3 w-3" />
@@ -90,28 +83,26 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-neutral-700 line-clamp-2 leading-relaxed">
-                    {entry.content.length > 100 
-                      ? `${entry.content.substring(0, 100)}...` 
+                  <p className="text-xs text-neutral-600 line-clamp-1">
+                    {entry.content.length > 60 
+                      ? `${entry.content.substring(0, 60)}...` 
                       : entry.content
                     }
                   </p>
                 </div>
               ))}
-              {entries.length > 2 && (
+              {entries.length > 1 && (
                 <p className="text-xs text-neutral-500 text-center">
-                  +{entries.length - 2} more entries
+                  +{entries.length - 1} more
                 </p>
               )}
             </div>
           ) : (
-            <div className="text-center py-4">
-              <p className="text-sm text-neutral-500">No entries yet</p>
-              <p className="text-xs text-neutral-400">Start journaling about {child.name}</p>
+            <div className="text-center py-2">
+              <p className="text-xs text-neutral-500">No entries yet</p>
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

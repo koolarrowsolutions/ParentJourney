@@ -257,12 +257,14 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         </div>
 
         {/* Streamlined Content Layout */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Child-specific entries overview */}
           {childProfiles && childProfiles.length > 0 && (
-            <div className="bg-white rounded-xl border border-neutral-200 shadow-sm p-4 animate-bounce-in stagger-3">
-              <h3 className="text-base font-semibold text-neutral-800 mb-3">Your Children's Journey</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-3 animate-bounce-in stagger-3">
+              <h3 className="text-sm font-semibold text-blue-800 mb-2 flex items-center">
+                👶 Your Children's Journey
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 {childProfiles.map((child, index) => (
                   <div key={child.id} className={`animate-pop-in stagger-${index + 4}`}>
                     <ChildEntryOverview child={child} />
@@ -272,8 +274,10 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             </div>
           )}
           
-          <div className="bg-white rounded-xl border border-neutral-200 shadow-sm p-4 hover-lift animate-pop-fade stagger-5">
-            <h3 className="text-base font-semibold text-neutral-800 mb-3">Recent Journal Entries</h3>
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 p-3 hover-lift animate-pop-fade stagger-5">
+            <h3 className="text-sm font-semibold text-emerald-800 mb-2 flex items-center">
+              📖 Recent Journal Entries
+            </h3>
             <RecentEntries />
           </div>
         </div>

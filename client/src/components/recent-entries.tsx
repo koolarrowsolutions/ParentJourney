@@ -53,90 +53,65 @@ export function RecentEntries() {
   };
 
   return (
-    <Card className="shadow-sm border border-neutral-200">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base sm:text-lg md:text-xl font-semibold text-neutral-800 flex items-center">
-            <History className="text-primary mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="hidden sm:inline">📖 {searchQuery ? 'Search Results' : 'Recent Entries'}</span>
-            <span className="sm:hidden">📖 {searchQuery ? 'Search' : 'Recent'}</span>
-          </h3>
+    <div className="bg-white/70 rounded-lg border border-emerald-100">
+        <div className="flex items-center justify-between mb-2">
           {!searchQuery && (
             <Button 
-              variant="link" 
-              className="text-primary hover:text-primary/80 text-xs sm:text-sm font-medium p-0"
+              variant="ghost" 
+              className="text-xs px-2 py-1 h-6 ml-auto"
               onClick={() => setLocation('/journal-history')}
             >
-              <span className="hidden sm:inline">View All</span>
-              <span className="sm:hidden">All</span>
-              <ArrowRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4" />
+              <ArrowRight className="h-3 w-3" />
             </Button>
           )}
         </div>
         
-        {/* Search Bar */}
-        <div className="mb-3">
-          <SearchBar
-            onSearch={setSearchQuery}
-            placeholder="🔍 Search entries by title, content, or mood..."
-            className="w-full"
-          />
-        </div>
 
-        <div className="space-y-3">
+
+        <div className="space-y-2">
           {isLoading ? (
             // Loading skeletons
-            Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="border border-neutral-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <Skeleton className="h-5 w-32" />
-                  <div className="flex items-center space-x-2">
-                    <Skeleton className="h-4 w-6" />
-                    <Skeleton className="h-4 w-12" />
-                  </div>
-                </div>
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-3/4 mb-2" />
-                <div className="flex items-center justify-between">
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-4 w-16" />
-                </div>
+            Array.from({ length: 2 }).map((_, index) => (
+              <div key={index} className="bg-white/50 rounded border border-neutral-100 p-2">
+                <Skeleton className="h-3 w-20 mb-1" />
+                <Skeleton className="h-3 w-full mb-1" />
+                <Skeleton className="h-3 w-3/4" />
               </div>
             ))
           ) : entries && entries.length > 0 ? (
             <>
-              {searchQuery && (
-                <div className="text-sm text-neutral-600 mb-3 p-2 bg-primary/5 rounded-lg border border-primary/10">
-                  📊 Found {entries.length} {entries.length === 1 ? 'entry' : 'entries'} matching "{searchQuery}"
+              {entries.slice(0, 2).map((entry) => (
+                <div key={entry.id} className="bg-white/50 rounded border border-neutral-100 p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-neutral-500">
+                      {format(new Date(entry.createdAt), 'MMM d')}
+                    </span>
+                    {entry.mood && (
+                      <Badge variant="outline" className="text-xs px-1 py-0">
+                        {entry.mood}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-neutral-600 line-clamp-1">
+                    {entry.content.length > 80 
+                      ? `${entry.content.substring(0, 80)}...` 
+                      : entry.content
+                    }
+                  </p>
                 </div>
-              )}
-              {entries.map((entry) => (
-                <JournalEntryCard 
-                  key={entry.id} 
-                  entry={entry}
-                  showChildInfo={true}
-                  childProfiles={childProfiles}
-                />
               ))}
+              {entries.length > 2 && (
+                <p className="text-xs text-neutral-500 text-center">
+                  +{entries.length - 2} more entries
+                </p>
+              )}
             </>
           ) : (
-            <div className="text-center py-8 text-neutral-500">
-              <PenTool className="mx-auto h-12 w-12 mb-4 text-neutral-300" />
-              {searchQuery ? (
-                <>
-                  <p>🔍 No entries found matching "{searchQuery}"</p>
-                  <p className="text-sm">Try adjusting your search terms or browse all entries.</p>
-                </>
-              ) : (
-                <>
-                  <p>📝 No journal entries yet.</p>
-                  <p className="text-sm">✨ Start your parenting journey by writing your first entry above! ✨</p>
-                </>
-              )}
+            <div className="text-center py-2">
+              <p className="text-xs text-neutral-500">No entries yet</p>
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

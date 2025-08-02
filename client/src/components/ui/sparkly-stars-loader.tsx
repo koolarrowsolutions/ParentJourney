@@ -20,7 +20,7 @@ export function SparklyStarsLoader({
 
   return (
     <div className="flex flex-col items-center justify-center py-8">
-      <div className="relative mb-6">
+      <div className="relative mb-8">
         {/* Main central sparkle */}
         <Sparkles 
           className={`${sparkleSize} text-primary animate-pulse`} 

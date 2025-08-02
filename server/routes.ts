@@ -1249,6 +1249,8 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
 
       console.log(`✅ REAL AI ANALYSIS: Processing authenticated user data for ${type}`);
       console.log(`📊 Input data - entries: ${entries?.length || 0}, childProfiles: ${childProfiles?.length || 0}, parentProfile: ${parentProfile ? 'present' : 'missing'}`);
+      console.log(`👶 CHILD PROFILES DEBUG:`, JSON.stringify(childProfiles, null, 2));
+      console.log(`👨‍👩‍👧‍👦 PARENT PROFILE DEBUG:`, JSON.stringify(parentProfile, null, 2));
       
       // Use real user data to generate personalized AI insights
       const analysis = await generateAIAnalysis(type, entries || [], childProfiles || [], parentProfile);
@@ -1284,6 +1286,8 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         return { name: child.name, age };
       }) || []
     };
+
+    console.log(`🔍 CONTEXT DATA DEBUG for ${type}:`, JSON.stringify(contextData, null, 2));
 
     const prompts = {
       "parenting-progress": `

@@ -566,8 +566,8 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
   const insights = [
     {
       id: "parenting-progress",
-      title: "Your Parenting Progress",
-      description: "AI analysis of your growth, patterns, and development based on your journal entries and reflections",
+      title: "Your Growth as a Parent",
+      description: "AI insights on your parenting strengths, patterns, and growth—based on your journal entries and reflections. We'll highlight key moments, trends, and tips you can use today.",
       icon: <TrendingUp className="h-5 w-5" />,
       color: "text-primary",
       bgColor: "bg-primary/5",
@@ -577,8 +577,8 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     },
     {
       id: "child-development",
-      title: "Child Development Patterns", 
-      description: "Insights into each child's growth stages, milestones, and behavioral patterns with personalized guidance for your family",
+      title: "Your Children's Development",
+      description: "Understand your child's developmental stages and behavior trends with personalized guidance just for your family. We'll highlight key moments, trends, and tips you can use today.",
       icon: <Baby className="h-5 w-5" />,
       color: "text-accent",
       bgColor: "bg-accent/5",

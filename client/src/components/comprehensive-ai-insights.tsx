@@ -63,18 +63,42 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     setIsLoading(true);
     
     try {
-      // Get the current auth token to ensure proper authentication
+      // Get the current auth token and verify authentication
       const token = localStorage.getItem('parentjourney_token');
+      const authData = (authUser as any);
+      const hasValidAuth = authData?.success && authData?.user && token;
       
-      if (!token || !isAuthenticated) {
+      console.log(`🔍 DEBUGGING AI Analysis Request:`);
+      console.log(`- Auth user data:`, authData);
+      console.log(`- Token present: ${token ? 'YES' : 'NO'}`);
+      console.log(`- isAuthenticated: ${isAuthenticated}`);
+      console.log(`- hasValidAuth: ${hasValidAuth}`);
+      console.log(`- Available data - entries: ${entries?.length || 0}, children: ${childProfiles?.length || 0}, parent: ${parentProfile ? 'present' : 'missing'}`);
+      
+      if (!hasValidAuth) {
         // Show explainer content for unauthenticated users
-        console.log('No token or not authenticated, showing explainer');
+        console.log('❌ Not authenticated or no token, showing explainer');
         setAnalysisData(getUnauthenticatedExplainer(insightType));
       } else {
+        // Double-check by making a quick auth test first
+        const authTestResponse = await fetch('/api/auth/user', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+        
+        const authTest = await authTestResponse.json();
+        console.log('🔍 Auth test result:', authTest);
+        
+        if (!authTest.success) {
+          console.log('❌ Auth test failed, showing explainer');
+          setAnalysisData(getUnauthenticatedExplainer(insightType));
+          return;
+        }
         // Use actual user data for authenticated users - call real AI API
-        console.log(`Loading REAL AI analysis for: ${insightType}`);
-        console.log(`Auth token present: ${token ? 'YES' : 'NO'}`);
-        console.log(`Available data - entries: ${entries?.length || 0}, children: ${childProfiles?.length || 0}, parent: ${parentProfile ? 'present' : 'missing'}`);
+        console.log(`🚀 Making REAL AI analysis request for: ${insightType}`);
         
         const response = await fetch(`/api/ai-analysis/${insightType}`, {
           method: 'POST',
@@ -91,24 +115,29 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
         });
         
         if (!response.ok) {
-          console.error(`AI analysis API failed: ${response.status} ${response.statusText}`);
+          const errorText = await response.text();
+          console.error(`❌ AI analysis API failed: ${response.status} ${response.statusText} - ${errorText}`);
           throw new Error(`Failed to fetch AI analysis: ${response.statusText}`);
         }
         
         const analysisResult = await response.json();
-        console.log(`✅ SUCCESS: Received REAL AI analysis result:`, analysisResult);
+        console.log(`✅ SUCCESS: Received REAL AI analysis result for ${insightType}:`, analysisResult);
         setAnalysisData(analysisResult);
       }
     } catch (error) {
       console.error('❌ Error fetching AI analysis:', error);
       // Fallback to appropriate content based on auth state
       const token = localStorage.getItem('parentjourney_token');
-      if (token && isAuthenticated) {
+      const authData = (authUser as any);
+      const hasValidAuth = authData?.success && authData?.user && token;
+      
+      if (hasValidAuth) {
         // For authenticated users, try backup local processing
-        console.log('API failed, using local fallback processing');
+        console.log('🔄 API failed, using local fallback processing');
         const userData = getUserSpecificData(insightType, entries || [], childProfiles || [], parentProfile);
         setAnalysisData(userData);
       } else {
+        console.log('🔄 No auth, showing explainer');
         setAnalysisData(getUnauthenticatedExplainer(insightType));
       }
     } finally {

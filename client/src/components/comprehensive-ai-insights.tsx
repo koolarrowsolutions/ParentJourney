@@ -67,19 +67,42 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
         // Show explainer content for unauthenticated users
         setAnalysisData(getUnauthenticatedExplainer(insightType));
       } else {
-        // Use actual user data for authenticated users
+        // Use actual user data for authenticated users - call real API
         console.log(`Loading AI analysis for: ${insightType}`);
-        const userData = getUserSpecificData(insightType, entries || [], childProfiles || [], parentProfile);
-        console.log(`User data structure:`, Object.keys(userData));
-        setAnalysisData(userData);
+        console.log(`Sending real data - entries: ${entries?.length || 0}, children: ${childProfiles?.length || 0}, parent: ${parentProfile ? 'present' : 'missing'}`);
+        
+        const response = await fetch(`/api/ai-analysis/${insightType}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            entries: entries || [],
+            childProfiles: childProfiles || [],
+            parentProfile: parentProfile
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch AI analysis: ${response.statusText}`);
+        }
+        
+        const analysisResult = await response.json();
+        console.log(`Received AI analysis result:`, analysisResult);
+        setAnalysisData(analysisResult);
       }
     } catch (error) {
-      console.error('Error setting AI analysis data:', error);
+      console.error('Error fetching AI analysis:', error);
       // Fallback to appropriate content based on auth state
-      setAnalysisData(isAuthenticated ? 
-        getUserSpecificData(insightType, entries || [], childProfiles || [], parentProfile) : 
-        getUnauthenticatedExplainer(insightType)
-      );
+      if (isAuthenticated) {
+        // For authenticated users, try backup local processing
+        console.log('API failed, using local fallback processing');
+        const userData = getUserSpecificData(insightType, entries || [], childProfiles || [], parentProfile);
+        setAnalysisData(userData);
+      } else {
+        setAnalysisData(getUnauthenticatedExplainer(insightType));
+      }
     } finally {
       setIsLoading(false);
     }

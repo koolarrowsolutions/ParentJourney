@@ -1183,14 +1183,17 @@ Provide your analysis in this exact JSON format:
         return res.status(400).json({ error: "Invalid analysis type" });
       }
 
-      // Use fallback data directly to ensure proper AI Insights display
-      console.log(`DEBUG: Serving fallback data for ${type}`);
-      const analysis = getFallbackAnalysis(type);
-      console.log(`DEBUG: Analysis structure for ${type}:`, Object.keys(analysis));
+      console.log(`DEBUG: Processing real user data for ${type} analysis`);
+      console.log(`DEBUG: Input data - entries: ${entries?.length || 0}, childProfiles: ${childProfiles?.length || 0}, parentProfile: ${parentProfile ? 'present' : 'missing'}`);
+      
+      // Use real user data to generate personalized AI insights
+      const analysis = await generateAIAnalysis(type, entries || [], childProfiles || [], parentProfile);
+      console.log(`DEBUG: Generated analysis structure for ${type}:`, Object.keys(analysis));
       
       res.json(analysis);
     } catch (error) {
       console.error("AI Analysis error:", error);
+      // Only use fallback if there's a critical error
       res.status(500).json({ 
         error: "Failed to generate AI analysis",
         fallback: getFallbackAnalysis(req.params.type)
@@ -1300,9 +1303,53 @@ Provide your analysis in this exact JSON format:
       `
     };
 
-    // Use fallback data for now to ensure proper AI Insights display
-    // TODO: Fix OpenAI API to return correct structured format for each analysis type
-    return getFallbackAnalysis(type);
+    // Generate real AI analysis based on user data
+    try {
+      const prompt = prompts[type as keyof typeof prompts];
+      if (!prompt) {
+        throw new Error(`No prompt defined for analysis type: ${type}`);
+      }
+
+      console.log(`Generating AI analysis for ${type} with ${contextData.entriesCount} entries and ${contextData.childrenCount} children`);
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert parenting coach and child development specialist. Provide personalized, evidence-based insights in the exact JSON format requested."
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+      });
+
+      const aiAnalysis = JSON.parse(response.choices[0].message.content || "{}");
+      
+      // Validate structure and return
+      if (validateAnalysisStructure(aiAnalysis, type)) {
+        console.log(`Successfully generated ${type} analysis with AI`);
+        return aiAnalysis;
+      } else {
+        console.warn(`AI analysis structure invalid for ${type}, using fallback`);
+        return getFallbackAnalysis(type);
+      }
+    } catch (error) {
+      console.error(`Error generating AI analysis for ${type}:`, error);
+      // Return fallback with user context when AI fails
+      const fallback = getFallbackAnalysis(type);
+      
+      // Enhance fallback with some user context
+      if (type === "parenting-progress" && contextData.entriesCount > 0) {
+        fallback.progressOverview = `Based on your ${contextData.entriesCount} journal entries, you're showing consistent engagement in your parenting journey. Your willingness to reflect and document experiences demonstrates strong parental self-awareness.`;
+      }
+      
+      return fallback;
+    }
   }
 
   function validateAnalysisStructure(data: any, type: string): boolean {

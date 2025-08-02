@@ -864,6 +864,88 @@ Remember: You're supporting parents who are doing their best. Validate their eff
     }
   });
 
+  // Daily Check-In endpoint
+  app.post("/api/daily-checkin", requireAuth, async (req, res) => {
+    try {
+      const checkinData = req.body;
+      const userId = req.session.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Convert check-in data to journal entry with AI analysis
+      const content = `Daily Wellness Check-In:
+      
+Energy Level: ${checkinData.energyLevel}
+Patience Level: ${checkinData.patienceLevel}
+Parent-Child Connection: ${checkinData.parentChildConnection}
+Parenting Confidence: ${checkinData.parentingConfidence}
+Self-Care: ${checkinData.parentSelfCare}
+Support System Contact: ${checkinData.supportSystemContact}
+Arguments/Tension: ${checkinData.argumentsOrTension}
+Emotional Regulation: ${checkinData.emotionalRegulation}
+Discipline Style: ${checkinData.disciplineStyle}
+Wins of the Day: ${checkinData.winsOfTheDay}`;
+
+      // Calculate overall mood from check-in data for analytics
+      const moodMapping = {
+        'completely_drained': 1, 'exhausted': 2, 'very_tired': 3, 'tired': 4,
+        'explosive': 1, 'very_short_fuse': 2, 'short_fuse': 3, 'impatient': 4,
+        'completely_disconnected': 1, 'very_distant': 2, 'distant': 3, 'strained': 4,
+        'completely_lost': 1, 'very_doubting': 2, 'doubting': 3, 'unsure': 4,
+        'completely_neglected': 1, 'very_neglected': 2, 'neglected': 3, 'minimal': 4,
+        'completely_isolated': 1, 'very_isolated': 2, 'isolated': 3, 'limited': 4,
+        'constant_conflict': 1, 'frequent_arguments': 2, 'some_tension': 3, 'occasional_disagreements': 4,
+        'completely_overwhelmed': 1, 'very_overwhelmed': 2, 'overwhelmed': 3, 'struggled': 4,
+        'very_harsh': 1, 'too_harsh': 2, 'harsh': 3, 'strict': 4,
+        'very_rough_day': 1, 'rough_day': 2, 'challenging_day': 3, 'few_bright_spots': 4,
+        'okay': 5, 'neutral': 5, 'managed': 5, 'some_wins': 5,
+        'good': 6, 'mostly_patient': 6, 'somewhat_confident': 6, 'good_moments': 6,
+        'energetic': 7, 'patient': 7, 'close': 7, 'confident': 7, 'great_moments': 7,
+        'vibrant': 8, 'zen': 8, 'deeply_bonded': 8, 'very_empowered': 8, 'absolutely_amazing': 8,
+        'firm_but_fair': 6, 'gentle': 7, 'kind': 7, 'loving_guide': 8,
+        'adequate': 5, 'some_self_care': 6, 'good_self_care': 7, 'prioritized_myself': 8,
+        'some_connection': 5, 'regular_contact': 6, 'good_support': 7, 'strong_network': 8,
+        'handled_well': 6, 'balanced': 7, 'completely_centered': 8
+      };
+
+      const scores = Object.values(checkinData).map(value => moodMapping[value] || 5);
+      const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+      
+      // Map average score to mood
+      let mood = 'neutral';
+      if (averageScore >= 7.5) mood = 'joyful';
+      else if (averageScore >= 6.5) mood = 'content';
+      else if (averageScore >= 5.5) mood = 'hopeful';
+      else if (averageScore >= 4.5) mood = 'neutral';
+      else if (averageScore >= 3.5) mood = 'tired';
+      else if (averageScore >= 2.5) mood = 'stressed';
+      else if (averageScore >= 1.5) mood = 'frustrated';
+      else mood = 'overwhelmed';
+
+      // Create journal entry
+      const entryData = {
+        title: `Daily Check-In - ${new Date().toLocaleDateString()}`,
+        content,
+        mood,
+        aiAnalyzedMood: mood,
+        userId
+      };
+
+      const entry = await storage.createJournalEntry(entryData);
+      res.status(201).json({ 
+        message: "Daily check-in saved successfully",
+        entry,
+        mood,
+        averageScore: Math.round(averageScore * 10) / 10
+      });
+    } catch (error) {
+      console.error("Error saving daily check-in:", error);
+      res.status(500).json({ message: "Failed to save daily check-in" });
+    }
+  });
+
   // AI Analysis endpoints
   app.post("/api/ai-analysis/:type", async (req, res) => {
     try {

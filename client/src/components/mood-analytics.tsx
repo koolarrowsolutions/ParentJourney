@@ -78,16 +78,17 @@ export function MoodAnalytics() {
 
     const filteredEntries = entries.filter(entry => {
       const entryDate = new Date(entry.createdAt);
-      return entryDate >= startDate && entryDate <= endDate && entry.mood;
+      return entryDate >= startDate && entryDate <= endDate && (entry.mood || entry.aiAnalyzedMood);
     });
 
     if (filteredEntries.length === 0) return null;
 
-    // Count moods
+    // Count moods (prioritize AI analyzed mood over user selected mood)
     const moodCounts: { [key: string]: number } = {};
     filteredEntries.forEach(entry => {
-      if (entry.mood) {
-        moodCounts[entry.mood] = (moodCounts[entry.mood] || 0) + 1;
+      const mood = entry.aiAnalyzedMood || entry.mood;
+      if (mood) {
+        moodCounts[mood] = (moodCounts[mood] || 0) + 1;
       }
     });
 
@@ -100,10 +101,11 @@ export function MoodAnalytics() {
     const dailyMoods: { [key: string]: { [mood: string]: number } } = {};
 
     filteredEntries.forEach(entry => {
-      if (entry.mood) {
+      const mood = entry.aiAnalyzedMood || entry.mood;
+      if (mood) {
         const day = format(new Date(entry.createdAt), 'yyyy-MM-dd');
         if (!dailyMoods[day]) dailyMoods[day] = {};
-        dailyMoods[day][entry.mood] = (dailyMoods[day][entry.mood] || 0) + 1;
+        dailyMoods[day][mood] = (dailyMoods[day][mood] || 0) + 1;
       }
     });
 
@@ -122,11 +124,12 @@ export function MoodAnalytics() {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 7);
     
-    let streakMood = recentEntries[0]?.mood || "";
+    let streakMood = recentEntries[0]?.aiAnalyzedMood || recentEntries[0]?.mood || "";
     let streakDays = 0;
     
     for (const entry of recentEntries) {
-      if (entry.mood === streakMood) {
+      const entryMood = entry.aiAnalyzedMood || entry.mood;
+      if (entryMood === streakMood) {
         streakDays++;
       } else {
         break;

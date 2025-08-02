@@ -26,7 +26,7 @@ export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginCo
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-8">
+    <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-8">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/20 backdrop-blur-sm animate-in fade-in-0 duration-300"

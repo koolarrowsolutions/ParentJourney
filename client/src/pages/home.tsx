@@ -13,7 +13,7 @@ import { getDailyInsight } from "@shared/daily-insights";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { ComprehensiveAIInsights } from "@/components/comprehensive-ai-insights";
-import { LoginSuccessPopup } from "@/components/login-success-popup";
+
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { WellnessProgressRing } from "@/components/wellness-progress-ring";
 
@@ -36,7 +36,6 @@ interface HomeProps {
 export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
-  const [showLoginSuccess, setShowLoginSuccess] = useState<boolean>(false);
   
   const {
     parentProfile,
@@ -79,22 +78,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     },
   });
 
-  // Show login success popup on first visit or significant achievements
-  useEffect(() => {
-    if (stats && !shouldShowOnboarding) {
-      const hasSeenPopupToday = localStorage.getItem(`loginSuccess-${new Date().toDateString()}`);
-      
-      // Show popup if they have meaningful progress and haven't seen it today
-      if (!hasSeenPopupToday && (stats.totalEntries > 0 || stats.longestStreak > 0)) {
-        setShowLoginSuccess(true);
-        localStorage.setItem(`loginSuccess-${new Date().toDateString()}`, 'true');
-      }
-    }
-  }, [stats, shouldShowOnboarding]);
+  // Login success popup disabled - using LoginConfirmationModal instead
 
-  const handleCloseLoginSuccess = () => {
-    setShowLoginSuccess(false);
-  };
+  // Login success popup disabled - using LoginConfirmationModal instead
 
   // Enhanced trigger function that includes onboarding check
   const enhancedTriggerSignUpPrompt = (trigger: 'save' | 'bookmark' | 'export' | 'settings') => {
@@ -313,16 +299,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         />
       )}
 
-      {/* Show login success popup */}
-      {showLoginSuccess && stats && (
-        <LoginSuccessPopup
-          totalEntries={stats.totalEntries}
-          weekEntries={stats.weekEntries}
-          longestStreak={stats.longestStreak}
-          recentMoodTrend="stable"
-          onClose={handleCloseLoginSuccess}
-        />
-      )}
+      {/* Login success popup disabled - using LoginConfirmationModal instead */}
     </div>
   );
 }

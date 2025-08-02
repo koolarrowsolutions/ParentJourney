@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import { History, ArrowRight, Bot, PenTool, Baby, GraduationCap, Edit2, Trash2, MoreHorizontal } from "lucide-react";
 import { SearchBar } from "@/components/search-bar";
 import { EditEntryDialog } from "@/components/edit-entry-dialog";
@@ -10,6 +11,7 @@ import { DeleteEntryDialog } from "@/components/delete-entry-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { JournalEntryCard } from "@/components/journal-entry-card";
 import { useLocation } from "wouter";
+import { format } from "date-fns";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
 
 export function RecentEntries() {

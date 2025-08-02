@@ -86,8 +86,10 @@ The application employs a modern full-stack architecture with clear separation b
 **AI Analysis & UX Improvements (August 2025):**
 - Replaced circular loading indicators with animated sparkly stars loader for AI analysis, reflecting AI-powered insights
 - Enhanced AI analysis prompts to include child-specific insights using actual names and journal examples
-- Improved parenting progress analysis to reference specific journal content and real experiences
-- Updated child development patterns to display individual child insights with personalized recommendations
-- Modified AI analysis structure to show each child individually with age-appropriate developmental guidance
+- Improved parenting progress analysis to reference specific journal content and real experiences (mentions children by name, references specific journal entries like cooking activities, reading habits, etc.)
+- Updated child development patterns to display individual child insights with personalized recommendations using actual user data
+- Modified AI analysis structure to show each child individually with age-appropriate developmental guidance based on real journal content
 - Added SparklyStarsLoader component with animated floating sparkles for better AI feedback representation
 - Enhanced modular structure in child development modal matching parenting progress modal design
+- Fixed AI analysis prompts to consistently use actual user data, children's names, and specific journal examples instead of generic responses
+- Increased AI token limits and improved JSON response format handling for more detailed personalized insights

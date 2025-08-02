@@ -16,6 +16,9 @@ import Settings from "@/pages/settings";
 import ChildEntries from "@/pages/child-entries";
 import JournalHistory from "@/pages/journal-history";
 import { Community } from "@/pages/community";
+import AdminDashboard from "@/pages/admin";
+import Checkout from "@/pages/checkout";
+import PaymentDemo from "@/pages/payment-demo";
 
 function AppRouter() {
   const {
@@ -95,6 +98,9 @@ function AppRouter() {
         <Route path="/child-entries" component={ChildEntries} />
         <Route path="/journal-history" component={() => <JournalHistory triggerSignUpPrompt={triggerSignUpPrompt} />} />
         <Route path="/community" component={Community} />
+        <Route path="/admin" component={AdminDashboard} />
+        <Route path="/checkout" component={Checkout} />
+        <Route path="/payment-demo" component={PaymentDemo} />
         <Route component={NotFound} />
       </Switch>
       

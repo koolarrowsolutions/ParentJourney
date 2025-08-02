@@ -1712,6 +1712,135 @@ Provide your analysis in this exact JSON format:
     }
   });
 
+  // Stripe payment routes
+  app.post("/api/create-payment-intent", async (req, res) => {
+    try {
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ 
+          message: "Stripe not configured. Please set STRIPE_SECRET_KEY environment variable." 
+        });
+      }
+
+      const Stripe = (await import("stripe")).default;
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: "2023-10-16",
+      });
+
+      const { amount } = req.body;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round((amount || 9.99) * 100), // Convert to cents
+        currency: "usd",
+      });
+      res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error: any) {
+      res
+        .status(500)
+        .json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // PayPal routes
+  const { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } = await import("./paypal");
+
+  app.get("/paypal/setup", async (req, res) => {
+      await loadPaypalDefault(req, res);
+  });
+
+  app.post("/paypal/order", async (req, res) => {
+    // Request body should contain: { intent, amount, currency }
+    await createPaypalOrder(req, res);
+  });
+
+  app.post("/paypal/order/:orderID/capture", async (req, res) => {
+    await capturePaypalOrder(req, res);
+  });
+
+  // Admin middleware
+  const requireAdmin = (req: any, res: any, next: any) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    
+    // For now, let's make the existing user an admin for testing
+    // In production, you'd check the user's role from the database
+    if (req.session.userId === 'bf67f7b6-1143-4fb3-bbef-662f1fe83d50') {
+      return next();
+    }
+    
+    return res.status(403).json({ message: "Admin access required" });
+  };
+
+  // Admin routes
+  app.get("/api/admin/stats", requireAdmin, async (req, res) => {
+    try {
+      const stats = await storage.getAdminStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  app.get("/api/admin/users", requireAdmin, async (req, res) => {
+    try {
+      const searchTerm = req.query.search as string;
+      const users = await storage.getAllUsers(searchTerm);
+      
+      // Add total entries count for each user
+      const usersWithStats = await Promise.all(users.map(async (user) => {
+        storage.setCurrentUser(user.id);
+        const stats = await storage.getJournalStats();
+        return {
+          ...user,
+          totalEntries: stats.totalEntries
+        };
+      }));
+      
+      res.json(usersWithStats);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.post("/api/admin/grant-access", requireAdmin, async (req, res) => {
+    try {
+      const { userId, months } = req.body;
+      if (!userId || !months) {
+        return res.status(400).json({ message: "userId and months are required" });
+      }
+      
+      const user = await storage.grantFreeAccess(userId, months);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ message: "Free access granted successfully", user });
+    } catch (error) {
+      console.error("Error granting free access:", error);
+      res.status(500).json({ message: "Failed to grant free access" });
+    }
+  });
+
+  app.post("/api/admin/add-note", requireAdmin, async (req, res) => {
+    try {
+      const { userId, note } = req.body;
+      if (!userId || !note) {
+        return res.status(400).json({ message: "userId and note are required" });
+      }
+      
+      const user = await storage.addAdminNote(userId, note);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ message: "Note added successfully", user });
+    } catch (error) {
+      console.error("Error adding admin note:", error);
+      res.status(500).json({ message: "Failed to add admin note" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

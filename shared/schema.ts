@@ -47,9 +47,18 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
+  role: varchar("role", { length: 50 }).default("user").notNull(), // user, admin, support
   familyId: varchar("family_id").references(() => families.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  lastLoginAt: timestamp("last_login_at"),
+  subscriptionStatus: varchar("subscription_status", { length: 50 }).default("free").notNull(), // free, active, cancelled, past_due
+  subscriptionEndDate: timestamp("subscription_end_date"),
+  stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
+  stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
+  paypalSubscriptionId: varchar("paypal_subscription_id", { length: 255 }),
+  adminNotes: text("admin_notes"),
+  freeAccessGrantedUntil: timestamp("free_access_granted_until"),
 });
 
 // User notification settings

@@ -47,11 +47,15 @@ The application employs a modern full-stack architecture with clear separation b
 - **Child Profile Management**: Comprehensive dialog system for managing multiple child profiles, including age calculation and personality trait selection with periodic update options.
 - **Journal History**: Dedicated screen for viewing past entries, filterable by child, with AI feedback display.
 - **Welcome System**: Complete three-tier welcome messaging system: (1) Static explanatory text about AI personalization, (2) 50 daily rotating insights, and (3) 50 per-login rotating welcome messages in login confirmation modal positioned at top of screen with 5-second auto-close.
+- **Payment Processing**: Complete dual payment system supporting Stripe and PayPal Express with flexible pricing configuration, subscription management, and payment intent handling.
+- **Admin Dashboard**: Full administrative interface with user management, subscription handling, payment oversight, analytics dashboard, and customer support tools including free access grants and admin notes.
 
 **System Design Choices:**
 - **Frontend**: React 18, Wouter for routing, TanStack Query for server state, React Hook Form with Zod for forms, shadcn/ui for components, Tailwind CSS for styling, date-fns for date handling.
 - **Backend**: Express.js, PostgreSQL with Drizzle ORM, Zod for shared validation schemas, RESTful API design.
 - **Database Schema**: Extended family-centric schema including `families`, `parent_profiles`, `community_posts`, `community_comments`, `child_profiles`, and `journal_entries` tables, designed for relationship tracking and detailed data storage.
+- **Payment Integration**: Dual payment system supporting both Stripe and PayPal Express checkout with flexible pricing configuration.
+- **Admin Dashboard**: Comprehensive administrative interface for user management, subscription handling, payment processing, and platform analytics.
 
 ## External Dependencies
 

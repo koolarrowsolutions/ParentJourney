@@ -73,6 +73,20 @@ export interface IStorage {
   updateUserPassword(id: string, passwordHash: string): Promise<User | undefined>;
   updateUserEmail(id: string, email: string): Promise<User | undefined>;
   
+  // Admin functions
+  getAllUsers(searchTerm?: string): Promise<User[]>;
+  getAdminStats(): Promise<{
+    totalUsers: number;
+    activeSubscriptions: number;
+    monthlyRevenue: number;
+    newUsersThisMonth: number;
+    churnRate: number;
+  }>;
+  grantFreeAccess(userId: string, months: number): Promise<User | undefined>;
+  addAdminNote(userId: string, note: string): Promise<User | undefined>;
+  updateUserRole(userId: string, role: string): Promise<User | undefined>;
+  updateUserSubscriptionStatus(userId: string, status: string, endDate?: Date): Promise<User | undefined>;
+  
   // Notification settings
   getUserNotificationSettings(userId: string): Promise<UserNotificationSettings | undefined>;
   createUserNotificationSettings(settings: InsertUserNotificationSettings): Promise<UserNotificationSettings>;
@@ -522,6 +536,15 @@ export class MemStorage implements IStorage {
     const newUser: User = {
       ...user,
       familyId: user.familyId ?? null,
+      role: user.role ?? "user",
+      lastLoginAt: null,
+      subscriptionStatus: user.subscriptionStatus ?? "free",
+      subscriptionEndDate: null,
+      stripeCustomerId: null,
+      stripeSubscriptionId: null,
+      paypalSubscriptionId: null,
+      adminNotes: null,
+      freeAccessGrantedUntil: null,
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -590,6 +613,96 @@ export class MemStorage implements IStorage {
 
   async deleteUserNotificationSettings(userId: string): Promise<boolean> {
     return this.userNotificationSettings.delete(userId);
+  }
+
+  // Admin methods
+  async getAllUsers(searchTerm?: string): Promise<User[]> {
+    const users = Array.from(this.users.values());
+    if (!searchTerm) return users;
+    
+    const term = searchTerm.toLowerCase();
+    return users.filter(user => 
+      user.name.toLowerCase().includes(term) ||
+      user.email.toLowerCase().includes(term) ||
+      user.username.toLowerCase().includes(term)
+    );
+  }
+
+  async getAdminStats(): Promise<{
+    totalUsers: number;
+    activeSubscriptions: number;
+    monthlyRevenue: number;
+    newUsersThisMonth: number;
+    churnRate: number;
+  }> {
+    const users = Array.from(this.users.values());
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const totalUsers = users.length;
+    const activeSubscriptions = users.filter(u => u.subscriptionStatus === 'active').length;
+    const newUsersThisMonth = users.filter(u => u.createdAt >= monthStart).length;
+    
+    return {
+      totalUsers,
+      activeSubscriptions,
+      monthlyRevenue: activeSubscriptions * 9.99, // Mock pricing
+      newUsersThisMonth,
+      churnRate: 2.5 // Mock churn rate
+    };
+  }
+
+  async grantFreeAccess(userId: string, months: number): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (user) {
+      const endDate = new Date();
+      endDate.setMonth(endDate.getMonth() + months);
+      
+      user.subscriptionStatus = 'active';
+      user.freeAccessGrantedUntil = endDate;
+      user.updatedAt = new Date();
+      
+      this.users.set(userId, user);
+      return user;
+    }
+    return undefined;
+  }
+
+  async addAdminNote(userId: string, note: string): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (user) {
+      const timestamp = new Date().toISOString();
+      const newNote = `[${timestamp}] ${note}`;
+      user.adminNotes = user.adminNotes ? `${user.adminNotes}\n${newNote}` : newNote;
+      user.updatedAt = new Date();
+      
+      this.users.set(userId, user);
+      return user;
+    }
+    return undefined;
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.role = role;
+      user.updatedAt = new Date();
+      this.users.set(userId, user);
+      return user;
+    }
+    return undefined;
+  }
+
+  async updateUserSubscriptionStatus(userId: string, status: string, endDate?: Date): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.subscriptionStatus = status;
+      user.subscriptionEndDate = endDate || null;
+      user.updatedAt = new Date();
+      this.users.set(userId, user);
+      return user;
+    }
+    return undefined;
   }
 }
 

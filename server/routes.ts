@@ -1422,10 +1422,12 @@ Provide your analysis in this exact JSON format:
         return res.status(401).json({ message: "User not authenticated" });
       }
       
+      // Filter out timestamp fields from request body to avoid type errors
+      const { createdAt, updatedAt, id, ...cleanData } = req.body;
+      
       const settingsData = {
         userId: userId,
-        ...req.body,
-        updatedAt: new Date() // Fix timestamp issue
+        ...cleanData
       };
       
       // Check if settings already exist
@@ -1433,7 +1435,7 @@ Provide your analysis in this exact JSON format:
       
       let settings;
       if (existingSettings) {
-        settings = await storage.updateUserNotificationSettings(userId, req.body);
+        settings = await storage.updateUserNotificationSettings(userId, cleanData);
       } else {
         settings = await storage.createUserNotificationSettings(settingsData);
       }

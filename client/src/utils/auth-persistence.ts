@@ -24,6 +24,21 @@ export function storeAuthData(authData: Partial<AuthData>): void {
   console.log('Stored auth data:', data);
 }
 
+// Set login flag to trigger modal
+export function setLoginFlag(): void {
+  localStorage.setItem('parentjourney_just_logged_in', 'true');
+}
+
+// Check and clear login flag
+export function checkAndClearLoginFlag(): boolean {
+  const flag = localStorage.getItem('parentjourney_just_logged_in');
+  if (flag === 'true') {
+    localStorage.removeItem('parentjourney_just_logged_in');
+    return true;
+  }
+  return false;
+}
+
 // Retrieve authentication data if still valid (within 24 hours)
 export function getStoredAuthData(): AuthData | null {
   try {
@@ -92,6 +107,9 @@ export async function performLogin(identifier: string, password: string): Promis
         localStorage.setItem('parentjourney_token', result.authToken);
         console.log('Stored auth token for API requests');
       }
+      
+      // Set login flag to trigger modal
+      setLoginFlag();
       
       return { 
         success: true, 

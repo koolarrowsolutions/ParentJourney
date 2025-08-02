@@ -14,16 +14,19 @@ export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginCo
 
   useEffect(() => {
     if (isVisible) {
-      // Auto-close after 5 seconds
+      console.log('Login confirmation modal showing with message:', greeting);
+      // Auto-close after 7 seconds with fade effect
       const timer = setTimeout(() => {
         onClose();
-      }, 5000);
+      }, 7000);
 
       return () => clearTimeout(timer);
     }
-  }, [isVisible, onClose]);
+  }, [isVisible, onClose, greeting]);
 
   if (!isVisible) return null;
+
+  console.log('LoginConfirmationModal rendering with:', { isVisible, userName, greeting });
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-8">
@@ -67,7 +70,7 @@ export function LoginConfirmationModal({ isVisible, onClose, userName }: LoginCo
             {/* Auto-close indicator */}
             <div className="flex items-center justify-center space-x-2 text-xs text-neutral-400">
               <div className="w-2 h-2 bg-neutral-300 rounded-full animate-pulse" />
-              <span>Auto-closing in 5 seconds</span>
+              <span>Auto-closing in 7 seconds</span>
             </div>
           </div>
         </CardContent>

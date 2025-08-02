@@ -120,9 +120,13 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             </h2>
             
             {/* Static descriptive text about AI participation */}
-            <div className="bg-blue-50/50 border border-blue-200/50 rounded-lg p-3 sm:p-4 mb-4">
-              <p className="text-xs sm:text-sm text-blue-800 leading-relaxed">
-                <strong>Your engagement powers personalized insights:</strong> Every journal entry, mood check-in, and milestone you track is analyzed by our AI to provide real-time feedback on your growth as a parent, your child's development, and personalized suggestions for what's working well and areas to focus on. The more you participate, the more tailored and valuable your insights become.
+            <div className="bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-300 rounded-lg p-4 mb-4 shadow-sm">
+              <p className="text-sm font-semibold text-blue-900 text-center leading-tight">
+                <span className="inline-flex items-center">
+                  ✨ <strong className="mx-1">Your active participation fuels personalized AI insights</strong> ✨
+                </span>
+                <br />
+                <span className="text-blue-700 font-normal">Every entry you share helps our AI provide tailored feedback on your parenting journey and child's development.</span>
               </p>
             </div>
             

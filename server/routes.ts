@@ -27,13 +27,8 @@ function configureSession(app: Express) {
     // Allow credentials for all mobile browsers
     res.header('Access-Control-Allow-Credentials', 'true');
     
-    // Set origin based on environment
-    if (origin) {
-      res.header('Access-Control-Allow-Origin', origin);
-    } else {
-      // Fallback for mobile browsers that don't send origin header
-      res.header('Access-Control-Allow-Origin', '*');
-    }
+    // Set origin based on environment - for local development
+    res.header('Access-Control-Allow-Origin', req.headers.origin || 'http://localhost:5000');
     
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie, Set-Cookie');
@@ -54,7 +49,7 @@ function configureSession(app: Express) {
       secure: false, // Never secure in development
       httpOnly: false, // Allow JavaScript access for mobile compatibility
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'none' // Required for mobile cross-origin compatibility
+      sameSite: 'lax' // Changed from 'none' for better browser compatibility
     },
     name: 'parentjourney.sid', // Custom cookie name
     // Force session store to handle mobile browser quirks

@@ -384,7 +384,7 @@ export function EnhancedNotificationSettings() {
             <div className="flex items-center gap-2 sm:gap-3 mb-2">
               <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
               <Label className="font-medium text-blue-900 text-sm sm:text-base">SMS Notifications</Label>
-              <Badge variant="outline" className="text-xs bg-amber-100 text-amber-800 border-amber-300">FREE (Limited)</Badge>
+              <Badge variant="outline" className="text-xs bg-green-100 text-green-800 border-green-300">$0.005/SMS</Badge>
             </div>
             
             <div className="space-y-2 sm:space-y-3">
@@ -505,7 +505,7 @@ export function EnhancedNotificationSettings() {
             <ul className="text-xs sm:text-sm text-blue-800 space-y-1 leading-relaxed">
               <li>• <strong>Email notifications</strong> work reliably on all mobile devices (FREE via Brevo)</li>
               <li>• <strong>Browser notifications</strong> are recommended for desktop users (FREE)</li>
-              <li>• <strong>SMS notifications</strong> available FREE but limited by region (1 per day)</li>
+              <li>• <strong>SMS notifications</strong> available at $0.005 per message (reliable delivery)</li>
               <li>• Consider adding your email for the best mobile experience</li>
             </ul>
           </div>

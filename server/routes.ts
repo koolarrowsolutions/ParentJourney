@@ -1591,38 +1591,71 @@ Provide your analysis in this exact JSON format:
           }
           
           try {
-            // Free SMS via TextBelt (1 per day)
-            const smsResponse = await fetch('https://textbelt.com/text', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                phone: recipient,
-                message: 'ParentJourney Test: Your FREE SMS notifications are working! This free service provides 1 test SMS per day. For unlimited alerts, enable browser notifications.',
-                key: 'textbelt' // Free key - 1 SMS per day
-              })
-            });
-
-            const smsData = await smsResponse.json();
+            // Check for MessageBird API key first (reliable, $0.005/SMS)
+            const messageBirdKey = process.env.MESSAGEBIRD_API_KEY;
             
-            if (smsData.success) {
-              result = { 
-                success: true, 
-                message: `✅ FREE SMS sent to ${recipient}! (TextBelt: 1 SMS/day free limit - Message ID: ${smsData.textId})`
-              };
-            } else {
-              const errorMessage = smsData.error || 'Unknown error';
-              if (errorMessage.includes('disabled for this country') || errorMessage.includes('abuse')) {
+            if (messageBirdKey) {
+              // MessageBird SMS - Reliable delivery
+              const smsResponse = await fetch('https://rest.messagebird.com/messages', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `AccessKey ${messageBirdKey}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  recipients: [recipient],
+                  originator: 'ParentJourney',
+                  body: 'ParentJourney Test: Your SMS notifications are working perfectly! Reliable delivery via MessageBird at just $0.005 per message.',
+                })
+              });
+
+              const messageBirdData = await smsResponse.json();
+              
+              if (smsResponse.ok) {
                 result = { 
-                  success: false, 
-                  message: `Free SMS unavailable in your region due to service restrictions. Browser notifications work great as a free alternative!`
+                  success: true, 
+                  message: `✅ SMS sent to ${recipient}! (MessageBird: $0.005/SMS - ID: ${messageBirdData.id})`
                 };
               } else {
                 result = { 
                   success: false, 
-                  message: `SMS delivery failed: ${errorMessage}. Try browser notifications for unlimited alerts.`
+                  message: `MessageBird SMS failed: ${messageBirdData.errors?.[0]?.description || 'Unknown error'}`
                 };
+              }
+            } else {
+              // Fallback to TextBelt free service
+              const smsResponse = await fetch('https://textbelt.com/text', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  phone: recipient,
+                  message: 'ParentJourney Test: Your FREE SMS notifications are working! This free service provides 1 test SMS per day. For unlimited alerts, enable browser notifications.',
+                  key: 'textbelt' // Free key - 1 SMS per day
+                })
+              });
+
+              const smsData = await smsResponse.json();
+              
+              if (smsData.success) {
+                result = { 
+                  success: true, 
+                  message: `✅ FREE SMS sent to ${recipient}! (TextBelt: 1 SMS/day free limit - Message ID: ${smsData.textId})`
+                };
+              } else {
+                const errorMessage = smsData.error || 'Unknown error';
+                if (errorMessage.includes('disabled for this country') || errorMessage.includes('abuse')) {
+                  result = { 
+                    success: false, 
+                    message: `Free SMS unavailable in your region. For reliable SMS delivery, add a MessageBird API key (costs only $0.005 per SMS). Browser notifications work great as a free alternative!`
+                  };
+                } else {
+                  result = { 
+                    success: false, 
+                    message: `SMS delivery failed: ${errorMessage}. Try browser notifications for unlimited alerts.`
+                  };
+                }
               }
             }
           } catch (error) {

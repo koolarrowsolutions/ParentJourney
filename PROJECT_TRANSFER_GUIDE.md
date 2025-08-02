@@ -116,7 +116,29 @@ npm run db:push
 ```
 
 ### 4. Configure Environment Variables
-Set up the required secrets in Replit's environment variables panel.
+Set up the required secrets in Replit's environment variables panel:
+
+#### Required for Core Features:
+- `DATABASE_URL` (automatically provided by Replit)
+
+#### Optional API Keys:
+- `OPENAI_API_KEY` - For AI insights and mood analysis
+- `BREVO_API_KEY` - For FREE email notifications (300/day)
+- `MESSAGEBIRD_API_KEY` - For reliable SMS ($0.005/SMS)
+
+**Brevo Setup (FREE Email):**
+1. Create account at brevo.com
+2. Go to SMTP & API → API Keys
+3. Generate new API key
+4. Verify sender email address
+5. Add `BREVO_API_KEY` to Replit Secrets
+
+**MessageBird Setup (Affordable SMS):**
+1. Create account at messagebird.com  
+2. Go to Developer → API Keys
+3. Copy your Live API Key
+4. Add `MESSAGEBIRD_API_KEY` to Replit Secrets
+5. Cost: Half a cent per SMS
 
 ### 5. Start Development Server
 ```bash
@@ -153,9 +175,9 @@ npm run dev
 - User interaction and engagement
 
 ### Notification System
-- Email notifications (requires SendGrid)
-- SMS notifications (requires Twilio)
-- Browser notifications
+- Email notifications (FREE via Brevo API - 300/day)
+- SMS notifications (MessageBird API $0.005/SMS with TextBelt fallback)
+- Browser notifications for desktop users
 - Daily reminder settings
 - Weekly progress notifications
 
@@ -227,7 +249,7 @@ After setting up in new account:
 - All core features are implemented and functional
 - FREE email notification system working via Brevo API (verified working)
 - Browser notifications implemented for desktop users
-- FREE SMS notifications via TextBelt API (1/day, region-limited)
+- SMS notifications via MessageBird API ($0.005/SMS) with TextBelt fallback
 - AI insights require OpenAI API key
 - Database schema is stable and tested
 

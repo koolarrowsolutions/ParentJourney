@@ -1173,9 +1173,15 @@ Provide your analysis in this exact JSON format:
     }
   });
 
-  // AI Analysis routes for comprehensive insights
+  // AI Analysis routes for comprehensive insights - authentication required
   app.post("/api/ai-analysis/:type", async (req, res) => {
     try {
+      // Check authentication first
+      if (!req.isAuthenticated()) {
+        console.log('AI Analysis: Authentication required');
+        return res.status(401).json({ error: "Authentication required for AI analysis" });
+      }
+
       const { type } = req.params;
       const { entries, childProfiles, parentProfile } = req.body;
 
@@ -1183,16 +1189,16 @@ Provide your analysis in this exact JSON format:
         return res.status(400).json({ error: "Invalid analysis type" });
       }
 
-      console.log(`DEBUG: Processing real user data for ${type} analysis`);
-      console.log(`DEBUG: Input data - entries: ${entries?.length || 0}, childProfiles: ${childProfiles?.length || 0}, parentProfile: ${parentProfile ? 'present' : 'missing'}`);
+      console.log(`✅ REAL AI ANALYSIS: Processing authenticated user data for ${type}`);
+      console.log(`📊 Input data - entries: ${entries?.length || 0}, childProfiles: ${childProfiles?.length || 0}, parentProfile: ${parentProfile ? 'present' : 'missing'}`);
       
       // Use real user data to generate personalized AI insights
       const analysis = await generateAIAnalysis(type, entries || [], childProfiles || [], parentProfile);
-      console.log(`DEBUG: Generated analysis structure for ${type}:`, Object.keys(analysis));
+      console.log(`🎯 Generated REAL AI analysis for ${type}:`, Object.keys(analysis));
       
       res.json(analysis);
     } catch (error) {
-      console.error("AI Analysis error:", error);
+      console.error("❌ AI Analysis error:", error);
       // Only use fallback if there's a critical error
       res.status(500).json({ 
         error: "Failed to generate AI analysis",

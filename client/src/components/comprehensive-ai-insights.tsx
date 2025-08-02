@@ -63,18 +63,24 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     setIsLoading(true);
     
     try {
-      if (!isAuthenticated) {
+      // Get the current auth token to ensure proper authentication
+      const token = localStorage.getItem('parentjourney_token');
+      
+      if (!token || !isAuthenticated) {
         // Show explainer content for unauthenticated users
+        console.log('No token or not authenticated, showing explainer');
         setAnalysisData(getUnauthenticatedExplainer(insightType));
       } else {
-        // Use actual user data for authenticated users - call real API
-        console.log(`Loading AI analysis for: ${insightType}`);
-        console.log(`Sending real data - entries: ${entries?.length || 0}, children: ${childProfiles?.length || 0}, parent: ${parentProfile ? 'present' : 'missing'}`);
+        // Use actual user data for authenticated users - call real AI API
+        console.log(`Loading REAL AI analysis for: ${insightType}`);
+        console.log(`Auth token present: ${token ? 'YES' : 'NO'}`);
+        console.log(`Available data - entries: ${entries?.length || 0}, children: ${childProfiles?.length || 0}, parent: ${parentProfile ? 'present' : 'missing'}`);
         
         const response = await fetch(`/api/ai-analysis/${insightType}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           credentials: 'include',
           body: JSON.stringify({
@@ -85,17 +91,19 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
         });
         
         if (!response.ok) {
+          console.error(`AI analysis API failed: ${response.status} ${response.statusText}`);
           throw new Error(`Failed to fetch AI analysis: ${response.statusText}`);
         }
         
         const analysisResult = await response.json();
-        console.log(`Received AI analysis result:`, analysisResult);
+        console.log(`✅ SUCCESS: Received REAL AI analysis result:`, analysisResult);
         setAnalysisData(analysisResult);
       }
     } catch (error) {
-      console.error('Error fetching AI analysis:', error);
+      console.error('❌ Error fetching AI analysis:', error);
       // Fallback to appropriate content based on auth state
-      if (isAuthenticated) {
+      const token = localStorage.getItem('parentjourney_token');
+      if (token && isAuthenticated) {
         // For authenticated users, try backup local processing
         console.log('API failed, using local fallback processing');
         const userData = getUserSpecificData(insightType, entries || [], childProfiles || [], parentProfile);

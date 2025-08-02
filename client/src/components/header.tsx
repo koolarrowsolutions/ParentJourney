@@ -10,8 +10,8 @@ export function Header() {
   const logout = useLogout();
 
   return (
-    <header className="bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-50 animate-pop-fade w-full">
-      <div className="w-full px-2 sm:px-4 lg:px-6">
+    <header className="bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-50 animate-pop-fade">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
             <Link href="/">

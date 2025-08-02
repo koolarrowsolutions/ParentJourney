@@ -30,10 +30,7 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
     : null;
 
   return (
-    <div 
-      className="bg-white/70 rounded-lg border border-blue-100 p-3 hover-lift animate-fade-in cursor-pointer hover:bg-white/90 hover:border-blue-200 transition-all duration-200"
-      onClick={() => navigate(`/child-entries?childId=${child.id}`)}
-    >
+    <div className="bg-white/70 rounded-lg border border-blue-100 p-3 hover-lift animate-fade-in">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
@@ -46,10 +43,14 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-primary">
-            <span className="text-xs font-medium">View Full Journal</span>
-            <ArrowRight className="h-4 w-4" />
-          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate(`/child-entries?childId=${child.id}`)}
+            className="text-xs px-2 py-1 h-6"
+          >
+            <ArrowRight className="h-3 w-3" />
+          </Button>
         </div>
 
         <div className="space-y-2">
@@ -82,20 +83,18 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
                       </Badge>
                     )}
                   </div>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-neutral-500 italic">
-                      Tap to view entry
-                    </p>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  </div>
+                  <p className="text-xs text-neutral-600 line-clamp-1">
+                    {entry.content.length > 60 
+                      ? `${entry.content.substring(0, 60)}...` 
+                      : entry.content
+                    }
+                  </p>
                 </div>
               ))}
               {entries.length > 1 && (
-                <div className="flex justify-center mt-2">
-                  <div className="bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs px-3 py-1 rounded-full flex items-center gap-1 transition-colors">
-                    <span>🔍 View all {entries.length} entries</span>
-                  </div>
-                </div>
+                <p className="text-xs text-neutral-500 text-center">
+                  +{entries.length - 1} more
+                </p>
               )}
             </div>
           ) : (

@@ -538,7 +538,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
   return (
     <>
-      <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-4 animate-pop-fade">
+      <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-4 animate-pop-fade w-full">
         <h3 className="text-lg font-semibold text-neutral-800 mb-3 flex items-center">
           <Sparkles className="mr-2 h-5 w-5 text-primary" />
           AI Insights & Guidance
@@ -546,7 +546,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
         <p className="text-sm text-neutral-600 mb-4">
           Click any card to get personalized insights based on your family's journey
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
           {insights.map((insight) => (
             <div
               key={insight.id}

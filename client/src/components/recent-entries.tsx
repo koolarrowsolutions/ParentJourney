@@ -55,7 +55,7 @@ export function RecentEntries() {
   };
 
   return (
-    <div className="bg-white/70 rounded-lg border border-emerald-100">
+    <div className="bg-white/70 rounded-lg border border-emerald-100 w-full">
         <div className="flex items-center justify-between mb-2">
           {!searchQuery && (
             <Button 

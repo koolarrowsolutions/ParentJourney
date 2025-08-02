@@ -102,7 +102,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 w-full">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full">
+      <main className="w-full px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Welcome Section */}
         <div className="mb-4 sm:mb-6 lg:mb-8">
           <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
@@ -251,7 +251,7 @@ export default function Home() {
           position="bottom"
           persistent={false}
         >
-          <div className="mb-4 sm:mb-6" data-mood-selector>
+          <div className="mb-4 sm:mb-6 w-full" data-mood-selector>
             <MoodSelector />
           </div>
         </OnboardingTooltip>
@@ -264,7 +264,7 @@ export default function Home() {
           position="bottom"
           persistent={false}
         >
-          <div className="mb-4 sm:mb-6" data-ai-insights>
+          <div className="mb-4 sm:mb-6 w-full" data-ai-insights>
             <ComprehensiveAIInsights />
           </div>
         </OnboardingTooltip>
@@ -277,7 +277,7 @@ export default function Home() {
           position="top"
           persistent={false}
         >
-          <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100" data-calm-reset>
+          <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100 w-full" data-calm-reset>
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-emerald-800 font-medium mb-1">
@@ -302,7 +302,7 @@ export default function Home() {
           position="top"
           persistent={false}
         >
-          <div className="mb-4" data-quick-actions>
+          <div className="mb-4 w-full" data-quick-actions>
             <QuickActionsGroup 
               selectedMood={selectedMood} 
               triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
@@ -311,7 +311,7 @@ export default function Home() {
         </OnboardingTooltip>
 
         {/* Streamlined Content Layout */}
-        <div className="space-y-3">
+        <div className="space-y-3 w-full">
           {/* Child-specific entries overview */}
           {childProfiles && childProfiles.length > 0 && (
             <OnboardingTooltip
@@ -321,7 +321,7 @@ export default function Home() {
               position="top"  
               persistent={false}
             >
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-3 animate-bounce-in stagger-3" data-children-journey>
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-3 animate-bounce-in stagger-3 w-full" data-children-journey>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-blue-800 flex items-center">
                     👶 Your Children's Journey
@@ -330,7 +330,7 @@ export default function Home() {
                     💡 Regular reflections help you notice patterns in moods and needs
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 w-full">
                   {childProfiles.map((child, index) => (
                     <div key={child.id} className={`animate-pop-in stagger-${index + 4}`}>
                       <ChildEntryOverview child={child} />
@@ -341,7 +341,7 @@ export default function Home() {
             </OnboardingTooltip>
           )}
           
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 p-3 hover-lift animate-pop-fade stagger-5">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 p-3 hover-lift animate-pop-fade stagger-5 w-full">
             <h3 className="text-sm font-semibold text-emerald-800 mb-2 flex items-center">
               📖 Recent Journal Entries
             </h3>

@@ -980,19 +980,26 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         4. Provide age-appropriate developmental insights for each child's current stage
         5. Connect observations to real examples from the parent's writing
         
-        Provide your analysis in this exact JSON format:
+        Return your analysis in this exact JSON format. Create one object in the childrenInsights array for each child mentioned:
         {
-          "developmentOverview": "Assessment of each child's development mentioning ${childAges.map(c => `${c.name} (${c.age})`).join(' and ')} with specific examples from journal entries showing their unique personalities and growth",
+          "developmentOverview": "Assessment mentioning each child by name with specific examples from journal entries",
           "childrenInsights": [
             {
-              "childName": "${childAges[0]?.name || 'Child'}",
-              "age": "${childAges[0]?.age || 0}",
-              "milestones": ["Specific milestone for this child based on their age and journal mentions"],
-              "focusAreas": ["Development focus area with examples from journal entries"],
-              "recommendations": "Personalized recommendations for ${childAges[0]?.name || 'this child'} based on parent observations"
+              "childName": "Sofia",
+              "age": "7 years old",
+              "milestones": ["Specific milestone based on journal entries"],
+              "focusAreas": ["Development focus with journal examples"],
+              "recommendations": "Personalized recommendations based on observations"
+            },
+            {
+              "childName": "David", 
+              "age": "5 years old",
+              "milestones": ["Specific milestone based on journal entries"],
+              "focusAreas": ["Development focus with journal examples"],
+              "recommendations": "Personalized recommendations based on observations"
             }
           ],
-          "familyDynamics": "How the children interact and how family dynamics show in the journal entries, mentioning each child by name"
+          "familyDynamics": "Family interactions mentioned in journal entries"
         }
         
         Make each child's section deeply personalized using actual journal content and their individual characteristics.`;
@@ -1013,15 +1020,27 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
       
       try {
         const parsedResult = JSON.parse(result || "{}");
+        console.log(`AI Analysis successful for ${type}:`, parsedResult);
         res.json(parsedResult);
       } catch (parseError) {
-        // If JSON parsing fails, return a fallback structure
-        res.json({
-          progressOverview: "Based on your journal entries, you're showing consistent growth in your parenting journey with thoughtful reflection and care for your children's well-being.",
-          strengths: ["Consistent journaling and reflection", "Emotional awareness and growth", "Commitment to child's development"],
-          growthAreas: ["Continue building patience during challenging moments", "Explore new positive reinforcement strategies"],
-          nextSteps: "Keep documenting your experiences, celebrate small wins, and consider trying new approaches that align with your family values."
-        });
+        console.error(`JSON parsing failed for ${type}:`, parseError);
+        console.error(`Raw AI response:`, result);
+        
+        // Return appropriate fallback based on type
+        if (type === "child-development") {
+          res.json({
+            developmentOverview: "Unable to generate personalized child development analysis at this time.",
+            childrenInsights: [],
+            familyDynamics: "Please try again later for detailed family dynamics analysis."
+          });
+        } else {
+          res.json({
+            progressOverview: "Based on your journal entries, you're showing consistent growth in your parenting journey with thoughtful reflection and care for your children's well-being.",
+            strengths: ["Consistent journaling and reflection", "Emotional awareness and growth", "Commitment to child's development"],
+            growthAreas: ["Continue building patience during challenging moments", "Explore new positive reinforcement strategies"],
+            nextSteps: "Keep documenting your experiences, celebrate small wins, and consider trying new approaches that align with your family values."
+          });
+        }
       }
 
     } catch (error) {

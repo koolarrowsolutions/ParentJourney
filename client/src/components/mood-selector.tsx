@@ -31,32 +31,34 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
   return (
     <>
       <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible">
-        <CardContent className="p-3">
-          <div className="flex items-center justify-between">
+        <CardContent className="p-3 sm:p-4">
+          {/* Mobile: Stack layout, Desktop: Horizontal layout */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
             <div className="flex items-center space-x-3 flex-1">
               <Heart className="text-blue-600 h-5 w-5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-bold text-gray-900 leading-tight">
+                <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
                   How are you really doing today?
                 </h3>
-                <p className="text-gray-600 text-xs leading-tight mt-0.5">
+                <p className="text-gray-600 text-xs sm:text-sm leading-tight mt-0.5">
                   Take a 2-minute check-in across 10 key areas of your life.
                 </p>
-                <div className="flex items-center mt-1 text-xs text-amber-600">
+                <div className="flex items-center mt-1 text-xs text-amber-600 flex-wrap">
                   <span className="mr-1">🌟</span>
                   <span className="font-semibold">{streakCount} day streak!</span>
-                  <span className="mx-2 text-gray-400">•</span>
-                  <span className="text-gray-500">Last: {format(lastCompleted, 'MMM d')}</span>
+                  <span className="mx-2 text-gray-400 hidden xs:inline">•</span>
+                  <span className="text-gray-500 ml-2 xs:ml-0">Last: {format(lastCompleted, 'MMM d')}</span>
                 </div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 flex-shrink-0">
+            <div className="flex items-center justify-center sm:justify-end space-x-2 flex-shrink-0">
               <Button 
                 onClick={() => setShowCheckIn(true)}
-                className="bg-primary hover:bg-primary/90 text-white font-medium text-sm px-4 py-2 rounded-lg transition-all hover-scale button-press"
+                className="bg-primary hover:bg-primary/90 text-white font-medium text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition-all hover-scale button-press flex-1 sm:flex-initial"
               >
-                📝 Begin My Check-In
+                <span className="sm:hidden">📝 Check-In</span>
+                <span className="hidden sm:inline">📝 Begin My Check-In</span>
               </Button>
               
               <TooltipWrapper content="See My Past Check-Ins">

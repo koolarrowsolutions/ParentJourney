@@ -104,6 +104,23 @@
     width: 100% !important;
     max-width: 100% !important;
   }
+  
+  /* Override any flex or grid constraints */
+  [class*="grid"], [class*="flex"] {
+    width: 100% !important;
+  }
+  
+  /* Force all card components to full width */
+  [class*="Card"], [class*="card"], .bg-white {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Remove any max-width constraints from containers */
+  .container, [class*="container"] {
+    max-width: none !important;
+    width: 100% !important;
+  }
 
   .line-clamp-2 {
     display: -webkit-box;

@@ -102,7 +102,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 w-full">
       <Header />
       
-      <main className="w-full px-0 py-4 sm:py-6 lg:py-8">
+      <main className="w-full px-0 py-4 sm:py-6 lg:py-8" style={{width: '100vw', maxWidth: '100vw'}}>
         {/* Welcome Section */}
         <div className="mb-4 sm:mb-6 lg:mb-8">
           <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
@@ -243,7 +243,7 @@ export default function Home() {
 
 
 
-        <div className="px-3 sm:px-4 md:px-6 lg:px-8 w-full space-y-6">
+        <div className="px-2 sm:px-3 md:px-4 lg:px-6 w-full space-y-6" style={{width: '100%', maxWidth: '100%'}}>
           {/* Easy Daily Check-In - Between welcome and AI insights */}
           <OnboardingTooltip
             title="Start Your Day with Check-In"
@@ -252,7 +252,7 @@ export default function Home() {
             position="bottom"
             persistent={false}
           >
-            <div data-mood-selector className="w-full">
+            <div data-mood-selector className="w-full" style={{width: '100%', maxWidth: '100%'}}>
               <MoodSelector />
             </div>
           </OnboardingTooltip>
@@ -265,7 +265,7 @@ export default function Home() {
             position="bottom"
             persistent={false}
           >
-            <div data-ai-insights className="w-full">
+            <div data-ai-insights className="w-full" style={{width: '100%', maxWidth: '100%'}}>
               <ComprehensiveAIInsights />
             </div>
           </OnboardingTooltip>
@@ -278,8 +278,8 @@ export default function Home() {
             position="top"
             persistent={false}
           >
-            <div data-calm-reset className="w-full">
-              <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100 w-full">
+            <div data-calm-reset className="w-full" style={{width: '100%', maxWidth: '100%'}}>
+              <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100 w-full" style={{width: '100%', maxWidth: '100%'}}>
                 <div className="flex items-center justify-between w-full">
                   <div className="flex-1">
                     <p className="text-emerald-800 font-medium mb-1">
@@ -303,7 +303,7 @@ export default function Home() {
             position="top"
             persistent={false}
           >
-            <div data-quick-actions className="w-full">
+            <div data-quick-actions className="w-full" style={{width: '100%', maxWidth: '100%'}}>
               <QuickActionsGroup 
                 selectedMood={selectedMood} 
                 triggerSignUpPrompt={enhancedTriggerSignUpPrompt}

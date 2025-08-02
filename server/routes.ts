@@ -207,6 +207,7 @@ function requireAuth(req: any, res: any, next: any) {
   if (req.session?.userId) {
     // Set user context for storage isolation
     storage.setCurrentUser(req.session.userId);
+    req.user = { id: req.session.userId }; // Set req.user for compatibility
     return next();
   }
   
@@ -218,6 +219,10 @@ function requireAuth(req: any, res: any, next: any) {
     if (tokenData) {
       // Set req.user for compatibility with existing code
       req.user = { id: tokenData.userId };
+      // Create a minimal session for compatibility but don't save it
+      if (!req.session) {
+        req.session = {};
+      }
       req.session.userId = tokenData.userId; // Set session for compatibility
       // Set user context for storage isolation
       storage.setCurrentUser(tokenData.userId);

@@ -1646,7 +1646,7 @@ Provide your analysis in this exact JSON format:
                 } else {
                   result = { 
                     success: false, 
-                    message: `MessageBird failed (${errorMsg}) and TextBelt unavailable in your region. Please verify your MessageBird LIVE API key.`
+                    message: `MessageBird failed (${errorMsg}) and TextBelt unavailable in US region. Please create a MessageBird LIVE API key (not Test key) from Developer → API Keys in your dashboard.`
                   };
                 }
               }

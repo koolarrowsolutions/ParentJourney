@@ -40,12 +40,13 @@ The application employs a modern full-stack architecture with clear separation b
 - **AI Mood Analysis**: Automatic mood detection and quantification (1-10 scale) for every journal entry using OpenAI GPT-4o, creating emotional journey maps.
 - **AI-Powered Insights**: OpenAI GPT-4o generates warm, age-appropriate parenting feedback, structured for validation, suggestions, and growth insights.
 - **Milestone Tracking**: Age-appropriate and custom milestone tracking.
-- **Notifications**: FREE email notifications via Brevo API (300/day), browser notifications for desktop users, and affordable SMS via MessageBird API ($0.005/SMS) with TextBelt fallback.
+- **Notifications**: Cost-free notification system with email notifications via Brevo API (300/day) and browser notifications for desktop users. SMS functionality removed entirely to maintain zero-cost approach.
 - **Search**: Advanced multi-filter search by keywords, mood, child, dates, and AI feedback.
 - **Weekly Reflections**: Automated summaries with pattern analysis.
 - **Developmental Insights**: Age-specific parenting insights based on child development research, personalized by child's selected personality traits.
 - **Child Profile Management**: Comprehensive dialog system for managing multiple child profiles, including age calculation and personality trait selection with periodic update options.
 - **Journal History**: Dedicated screen for viewing past entries, filterable by child, with AI feedback display.
+- **Welcome System**: Expanded from 19 to 50 rotating motivational messages that change on every login (not daily), with static explanatory text emphasizing user participation drives AI personalization.
 
 **System Design Choices:**
 - **Frontend**: React 18, Wouter for routing, TanStack Query for server state, React Hook Form with Zod for forms, shadcn/ui for components, Tailwind CSS for styling, date-fns for date handling.

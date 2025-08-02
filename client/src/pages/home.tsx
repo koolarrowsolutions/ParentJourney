@@ -9,7 +9,7 @@ import { Award } from "lucide-react";
 import { ChildEntryOverview } from "@/components/child-entry-overview";
 import { MoodSelector } from "@/components/mood-selector";
 import { QuickActionsGroup } from "@/components/quick-actions-group";
-import { getDailyGreeting } from "@shared/greetings";
+import { getLoginGreeting } from "@shared/greetings";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { ComprehensiveAIInsights } from "@/components/comprehensive-ai-insights";
@@ -115,10 +115,18 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         {/* Welcome Section */}
         <div className="mb-4 sm:mb-6 lg:mb-8">
           <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-3">
               Welcome back to your parenting journey
             </h2>
-            <p className="text-sm sm:text-base text-neutral-600 mb-3 sm:mb-4">{getDailyGreeting()}</p>
+            
+            {/* Static descriptive text about AI participation */}
+            <div className="bg-blue-50/50 border border-blue-200/50 rounded-lg p-3 sm:p-4 mb-4">
+              <p className="text-xs sm:text-sm text-blue-800 leading-relaxed">
+                <strong>Your engagement powers personalized insights:</strong> Every journal entry, mood check-in, and milestone you track is analyzed by our AI to provide real-time feedback on your growth as a parent, your child's development, and personalized suggestions for what's working well and areas to focus on. The more you participate, the more tailored and valuable your insights become.
+              </p>
+            </div>
+            
+            <p className="text-sm sm:text-base text-neutral-600 mb-3 sm:mb-4 font-medium">{getLoginGreeting()}</p>
             {isLoading ? (
               <div className="space-y-3 sm:space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">

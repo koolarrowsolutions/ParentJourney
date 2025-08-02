@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { journalEntryWithAiSchema, type JournalEntryWithAi, type ChildProfile } from "@shared/schema";
 import { getRandomPrompt } from "@shared/prompts";
-import { getDailyGreeting } from "@shared/greetings";
+import { getLoginGreeting } from "@shared/greetings";
 import { getSettings } from "@/utils/settings-storage";
 import { PenTool, Save, Sparkles, Loader2, Bot, Lightbulb, Heart, Star, Baby, Users, GraduationCap, RefreshCw, Camera, X } from "lucide-react";
 import { ChildProfilesDialog } from "./child-profiles-dialog";
@@ -159,7 +159,7 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
   const [showAiFeedback, setShowAiFeedback] = useState(false);
   const [photos, setPhotos] = useState<string[]>([]);
   const [currentPrompt, setCurrentPrompt] = useState<string>(() => getRandomPrompt());
-  const [dailyGreeting] = useState<string>(() => getDailyGreeting());
+  const [loginGreeting] = useState<string>(() => getLoginGreeting());
   const [isCalmResetOpen, setIsCalmResetOpen] = useState(false);
   const [settings] = useState(() => getSettings());
   const { toast } = useToast();

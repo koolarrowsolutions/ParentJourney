@@ -31,60 +31,52 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
   return (
     <>
       <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible">
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <div className="flex items-center">
-              <Heart className="text-blue-600 mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-gray-900">
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 flex-1">
+              <Heart className="text-blue-600 h-5 w-5 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-bold text-gray-900 leading-tight">
                   How are you really doing today?
                 </h3>
-                <p className="text-gray-600 text-xs sm:text-sm">
+                <p className="text-gray-600 text-xs leading-tight mt-0.5">
                   Take a 2-minute check-in across 10 key areas of your life.
                 </p>
-                {/* Streak indicator */}
                 <div className="flex items-center mt-1 text-xs text-amber-600">
                   <span className="mr-1">🌟</span>
                   <span className="font-semibold">{streakCount} day streak!</span>
+                  <span className="mx-2 text-gray-400">•</span>
+                  <span className="text-gray-500">Last: {format(lastCompleted, 'MMM d')}</span>
                 </div>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="flex flex-col items-end space-y-2">
-                <Button 
-                  onClick={() => setShowCheckIn(true)}
-                  className="bg-primary hover:bg-primary/90 text-white font-medium text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition-all hover-scale button-press"
-                >
-                  <Heart className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
-                  📝 Begin My Check-In
-                </Button>
-                
-                {/* Last completed indicator */}
-                <div className="text-xs text-gray-500">
-                  Last completed: {format(lastCompleted, 'MMM d')}
-                </div>
-              </div>
+            
+            <div className="flex items-center space-x-2 flex-shrink-0">
+              <Button 
+                onClick={() => setShowCheckIn(true)}
+                className="bg-primary hover:bg-primary/90 text-white font-medium text-sm px-4 py-2 rounded-lg transition-all hover-scale button-press"
+              >
+                📝 Begin My Check-In
+              </Button>
               
-              <div className="flex flex-col space-y-1">
-                <TooltipWrapper content="See My Past Check-Ins">
-                  <Button 
-                    variant="outline"
-                    onClick={() => setShowAnalytics(!showAnalytics)}
-                    className="border-primary/30 text-primary hover:bg-primary/5 font-medium text-xs sm:text-sm px-2 sm:px-3 py-2 rounded-lg transition-all hover-scale button-press"
-                  >
-                    <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
-                  </Button>
-                </TooltipWrapper>
-                
-                <TooltipWrapper content="See Personalized Suggestions">
-                  <Button 
-                    variant="outline"
-                    className="border-amber-300 text-amber-600 hover:bg-amber-50 font-medium text-xs sm:text-sm px-2 sm:px-3 py-2 rounded-lg transition-all hover-scale button-press"
-                  >
-                    <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
-                  </Button>
-                </TooltipWrapper>
-              </div>
+              <TooltipWrapper content="See My Past Check-Ins">
+                <Button 
+                  variant="outline"
+                  onClick={() => setShowAnalytics(!showAnalytics)}
+                  className="border-primary/30 text-primary hover:bg-primary/5 p-2 rounded-lg transition-all hover-scale button-press"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                </Button>
+              </TooltipWrapper>
+              
+              <TooltipWrapper content="See Personalized Suggestions">
+                <Button 
+                  variant="outline"
+                  className="border-amber-300 text-amber-600 hover:bg-amber-50 p-2 rounded-lg transition-all hover-scale button-press"
+                >
+                  <Sparkles className="h-4 w-4" />
+                </Button>
+              </TooltipWrapper>
             </div>
           </div>
         </CardContent>

@@ -214,13 +214,16 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       const authData = (authUser as any);
       const hasValidAuth = authData?.success && authData?.user && token;
       
-      if (hasValidAuth) {
-        // For authenticated users, try backup local processing
-        console.log('🔄 API failed, using local fallback processing');
+      // Always try to use available user data first, even if API failed
+      const hasUserData = (entries && entries.length > 0) || (childProfiles && childProfiles.length > 0) || parentProfile;
+      
+      if (hasUserData || hasValidAuth) {
+        // For authenticated users or when we have user data, try backup local processing
+        console.log('🔄 API failed, using local fallback processing with user data');
         const userData = getUserSpecificData(insightType, entries || [], childProfiles || [], parentProfile);
         setAnalysisData(userData);
       } else {
-        console.log('🔄 No auth, showing explainer');
+        console.log('🔄 No auth and no user data, showing explainer');
         setAnalysisData(getUnauthenticatedExplainer(insightType));
       }
     } finally {
@@ -475,6 +478,7 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
   // Generate personalized tips from actual user data
   const generatePersonalizedTips = (entries: any[], childProfiles: any[], parentProfile: any) => {
+    const parentName = parentProfile?.name || 'Parent';
     const recentChallenges = entries.slice(0, 5).filter(e => 
       e.content && (e.content.toLowerCase().includes('difficult') || 
                    e.content.toLowerCase().includes('challenge') || 
@@ -482,25 +486,28 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     );
 
     return {
-      tips: [
+      personalizedTips: [
         {
-          category: "Based on Your Recent Entries",
+          category: "Based on Your Journal Patterns",
           tip: recentChallenges.length > 0 
-            ? "I notice you've documented some challenging moments. Consider creating a simple response plan for similar situations."
-            : "Your recent entries show thoughtful reflection. Try documenting what worked well to build on those successes.",
-          reason: "Your journal entries provide valuable insights into what strategies align with your family's needs."
+            ? `${parentName}, I notice you've documented some challenging moments in your recent entries. Consider creating a simple response plan for similar situations with ${childProfiles?.map(c => c.name).join(' and ') || 'your children'}.`
+            : `${parentName}, your recent entries show thoughtful reflection on your parenting journey. Try documenting what worked well with ${childProfiles?.map(c => c.name).join(' and ') || 'your family'} to build on those successes.`,
+          reasoning: `Your ${entries.length} journal entries provide valuable insights into what strategies align with your family's specific needs and dynamics.`,
+          implementation: "Review your last 3 entries and identify one successful approach you can replicate."
         },
         {
-          category: "Child Development",
+          category: "Child-Specific Strategies",
           tip: childProfiles && childProfiles.length > 0 
-            ? `For ${childProfiles[0]?.name || 'your child'} at ${calculateAge(childProfiles[0]?.dateOfBirth)}, focus on age-appropriate independence activities.`
-            : "Create simple routines that support your child's current developmental stage.",
-          reason: "Your child profiles show specific developmental needs that can guide your approach."
+            ? `For ${childProfiles[0]?.name || 'your child'} at ${calculateAge(childProfiles[0]?.dateOfBirth)}, ${parentName}, focus on age-appropriate independence activities that match their current developmental stage.`
+            : `${parentName}, create simple routines that support your child's current developmental stage based on the experiences you've documented.`,
+          reasoning: `Your child profiles and journal entries about ${childProfiles?.map(c => c.name).join(' and ') || 'your children'} show specific developmental needs that can guide your approach.`,
+          implementation: "Choose one small independence skill to practice with them this week."
         },
         {
-          category: "Self-Care",
-          tip: `With ${entries.length} journal entries, you're committed to growth. Now prioritize 10 minutes daily for personal reflection or relaxation.`,
-          reason: "Your journaling shows dedication to family - balancing this with self-care will support your long-term well-being."
+          category: "Self-Care for Parents",
+          tip: `${parentName}, with ${entries.length} journal entries, you're clearly committed to growth and reflection. Now prioritize 10 minutes daily for personal relaxation or mindfulness.`,
+          reasoning: "Your consistent journaling shows dedication to your family - balancing this with self-care will support your long-term well-being and patience.",
+          implementation: "Set a daily 10-minute timer for a personal activity that brings you peace."
         }
       ]
     };
@@ -508,24 +515,27 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
 
   // Generate considerations from user data
   const generateConsiderations = (entries: any[], childProfiles: any[], parentProfile: any) => {
+    const parentName = parentProfile?.name || 'Parent';
+    const childNames = childProfiles?.map(c => c.name).join(' and ') || 'your children';
+    
     return {
       considerations: [
         {
-          title: "Review Your Journal Patterns",
-          description: `With ${entries.length} entries, you might notice recurring themes. What patterns do you see in your most challenging or successful parenting moments?`,
-          actionStep: "Spend a few minutes reviewing your last 5 entries to identify what approaches work best for your family."
+          concept: "Journal Pattern Recognition",
+          description: `${parentName}, with your ${entries.length} documented entries, you might notice recurring themes in your parenting experiences with ${childNames}. What patterns do you see emerging in your most challenging or successful moments?`,
+          importance: `Your consistent documentation provides valuable data about what approaches work best for your specific family dynamics. Based on your entries, you can identify what strategies consistently lead to positive outcomes with ${childNames}.`
         },
         {
-          title: "Child-Specific Approaches",
+          concept: "Individual Child Approaches",
           description: childProfiles && childProfiles.length > 0 
-            ? `Each of your ${childProfiles.length} child${childProfiles.length === 1 ? '' : 'ren'} has unique needs. Are you adapting your parenting style for each personality?`
-            : "Consider how your child's personality traits influence the most effective parenting strategies.",
-          actionStep: "Document what works specifically for each child's personality and developmental stage."
+            ? `${parentName}, each of your ${childProfiles.length} child${childProfiles.length === 1 ? '' : 'ren'} - ${childNames} - has unique needs and personalities. Are you adapting your parenting style to match each of their individual characteristics?`
+            : `${parentName}, consider how your child's unique personality traits, as documented in your journal entries, influence the most effective parenting strategies.`,
+          importance: `Your journal entries about ${childNames} provide insights into their individual responses to different approaches. Tailoring your parenting style to each child's personality can lead to more effective communication and stronger relationships.`
         },
         {
-          title: "Celebrate Your Growth",
-          description: `Your ${entries.length} journal entries show real commitment to conscious parenting. Are you acknowledging your progress and wins?`,
-          actionStep: "Write about three parenting moments you handled well recently - big or small victories count."
+          concept: "Emotional Regulation Modeling",
+          description: `${parentName}, based on your journal reflections, children learn emotional regulation by observing how you handle stress and challenging moments with ${childNames}. How are you modeling healthy coping strategies?`,
+          importance: `Your documented experiences show that when you remain calm during difficult moments, you provide a secure foundation that helps ${childNames} learn to self-regulate over time. Your journal entries can help you identify patterns in your emotional responses.`
         }
       ]
     };

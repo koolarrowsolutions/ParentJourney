@@ -18,6 +18,9 @@ export async function apiRequest(
   const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
+    console.log(`API Request to ${url} with token: ${token.substring(0, 20)}...`);
+  } else {
+    console.log(`API Request to ${url} without token`);
   }
   
   const res = await fetch(url, {
@@ -43,6 +46,9 @@ export const getQueryFn: <T>(options: {
     const headers: Record<string, string> = {};
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
+      console.log(`Query to ${queryKey.join("/")} with token: ${token.substring(0, 20)}...`);
+    } else {
+      console.log(`Query to ${queryKey.join("/")} without token`);
     }
     
     const res = await fetch(queryKey.join("/") as string, {

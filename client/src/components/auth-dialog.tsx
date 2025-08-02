@@ -133,11 +133,22 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
         // Close dialog first to avoid visual issues
         setOpen(false);
         
-        // Invalidate auth queries and wait for refetch to ensure state is properly updated
-        await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        // Invalidate all queries to force fresh data with new token
+        queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/journal-entries'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/child-profiles'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/parent-profile'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/journal-stats'] });
         
-        // Force immediate refetch to update auth state
-        await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
+        // Clear all cache to ensure fresh state
+        console.log('Login successful - clearing cache to reload with new token');
+        queryClient.clear();
+        
+        // Wait a moment, then refetch auth state
+        setTimeout(async () => {
+          await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
+          console.log('Auth state refetched after login');
+        }, 100);
       } else {
         throw new Error(result.error || 'Failed to log in');
       }

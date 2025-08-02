@@ -106,7 +106,16 @@ export async function performLogin(identifier: string, password: string): Promis
       // Store auth token for API requests
       if (result.authToken) {
         localStorage.setItem('parentjourney_token', result.authToken);
-        console.log('Stored auth token for API requests');
+        console.log('Stored auth token for API requests:', result.authToken.substring(0, 20) + '...');
+        
+        // Verify token was stored properly
+        const storedToken = localStorage.getItem('parentjourney_token');
+        console.log('Token verification - stored successfully:', !!storedToken && storedToken === result.authToken);
+        
+        // Token stored successfully - no additional action needed
+        // The auth dialog will handle cache invalidation
+      } else {
+        console.warn('No auth token received in login response');
       }
       
       // Set login flag to trigger modal

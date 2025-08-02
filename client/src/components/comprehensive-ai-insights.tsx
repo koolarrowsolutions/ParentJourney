@@ -492,8 +492,8 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
   const insights = [
     {
       id: "parenting-progress",
-      title: "Your Parenting Progress",
-      description: "AI analysis of your growth, patterns, and development based on your journal entries and reflections",
+      title: "Track Your Growth",
+      description: "See your parenting wins, patterns, and progress over time with AI-powered insights based on your family's unique journey",
       icon: <TrendingUp className="h-5 w-5" />,
       color: "text-primary",
       bgColor: "bg-primary/5",
@@ -503,8 +503,8 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     },
     {
       id: "child-development",
-      title: "Child Development Patterns", 
-      description: "Insights into each child's growth stages, milestones, and behavioral patterns with personalized guidance for your family",
+      title: "Unlock Development Insights", 
+      description: "Get stage-specific guidance on each child's behavior, growth, and milestones — tailored to your family's needs",
       icon: <Baby className="h-5 w-5" />,
       color: "text-accent",
       bgColor: "bg-accent/5",
@@ -514,8 +514,8 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     },
     {
       id: "personalized-tips",
-      title: "Personalized Tips",
-      description: "Custom recommendations based on your parenting style, child's personality, and recent experiences",
+      title: "Get Custom Tips",
+      description: "Receive actionable recommendations based on your parenting style, your child's personality, and recent experiences",
       icon: <Lightbulb className="h-5 w-5" />,
       color: "text-secondary",
       bgColor: "bg-secondary/5",
@@ -525,8 +525,8 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
     },
     {
       id: "considerations",
-      title: "Have You Considered",
-      description: "Three thoughtful suggestions to enhance your parenting journey and family dynamics",
+      title: "Try New Strategies",
+      description: "Discover 3 thoughtful, evidence-informed suggestions to support your parenting and enhance family dynamics",
       icon: <MessageSquare className="h-5 w-5" />,
       color: "text-primary",
       bgColor: "bg-primary/5",
@@ -539,10 +539,13 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
   return (
     <>
       <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-4 animate-pop-fade">
-        <h3 className="text-lg font-semibold text-neutral-800 mb-2 flex items-center">
+        <h3 className="text-lg font-semibold text-neutral-800 mb-3 flex items-center">
           <Sparkles className="mr-2 h-5 w-5 text-primary" />
           AI Insights & Guidance
         </h3>
+        <p className="text-sm text-neutral-600 mb-4">
+          Click any card to get personalized insights based on your family's journey
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {insights.map((insight) => (
             <div
@@ -557,6 +560,9 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
                 <h4 className={`font-medium ${insight.color} flex-1`}>
                   {insight.title}
                 </h4>
+                <div className="text-xs text-neutral-400">
+                  <ArrowRight className="h-3 w-3" />
+                </div>
               </div>
               <p className="text-xs text-neutral-700 leading-relaxed">
                 {insight.description}

@@ -271,27 +271,33 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         {/* Streamlined Content Layout */}
         <div className="space-y-3">
           {/* Child-specific entries overview */}
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 p-3 hover-lift animate-pop-fade stagger-3">
+            <h3 className="text-sm font-semibold text-emerald-800 mb-2 flex items-center">
+              📖 Recent Journal Entries
+            </h3>
+            <p className="text-xs text-emerald-600 mb-3">
+              Your latest reflections and moments - these also appear in your children's profiles below
+            </p>
+            <RecentEntries />
+          </div>
+
           {childProfiles && childProfiles.length > 0 && (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-3 animate-bounce-in stagger-3">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-3 animate-bounce-in stagger-5">
               <h3 className="text-sm font-semibold text-blue-800 mb-2 flex items-center">
                 👶 Your Children's Journey
               </h3>
+              <p className="text-xs text-blue-600 mb-3">
+                Child-specific views of your journal entries and reflections
+              </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 {childProfiles.map((child, index) => (
-                  <div key={child.id} className={`animate-pop-in stagger-${index + 4}`}>
+                  <div key={child.id} className={`animate-pop-in stagger-${index + 6}`}>
                     <ChildEntryOverview child={child} />
                   </div>
                 ))}
               </div>
             </div>
           )}
-          
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 p-3 hover-lift animate-pop-fade stagger-5">
-            <h3 className="text-sm font-semibold text-emerald-800 mb-2 flex items-center">
-              📖 Recent Journal Entries
-            </h3>
-            <RecentEntries />
-          </div>
         </div>
         
 

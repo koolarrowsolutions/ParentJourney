@@ -10,7 +10,7 @@ import { EditEntryDialog } from "@/components/edit-entry-dialog";
 import { DeleteEntryDialog } from "@/components/delete-entry-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { JournalEntryCard } from "@/components/journal-entry-card";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { format } from "date-fns";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
 
@@ -83,29 +83,54 @@ export function RecentEntries() {
           ) : entries && entries.length > 0 ? (
             <>
               {entries.slice(0, 2).map((entry) => (
-                <div key={entry.id} className="bg-white/50 rounded border border-neutral-100 p-2">
+                <div key={entry.id} className="bg-white/50 rounded border border-neutral-100 p-2 group hover:bg-white/80 transition-all cursor-pointer"
+                     onClick={() => setLocation('/journal-history')}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs text-neutral-500">
                       {format(new Date(entry.createdAt), 'MMM d')}
                     </span>
-                    {entry.mood && (
-                      <Badge variant="outline" className="text-xs px-1 py-0">
-                        {entry.mood}
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {(entry.aiAnalyzedMood || entry.mood) && (
+                        <Badge variant="outline" className="text-xs px-1 py-0">
+                          {entry.aiAnalyzedMood || entry.mood}
+                        </Badge>
+                      )}
+                      {entry.childProfileId && childProfiles && (
+                        <div 
+                          className={`w-3 h-3 rounded-full ${
+                            childProfiles.findIndex(c => c.id === entry.childProfileId) % 3 === 0 ? 'bg-blue-400' :
+                            childProfiles.findIndex(c => c.id === entry.childProfileId) % 3 === 1 ? 'bg-purple-400' : 'bg-pink-400'
+                          }`}
+                          title={`Entry for ${childProfiles.find(c => c.id === entry.childProfileId)?.name}`}>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-xs text-neutral-600 line-clamp-1">
-                    {entry.content.length > 80 
-                      ? `${entry.content.substring(0, 80)}...` 
-                      : entry.content
-                    }
+                  <p className="text-xs text-neutral-600 group-hover:text-neutral-700 transition-colors">
+                    <span className="group-hover:hidden">
+                      {entry.content.length > 100 
+                        ? `${entry.content.substring(0, 100)}...` 
+                        : entry.content
+                      }
+                    </span>
+                    <span className="hidden group-hover:block">
+                      {entry.content.length > 200 
+                        ? `${entry.content.substring(0, 200)}...` 
+                        : entry.content
+                      }
+                    </span>
                   </p>
+                  <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs text-emerald-600 font-medium">Read full entry →</span>
+                  </div>
                 </div>
               ))}
               {entries.length > 2 && (
-                <p className="text-xs text-neutral-500 text-center">
-                  +{entries.length - 2} more entries
-                </p>
+                <Link href="/journal-history">
+                  <button className="w-full text-xs text-emerald-600 hover:text-emerald-700 text-center py-2 hover:bg-emerald-50 rounded transition-colors">
+                    See {entries.length - 2} more journal entries
+                  </button>
+                </Link>
               )}
             </>
           ) : (

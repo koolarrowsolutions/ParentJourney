@@ -30,8 +30,11 @@ The application employs a modern full-stack architecture with clear separation b
 - **Wellness Features**: Integrated "Calm Reset Tool" with breathing exercises, guided meditations, and positive affirmations, strategically placed for easy access.
 
 **Technical Implementations & Feature Specifications:**
-- **Daily Check-In System**: Comprehensive 10-category wellness assessment (energy, patience, parent-child connection, etc.) presented through a gallery-style interface with visual progress.
-- **Parent Analytics Dashboard**: Comprehensive trend analysis and visualization of all daily check-in categories, replacing previous "Mood Analytics."
+- **Daily Check-In System**: Comprehensive 10-category wellness assessment (energy, patience, parent-child connection, etc.) presented through a gallery-style interface with visual progress, connected to real data analytics.
+- **Parent Analytics Dashboard**: Comprehensive trend analysis and visualization of all daily check-in categories with real-time streak calculation and wellness scoring based on actual journal entry data.
+- **Enhanced UX Flow**: Reordered home page layout with journal entries displayed first followed by child-specific views, including explanatory text clarifying relationships between sections and visual color-coding system linking journal entries to child profiles.
+- **Interactive Entry Previews**: Hover-to-expand functionality for journal entries showing more content on interaction, with clickable entries leading to full journal history.
+- **Visual Linking System**: Color-coded dots (blue, purple, pink) matching child profiles to their associated journal entries for clear visual relationship mapping.
 - **Authentication**: Streamlined username/email + password system with robust session management and cookie configuration.
 - **Family Support**: Multi-parent family management system supporting up to 4 parents with relationship tracking.
 - **Community Forum**: Integrated posting and commenting system for parent interaction.

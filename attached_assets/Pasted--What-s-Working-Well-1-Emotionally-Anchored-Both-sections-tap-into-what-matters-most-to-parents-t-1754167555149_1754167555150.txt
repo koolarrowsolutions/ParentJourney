@@ -1,0 +1,51 @@
+✅ What’s Working Well
+1. Emotionally Anchored
+Both sections tap into what matters most to parents: their kids and their parenting journey. Showing real journal snippets creates a sense of continuity and reflection.
+
+2. Child Profiles with Age & Journal Preview
+Highlighting each child with age and a short excerpt provides useful at-a-glance context. It invites the user to reflect on each child individually, which is a meaningful differentiator.
+
+3. Clean Design
+Spacing, alignment, and soft pastel colors convey calm and accessibility, which matches the wellness-oriented brand.
+
+🧠 Suggestions for Improvement
+🔁 1. Consider Flipping the Order
+Current order:
+
+Children’s Journey
+
+Recent Journal Entries
+
+But the journal entries often span multiple people or themes — so it might make more sense to lead with the journal, then show how entries relate to each child underneath.
+
+Suggested Order:
+
+Recent Journal Entries (full emotional and narrative context)
+
+Child-Specific Journey Cards (filtered view of entries for each child)
+
+This gives users a more natural reading flow: big picture first, then zoom in.
+
+🧭 2. Clarify the Relationship Between Sections
+Right now, it’s not obvious whether the journal entries shown are also the ones displayed in the children’s journey. A simple label could help:
+
+“These entries are also visible under your child profiles.”
+
+Or use visual linking like colored dots (e.g., blue = Citlalli, purple = Xochitl) beside each journal entry and match it to the child card.
+
+✍️ 3. Expand or Hover to Reveal Full Entries
+The journal excerpts get cut off, which interrupts the emotional rhythm. Consider:
+
+Adding a “Read full entry” hover or tap effect
+
+Allowing for expanded view inline (accordion style)
+
+🧠 4. Label Actions More Clearly
+The “+2 more” under each child and the “+3 more entries” below the journal feel like missed UX opportunities. Those could be more inviting, e.g.:
+
+“View 2 more reflections for Xochitl”
+
+“See 3 more journal entries”
+
+🎯 Bonus Idea: Smart Tagging
+Let users tag entries with emotions, kids, or themes (“stress,” “growth,” “conflict”) — and show these as quick filters. This would turn the journal into an interactive insight hub.

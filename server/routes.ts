@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
 import bcrypt from "bcryptjs";
@@ -282,66 +283,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Configure session and OAuth
   configureSession(app);
-  setupAuthRoutes(app);
   
-  // Map the auth routes to API endpoints
-  app.get('/api/auth/user', async (req, res) => {
-    const userAgent = req.headers['user-agent'] || '';
-    console.log('Auth check - session userId:', req.session?.userId, 'User-Agent:', userAgent.substring(0, 100));
-    
-    // Try session-based auth first
-    if (req.session?.userId) {
-      const user = await storage.getUserById(req.session.userId);
-      if (user) {
-        console.log('Session auth successful for user:', user.username);
-        
-        // Ensure session is properly saved for mobile browsers
-        req.session.save((err) => {
-          if (err) console.error('Session save error:', err);
-        });
-        
-        return res.json({ 
-          success: true, 
-          user: { 
-            id: user.id, 
-            username: user.username,
-            name: user.name, 
-            email: user.email 
-          },
-          hasJustSignedUp: req.session.hasJustSignedUp || false
-        });
-      } else {
-        // Clean up invalid session
-        req.session.destroy((err) => {
-          if (err) console.error('Session destroy error:', err);
-        });
-      }
-    }
-    
-    // Try token-based auth for iframe environments
-    const token = extractToken(req);
-    console.log('Checking token auth, token present:', !!token);
-    
-    if (token) {
-      const tokenData = validateAuthToken(token);
-      if (tokenData) {
-        console.log('Token auth successful for user:', tokenData.username);
-        return res.json({ 
-          success: true, 
-          user: { 
-            id: tokenData.userId, 
-            username: tokenData.username,
-            name: tokenData.name, 
-            email: tokenData.email 
-          },
-          hasJustSignedUp: tokenData.hasJustSignedUp || false
-        });
-      }
-    }
-    
-    console.log('Auth check failed - no valid session or token');
-    return res.status(401).json({ success: false, user: null });
-  });
+  // Setup auth routes with /api prefix mapping
+  const authApp = express();
+  setupAuthRoutes(authApp);
+  app.use('/api', authApp);
 
   app.post('/api/auth/login', async (req, res) => {
     try {

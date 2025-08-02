@@ -18,7 +18,10 @@ import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { WellnessProgressRing } from "@/components/wellness-progress-ring";
 
 import { OnboardingFlow } from "@/components/onboarding-flow";
+import { OnboardingTooltip } from "@/components/onboarding-tooltip";
+import { OnboardingManager } from "@/components/onboarding-manager";
 import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
+import { useOnboarding, homeOnboardingSteps } from "@/hooks/use-onboarding";
 
 import type { ChildProfile, JournalEntry } from "@shared/schema";
 
@@ -36,6 +39,13 @@ interface HomeProps {
 export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
+  
+  // Initialize contextual onboarding tooltips
+  const onboarding = useOnboarding({
+    steps: homeOnboardingSteps,
+    autoStart: false,
+    storageKey: 'home-tooltips-completed'
+  });
   
   const {
     parentProfile,
@@ -239,61 +249,101 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
 
         {/* Easy Daily Check-In - Between welcome and AI insights */}
-        <div className="mb-4 sm:mb-6" data-mood-selector>
-          <MoodSelector />
-        </div>
+        <OnboardingTooltip
+          title="Start Your Day with Check-In"
+          content="Share how you're feeling today. This simple practice helps track your emotional wellness patterns and provides better AI insights."
+          variant="welcome"
+          position="bottom"
+          persistent={false}
+        >
+          <div className="mb-4 sm:mb-6" data-mood-selector>
+            <MoodSelector />
+          </div>
+        </OnboardingTooltip>
 
         {/* AI Insights Section */}
-        <div className="mb-4 sm:mb-6">
-          <ComprehensiveAIInsights />
-        </div>
+        <OnboardingTooltip
+          title="AI-Powered Parenting Guidance"
+          content="These personalized insights are generated from your journal entries. Click any card to dive deeper into specific topics."
+          variant="feature"
+          position="bottom"
+          persistent={false}
+        >
+          <div className="mb-4 sm:mb-6" data-ai-insights>
+            <ComprehensiveAIInsights />
+          </div>
+        </OnboardingTooltip>
 
         {/* Feeling Overwhelmed Element - Enhanced with clearer description */}
-        <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-emerald-800 font-medium mb-1">
-                Feeling overwhelmed today? Take a moment to center yourself.
-              </p>
-              <p className="text-emerald-700 text-sm">
-                Try a 60-second breathing exercise or guided mindfulness tool
-              </p>
+        <OnboardingTooltip
+          title="Quick Stress Relief"
+          content="When parenting feels overwhelming, this tool offers instant access to breathing exercises and mindfulness techniques."
+          variant="tip"
+          position="top"
+          persistent={false}
+        >
+          <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100" data-calm-reset>
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-emerald-800 font-medium mb-1">
+                  Feeling overwhelmed today? Take a moment to center yourself.
+                </p>
+                <p className="text-emerald-700 text-sm">
+                  Try a 60-second breathing exercise or guided mindfulness tool
+                </p>
+              </div>
+              <CalmReset trigger="inline" />
             </div>
-            <CalmReset trigger="inline" />
           </div>
-        </div>
+        </OnboardingTooltip>
 
 
 
         {/* Quick Actions Group */}
-        <div className="mb-4">
-          <QuickActionsGroup 
-            selectedMood={selectedMood} 
-            triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
-          />
-        </div>
+        <OnboardingTooltip
+          title="Quick Actions Hub"
+          content="Fast access to key features like writing entries, viewing analytics, and managing profiles. Hover over each button for specific details."
+          variant="feature"
+          position="top"
+          persistent={false}
+        >
+          <div className="mb-4" data-quick-actions>
+            <QuickActionsGroup 
+              selectedMood={selectedMood} 
+              triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
+            />
+          </div>
+        </OnboardingTooltip>
 
         {/* Streamlined Content Layout */}
         <div className="space-y-3">
           {/* Child-specific entries overview */}
           {childProfiles && childProfiles.length > 0 && (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-3 animate-bounce-in stagger-3">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-blue-800 flex items-center">
-                  👶 Your Children's Journey
-                </h3>
-                <div className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                  💡 Regular reflections help you notice patterns in moods and needs
+            <OnboardingTooltip
+              title="Track Each Child's Journey"
+              content="View recent entries for each child. Click any card to see their full journal history and development insights."
+              variant="feature"
+              position="top"  
+              persistent={false}
+            >
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-3 animate-bounce-in stagger-3" data-children-journey>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-blue-800 flex items-center">
+                    👶 Your Children's Journey
+                  </h3>
+                  <div className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                    💡 Regular reflections help you notice patterns in moods and needs
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {childProfiles.map((child, index) => (
+                    <div key={child.id} className={`animate-pop-in stagger-${index + 4}`}>
+                      <ChildEntryOverview child={child} />
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                {childProfiles.map((child, index) => (
-                  <div key={child.id} className={`animate-pop-in stagger-${index + 4}`}>
-                    <ChildEntryOverview child={child} />
-                  </div>
-                ))}
-              </div>
-            </div>
+            </OnboardingTooltip>
           )}
           
           <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 p-3 hover-lift animate-pop-fade stagger-5">
@@ -309,6 +359,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       
       {/* Floating Parenting Chatbot */}
       <ParentingChatbot />
+      
+      {/* Onboarding Manager for Feature Tours */}
+      <OnboardingManager />
 
 
 

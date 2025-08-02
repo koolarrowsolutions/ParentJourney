@@ -47,6 +47,7 @@ The application employs a modern full-stack architecture with clear separation b
 - **Child Profile Management**: Comprehensive dialog system for managing multiple child profiles, including age calculation and personality trait selection with periodic update options.
 - **Journal History**: Dedicated screen for viewing past entries, filterable by child, with AI feedback display.
 - **Welcome System**: Complete three-tier welcome messaging system: (1) Static explanatory text about AI personalization, (2) 50 daily rotating insights, and (3) 50 per-login rotating welcome messages in login confirmation modal positioned at top of screen with 5-second auto-close.
+- **Contextual Onboarding Tooltips**: Smart tooltip system that provides contextual guidance for new users. Features include persistent and hover-based tooltips with different variants (welcome, feature, tip, achievement), multi-step guided tours, local storage persistence, and an onboarding manager component for resetting tours. Implements progressive disclosure with action-oriented messaging and visual hierarchy through color-coded variants.
 
 **System Design Choices:**
 - **Frontend**: React 18, Wouter for routing, TanStack Query for server state, React Hook Form with Zod for forms, shadcn/ui for components, Tailwind CSS for styling, date-fns for date handling.

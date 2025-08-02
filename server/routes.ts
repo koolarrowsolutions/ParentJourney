@@ -1596,6 +1596,8 @@ Provide your analysis in this exact JSON format:
             
             if (messageBirdKey) {
               // MessageBird SMS - Reliable delivery
+              console.log("Testing MessageBird API key:", messageBirdKey.substring(0, 10) + "...");
+              
               const smsResponse = await fetch('https://rest.messagebird.com/messages', {
                 method: 'POST',
                 headers: {
@@ -1610,6 +1612,7 @@ Provide your analysis in this exact JSON format:
               });
 
               const messageBirdData = await smsResponse.json();
+              console.log("MessageBird response:", messageBirdData);
               
               if (smsResponse.ok) {
                 result = { 
@@ -1617,10 +1620,35 @@ Provide your analysis in this exact JSON format:
                   message: `✅ SMS sent to ${recipient}! (MessageBird: $0.005/SMS - ID: ${messageBirdData.id})`
                 };
               } else {
-                result = { 
-                  success: false, 
-                  message: `MessageBird SMS failed: ${messageBirdData.errors?.[0]?.description || 'Unknown error'}`
-                };
+                const errorMsg = messageBirdData.errors?.[0]?.description || 'Unknown error';
+                console.log("MessageBird failed, falling back to TextBelt");
+                
+                // Fall back to TextBelt when MessageBird fails
+                const textBeltResponse = await fetch('https://textbelt.com/text', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    phone: recipient,
+                    message: 'ParentJourney Test: SMS via fallback service (MessageBird API key needs verification). Check your MessageBird API key settings.',
+                    key: 'textbelt'
+                  })
+                });
+
+                const textBeltData = await textBeltResponse.json();
+                
+                if (textBeltData.success) {
+                  result = { 
+                    success: true, 
+                    message: `✅ SMS sent via fallback! MessageBird API key issue: ${errorMsg}. Verify you're using a LIVE key from Developer → API Keys.`
+                  };
+                } else {
+                  result = { 
+                    success: false, 
+                    message: `MessageBird failed (${errorMsg}) and TextBelt unavailable in your region. Please verify your MessageBird LIVE API key.`
+                  };
+                }
               }
             } else {
               // Fallback to TextBelt free service

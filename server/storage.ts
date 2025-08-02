@@ -567,10 +567,8 @@ export class MemStorage implements IStorage {
       weeklyProgress: settings.weeklyProgress || "false",
       reminderTime: settings.reminderTime || "20:00",
       notificationEmail: settings.notificationEmail || null,
-      notificationPhone: settings.notificationPhone || null,
       browserNotifications: settings.browserNotifications || "false",
       emailVerified: settings.emailVerified || "false",
-      phoneVerified: settings.phoneVerified || "false",
     };
     this.userNotificationSettings.set(newSettings.userId, newSettings);
     return newSettings;

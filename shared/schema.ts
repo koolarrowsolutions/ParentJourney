@@ -60,10 +60,8 @@ export const userNotificationSettings = pgTable("user_notification_settings", {
   weeklyProgress: text("weekly_progress").notNull().default("false"),
   reminderTime: text("reminder_time").notNull().default("20:00"),
   notificationEmail: text("notification_email"),
-  notificationPhone: text("notification_phone"),
   browserNotifications: text("browser_notifications").notNull().default("false"),
   emailVerified: text("email_verified").notNull().default("false"),
-  phoneVerified: text("phone_verified").notNull().default("false"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

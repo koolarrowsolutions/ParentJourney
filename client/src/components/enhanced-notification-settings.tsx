@@ -28,10 +28,8 @@ interface NotificationSettings {
   weeklyProgress: string;
   reminderTime: string;
   notificationEmail: string;
-  notificationPhone: string;
   browserNotifications: string;
   emailVerified: string;
-  phoneVerified: string;
 }
 
 interface ValidationResult {
@@ -45,10 +43,8 @@ export function EnhancedNotificationSettings() {
     weeklyProgress: "false",
     reminderTime: "20:00",
     notificationEmail: "",
-    notificationPhone: "",
     browserNotifications: "false",
-    emailVerified: "false",
-    phoneVerified: "false"
+    emailVerified: "false"
   });
   
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -178,7 +174,7 @@ export function EnhancedNotificationSettings() {
     if (isMobileDevice()) {
       toast({
         title: "Mobile Device Detected",
-        description: "Mobile browsers have limited notification support. Email and SMS are more reliable options.",
+        description: "Mobile browsers have limited notification support. Email notifications are more reliable on mobile devices.",
         variant: "destructive",
       });
       return;
@@ -220,18 +216,17 @@ export function EnhancedNotificationSettings() {
 
 
   const sendTestNotification = (type: string) => {
-    const recipient = type === 'email' ? settings.notificationEmail : 
-                     type === 'sms' ? settings.notificationPhone : undefined;
+    const recipient = type === 'email' ? settings.notificationEmail : undefined;
     testNotificationMutation.mutate({ type, recipient });
   };
 
   const handleSave = () => {
     // Simple validation - require at least one notification method if reminders are enabled
     if (settings.dailyReminder === "true" || settings.weeklyProgress === "true") {
-      if (!settings.notificationEmail && !settings.notificationPhone && settings.browserNotifications === "false") {
+      if (!settings.notificationEmail && settings.browserNotifications === "false") {
         toast({
           title: "Validation Error",
-          description: "Please enable at least one notification method (email, SMS, or browser) to receive reminders.",
+          description: "Please enable at least one notification method (email or browser) to receive reminders.",
           variant: "destructive",
         });
         return;
@@ -379,38 +374,7 @@ export function EnhancedNotificationSettings() {
             </div>
           </div>
 
-          {/* SMS Notifications */}
-          <div className="space-y-3 p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="flex items-center gap-2 sm:gap-3 mb-2">
-              <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
-              <Label className="font-medium text-blue-900 text-sm sm:text-base">SMS Notifications</Label>
-              <Badge variant="outline" className="text-xs bg-green-100 text-green-800 border-green-300">$0.005/SMS</Badge>
-            </div>
-            
-            <div className="space-y-2 sm:space-y-3">
-              <Input
-                type="tel"
-                placeholder="+1 (555) 123-4567"
-                value={settings.notificationPhone}
-                onChange={(e) => updateSetting('notificationPhone', e.target.value)}
-                className="text-sm sm:text-base"
-              />
 
-              
-              {settings.notificationPhone && (
-                <Button 
-                  onClick={() => sendTestNotification('sms')} 
-                  size="sm" 
-                  variant="outline"
-                  disabled={testNotificationMutation.isPending}
-                  className="text-xs sm:text-sm w-full sm:w-auto"
-                >
-                  <TestTube className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  Send Test SMS
-                </Button>
-              )}
-            </div>
-          </div>
 
           {/* Mobile Device Information */}
           {isMobileDevice() && (

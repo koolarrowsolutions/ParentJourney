@@ -1402,10 +1402,8 @@ Provide your analysis in this exact JSON format:
           weeklyProgress: "false",
           reminderTime: "20:00",
           notificationEmail: "",
-          notificationPhone: "",
           browserNotifications: "false",
-          emailVerified: "false",
-          phoneVerified: "false"
+          emailVerified: "false"
         };
         res.json(defaultSettings);
       } else {
@@ -1426,7 +1424,8 @@ Provide your analysis in this exact JSON format:
       
       const settingsData = {
         userId: userId,
-        ...req.body
+        ...req.body,
+        updatedAt: new Date() // Fix timestamp issue
       };
       
       // Check if settings already exist
@@ -1471,31 +1470,7 @@ Provide your analysis in this exact JSON format:
     }
   });
 
-  app.post("/api/validate-phone", requireAuth, async (req, res) => {
-    try {
-      const { phone } = req.body;
-      
-      // Basic phone validation (supports international formats)
-      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-      const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
-      
-      if (!phoneRegex.test(cleanPhone)) {
-        return res.status(400).json({ 
-          valid: false, 
-          message: "Please enter a valid phone number" 
-        });
-      }
-      
-      // In a real app, you might send an SMS verification here
-      res.json({ 
-        valid: true, 
-        message: "Phone number format is valid" 
-      });
-    } catch (error) {
-      console.error("Phone validation error:", error);
-      res.status(500).json({ message: "Failed to validate phone number" });
-    }
-  });
+
 
   app.post("/api/test-notification", requireAuth, async (req, res) => {
     try {
@@ -1584,116 +1559,7 @@ Provide your analysis in this exact JSON format:
           }
           break;
           
-        case 'sms':
-          if (!recipient || recipient.length < 10) {
-            result = { success: false, message: "Please enter a valid phone number first" };
-            break;
-          }
-          
-          try {
-            // Check for MessageBird API key first (reliable, $0.005/SMS)
-            const messageBirdKey = process.env.MESSAGEBIRD_API_KEY;
-            
-            if (messageBirdKey) {
-              // MessageBird SMS - Reliable delivery
-              console.log("Testing MessageBird API key:", messageBirdKey.substring(0, 10) + "...");
-              
-              const smsResponse = await fetch('https://rest.messagebird.com/messages', {
-                method: 'POST',
-                headers: {
-                  'Authorization': `AccessKey ${messageBirdKey}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  recipients: [recipient],
-                  originator: 'ParentJourney',
-                  body: 'ParentJourney Test: Your SMS notifications are working perfectly! Reliable delivery via MessageBird at just $0.005 per message.',
-                })
-              });
 
-              const messageBirdData = await smsResponse.json();
-              console.log("MessageBird response:", messageBirdData);
-              
-              if (smsResponse.ok) {
-                result = { 
-                  success: true, 
-                  message: `✅ SMS sent to ${recipient}! (MessageBird: $0.005/SMS - ID: ${messageBirdData.id})`
-                };
-              } else {
-                const errorMsg = messageBirdData.errors?.[0]?.description || 'Unknown error';
-                console.log("MessageBird failed, falling back to TextBelt");
-                
-                // Fall back to TextBelt when MessageBird fails
-                const textBeltResponse = await fetch('https://textbelt.com/text', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    phone: recipient,
-                    message: 'ParentJourney Test: SMS via fallback service (MessageBird API key needs verification). Check your MessageBird API key settings.',
-                    key: 'textbelt'
-                  })
-                });
-
-                const textBeltData = await textBeltResponse.json();
-                
-                if (textBeltData.success) {
-                  result = { 
-                    success: true, 
-                    message: `✅ SMS sent via fallback! MessageBird API key issue: ${errorMsg}. Verify you're using a LIVE key from Developer → API Keys.`
-                  };
-                } else {
-                  result = { 
-                    success: false, 
-                    message: `MessageBird failed (${errorMsg}) and TextBelt unavailable in US region. Please create a MessageBird LIVE API key (not Test key) from Developer → API Keys in your dashboard.`
-                  };
-                }
-              }
-            } else {
-              // Fallback to TextBelt free service
-              const smsResponse = await fetch('https://textbelt.com/text', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  phone: recipient,
-                  message: 'ParentJourney Test: Your FREE SMS notifications are working! This free service provides 1 test SMS per day. For unlimited alerts, enable browser notifications.',
-                  key: 'textbelt' // Free key - 1 SMS per day
-                })
-              });
-
-              const smsData = await smsResponse.json();
-              
-              if (smsData.success) {
-                result = { 
-                  success: true, 
-                  message: `✅ FREE SMS sent to ${recipient}! (TextBelt: 1 SMS/day free limit - Message ID: ${smsData.textId})`
-                };
-              } else {
-                const errorMessage = smsData.error || 'Unknown error';
-                if (errorMessage.includes('disabled for this country') || errorMessage.includes('abuse')) {
-                  result = { 
-                    success: false, 
-                    message: `Free SMS unavailable in your region. For reliable SMS delivery, add a MessageBird API key (costs only $0.005 per SMS). Browser notifications work great as a free alternative!`
-                  };
-                } else {
-                  result = { 
-                    success: false, 
-                    message: `SMS delivery failed: ${errorMessage}. Try browser notifications for unlimited alerts.`
-                  };
-                }
-              }
-            }
-          } catch (error) {
-            console.error('SMS API error:', error);
-            result = { 
-              success: false, 
-              message: 'SMS service temporarily unavailable. Use browser notifications for reliable alerts.'
-            };
-          }
-          break;
           
         default:
           result = { success: false, message: "Invalid notification type" };

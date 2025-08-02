@@ -248,12 +248,17 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           <ComprehensiveAIInsights />
         </div>
 
-        {/* Feeling Overwhelmed Element */}
-        <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
+        {/* Feeling Overwhelmed Element - Enhanced with clearer description */}
+        <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100">
           <div className="flex items-center justify-between">
-            <p className="text-emerald-800 font-medium">
-              Feeling overwhelmed today? Take a moment to center yourself.
-            </p>
+            <div className="flex-1">
+              <p className="text-emerald-800 font-medium mb-1">
+                Feeling overwhelmed today? Take a moment to center yourself.
+              </p>
+              <p className="text-emerald-700 text-sm">
+                Try a 60-second breathing exercise or guided mindfulness tool
+              </p>
+            </div>
             <CalmReset trigger="inline" />
           </div>
         </div>

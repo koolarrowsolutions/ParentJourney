@@ -244,76 +244,83 @@ export default function Home() {
 
 
         {/* Easy Daily Check-In - Between welcome and AI insights */}
-        <OnboardingTooltip
-          title="Start Your Day with Check-In"
-          content="Share how you're feeling today. This simple practice helps track your emotional wellness patterns and provides better AI insights."
-          variant="welcome"
-          position="bottom"
-          persistent={false}
-        >
-          <div className="mb-4 sm:mb-6 w-full" data-mood-selector>
-            <MoodSelector />
-          </div>
-        </OnboardingTooltip>
+        <div className="mb-6 w-full">
+          <OnboardingTooltip
+            title="Start Your Day with Check-In"
+            content="Share how you're feeling today. This simple practice helps track your emotional wellness patterns and provides better AI insights."
+            variant="welcome"
+            position="bottom"
+            persistent={false}
+          >
+            <div data-mood-selector className="w-full">
+              <MoodSelector />
+            </div>
+          </OnboardingTooltip>
+        </div>
 
         {/* AI Insights Section */}
-        <OnboardingTooltip
-          title="AI-Powered Parenting Guidance"
-          content="These personalized insights are generated from your journal entries. Click any card to dive deeper into specific topics."
-          variant="feature"
-          position="bottom"
-          persistent={false}
-        >
-          <div className="mb-4 sm:mb-6 w-full" data-ai-insights>
-            <ComprehensiveAIInsights />
-          </div>
-        </OnboardingTooltip>
+        <div className="mb-6 w-full">
+          <OnboardingTooltip
+            title="AI-Powered Parenting Guidance"
+            content="These personalized insights are generated from your journal entries. Click any card to dive deeper into specific topics."
+            variant="feature"
+            position="bottom"
+            persistent={false}
+          >
+            <div data-ai-insights className="w-full">
+              <ComprehensiveAIInsights />
+            </div>
+          </OnboardingTooltip>
+        </div>
 
         {/* Feeling Overwhelmed Element - Enhanced with clearer description */}
-        <OnboardingTooltip
-          title="Quick Stress Relief"
-          content="When parenting feels overwhelming, this tool offers instant access to breathing exercises and mindfulness techniques."
-          variant="tip"
-          position="top"
-          persistent={false}
-        >
-          <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100 w-full" data-calm-reset>
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-emerald-800 font-medium mb-1">
-                  Feeling overwhelmed today? Take a moment to center yourself.
-                </p>
-                <p className="text-emerald-700 text-sm">
-                  Try a 60-second breathing exercise or guided mindfulness tool
-                </p>
+        <div className="mb-6 w-full">
+          <OnboardingTooltip
+            title="Quick Stress Relief"
+            content="When parenting feels overwhelming, this tool offers instant access to breathing exercises and mindfulness techniques."
+            variant="tip"
+            position="top"
+            persistent={false}
+          >
+            <div data-calm-reset className="w-full">
+              <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gradient-to-r hover:from-emerald-100 hover:to-teal-100 w-full">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex-1">
+                    <p className="text-emerald-800 font-medium mb-1">
+                      Feeling overwhelmed today? Take a moment to center yourself.
+                    </p>
+                    <p className="text-emerald-700 text-sm">
+                      Try a 60-second breathing exercise or guided mindfulness tool
+                    </p>
+                  </div>
+                  <CalmReset trigger="inline" />
+                </div>
               </div>
-              <CalmReset trigger="inline" />
             </div>
-          </div>
-        </OnboardingTooltip>
-
-
+          </OnboardingTooltip>
+        </div>
 
         {/* Quick Actions Group */}
-        <OnboardingTooltip
-          title="Quick Actions Hub"
-          content="Fast access to key features like writing entries, viewing analytics, and managing profiles. Hover over each button for specific details."
-          variant="feature"
-          position="top"
-          persistent={false}
-        >
-          <div className="mb-4 w-full" data-quick-actions>
-            <QuickActionsGroup 
-              selectedMood={selectedMood} 
-              triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
-            />
-          </div>
-        </OnboardingTooltip>
+        <div className="mb-6 w-full">
+          <OnboardingTooltip
+            title="Quick Actions Hub"
+            content="Fast access to key features like writing entries, viewing analytics, and managing profiles. Hover over each button for specific details."
+            variant="feature"
+            position="top"
+            persistent={false}
+          >
+            <div data-quick-actions className="w-full">
+              <QuickActionsGroup 
+                selectedMood={selectedMood} 
+                triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
+              />
+            </div>
+          </OnboardingTooltip>
+        </div>
 
-        {/* Streamlined Content Layout */}
-        <div className="space-y-3 w-full">
-          {/* Child-specific entries overview */}
-          {childProfiles && childProfiles.length > 0 && (
+        {/* Child-specific entries overview */}
+        {childProfiles && childProfiles.length > 0 && (
+          <div className="mb-6 w-full">
             <OnboardingTooltip
               title="Track Each Child's Journey"
               content="View recent entries for each child. Click any card to see their full journal history and development insights."
@@ -321,28 +328,31 @@ export default function Home() {
               position="top"  
               persistent={false}
             >
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-3 animate-bounce-in stagger-3 w-full" data-children-journey>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-blue-800 flex items-center">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-4 animate-bounce-in stagger-3 w-full" data-children-journey>
+                <div className="flex items-center justify-between mb-4 w-full">
+                  <h3 className="text-base font-semibold text-blue-800 flex items-center">
                     👶 Your Children's Journey
                   </h3>
-                  <div className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                  <div className="text-xs text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
                     💡 Regular reflections help you notice patterns in moods and needs
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
                   {childProfiles.map((child, index) => (
-                    <div key={child.id} className={`animate-pop-in stagger-${index + 4}`}>
+                    <div key={child.id} className={`animate-pop-in stagger-${index + 4} w-full`}>
                       <ChildEntryOverview child={child} />
                     </div>
                   ))}
                 </div>
               </div>
             </OnboardingTooltip>
-          )}
-          
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 p-3 hover-lift animate-pop-fade stagger-5 w-full">
-            <h3 className="text-sm font-semibold text-emerald-800 mb-2 flex items-center">
+          </div>
+        )}
+        
+        {/* Recent Journal Entries */}
+        <div className="mb-6 w-full">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 p-4 hover-lift animate-pop-fade stagger-5 w-full">
+            <h3 className="text-base font-semibold text-emerald-800 mb-3 flex items-center">
               📖 Recent Journal Entries
             </h3>
             <RecentEntries />

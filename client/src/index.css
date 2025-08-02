@@ -75,11 +75,17 @@
     overflow-x: hidden;
     width: 100vw;
     min-height: 100vh;
+    box-sizing: border-box;
   }
   
   #root {
     width: 100%;
     min-height: 100vh;
+    box-sizing: border-box;
+  }
+  
+  * {
+    box-sizing: border-box;
   }
 
   .line-clamp-2 {

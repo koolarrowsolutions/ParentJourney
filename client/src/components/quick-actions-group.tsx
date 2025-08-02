@@ -18,8 +18,8 @@ export function QuickActionsGroup({ selectedMood, triggerSignUpPrompt }: QuickAc
   const [showDailyReflectionDialog, setShowDailyReflectionDialog] = useState(false);
 
   return (
-    <Card className="shadow-sm border border-neutral-200 hover-lift animate-bounce-in stagger-2">
-      <CardContent className="p-4 sm:p-6">
+    <Card className="shadow-sm border border-neutral-200 hover-lift animate-bounce-in stagger-2 w-full">
+      <CardContent className="p-4 sm:p-6 w-full">
         <div className="text-center mb-3 sm:mb-4">
           <h3 className="text-base sm:text-lg font-semibold text-neutral-800 mb-1">
             Quick Actions

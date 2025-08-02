@@ -33,7 +33,7 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
       <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible w-full">
         <CardContent className="p-4 sm:p-6">
           {/* Mobile: Stack layout, Desktop: Horizontal layout */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 sm:space-x-4 w-full">
             <div className="flex items-center space-x-4 flex-1">
               <Heart className="text-blue-600 h-6 w-6 flex-shrink-0" />
               <div className="flex-1 min-w-0">
@@ -52,7 +52,7 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
               </div>
             </div>
             
-            <div className="flex items-center justify-center sm:justify-end space-x-3 flex-shrink-0">
+            <div className="flex items-center justify-center sm:justify-end space-x-3 flex-shrink-0 w-full sm:w-auto">
               <Button 
                 onClick={() => setShowCheckIn(true)}
                 className="bg-primary hover:bg-primary/90 text-white font-medium text-sm px-6 py-3 rounded-lg transition-all hover-scale button-press flex-1 sm:flex-initial"

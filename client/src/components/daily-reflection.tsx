@@ -117,6 +117,8 @@ export function DailyReflection() {
   const saveReflectionMutation = useMutation({
     mutationFn: async (data: { content: string; title: string; photos?: string[] }) => {
       const token = localStorage.getItem('parentjourney_token');
+      console.log("Daily reflection save - token present:", !!token);
+      
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
@@ -134,7 +136,14 @@ export function DailyReflection() {
           entryType: "quick_moment",
         }),
       });
-      if (!response.ok) throw new Error("Failed to save reflection");
+      
+      console.log("Daily reflection save - response status:", response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Daily reflection save - error response:", errorText);
+        throw new Error(`Failed to save reflection: ${response.status} ${errorText}`);
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -150,10 +159,21 @@ export function DailyReflection() {
       setShowFollowUp(false);
       setPhotos([]);
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Daily reflection save error:", error);
+      
+      let errorMessage = "Failed to save your reflection. Please try again.";
+      
+      // Check for specific authentication errors
+      if (error.message?.includes('401') || error.message?.includes('Authentication')) {
+        errorMessage = "Please log in to save your reflection.";
+      } else if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
+        errorMessage = "You don't have permission to save reflections.";
+      }
+      
       toast({
         title: "❌ Save Failed",
-        description: "Failed to save your reflection. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     },

@@ -99,6 +99,7 @@ export function FeatureTour({ isActive, onComplete, onSkip, tour }: FeatureTourP
     if (currentStep < tour.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      setCurrentStep(0); // Reset for next time
       onComplete();
     }
   };
@@ -114,6 +115,11 @@ export function FeatureTour({ isActive, onComplete, onSkip, tour }: FeatureTourP
     if (step?.action) {
       step.action.handler();
     }
+  };
+
+  const handleSkip = () => {
+    setCurrentStep(0); // Reset for next time
+    onSkip();
   };
 
   if (!isActive || !tour.length) return null;
@@ -163,7 +169,7 @@ export function FeatureTour({ isActive, onComplete, onSkip, tour }: FeatureTourP
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={onSkip}
+                onClick={handleSkip}
                 className="h-6 w-6 p-0"
               >
                 <X className="h-4 w-4" />

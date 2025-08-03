@@ -275,7 +275,7 @@ export function InteractiveOnboarding({ isOpen, onClose, onComplete }: Interacti
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
-      setCompletedSteps(prev => new Set([...prev, currentStep]));
+      setCompletedSteps(prev => new Set([...Array.from(prev), currentStep]));
       setCurrentStep(currentStep + 1);
     }
   };
@@ -287,9 +287,9 @@ export function InteractiveOnboarding({ isOpen, onClose, onComplete }: Interacti
   };
 
   const handleComplete = () => {
-    setCompletedSteps(prev => new Set([...prev, currentStep]));
+    setCompletedSteps(prev => new Set([...Array.from(prev), currentStep]));
+    setCurrentStep(0); // Reset step for next time
     onComplete();
-    onClose();
   };
 
   const startInteractiveMode = () => {
@@ -300,8 +300,16 @@ export function InteractiveOnboarding({ isOpen, onClose, onComplete }: Interacti
   const currentStepData = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
 
+  const handleDialogClose = (open: boolean) => {
+    if (!open) {
+      setCurrentStep(0); // Reset step when closing
+      setCompletedSteps(new Set());
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
@@ -340,14 +348,24 @@ export function InteractiveOnboarding({ isOpen, onClose, onComplete }: Interacti
 
           {/* Action Buttons */}
           <div className="flex justify-between">
-            <Button
-              variant="outline"
-              onClick={prevStep}
-              disabled={currentStep === 0}
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Previous
-            </Button>
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 0}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+              
+              <Button
+                variant="ghost"
+                onClick={() => handleDialogClose(false)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Skip Onboarding
+              </Button>
+            </div>
 
             <div className="flex space-x-2">
               {currentStepData.actionLabel && !isLastStep && (

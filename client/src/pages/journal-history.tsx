@@ -35,7 +35,7 @@ interface JournalHistoryProps {
 }
 
 export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryProps) {
-  const [selectedChildId, setSelectedChildId] = useState<string>("");
+  const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("all");
   const { toast } = useToast();
 
@@ -59,13 +59,12 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
     },
   });
 
-  // Fetch journal entries for selected child
-  const { data: entries, isLoading: entriesLoading } = useQuery<JournalEntry[]>({
-    queryKey: ["/api/journal-entries", selectedChildId],
+  // Fetch all journal entries (no child filtering in API call)
+  const { data: allEntries, isLoading: entriesLoading } = useQuery<JournalEntry[]>({
+    queryKey: ["/api/journal-entries"],
     queryFn: async () => {
-      const url = selectedChildId 
-        ? `/api/journal-entries?childId=${selectedChildId}&limit=50`
-        : "/api/journal-entries?limit=50";
+      // Always fetch all entries, we'll filter client-side
+      const url = "/api/journal-entries?limit=100";
       
       // Get auth token for authenticated requests
       const token = localStorage.getItem('parentjourney_token');
@@ -120,17 +119,44 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
     },
   });
 
-  const selectedChild = childProfiles?.find(child => child.id === selectedChildId);
-
-  // Filter entries based on active tab
-  const filteredEntries = entries?.filter(entry => {
-    if (activeTab === "favorites") {
-      return entry.isFavorite === "true";
-    }
-    return true;
+  // Filter entries based on selected children and active tab
+  const filteredEntries = allEntries?.filter(entry => {
+    // First filter by selected children (if any are selected)
+    const childFilter = selectedChildIds.length === 0 || 
+                       selectedChildIds.includes(entry.childProfileId || '') ||
+                       (selectedChildIds.includes('no-child') && !entry.childProfileId);
+    
+    // Then filter by tab
+    const tabFilter = activeTab === "favorites" ? entry.isFavorite === "true" : true;
+    
+    return childFilter && tabFilter;
   }) || [];
 
-  const favoriteEntries = entries?.filter(entry => entry.isFavorite === "true") || [];
+  const favoriteEntries = allEntries?.filter(entry => entry.isFavorite === "true") || [];
+
+  // Handle child selection changes
+  const handleChildToggle = (childId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedChildIds(prev => [...prev, childId]);
+    } else {
+      setSelectedChildIds(prev => prev.filter(id => id !== childId));
+    }
+  };
+
+  const handleSelectAllChildren = () => {
+    if (!childProfiles) return;
+    const allChildIds = childProfiles.map(child => child.id);
+    // Also include entries with no child profile
+    const hasUnassignedEntries = allEntries?.some(entry => !entry.childProfileId);
+    if (hasUnassignedEntries) {
+      allChildIds.push('no-child');
+    }
+    setSelectedChildIds(allChildIds);
+  };
+
+  const handleClearAllChildren = () => {
+    setSelectedChildIds([]);
+  };
 
   const handleToggleFavorite = (entryId: string, currentStatus: string) => {
     const newStatus = currentStatus === "true" ? false : true;
@@ -404,10 +430,8 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
                         <input
                           type="checkbox"
                           id={`history-child-${child.id}`}
-                          checked={selectedChildId === child.id}
-                          onChange={(e) => {
-                            setSelectedChildId(e.target.checked ? child.id : "");
-                          }}
+                          checked={selectedChildIds.includes(child.id)}
+                          onChange={(e) => handleChildToggle(child.id, e.target.checked)}
                           className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
                         />
                         <label 
@@ -434,128 +458,195 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
                   </Button>
                 </div>
               )}
+              
+              {/* Selection controls */}
+              {childProfiles && childProfiles.length > 0 && (
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSelectAllChildren}
+                    className="text-xs"
+                  >
+                    Select All
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearAllChildren}
+                    className="text-xs"
+                  >
+                    Clear All
+                  </Button>
+                </div>
+              )}
+              
+              {/* Add checkbox for entries without child profiles */}
+              {allEntries?.some(entry => !entry.childProfileId) && (
+                <div className="flex items-center space-x-2 mt-2 pt-2 border-t">
+                  <input
+                    type="checkbox"
+                    id="history-child-no-child"
+                    checked={selectedChildIds.includes('no-child')}
+                    onChange={(e) => handleChildToggle('no-child', e.target.checked)}
+                    className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                  />
+                  <label 
+                    htmlFor="history-child-no-child"
+                    className="text-sm text-neutral-700 flex items-center cursor-pointer"
+                  >
+                    <FileText className="h-4 w-4 mr-2 text-neutral-500" />
+                    General entries (no child assigned)
+                  </label>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
         {/* Tabs and Export Controls */}
-        {selectedChild && (
-          <Card className="mb-6">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <BookOpen className="h-5 w-5 text-primary" />
-                  <h2 className="text-lg font-semibold text-neutral-800">
-                    {selectedChild.name}'s Journal Entries
-                  </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">
-                    {filteredEntries.length} entries
-                  </Badge>
-                  {favoriteEntries.length > 0 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleExportAllFavorites}
-                      className="text-xs"
-                    >
-                      <FileText className="h-3 w-3 mr-1" />
-                      Export All Favorites
-                    </Button>
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-5 w-5 text-primary" />
+                <h2 className="text-lg font-semibold text-neutral-800">
+                  Journal Entries
+                  {selectedChildIds.length > 0 && (
+                    <span className="text-sm font-normal text-neutral-600 ml-2">
+                      ({selectedChildIds.length === 1 && selectedChildIds[0] !== 'no-child' 
+                        ? childProfiles?.find(c => c.id === selectedChildIds[0])?.name || 'Unknown'
+                        : selectedChildIds.length === 1 && selectedChildIds[0] === 'no-child'
+                        ? 'General entries'
+                        : `${selectedChildIds.length} selected`})
+                    </span>
                   )}
-                </div>
+                </h2>
               </div>
-              
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="all" className="flex items-center gap-2">
-                    <Archive className="h-4 w-4" />
-                    All Entries ({entries?.length || 0})
-                  </TabsTrigger>
-                  <TabsTrigger value="favorites" className="flex items-center gap-2">
-                    <Star className="h-4 w-4" />
-                    Favorites ({favoriteEntries.length})
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </CardContent>
-          </Card>
-        )}
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs">
+                  {filteredEntries.length} entries
+                </Badge>
+                {favoriteEntries.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportAllFavorites}
+                    className="text-xs"
+                  >
+                    <FileText className="h-3 w-3 mr-1" />
+                    Export All Favorites
+                  </Button>
+                )}
+              </div>
+            </div>
+            
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="all" className="flex items-center gap-2">
+                  <Archive className="h-4 w-4" />
+                  All Entries ({filteredEntries.length})
+                </TabsTrigger>
+                <TabsTrigger value="favorites" className="flex items-center gap-2">
+                  <Star className="h-4 w-4" />
+                  Favorites ({favoriteEntries.length})
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </CardContent>
+        </Card>
         
         {/* Journal Entries Display */}
-        {selectedChild && (
-          <div className="space-y-6">
-            {entriesLoading ? (
-              <div className="space-y-6">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i}>
-                    <CardHeader>
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-6 w-64" />
-                    </CardHeader>
-                    <CardContent>
-                      <Skeleton className="h-20 w-full" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : filteredEntries.length > 0 ? (
-              <div className="space-y-6">
-                {filteredEntries.map((entry) => (
-                  <LocalJournalEntryCard key={entry.id} entry={entry} />
-                ))}
-              </div>
-            ) : activeTab === "favorites" ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <Star className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-neutral-800 mb-2">
-                    No favorite entries yet
-                  </h3>
-                  <p className="text-neutral-600 mb-4">
-                    Click the star icon on entries you want to save as favorites
-                  </p>
-                  <Button onClick={() => setActiveTab("all")} variant="outline">
-                    <Archive className="h-4 w-4 mr-2" />
-                    View All Entries
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <BookOpen className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-neutral-800 mb-2">
-                    No journal entries yet
-                  </h3>
-                  <p className="text-neutral-600 mb-4">
-                    Start documenting your parenting journey with {selectedChild.name}
-                  </p>
-                  <Button onClick={() => window.history.back()}>
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    Write First Entry
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {/* No Child Selected State */}
-        {!selectedChildId && !profilesLoading && childProfiles && childProfiles.length > 0 && (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Baby className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-neutral-800 mb-2">
-                Select a child to view their journal history
-              </h3>
-              <p className="text-neutral-600">
-                Choose a child from the dropdown above to see their past journal entries and AI insights
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        <div className="space-y-6">
+          {entriesLoading ? (
+            <div className="space-y-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-6 w-64" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-20 w-full" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredEntries.length > 0 ? (
+            <div className="space-y-6">
+              {filteredEntries.map((entry) => (
+                <LocalJournalEntryCard key={entry.id} entry={entry} />
+              ))}
+            </div>
+          ) : activeTab === "favorites" ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Star className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-neutral-800 mb-2">
+                  No favorite entries found
+                </h3>
+                <p className="text-neutral-600 mb-4">
+                  {selectedChildIds.length > 0 
+                    ? "No favorite entries for the selected children. Click the star icon on entries to save as favorites."
+                    : "Click the star icon on entries you want to save as favorites"
+                  }
+                </p>
+                <Button onClick={() => setActiveTab("all")} variant="outline">
+                  <Archive className="h-4 w-4 mr-2" />
+                  View All Entries
+                </Button>
+              </CardContent>
+            </Card>
+          ) : selectedChildIds.length > 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <BookOpen className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-neutral-800 mb-2">
+                  No journal entries found
+                </h3>
+                <p className="text-neutral-600 mb-4">
+                  No entries found for the selected children. Try selecting different children or create new entries.
+                </p>
+                <Button onClick={() => window.history.back()}>
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Write New Entry
+                </Button>
+              </CardContent>
+            </Card>
+          ) : allEntries && allEntries.length > 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <Baby className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-neutral-800 mb-2">
+                  Select children to view their journal entries
+                </h3>
+                <p className="text-neutral-600 mb-4">
+                  Use the checkboxes above to select which children's entries you want to view, or leave unselected to see all entries.
+                </p>
+                <Button onClick={handleSelectAllChildren} variant="outline">
+                  <Baby className="h-4 w-4 mr-2" />
+                  Show All Entries
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <BookOpen className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-neutral-800 mb-2">
+                  No journal entries yet
+                </h3>
+                <p className="text-neutral-600 mb-4">
+                  Start documenting your parenting journey by creating your first entry.
+                </p>
+                <Button onClick={() => window.history.back()}>
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Write First Entry
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -98,7 +98,7 @@ export async function completeAuthReset(): Promise<void> {
 }
 
 // Perform login with mobile browser compatibility
-export async function performLogin(identifier: string, password: string): Promise<{ success: boolean; user?: any; error?: string; authToken?: string; hasJustSignedUp?: boolean }> {
+export async function performLogin(identifier: string, password: string): Promise<{ success: boolean; user?: any; error?: string; authToken?: string }> {
   try {
     // Trim whitespace from identifier to prevent login issues
     const trimmedIdentifier = identifier.trim();

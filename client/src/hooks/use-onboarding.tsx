@@ -1,48 +1,64 @@
-import { useState, useEffect } from 'react';
-
-export interface OnboardingState {
-  isComplete: boolean;
-  currentStep: number;
-  totalSteps: number;
-}
+import { useState, useEffect } from "react";
+import { 
+  getOnboardingState, 
+  markFirstVisit, 
+  shouldShowSignUpPrompt, 
+  shouldShowTour,
+  isFirstTimeVisitor 
+} from "@/utils/onboarding-storage";
 
 export function useOnboarding() {
-  const [state, setState] = useState<OnboardingState>({
-    isComplete: false,
-    currentStep: 0,
-    totalSteps: 3
-  });
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+  const [signUpTrigger, setSignUpTrigger] = useState<'save' | 'bookmark' | 'export' | 'settings'>('save');
 
   useEffect(() => {
-    const stored = localStorage.getItem('onboarding-complete');
-    if (stored === 'true') {
-      setState(prev => ({ ...prev, isComplete: true }));
+    // Mark first visit if this is the first time
+    if (isFirstTimeVisitor()) {
+      markFirstVisit();
+    }
+
+    // Check if we should show the tour for returning signed-up users
+    if (shouldShowTour()) {
+      setShowTour(true);
     }
   }, []);
 
-  const completeOnboarding = () => {
-    localStorage.setItem('onboarding-complete', 'true');
-    setState(prev => ({ ...prev, isComplete: true }));
+  const triggerSignUpPrompt = (trigger: 'save' | 'bookmark' | 'export' | 'settings') => {
+    if (shouldShowSignUpPrompt()) {
+      setSignUpTrigger(trigger);
+      setShowSignUpPrompt(true);
+      return true; // Indicates that the prompt was shown
+    }
+    return false; // Indicates that the action can proceed normally
   };
 
-  const nextStep = () => {
-    setState(prev => ({
-      ...prev,
-      currentStep: Math.min(prev.currentStep + 1, prev.totalSteps - 1)
-    }));
+  const handleSignUp = () => {
+    setShowSignUpPrompt(false);
+    // After signing up, show the tour
+    setTimeout(() => {
+      setShowTour(true);
+    }, 500);
   };
 
-  const prevStep = () => {
-    setState(prev => ({
-      ...prev,
-      currentStep: Math.max(prev.currentStep - 1, 0)
-    }));
+  const handleTourComplete = () => {
+    setShowTour(false);
+  };
+
+  const startTourManually = () => {
+    setShowTour(true);
   };
 
   return {
-    ...state,
-    completeOnboarding,
-    nextStep,
-    prevStep
+    showSignUpPrompt,
+    setShowSignUpPrompt,
+    showTour,
+    setShowTour,
+    signUpTrigger,
+    triggerSignUpPrompt,
+    handleSignUp,
+    handleTourComplete,
+    startTourManually,
+    onboardingState: getOnboardingState()
   };
 }

@@ -1,58 +1,86 @@
-export interface Settings {
-  theme: 'light' | 'dark';
-  notifications: boolean;
-  language: string;
-}
-
-export interface UserSettings extends Settings {
-  parentName?: string;
-  email?: string;
-}
-
-const defaultSettings: Settings = {
-  theme: 'light',
-  notifications: true,
-  language: 'en'
-};
-
-export const settingsStorage = {
-  get: (): Settings => {
-    try {
-      const stored = localStorage.getItem('app-settings');
-      return stored ? { ...defaultSettings, ...JSON.parse(stored) } : defaultSettings;
-    } catch {
-      return defaultSettings;
-    }
-  },
+export interface UserSettings {
+  // Notification preferences
+  dailyReminder: boolean;
+  weeklyProgress: boolean;
+  reminderTime: string;
+  notificationEmail?: string;
+  notificationPhone?: string;
   
-  set: (settings: Partial<Settings>): void => {
-    try {
-      const current = settingsStorage.get();
-      const updated = { ...current, ...settings };
-      localStorage.setItem('app-settings', JSON.stringify(updated));
-    } catch (error) {
-      console.error('Failed to save settings:', error);
+  // Personal goals
+  parentingFocus: string;
+  
+  // UI preferences
+  darkMode: boolean;
+  
+  // App data
+  lastBackup?: string;
+}
+
+const SETTINGS_KEY = 'parenting-journal-settings';
+
+const defaultSettings: UserSettings = {
+  dailyReminder: false,
+  weeklyProgress: false,
+  reminderTime: '20:00',
+  notificationEmail: '',
+  notificationPhone: '',
+  parentingFocus: '',
+  darkMode: false,
+};
+
+export function getSettings(): UserSettings {
+  try {
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return { ...defaultSettings, ...parsed };
     }
+  } catch (error) {
+    console.warn('Failed to load settings:', error);
   }
-};
+  return defaultSettings;
+}
 
-// Legacy function names for compatibility
-export const getSettings = () => settingsStorage.get();
-export const saveSettings = (settings: Partial<Settings>) => settingsStorage.set(settings);
+export function saveSettings(settings: Partial<UserSettings>): void {
+  try {
+    const current = getSettings();
+    const updated = { ...current, ...settings };
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
+    
+    // Apply dark mode immediately
+    if (settings.darkMode !== undefined) {
+      document.documentElement.classList.toggle('dark', settings.darkMode);
+    }
+  } catch (error) {
+    console.error('Failed to save settings:', error);
+  }
+}
 
-export const resetSettings = () => {
-  localStorage.removeItem('app-settings');
-};
-
-export const clearAllAppData = () => {
-  localStorage.clear();
-};
-
-export const initializeTheme = () => {
-  const settings = getSettings();
-  if (settings.theme === 'dark') {
-    document.documentElement.classList.add('dark');
-  } else {
+export function resetSettings(): void {
+  try {
+    localStorage.removeItem(SETTINGS_KEY);
     document.documentElement.classList.remove('dark');
+  } catch (error) {
+    console.error('Failed to reset settings:', error);
   }
-};
+}
+
+export function clearAllAppData(): void {
+  const keys = Object.keys(localStorage);
+  const appKeys = keys.filter(key => 
+    key.startsWith('parenting-journal') || 
+    key.startsWith('calmResetUsage')
+  );
+  
+  appKeys.forEach(key => {
+    localStorage.removeItem(key);
+  });
+  
+  document.documentElement.classList.remove('dark');
+}
+
+// Initialize dark mode on app load
+export function initializeTheme(): void {
+  const settings = getSettings();
+  document.documentElement.classList.toggle('dark', settings.darkMode);
+}

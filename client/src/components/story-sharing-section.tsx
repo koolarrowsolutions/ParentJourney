@@ -57,7 +57,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
                   <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-1 sm:mb-2">
                     Share Journey
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight text-center mx-auto">
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight text-center mx-auto break-words overflow-wrap-anywhere">
                     Write or voice record your full thoughts and experiences - perfect for detailed reflection and deeper journaling
                   </div>
                 </div>
@@ -91,7 +91,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
                   <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-1 sm:mb-2">
                     Quick Moment
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight text-center mx-auto">
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight text-center mx-auto break-words overflow-wrap-anywhere">
                     Quick reflection with a sentence or photo - perfect for capturing moments on the go
                   </div>
                 </div>

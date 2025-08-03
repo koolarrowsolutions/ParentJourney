@@ -189,6 +189,7 @@ export class MemStorage implements IStorage {
       dailyCheckIn: insertEntry.dailyCheckIn ?? null,
       isFavorite: insertEntry.isFavorite ?? "false",
       calmResetUsed: insertEntry.calmResetUsed ?? "false",
+      entryType: insertEntry.entryType ?? "shared_journey",
       createdAt: new Date(),
     };
     

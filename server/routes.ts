@@ -545,9 +545,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get journal statistics (PROTECTED)
   app.get("/api/journal-stats", requireAuth, async (req, res) => {
     try {
+      const currentUser = req.user!;
+      console.log("Getting journal stats for user:", currentUser.id, "family:", currentUser.familyId);
+      storage.setCurrentUser(currentUser.id);
       const stats = await storage.getJournalStats();
+      console.log("Journal stats result:", stats);
       res.json(stats);
     } catch (error) {
+      console.error("Error fetching journal stats:", error);
       res.status(500).json({ message: "Failed to fetch journal statistics" });
     }
   });

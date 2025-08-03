@@ -77,6 +77,7 @@ export class DatabaseStorage implements IStorage {
       dailyCheckIn: schema.journalEntries.dailyCheckIn,
       isFavorite: schema.journalEntries.isFavorite,
       calmResetUsed: schema.journalEntries.calmResetUsed,
+      entryType: schema.journalEntries.entryType,
       createdAt: schema.journalEntries.createdAt
     })
     .from(schema.journalEntries)
@@ -156,7 +157,9 @@ export class DatabaseStorage implements IStorage {
     weekSharedJourneys: number;
     weekQuickMoments: number;
   }> {
+    console.log("Getting journal stats - current user ID:", this.currentUserId);
     const familyId = await this.getCurrentUserFamilyId();
+    console.log("Family ID for stats:", familyId);
     if (!familyId) return { totalEntries: 0, weekEntries: 0, longestStreak: 0, weekSharedJourneys: 0, weekQuickMoments: 0 };
 
     const totalResult = await db.select({ count: sql<number>`count(*)` })

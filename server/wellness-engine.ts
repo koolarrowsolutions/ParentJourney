@@ -96,6 +96,72 @@ const GENTLE_WELLNESS_LIBRARY: Omit<WellnessSuggestion, 'id'>[] = [
   },
 
   {
+    type: 'creativity',
+    title: 'Emotion Doodle',
+    description: 'Draw your current feeling—no artistic skill needed',
+    estimatedTime: '3 minutes',
+    difficulty: 'easy',
+    category: 'stress-relief',
+    triggerConditions: ['stress_detected', 'overwhelm_keywords', 'creative_outlet_needed'],
+    actionSteps: [
+      'Grab any paper and pen or pencil',
+      'Draw how you feel right now (lines, shapes, scribbles—anything)',
+      'No judgment, just let your hand move',
+      'Notice what comes up as you draw'
+    ],
+    completionReward: {
+      points: 10,
+      message: 'Creative expression helps process emotions'
+    },
+    isOptional: true,
+    priority: 'low'
+  },
+
+  {
+    type: 'movement',
+    title: 'Gentle Stretch Break',
+    description: 'Simple stretches to release physical tension',
+    estimatedTime: '2 minutes',
+    difficulty: 'easy',
+    category: 'quick-reset',
+    triggerConditions: ['physical_tension', 'long_day_detected'],
+    actionSteps: [
+      'Stand up and take a deep breath',
+      'Roll your shoulders back 5 times',
+      'Gently stretch your neck from side to side',
+      'Reach your arms up toward the ceiling and hold for 10 seconds'
+    ],
+    completionReward: {
+      points: 8,
+      message: 'Your body and mind are connected—both feel better now'
+    },
+    isOptional: true,
+    priority: 'low'
+  },
+
+  {
+    type: 'mindfulness', 
+    title: 'One-Minute Reset',
+    description: 'A quick mental reset when overwhelmed',
+    estimatedTime: '1 minute',
+    difficulty: 'easy',
+    category: 'quick-reset',
+    triggerConditions: ['overwhelm_keywords', 'stress_detected'],
+    actionSteps: [
+      'Close your eyes or soften your gaze',
+      'Name 3 things you can hear right now',
+      'Name 2 things you can physically feel (chair, air, clothing)',
+      'Take one slow, deep breath'
+    ],
+    completionReward: {
+      points: 5,
+      message: 'You just gave yourself permission to pause'
+    },
+    isOptional: true,
+    priority: 'low'
+  }
+
+  {
     type: 'creative',
     title: 'Emotion Doodle',
     description: 'Draw your current feeling - no artistic skill needed',

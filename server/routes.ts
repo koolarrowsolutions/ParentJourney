@@ -2331,9 +2331,26 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         enableGamification: true
       });
 
-      // Store suggestions in database
+      // Check for existing suggestions to prevent duplicates
+      const existingSuggestions = await db
+        .select({ suggestionId: wellnessSuggestions.suggestionId })
+        .from(wellnessSuggestions)
+        .where(and(
+          eq(wellnessSuggestions.userId, userId),
+          eq(wellnessSuggestions.status, 'suggested')
+        ));
+      
+      const existingSuggestionIds = new Set(existingSuggestions.map(s => s.suggestionId));
+
+      // Store only new suggestions in database
       const storedSuggestions = [];
       for (const suggestion of suggestions) {
+        // Skip if this suggestion already exists for the user
+        if (existingSuggestionIds.has(suggestion.id)) {
+          console.log(`Skipping duplicate suggestion: ${suggestion.id} for user: ${userId}`);
+          continue;
+        }
+
         const stored = await db
           .insert(wellnessSuggestions)
           .values({

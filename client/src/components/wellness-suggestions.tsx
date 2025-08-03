@@ -53,6 +53,19 @@ const categoryIcons = {
   'quick-reset': Timer,
 };
 
+const categoryEmojis = {
+  'self-care': '💝',
+  'mindfulness': '🧘‍♀️',
+  'connection': '💞',
+  'reflection': '💭',
+  'breathing': '🌬️',
+  'movement': '🏃‍♀️',
+  'gratitude': '🙏',
+  'rest': '😴',
+  'stress-relief': '🌿',
+  'quick-reset': '⚡',
+};
+
 const categoryColors = {
   'self-care': 'bg-rose-100 text-rose-800 border-rose-200',
   'mindfulness': 'bg-purple-100 text-purple-800 border-purple-200',
@@ -308,8 +321,9 @@ export function WellnessSuggestions() {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-2">
                         <IconComponent className="h-5 w-5 text-purple-600" />
-                        <Badge variant="outline" className={cn("text-xs", categoryColor)}>
-                          {suggestion.category}
+                        <Badge variant="outline" className={cn("text-xs flex items-center space-x-1", categoryColor)}>
+                          <span>{categoryEmojis[suggestion.category as keyof typeof categoryEmojis] || '✨'}</span>
+                          <span>{suggestion.category}</span>
                         </Badge>
                       </div>
                       <div className="text-xs text-gray-500">

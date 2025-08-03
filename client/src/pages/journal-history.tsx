@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { 
@@ -31,7 +32,6 @@ import {
   CalendarIcon
 } from "lucide-react";
 import { Link } from "wouter";
-import { format } from "date-fns";
 import type { JournalEntry, ChildProfile } from "@shared/schema";
 import { exportEntryToPDF, exportFavoritesToPDF } from "@/utils/pdf-export";
 
@@ -43,7 +43,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
   const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const [selectedInteractionTypes, setSelectedInteractionTypes] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("all");
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date } | undefined>();
+  const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | undefined>();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { toast } = useToast();
 
@@ -145,17 +145,11 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
     
     // Filter by date range (if set)
     let dateFilter = true;
-    if (dateRange?.from || dateRange?.to) {
+    if (dateRange) {
       const entryDate = new Date(entry.createdAt);
       if (dateRange.from && dateRange.to) {
         // Both dates set - check if entry is within range
         dateFilter = entryDate >= dateRange.from && entryDate <= dateRange.to;
-      } else if (dateRange.from) {
-        // Only start date set - check if entry is on or after start date
-        dateFilter = entryDate >= dateRange.from;
-      } else if (dateRange.to) {
-        // Only end date set - check if entry is on or before end date
-        dateFilter = entryDate <= dateRange.to;
       }
     }
     
@@ -498,16 +492,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
               {/* Unified Filter Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 
-                {/* Select Children Section */}
-                <div className="col-span-full">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Baby className="h-4 w-4 text-primary" />
-                    <h3 className="text-sm font-medium text-neutral-700">Select Children</h3>
-                    <div className="flex-1 border-t border-neutral-200"></div>
-                    <Users className="h-4 w-4 text-primary" />
-                    <h3 className="text-sm font-medium text-neutral-700">Your Interactions</h3>
-                  </div>
-                </div>
+
 
                 {/* Children and General Interactions */}
                 {profilesLoading ? (
@@ -628,7 +613,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                       <DialogTrigger asChild>
                         <div
                           className={`flex items-center p-3 rounded-lg border transition-colors cursor-pointer ${
-                            dateRange?.from || dateRange?.to
+                            dateRange
                               ? 'border-primary bg-primary/5'
                               : 'border-neutral-200 hover:border-neutral-300'
                           }`}
@@ -638,17 +623,17 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                               <CalendarIcon className="h-4 w-4" />
                             </div>
                             <div className="text-sm font-medium text-neutral-800">
-                              {dateRange?.from || dateRange?.to ? 'Date Range Set' : 'Select Date Range'}
+                              {dateRange ? 'Date Range Set' : 'Select Date Range'}
                             </div>
                           </div>
-                          {(dateRange?.from || dateRange?.to) && (
+                          {dateRange && (
                             <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
                               <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                             </div>
                           )}
                         </div>
                       </DialogTrigger>
-                      <DialogContent className="w-auto p-0">
+                      <DialogContent className="w-auto p-0 max-w-fit">
                         <div className="p-4">
                           <DialogHeader>
                             <DialogTitle>Select Date Range</DialogTitle>
@@ -658,21 +643,23 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                               mode="range"
                               selected={dateRange}
                               onSelect={setDateRange}
-                              numberOfMonths={2}
+                              numberOfMonths={window.innerWidth >= 768 ? 2 : 1}
                               className="rounded-md border"
                             />
-                            <div className="flex justify-between mt-4">
+                            <div className="flex justify-between mt-4 gap-2">
                               <Button
                                 variant="outline"
                                 onClick={() => {
                                   setDateRange(undefined);
                                   setShowDatePicker(false);
                                 }}
+                                className="flex-1 sm:flex-none"
                               >
                                 Clear
                               </Button>
                               <Button
                                 onClick={() => setShowDatePicker(false)}
+                                className="flex-1 sm:flex-none"
                               >
                                 Apply
                               </Button>
@@ -686,7 +673,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
               </div>
 
               {/* Selected Filters Display */}
-              {(selectedChildIds.length > 0 || selectedInteractionTypes.length > 0 || dateRange?.from || dateRange?.to) && (
+              {(selectedChildIds.length > 0 || selectedInteractionTypes.length > 0 || dateRange) && (
                 <div className="pt-4 border-t border-neutral-200">
                   <h4 className="text-xs font-medium text-neutral-600 mb-2">Active Filters:</h4>
                   <div className="flex flex-wrap gap-2">
@@ -710,13 +697,11 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                         {type === 'shared_journey' ? 'Parenting Journey' : 'Quick Moments'}
                       </Badge>
                     ))}
-                    {(dateRange?.from || dateRange?.to) && (
+                    {dateRange && (
                       <Badge variant="outline" className="text-xs">
-                        {dateRange?.from && dateRange?.to 
-                          ? `${format(dateRange.from, 'MMM d')} - ${format(dateRange.to, 'MMM d, yyyy')}`
-                          : dateRange?.from 
-                          ? `From ${format(dateRange.from, 'MMM d, yyyy')}`
-                          : `Until ${format(dateRange.to!, 'MMM d, yyyy')}`
+                        {dateRange.from && dateRange.to 
+                          ? `${dateRange.from.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${dateRange.to.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                          : 'Date Range Selected'
                         }
                       </Badge>
                     )}
@@ -724,7 +709,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                 </div>
               )}
 
-              {selectedChildIds.length === 0 && selectedInteractionTypes.length === 0 && !dateRange?.from && !dateRange?.to && (
+              {selectedChildIds.length === 0 && selectedInteractionTypes.length === 0 && !dateRange && (
                 <p className="text-xs text-neutral-500 pt-2 border-t border-neutral-200">
                   All interactions shown when no filters selected
                 </p>

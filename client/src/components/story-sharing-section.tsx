@@ -28,9 +28,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
             </h3>
             <Sparkles className="h-3 w-3 sm:h-6 sm:w-6 text-amber-500 ml-1 sm:ml-2" />
           </div>
-          <p className="text-xs sm:text-base text-neutral-600 leading-tight sm:leading-relaxed max-w-2xl mx-auto px-1 sm:px-2">
-            Every moment matters. Share what's happening, celebrate wins, work through challenges.
-          </p>
+
           
           {/* AI Insights messaging - Moved from welcome section */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">

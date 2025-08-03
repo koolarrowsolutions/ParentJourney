@@ -19,8 +19,7 @@ import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { WellnessProgressRing } from "@/components/wellness-progress-ring";
 import { OnboardingTrigger } from "@/components/onboarding-trigger";
 
-import { OnboardingFlow } from "@/components/onboarding-flow";
-import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
+
 import { authenticatedFetch } from "@/utils/api-client";
 
 import type { ChildProfile, JournalEntry } from "@shared/schema";
@@ -54,13 +53,15 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
   
-  const {
-    parentProfile,
-    shouldShowOnboarding,
-    completeOnboarding,
-    dismissOnboarding,
-    triggerOnboardingForProfileAccess,
-  } = useAuthOnboarding();
+  // Query parent profile to check authentication
+  const { data: parentProfile } = useQuery({
+    queryKey: ["/api/parent-profile"],
+    queryFn: async () => {
+      const response = await authenticatedFetch("/api/parent-profile");
+      if (!response.ok) throw new Error("Failed to fetch parent profile");
+      return response.json();
+    }
+  });
 
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],
@@ -96,14 +97,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
   // Login success popup disabled - using LoginConfirmationModal instead
 
-  // Enhanced trigger function that includes onboarding check
+  // Enhanced trigger function that fallbacks gracefully for authenticated users
   const enhancedTriggerSignUpPrompt = (trigger: 'save' | 'bookmark' | 'export' | 'settings') => {
-    // First check if onboarding should be triggered for profile access
-    if (triggerOnboardingForProfileAccess()) {
-      return true; // Block the action, onboarding will show
-    }
-    
-    // Otherwise use the original trigger function
+    // Use the regular trigger function if available
     return triggerSignUpPrompt ? triggerSignUpPrompt(trigger) : false;
   };
 
@@ -331,18 +327,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
 
 
-      {/* Onboarding Flow */}
-      {shouldShowOnboarding && (
-        <OnboardingFlow 
-          isOpen={true}
-          onComplete={() => {
-            completeOnboarding();
-            window.location.reload(); // Refresh to load new profile data
-          }}
-          onClose={dismissOnboarding}
-          showLaterButton={true}
-        />
-      )}
+
 
       {/* Login success popup disabled - using LoginConfirmationModal instead */}
     </div>

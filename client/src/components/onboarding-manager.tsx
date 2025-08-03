@@ -21,16 +21,21 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
       return;
     }
 
-
-
     // For testing purposes - allow resetting onboarding by clearing localStorage
     // Users can reset by running: localStorage.removeItem(`onboarding_${user.id}`) in console
+    
+    // Check URL parameter for forcing onboarding
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceOnboarding = urlParams.get('onboarding') === 'true';
+    
+    // Check localStorage debug flag
+    const debugOnboarding = localStorage.getItem('debug_onboarding') === 'true';
     
     // Check if user has completed onboarding
     const onboardingStatus = localStorage.getItem(`onboarding_${user.id}`);
     const parsedStatus = onboardingStatus ? JSON.parse(onboardingStatus) : {};
     
-    if (!parsedStatus.initial) {
+    if (forceOnboarding || debugOnboarding || !parsedStatus.initial) {
       setCurrentPhase('initial');
     } else if (!parsedStatus.firstTimeTour) {
       setCurrentPhase('first-time-tour');
@@ -111,6 +116,7 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
       {currentPhase === 'first-time-tour' && (
         <FeatureTour
           tour={TOURS.firstTime}
+          isActive={true}
           onComplete={() => completePhase('first-time-tour')}
           onSkip={() => skipPhase('first-time-tour')}
         />
@@ -120,6 +126,7 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
       {currentPhase === 'analytics-tour' && (
         <FeatureTour
           tour={TOURS.analytics}
+          isActive={true}
           onComplete={() => setCurrentPhase('completed')}
           onSkip={() => setCurrentPhase('completed')}
         />

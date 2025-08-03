@@ -23,6 +23,9 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
 
 
 
+    // For testing purposes - allow resetting onboarding by clearing localStorage
+    // Users can reset by running: localStorage.removeItem(`onboarding_${user.id}`) in console
+    
     // Check if user has completed onboarding
     const onboardingStatus = localStorage.getItem(`onboarding_${user.id}`);
     const parsedStatus = onboardingStatus ? JSON.parse(onboardingStatus) : {};

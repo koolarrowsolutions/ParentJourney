@@ -63,13 +63,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     }
   });
 
-  // Debug logging
-  console.log("Home component render:", {
-    parentProfile,
-    profileLoading,
-    profileError,
-    hasAuth: !!parentProfile
-  });
+
 
   const { data: stats, isLoading } = useQuery<JournalStats>({
     queryKey: ["/api/journal-stats"],

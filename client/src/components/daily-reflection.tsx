@@ -113,9 +113,16 @@ export function DailyReflection() {
 
   const saveReflectionMutation = useMutation({
     mutationFn: async (data: { content: string; title: string }) => {
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
       const response = await fetch("/api/journal-entries", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
+        credentials: "include",
         body: JSON.stringify({
           title: data.title,
           content: data.content,

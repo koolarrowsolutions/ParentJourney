@@ -16,38 +16,32 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
 
   // Check onboarding status on auth change
   useEffect(() => {
+    // For testing purposes, allow triggering onboarding even when not authenticated
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceOnboarding = urlParams.get('onboarding') === 'true';
+    const debugOnboarding = localStorage.getItem('debug_onboarding') === 'true';
+    
+    if (forceOnboarding || debugOnboarding) {
+      console.log('🎯 OnboardingManager: FORCING ONBOARDING DUE TO TRIGGER (even without auth)', { 
+        forceOnboarding, 
+        debugOnboarding,
+        isAuthenticated,
+        userID: user?.id || 'none'
+      });
+      setCurrentPhase('initial');
+      return;
+    }
+    
     if (!isAuthenticated || !user) {
       setCurrentPhase(null);
       return;
     }
 
-    // For testing purposes - allow resetting onboarding by clearing localStorage
-    // Users can reset by running: localStorage.removeItem(`onboarding_${user.id}`) in console
-    
-    // Check URL parameter for forcing onboarding
-    const urlParams = new URLSearchParams(window.location.search);
-    const forceOnboarding = urlParams.get('onboarding') === 'true';
-    
-    // Check localStorage debug flag
-    const debugOnboarding = localStorage.getItem('debug_onboarding') === 'true';
-    
     // Check if user has completed onboarding
     const onboardingStatus = localStorage.getItem(`onboarding_${user.id}`);
     const parsedStatus = onboardingStatus ? JSON.parse(onboardingStatus) : {};
     
-    // For testing - force onboarding to show always during development
     console.log('OnboardingManager: Auth check', { isAuthenticated, user: user?.username, forceOnboarding, debugOnboarding, parsedStatus });
-    
-    // FORCE COMPREHENSIVE ONBOARDING for any trigger
-    if (forceOnboarding || debugOnboarding) {
-      console.log('🎯 OnboardingManager: FORCING COMPREHENSIVE ONBOARDING DUE TO TRIGGER', { 
-        forceOnboarding, 
-        debugOnboarding,
-        userID: user?.id 
-      });
-      setCurrentPhase('initial');
-      return; // Exit early to force onboarding
-    }
     
     // Normal flow - check if user needs onboarding
     if (!parsedStatus.initial) {

@@ -275,6 +275,7 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
       childProfileId: selectedChildIds.length > 0 ? selectedChildIds[0] : null,
       requestAiFeedback,
       photos: photos.length > 0 ? photos : null,
+      entryType: 'shared_journey',
     };
     
     if (requestAiFeedback) {

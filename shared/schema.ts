@@ -111,6 +111,7 @@ export const journalEntries = pgTable("journal_entries", {
   dailyCheckIn: json("dailyCheckIn"), // Daily parent wellness check-in data
   isFavorite: text("is_favorite").notNull().default("false"), // Bookmarking support
   calmResetUsed: text("calm_reset_used").notNull().default("false"), // Track calm reset usage
+  entryType: text("entry_type").notNull().default("shared_journey"), // "shared_journey" or "quick_moment"
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

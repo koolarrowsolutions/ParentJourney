@@ -153,9 +153,11 @@ export class DatabaseStorage implements IStorage {
     totalEntries: number;
     weekEntries: number;
     longestStreak: number;
+    weekSharedJourneys: number;
+    weekQuickMoments: number;
   }> {
     const familyId = await this.getCurrentUserFamilyId();
-    if (!familyId) return { totalEntries: 0, weekEntries: 0, longestStreak: 0 };
+    if (!familyId) return { totalEntries: 0, weekEntries: 0, longestStreak: 0, weekSharedJourneys: 0, weekQuickMoments: 0 };
 
     const totalResult = await db.select({ count: sql<number>`count(*)` })
       .from(schema.journalEntries)
@@ -172,6 +174,26 @@ export class DatabaseStorage implements IStorage {
         gte(schema.journalEntries.createdAt, weekAgo)
       ));
     const weekEntries = weekResult[0]?.count || 0;
+
+    // Calculate weekly shared journeys (entries that are 'shared_journey' or have no entryType - backward compatibility)
+    const weekSharedJourneysResult = await db.select({ count: sql<number>`count(*)` })
+      .from(schema.journalEntries)
+      .where(and(
+        eq(schema.journalEntries.familyId, familyId),
+        gte(schema.journalEntries.createdAt, weekAgo),
+        sql`(${schema.journalEntries.entryType} = 'shared_journey' OR ${schema.journalEntries.entryType} IS NULL)`
+      ));
+    const weekSharedJourneys = weekSharedJourneysResult[0]?.count || 0;
+
+    // Calculate weekly quick moments
+    const weekQuickMomentsResult = await db.select({ count: sql<number>`count(*)` })
+      .from(schema.journalEntries)
+      .where(and(
+        eq(schema.journalEntries.familyId, familyId),
+        gte(schema.journalEntries.createdAt, weekAgo),
+        eq(schema.journalEntries.entryType, 'quick_moment')
+      ));
+    const weekQuickMoments = weekQuickMomentsResult[0]?.count || 0;
 
     // Calculate longest streak (consecutive days with entries)
     let longestStreak = 0;
@@ -216,6 +238,8 @@ export class DatabaseStorage implements IStorage {
       totalEntries,
       weekEntries,
       longestStreak,
+      weekSharedJourneys,
+      weekQuickMoments,
     };
   }
 

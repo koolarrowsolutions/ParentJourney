@@ -5,9 +5,11 @@ interface InteractiveProgressProps {
   totalEntries: number;
   weekEntries: number;
   longestStreak: number;
+  weekSharedJourneys: number;
+  weekQuickMoments: number;
 }
 
-export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }: InteractiveProgressProps) {
+export function InteractiveProgress({ totalEntries, weekEntries, longestStreak, weekSharedJourneys, weekQuickMoments }: InteractiveProgressProps) {
   const [animateNumbers, setAnimateNumbers] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
 
@@ -30,8 +32,8 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      {/* Top row - 3 metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      {/* Top row - 5 metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 sm:gap-4">
         {/* Total Entries */}
         <div className="bg-primary/5 rounded-lg p-3 sm:p-4 text-center border border-primary/20 animate-pop-in stagger-1">
           <div className="relative">
@@ -118,6 +120,36 @@ export function InteractiveProgress({ totalEntries, weekEntries, longestStreak }
             {longestStreak >= 7 ? 'On Fire!' : longestStreak >= 3 ? 'Good!' : 'Keep Going!'}
             </div>
           </div>
+        </div>
+
+        {/* Shared Journeys This Week */}
+        <div className="bg-blue-50 rounded-lg p-3 sm:p-4 text-center border border-blue-200 animate-bounce-in stagger-4">
+          <div className="relative">
+            <div className="text-xl sm:text-2xl font-bold text-blue-700">
+              {weekSharedJourneys || 0}
+            </div>
+            {weekSharedJourneys >= 3 && (
+              <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 animate-gentle-bounce">
+                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 fill-current" />
+              </div>
+            )}
+          </div>
+          <span className="text-xs sm:text-sm text-blue-700 block mt-1">Shared Journeys This Week</span>
+        </div>
+
+        {/* Quick Moments This Week */}
+        <div className="bg-amber-50 rounded-lg p-3 sm:p-4 text-center border border-amber-200 animate-pop-fade stagger-5">
+          <div className="relative">
+            <div className="text-xl sm:text-2xl font-bold text-amber-700">
+              {weekQuickMoments || 0}
+            </div>
+            {weekQuickMoments >= 5 && (
+              <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 animate-gentle-bounce">
+                <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500 fill-current" />
+              </div>
+            )}
+          </div>
+          <span className="text-xs sm:text-sm text-amber-700 block mt-1">Quick Moments This Week</span>
         </div>
       </div>
 

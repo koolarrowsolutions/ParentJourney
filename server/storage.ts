@@ -37,6 +37,8 @@ export interface IStorage {
     totalEntries: number;
     weekEntries: number;
     longestStreak: number;
+    weekSharedJourneys: number;
+    weekQuickMoments: number;
   }>;
   getMoodAnalytics(): Promise<{
     moodDistribution: { mood: string; count: number; percentage: number }[];
@@ -228,6 +230,8 @@ export class MemStorage implements IStorage {
     totalEntries: number;
     weekEntries: number;
     longestStreak: number;
+    weekSharedJourneys: number;
+    weekQuickMoments: number;
   }> {
     const entries = Array.from(this.journalEntries.values())
       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
@@ -239,6 +243,19 @@ export class MemStorage implements IStorage {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
     const weekEntries = entries.filter(entry => 
       new Date(entry.createdAt) >= oneWeekAgo
+    ).length;
+
+    // Calculate weekly shared journeys and quick moments
+    const weeklyEntries = entries.filter(entry => 
+      new Date(entry.createdAt) >= oneWeekAgo
+    );
+    
+    const weekSharedJourneys = weeklyEntries.filter(entry => 
+      (entry as any).entryType === 'shared_journey' || !(entry as any).entryType
+    ).length; // Default to shared_journey for backward compatibility
+    
+    const weekQuickMoments = weeklyEntries.filter(entry => 
+      (entry as any).entryType === 'quick_moment'
     ).length;
 
     // Calculate longest streak (simplified - consecutive days with entries)
@@ -271,6 +288,8 @@ export class MemStorage implements IStorage {
       totalEntries,
       weekEntries,
       longestStreak,
+      weekSharedJourneys,
+      weekQuickMoments,
     };
   }
 

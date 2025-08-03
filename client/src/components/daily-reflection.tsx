@@ -131,6 +131,7 @@ export function DailyReflection() {
           content: data.content,
           photos: data.photos || [],
           hasAiFeedback: "false",
+          entryType: "quick_moment",
         }),
       });
       if (!response.ok) throw new Error("Failed to save reflection");

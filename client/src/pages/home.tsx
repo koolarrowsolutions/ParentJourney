@@ -145,7 +145,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                       🔥 {stats?.longestStreak || 'New'}
                     </div>
                     <div className="text-xs sm:text-xs text-neutral-600 mt-1">
-                      {(stats?.longestStreak || 0) > 1 ? 'Day streak!' : 'Current Interaction Streak'}
+                      {(stats?.longestStreak || 0) > 1 ? 'Day streak!' : 'Current Daily Interaction Streak'}
                     </div>
                   </div>
 

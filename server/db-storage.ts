@@ -18,7 +18,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import * as schema from "@shared/schema";
-import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, asc, and, gte, lte, sql } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -173,8 +173,44 @@ export class DatabaseStorage implements IStorage {
       ));
     const weekEntries = weekResult[0]?.count || 0;
 
-    // Calculate longest streak - for now just return 0 if no entries
-    const longestStreak = totalEntries > 0 ? 1 : 0;
+    // Calculate longest streak (consecutive days with entries)
+    let longestStreak = 0;
+    if (totalEntries > 0) {
+      const entries = await db.select({ 
+        createdAt: schema.journalEntries.createdAt 
+      })
+      .from(schema.journalEntries)
+      .where(eq(schema.journalEntries.familyId, familyId))
+      .orderBy(asc(schema.journalEntries.createdAt));
+
+      // Group entries by date and calculate streak
+      const entryDates = Array.from(new Set(
+        entries.map(e => new Date(e.createdAt).toDateString())
+      )).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+      let currentStreak = 0;
+      let lastDate: Date | null = null;
+
+      for (const dateStr of entryDates) {
+        const entryDate = new Date(dateStr);
+        
+        if (lastDate) {
+          const dayDiff = Math.floor((entryDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+          if (dayDiff === 1) {
+            currentStreak++;
+          } else if (dayDiff > 1) {
+            longestStreak = Math.max(longestStreak, currentStreak);
+            currentStreak = 1;
+          }
+        } else {
+          currentStreak = 1;
+        }
+        
+        lastDate = entryDate;
+      }
+      
+      longestStreak = Math.max(longestStreak, currentStreak);
+    }
 
     return {
       totalEntries,

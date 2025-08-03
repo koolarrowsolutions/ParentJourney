@@ -60,7 +60,31 @@ export class DatabaseStorage implements IStorage {
     const familyId = await this.getCurrentUserFamilyId();
     if (!familyId) return [];
 
-    const conditions = [eq(schema.journalEntries.familyId, familyId)];
+    // Join with child_profiles to ensure proper family filtering
+    let baseQuery = db.select({
+      id: schema.journalEntries.id,
+      familyId: schema.journalEntries.familyId,
+      title: schema.journalEntries.title,
+      content: schema.journalEntries.content,
+      mood: schema.journalEntries.mood,
+      aiAnalyzedMood: schema.journalEntries.aiAnalyzedMood,
+      emotionTags: schema.journalEntries.emotionTags,
+      childProfileId: schema.journalEntries.childProfileId,
+      aiFeedback: schema.journalEntries.aiFeedback,
+      developmentalInsight: schema.journalEntries.developmentalInsight,
+      hasAiFeedback: schema.journalEntries.hasAiFeedback,
+      photos: schema.journalEntries.photos,
+      dailyCheckIn: schema.journalEntries.dailyCheckIn,
+      isFavorite: schema.journalEntries.isFavorite,
+      calmResetUsed: schema.journalEntries.calmResetUsed,
+      createdAt: schema.journalEntries.createdAt
+    })
+    .from(schema.journalEntries)
+    .leftJoin(schema.childProfiles, eq(schema.journalEntries.childProfileId, schema.childProfiles.id));
+
+    const conditions = [
+      sql`(${schema.journalEntries.familyId} = ${familyId} OR ${schema.childProfiles.familyId} = ${familyId})`
+    ];
     
     if (childId) {
       conditions.push(eq(schema.journalEntries.childProfileId, childId));
@@ -70,7 +94,7 @@ export class DatabaseStorage implements IStorage {
       conditions.push(sql`${schema.journalEntries.content} ILIKE ${'%' + search + '%'}`);
     }
     
-    let query = db.select().from(schema.journalEntries).where(and(...conditions))
+    let query = baseQuery.where(and(...conditions))
       .orderBy(desc(schema.journalEntries.createdAt));
     
     if (limit) {

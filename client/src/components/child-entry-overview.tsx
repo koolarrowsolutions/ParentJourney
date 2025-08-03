@@ -120,7 +120,7 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
                   onClick={() => navigate(`/journal-history?childId=${child.id}`)}
                   className="w-full text-xs text-blue-600 hover:text-blue-700 text-center py-1 hover:bg-blue-50 rounded transition-colors"
                 >
-                  View {entries.length - 1} more reflection{entries.length - 1 > 1 ? 's' : ''} for {child.name}
+                  View more reflections for {child.name}
                 </button>
               )}
             </div>

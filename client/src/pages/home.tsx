@@ -134,16 +134,25 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                   Get Started
                 </button>
                 <button 
-                  onClick={() => {
-                    localStorage.setItem('debug_onboarding', 'true');
-                    window.location.reload();
-                  }}
-                  data-testid="button-test-onboarding"
+                  onClick={() => setShowAuthDialog(true)}
+                  data-testid="button-learn-more"
                   className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                 >
-                  Test Onboarding
+                  Learn More
                 </button>
               </div>
+              
+              {/* Development helper - only visible when needed */}
+              {window.location.hostname.includes('replit') && (
+                <div className="mt-4 text-center">
+                  <button 
+                    onClick={() => window.location.href = '/?onboarding=true'}
+                    className="text-xs text-gray-400 hover:text-gray-600 underline"
+                  >
+                    [Dev: Test Onboarding]
+                  </button>
+                </div>
+              )}
               
               {/* Auth Dialog */}
               <AuthDialog 

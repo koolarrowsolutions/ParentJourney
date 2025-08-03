@@ -16,22 +16,17 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
 
   // Check onboarding status on auth change
   useEffect(() => {
-    // For testing purposes, allow triggering onboarding even when not authenticated
+    // For development: allow testing onboarding with URL parameter
     const urlParams = new URLSearchParams(window.location.search);
     const forceOnboarding = urlParams.get('onboarding') === 'true';
-    const debugOnboarding = localStorage.getItem('debug_onboarding') === 'true';
     
-    if (forceOnboarding || debugOnboarding) {
-      console.log('🎯 OnboardingManager: FORCING ONBOARDING DUE TO TRIGGER (even without auth)', { 
-        forceOnboarding, 
-        debugOnboarding,
-        isAuthenticated,
-        userID: user?.id || 'none'
-      });
+    if (forceOnboarding) {
+      console.log('🎯 OnboardingManager: FORCING ONBOARDING DUE TO URL PARAMETER');
       setCurrentPhase('initial');
       return;
     }
     
+    // Only show onboarding for authenticated users
     if (!isAuthenticated || !user) {
       setCurrentPhase(null);
       return;
@@ -41,7 +36,7 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
     const onboardingStatus = localStorage.getItem(`onboarding_${user.id}`);
     const parsedStatus = onboardingStatus ? JSON.parse(onboardingStatus) : {};
     
-    console.log('OnboardingManager: Auth check', { isAuthenticated, user: user?.username, forceOnboarding, debugOnboarding, parsedStatus });
+    console.log('OnboardingManager: Auth check', { isAuthenticated, user: user?.username, parsedStatus });
     
     // Normal flow - check if user needs onboarding
     if (!parsedStatus.initial) {

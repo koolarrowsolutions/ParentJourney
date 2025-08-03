@@ -25,7 +25,10 @@ The application employs a modern full-stack architecture with clear separation b
 - **Authentication Integration:** Fixed API authentication issues in onboarding flow with proper token handling
 - **Skip Option:** Added user-friendly skip option "I'll complete my info in the app" for flexible onboarding experience
 - **Modal Positioning:** Fixed modal sliding off-screen issue with proper CSS positioning
-- **User Testing:** Added easy testing capabilities - users can reset onboarding via localStorage.removeItem() in browser console
+- **Demo Mode Support:** Added complete demo mode for testing onboarding without authentication, with simulated API calls and realistic delays
+- **Close Button Fix:** Fixed X button and skip button functionality in both demo and authenticated modes
+- **User Experience Optimization:** Default behavior shows regular welcome screen for non-authenticated users; onboarding only appears for new authenticated users on first visit
+- **Development Testing:** Added URL parameter trigger (?onboarding=true) for developers to test onboarding flow
 - **Integration:** Seamlessly integrated with existing authentication system and user profiles
 - **Files Updated:** OnboardingManager uses OnboardingFlow component, authentication fixes in all mutation functions
 - **UX Enhancement:** Onboarding displays over main content without blocking functionality, allowing users to see the dashboard context

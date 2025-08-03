@@ -4,13 +4,16 @@ import {
   markFirstVisit, 
   shouldShowSignUpPrompt, 
   shouldShowTour,
-  isFirstTimeVisitor 
+  isFirstTimeVisitor,
+  markSignedUp 
 } from "@/utils/onboarding-storage";
+import { useAuth } from "@/hooks/use-auth";
 
 export function useOnboarding() {
   const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
   const [showTour, setShowTour] = useState(false);
   const [signUpTrigger, setSignUpTrigger] = useState<'save' | 'bookmark' | 'export' | 'settings'>('save');
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     // Mark first visit if this is the first time
@@ -18,13 +21,24 @@ export function useOnboarding() {
       markFirstVisit();
     }
 
+    // If user is authenticated but localStorage thinks they haven't signed up, sync the state
+    if (isAuthenticated && user && shouldShowSignUpPrompt()) {
+      markSignedUp();
+    }
+
     // Check if we should show the tour for returning signed-up users
     if (shouldShowTour()) {
       setShowTour(true);
     }
-  }, []);
+  }, [isAuthenticated, user]);
 
   const triggerSignUpPrompt = (trigger: 'save' | 'bookmark' | 'export' | 'settings') => {
+    // If user is already authenticated, don't show signup prompt regardless of localStorage state
+    if (isAuthenticated && user) {
+      return false; // User is authenticated, action can proceed normally
+    }
+    
+    // If user is not authenticated and localStorage suggests they should sign up
     if (shouldShowSignUpPrompt()) {
       setSignUpTrigger(trigger);
       setShowSignUpPrompt(true);

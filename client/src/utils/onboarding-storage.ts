@@ -73,6 +73,8 @@ export function resetOnboarding() {
 
 export function shouldShowSignUpPrompt(): boolean {
   const state = getOnboardingState();
+  // Only show signup prompt if user has visited but hasn't signed up in localStorage
+  // This will be further validated against actual auth state in the hook
   return state.hasVisited && !state.hasSignedUp;
 }
 

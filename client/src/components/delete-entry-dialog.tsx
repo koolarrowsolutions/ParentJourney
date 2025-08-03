@@ -19,8 +19,17 @@ export function DeleteEntryDialog({ entry, trigger }: DeleteEntryDialogProps) {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
+      // Get auth token for authenticated requests
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/journal-entries/${entry.id}`, {
         method: "DELETE",
+        headers,
+        credentials: "include",
       });
       if (!response.ok) throw new Error("Failed to delete entry");
       return response.json();

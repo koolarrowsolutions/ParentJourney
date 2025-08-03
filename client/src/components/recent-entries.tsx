@@ -26,7 +26,18 @@ export function RecentEntries() {
       if (searchQuery) {
         params.set("search", searchQuery);
       }
-      const response = await fetch(`/api/journal-entries?${params}`);
+      
+      // Get auth token for authenticated requests
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`/api/journal-entries?${params}`, {
+        headers,
+        credentials: "include",
+      });
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },
@@ -35,7 +46,17 @@ export function RecentEntries() {
   const { data: childProfiles } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
     queryFn: async () => {
-      const response = await fetch("/api/child-profiles");
+      // Get auth token for authenticated requests
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch("/api/child-profiles", {
+        headers,
+        credentials: "include",
+      });
       if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },

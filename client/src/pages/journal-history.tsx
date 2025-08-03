@@ -43,7 +43,17 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
   const { data: childProfiles, isLoading: profilesLoading } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
     queryFn: async () => {
-      const response = await fetch("/api/child-profiles");
+      // Get auth token for authenticated requests
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch("/api/child-profiles", {
+        headers,
+        credentials: "include",
+      });
       if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },
@@ -56,7 +66,18 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
       const url = selectedChildId 
         ? `/api/journal-entries?childId=${selectedChildId}&limit=50`
         : "/api/journal-entries?limit=50";
-      const response = await fetch(url);
+      
+      // Get auth token for authenticated requests
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(url, {
+        headers,
+        credentials: "include",
+      });
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },
@@ -65,11 +86,19 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
   // Mutation for updating favorite status
   const toggleFavoriteMutation = useMutation({
     mutationFn: async ({ entryId, isFavorite }: { entryId: string; isFavorite: boolean }) => {
+      // Get auth token for authenticated requests
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`/api/journal-entries/${entryId}/favorite`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
+        credentials: "include",
         body: JSON.stringify({ isFavorite }),
       });
       if (!response.ok) throw new Error("Failed to update favorite");

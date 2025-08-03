@@ -106,6 +106,8 @@ The application employs a modern full-stack architecture with clear separation b
 - Resolved critical issue where frontend used PATCH method but backend only had PUT endpoint for parent profile updates
 - Added missing PATCH /api/parent-profile endpoint to match frontend expectations
 - Enhanced error handling for empty update requests to prevent Drizzle "No values to set" errors
+- Fixed frontend mutation response handling - apiRequest now properly returns parsed JSON data
+- Added console logging for better error debugging in profile creation and update operations
 - Confirmed all profile update methods work correctly: PUT, PATCH, and POST endpoints all functional
 - Users can now successfully update parent profiles without "Update Failed" errors from endpoint mismatches
 

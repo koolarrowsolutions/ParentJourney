@@ -53,7 +53,8 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
 
   const createProfileMutation = useMutation({
     mutationFn: async (data: InsertParentProfile) => {
-      return await apiRequest("/api/parent-profile", "POST", data);
+      const response = await apiRequest("/api/parent-profile", "POST", data);
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/parent-profile"] });
@@ -64,6 +65,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
       onSuccess();
     },
     onError: (error) => {
+      console.error("Profile creation error:", error);
       toast({
         title: "❌ Creation Failed",
         description: "Failed to create your profile. Please try again.",
@@ -74,7 +76,8 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: Partial<InsertParentProfile>) => {
-      return await apiRequest("/api/parent-profile", "PATCH", data);
+      const response = await apiRequest("/api/parent-profile", "PATCH", data);
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/parent-profile"] });
@@ -85,6 +88,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
       onSuccess();
     },
     onError: (error) => {
+      console.error("Profile update error:", error);
       toast({
         title: "❌ Update Failed",
         description: "Failed to update your profile. Please try again.",

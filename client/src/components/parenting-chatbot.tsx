@@ -227,13 +227,16 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                   )}
                   <div
                     className={cn(
-                      "max-w-[280px] p-3 rounded-lg text-sm",
+                      "max-w-[280px] sm:max-w-[320px] p-3 rounded-lg text-sm leading-relaxed",
+                      "max-md:max-w-[calc(100vw-120px)]", // Better mobile width
                       message.role === 'user'
                         ? "bg-primary text-white rounded-br-sm"
                         : "bg-neutral-100 text-neutral-800 rounded-bl-sm"
                     )}
                   >
-                    {message.content}
+                    <div className="whitespace-pre-wrap break-words">
+                      {message.content}
+                    </div>
                   </div>
                   {message.role === 'user' && (
                     <div className="w-6 h-6 bg-neutral-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
@@ -248,9 +251,9 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                   <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <Bot className="h-3 w-3 text-primary" />
                   </div>
-                  <div className="bg-neutral-100 text-neutral-800 rounded-lg rounded-bl-sm p-3 text-sm">
+                  <div className="bg-neutral-100 text-neutral-800 rounded-lg rounded-bl-sm p-3 text-sm max-w-[280px] sm:max-w-[320px] max-md:max-w-[calc(100vw-120px)]">
                     <div className="flex items-center gap-1">
-                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <Loader2 className="h-3 w-3 animate-spin flex-shrink-0" />
                       <span>Thinking...</span>
                     </div>
                   </div>

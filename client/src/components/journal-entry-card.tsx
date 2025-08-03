@@ -141,27 +141,47 @@ export function JournalEntryCard({ entry, showChildInfo = true, onEdit, childPro
           )}
         </div>
 
-        {/* AI Feedback */}
+        {/* AI Feedback - Mobile Optimized */}
         {entry.aiFeedback && isExpanded && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-fade-in">
-            <div className="flex items-center mb-2">
-              <MessageSquare className="h-4 w-4 text-blue-600 mr-2" />
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 animate-fade-in">
+            {/* Icon at top center for mobile */}
+            <div className="flex flex-col items-center text-center mb-3 sm:hidden">
+              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mb-2">
+                <MessageSquare className="h-4 w-4 text-blue-600" />
+              </div>
               <span className="text-sm font-medium text-blue-800">🤖 AI Insights</span>
             </div>
-            <div className="text-sm text-blue-700 whitespace-pre-wrap">
+            
+            {/* Desktop layout with side icon */}
+            <div className="hidden sm:flex items-center mb-3">
+              <MessageSquare className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0" />
+              <span className="text-sm font-medium text-blue-800">🤖 AI Insights</span>
+            </div>
+            
+            <div className="text-sm sm:text-base text-blue-700 whitespace-pre-wrap leading-relaxed px-1 sm:px-0">
               {entry.aiFeedback}
             </div>
           </div>
         )}
 
-        {/* Developmental Insight */}
+        {/* Developmental Insight - Mobile Optimized */}
         {entry.developmentalInsight && isExpanded && (
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-3 animate-fade-in">
-            <div className="flex items-center mb-2">
-              <User className="h-4 w-4 text-purple-600 mr-2" />
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 sm:p-4 mt-3 animate-fade-in">
+            {/* Icon at top center for mobile */}
+            <div className="flex flex-col items-center text-center mb-3 sm:hidden">
+              <div className="flex items-center justify-center w-8 h-8 bg-purple-100 rounded-full mb-2">
+                <User className="h-4 w-4 text-purple-600" />
+              </div>
               <span className="text-sm font-medium text-purple-800">👶 Developmental Insights</span>
             </div>
-            <div className="text-sm text-purple-700 whitespace-pre-wrap">
+            
+            {/* Desktop layout with side icon */}
+            <div className="hidden sm:flex items-center mb-3">
+              <User className="h-4 w-4 text-purple-600 mr-2 flex-shrink-0" />
+              <span className="text-sm font-medium text-purple-800">👶 Developmental Insights</span>
+            </div>
+            
+            <div className="text-sm sm:text-base text-purple-700 whitespace-pre-wrap leading-relaxed px-1 sm:px-0">
               {entry.developmentalInsight}
             </div>
           </div>

@@ -780,18 +780,30 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
             <div
               key={insight.id}
               onClick={() => handleInsightClick(insight.id)}
-              className={`${insight.bgColor} rounded-lg p-4 border ${insight.borderColor} interactive-card hover-lift button-press cursor-pointer ${insight.hoverBorder} ${insight.hoverBg} hover:shadow-md transition-all duration-200`}
+              className={`${insight.bgColor} rounded-lg p-3 sm:p-4 border ${insight.borderColor} interactive-card hover-lift button-press cursor-pointer ${insight.hoverBorder} ${insight.hoverBg} hover:shadow-md transition-all duration-200`}
               title={insight.tooltip}
             >
-              <div className="flex items-start mb-2">
-                <div className={`${insight.color} mr-2`}>
+              {/* Mobile: Icon at top center */}
+              <div className="flex flex-col items-center text-center mb-3 sm:hidden">
+                <div className={`${insight.color} mb-2 p-2 bg-blue-100 rounded-full`}>
+                  {insight.icon}
+                </div>
+                <h4 className={`font-medium ${insight.color} text-sm`}>
+                  {insight.title}
+                </h4>
+              </div>
+              
+              {/* Desktop: Icon on the side */}
+              <div className="hidden sm:flex items-start mb-2">
+                <div className={`${insight.color} mr-2 flex-shrink-0`}>
                   {insight.icon}
                 </div>
                 <h4 className={`font-medium ${insight.color} flex-1`}>
                   {insight.title}
                 </h4>
               </div>
-              <p className="text-xs text-neutral-700 leading-relaxed">
+              
+              <p className="text-xs sm:text-sm text-neutral-700 leading-relaxed px-1 sm:px-0">
                 {insight.description}
               </p>
             </div>
@@ -947,12 +959,24 @@ function ParentingProgressAnalysis({ data }: { data: any }) {
 
   return (
     <div className="space-y-6" style={{minHeight: '400px', display: 'block', visibility: 'visible'}}>
-      <div className="bg-blue-50 rounded-xl p-6 border border-blue-200" style={{backgroundColor: '#eff6ff', border: '1px solid #bfdbfe'}}>
-        <h4 className="font-semibold text-blue-800 mb-4 flex items-center text-lg" style={{color: '#1e40af', fontSize: '18px', fontWeight: '600'}}>
-          <TrendingUp className="mr-3 h-5 w-5" />
+      <div className="bg-blue-50 rounded-xl p-4 sm:p-6 border border-blue-200" style={{backgroundColor: '#eff6ff', border: '1px solid #bfdbfe'}}>
+        {/* Mobile: Icon at top center */}
+        <div className="flex flex-col items-center text-center mb-4 sm:hidden">
+          <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full mb-3">
+            <TrendingUp className="h-5 w-5 text-blue-600" />
+          </div>
+          <h4 className="font-semibold text-blue-800 text-lg" style={{color: '#1e40af', fontSize: '18px', fontWeight: '600'}}>
+            Your Parenting Journey
+          </h4>
+        </div>
+        
+        {/* Desktop: Icon on the side */}
+        <h4 className="hidden sm:flex font-semibold text-blue-800 mb-4 items-center text-lg" style={{color: '#1e40af', fontSize: '18px', fontWeight: '600'}}>
+          <TrendingUp className="mr-3 h-5 w-5 flex-shrink-0" />
           Your Parenting Journey
         </h4>
-        <p className="text-blue-700 leading-relaxed" style={{color: '#1d4ed8', lineHeight: '1.6'}}>
+        
+        <p className="text-blue-700 leading-relaxed px-1 sm:px-0" style={{color: '#1d4ed8', lineHeight: '1.6'}}>
           {data.progressOverview || "Based on your journal entries and reflections, you're developing consistent parenting practices and growing in self-awareness."}
         </p>
       </div>
@@ -1100,11 +1124,23 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-              <h6 className="font-medium text-purple-800 mb-3 flex items-center text-sm">
-                <CheckCircle className="mr-2 h-4 w-4" />
+            <div className="bg-purple-50 rounded-lg p-3 sm:p-4 border border-purple-200">
+              {/* Mobile: Icon at top center */}
+              <div className="flex flex-col items-center text-center mb-3 sm:hidden">
+                <div className="flex items-center justify-center w-8 h-8 bg-purple-100 rounded-full mb-2">
+                  <CheckCircle className="h-4 w-4 text-purple-600" />
+                </div>
+                <h6 className="font-medium text-purple-800 text-sm">
+                  Key Milestones for {child.childName}
+                </h6>
+              </div>
+              
+              {/* Desktop: Icon on the side */}
+              <h6 className="hidden sm:flex font-medium text-purple-800 mb-3 items-center text-sm">
+                <CheckCircle className="mr-2 h-4 w-4 flex-shrink-0" />
                 Key Milestones for {child.childName}
               </h6>
+              
               <div className="space-y-2">
                 {child.milestones?.map((milestone: string, idx: number) => (
                   <div key={idx} className="flex items-start">
@@ -1115,11 +1151,23 @@ function ChildDevelopmentAnalysis({ data }: { data: any }) {
               </div>
             </div>
 
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-              <h6 className="font-medium text-blue-800 mb-3 flex items-center text-sm">
-                <Target className="mr-2 h-4 w-4" />
+            <div className="bg-blue-50 rounded-lg p-3 sm:p-4 border border-blue-200">
+              {/* Mobile: Icon at top center */}
+              <div className="flex flex-col items-center text-center mb-3 sm:hidden">
+                <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mb-2">
+                  <Target className="h-4 w-4 text-blue-600" />
+                </div>
+                <h6 className="font-medium text-blue-800 text-sm">
+                  Focus Areas for {child.childName}
+                </h6>
+              </div>
+              
+              {/* Desktop: Icon on the side */}
+              <h6 className="hidden sm:flex font-medium text-blue-800 mb-3 items-center text-sm">
+                <Target className="mr-2 h-4 w-4 flex-shrink-0" />
                 Focus Areas for {child.childName}
               </h6>
+              
               <div className="space-y-2">
                 {child.focusAreas?.map((area: string, idx: number) => (
                   <div key={idx} className="flex items-start">
@@ -1333,9 +1381,9 @@ function ConsiderationsAnalysis({ data }: { data: any }) {
               </p>
             </div>
             
-            <div className="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-400">
-              <p className="text-blue-800 font-medium mb-2">Why it matters:</p>
-              <p className="text-blue-700 leading-relaxed">
+            <div className="bg-blue-50 rounded-lg p-3 sm:p-4 border-l-4 border-blue-400">
+              <p className="text-blue-800 font-medium mb-2 text-center sm:text-left">Why it matters:</p>
+              <p className="text-blue-700 leading-relaxed px-1 sm:px-0">
                 {consideration.importance}
               </p>
             </div>

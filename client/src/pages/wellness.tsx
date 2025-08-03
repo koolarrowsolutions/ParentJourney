@@ -18,7 +18,7 @@ export function Wellness() {
                 className="hover:bg-neutral-100 animate-pop-in hover-scale button-press"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                Back to Main
               </Button>
             </Link>
           </div>

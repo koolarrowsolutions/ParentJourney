@@ -4,7 +4,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Check, X, Heart, Lightbulb, Timer, Star } from 'lucide-react';
+import { Sparkles, Check, X, Heart, Lightbulb, Timer, Star, Smile, Meh, Frown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface WellnessSuggestion {
@@ -49,6 +49,8 @@ const categoryIcons = {
   'movement': Star,
   'gratitude': Heart,
   'rest': Timer,
+  'stress-relief': Heart,
+  'quick-reset': Timer,
 };
 
 const categoryColors = {
@@ -60,10 +62,14 @@ const categoryColors = {
   'movement': 'bg-green-100 text-green-800 border-green-200',
   'gratitude': 'bg-pink-100 text-pink-800 border-pink-200',
   'rest': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+  'stress-relief': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  'quick-reset': 'bg-cyan-100 text-cyan-800 border-cyan-200',
 };
 
 export function WellnessSuggestions() {
   const [showProgress, setShowProgress] = useState(false);
+  const [showFeedback, setShowFeedback] = useState<string | null>(null);
+  const [feedbackGiven, setFeedbackGiven] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   // Get auth headers - removed in favor of using apiRequest for consistency
@@ -132,6 +138,17 @@ export function WellnessSuggestions() {
       points,
       badge,
     });
+    
+    // Show feedback prompt after completion
+    setShowFeedback(suggestion.id);
+  };
+
+  const handleFeedback = (suggestionId: string, feeling: 'better' | 'same' | 'stressed') => {
+    setFeedbackGiven(suggestionId);
+    setShowFeedback(null);
+    
+    // Here you could send feedback to backend for analytics
+    console.log(`User feedback for ${suggestionId}: ${feeling}`);
   };
 
   const handleDismiss = (suggestionId: string) => {
@@ -209,9 +226,12 @@ export function WellnessSuggestions() {
                 <Badge variant="secondary" className="bg-purple-100 text-purple-800">
                   {progress.totalPoints} points
                 </Badge>
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                  {progress.currentStreak} day streak
-                </Badge>
+                <div className="flex flex-col items-end">
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                    {progress.currentStreak} day streak
+                  </Badge>
+                  <span className="text-xs text-gray-500 mt-1">tracking your consistency in caring for yourself</span>
+                </div>
               </div>
             </div>
           </CardHeader>
@@ -321,6 +341,52 @@ export function WellnessSuggestions() {
                         Done
                       </Button>
                     </div>
+
+                    {/* Feedback Modal */}
+                    {showFeedback === suggestion.id && (
+                      <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                        <h5 className="font-medium text-purple-900 mb-2">How do you feel now?</h5>
+                        <div className="flex justify-center space-x-4">
+                          <Button
+                            onClick={() => handleFeedback(suggestion.id, 'better')}
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center space-x-1 hover:bg-green-50 hover:border-green-200"
+                          >
+                            <Smile className="h-4 w-4 text-green-600" />
+                            <span>Better</span>
+                          </Button>
+                          <Button
+                            onClick={() => handleFeedback(suggestion.id, 'same')}
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center space-x-1 hover:bg-yellow-50 hover:border-yellow-200"
+                          >
+                            <Meh className="h-4 w-4 text-yellow-600" />
+                            <span>Same</span>
+                          </Button>
+                          <Button
+                            onClick={() => handleFeedback(suggestion.id, 'stressed')}
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center space-x-1 hover:bg-red-50 hover:border-red-200"
+                          >
+                            <Frown className="h-4 w-4 text-red-600" />
+                            <span>Still Stressed</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Feedback Confirmation */}
+                    {feedbackGiven === suggestion.id && (
+                      <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <Check className="h-4 w-4 text-green-600" />
+                          <span className="text-sm text-green-800">Thank you for your feedback! 💚</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}

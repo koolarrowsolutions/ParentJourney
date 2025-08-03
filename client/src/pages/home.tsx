@@ -13,6 +13,7 @@ import { getDailyInsight } from "@shared/daily-insights";
 import { CalmReset } from "@/components/calm-reset";
 import { ParentingChatbot } from "@/components/parenting-chatbot";
 import { ComprehensiveAIInsights } from "@/components/comprehensive-ai-insights";
+import { StorySharingSection } from "@/components/story-sharing-section";
 
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { WellnessProgressRing } from "@/components/wellness-progress-ring";
@@ -233,9 +234,17 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
 
 
-        {/* Easy Daily Check-In - Between welcome and AI insights */}
+        {/* Easy Daily Check-In - How are you really doing today */}
         <div className="mb-4 sm:mb-6" data-mood-selector>
           <MoodSelector />
+        </div>
+
+        {/* Story Sharing Section - Tell Your Story */}
+        <div className="mb-4 sm:mb-6">
+          <StorySharingSection 
+            selectedMood={selectedMood} 
+            triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
+          />
         </div>
 
         {/* AI Insights Section */}

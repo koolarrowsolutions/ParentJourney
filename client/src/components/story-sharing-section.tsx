@@ -1,0 +1,113 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Heart, PenTool, Lightbulb, Sparkles } from "lucide-react";
+import { JournalForm } from "@/components/journal-form";
+import { DailyReflection } from "@/components/daily-reflection";
+
+interface StorySharingSectionProps {
+  selectedMood: string;
+  triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
+}
+
+export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: StorySharingSectionProps) {
+  const [showJournalDialog, setShowJournalDialog] = useState(false);
+  const [showDailyReflectionDialog, setShowDailyReflectionDialog] = useState(false);
+
+  return (
+    <Card className="shadow-lg border border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 hover-lift animate-bounce-in">
+      <CardContent className="p-4 sm:p-6">
+        {/* Header Section */}
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="flex items-center justify-center mb-2">
+            <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-rose-500 mr-2" />
+            <h3 className="text-lg sm:text-xl font-semibold text-neutral-800">
+              Tell Your Story
+            </h3>
+            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500 ml-2" />
+          </div>
+          <p className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-2xl mx-auto">
+            Every moment matters in your parenting journey. Share what's happening, 
+            celebrate your wins, work through challenges, or simply capture this moment in time.
+          </p>
+        </div>
+
+        {/* Story Sharing Options */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          {/* Deep Reflection Option */}
+          <Dialog open={showJournalDialog} onOpenChange={setShowJournalDialog}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 sm:p-5 flex flex-col items-center justify-center space-y-2 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200"
+              >
+                <div className="bg-rose-100 p-3 rounded-full group-hover:bg-rose-200 transition-colors">
+                  <PenTool className="h-6 w-6 sm:h-7 sm:w-7 text-rose-600" />
+                </div>
+                <div className="text-center">
+                  <div className="font-semibold text-sm sm:text-base text-neutral-800 mb-1">
+                    Share Your Full Journey
+                  </div>
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                    Write about today's experiences, feelings, and insights. Perfect for deeper reflection.
+                  </div>
+                </div>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Share Your Parenting Journey</DialogTitle>
+                <DialogDescription>
+                  Document your experiences, challenges, and victories as a parent.
+                </DialogDescription>
+              </DialogHeader>
+              <JournalForm 
+                selectedMood={selectedMood} 
+                triggerSignUpPrompt={triggerSignUpPrompt}
+              />
+            </DialogContent>
+          </Dialog>
+
+          {/* Quick Reflection Option */}
+          <Dialog open={showDailyReflectionDialog} onOpenChange={setShowDailyReflectionDialog}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="h-auto p-4 sm:p-5 flex flex-col items-center justify-center space-y-2 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200"
+              >
+                <div className="bg-amber-100 p-3 rounded-full group-hover:bg-amber-200 transition-colors">
+                  <Lightbulb className="h-6 w-6 sm:h-7 sm:w-7 text-amber-600" />
+                </div>
+                <div className="text-center">
+                  <div className="font-semibold text-sm sm:text-base text-neutral-800 mb-1">
+                    Quick Moment Capture
+                  </div>
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                    Answer a thoughtful prompt about today. Just a few minutes to reflect and record.
+                  </div>
+                </div>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Quick Daily Reflection</DialogTitle>
+                <DialogDescription>
+                  Take a moment to reflect on a specific aspect of your parenting day.
+                </DialogDescription>
+              </DialogHeader>
+              <DailyReflection />
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Encouragement Footer */}
+        <div className="mt-4 sm:mt-6 text-center">
+          <p className="text-xs sm:text-sm text-neutral-500 italic">
+            Your stories help you grow, help us understand you better, and create a meaningful record of your family's journey.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

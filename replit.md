@@ -14,6 +14,15 @@ Authentication preference: Simple username/email + password system without socia
 
 The application employs a modern full-stack architecture with clear separation between client and server.
 
+## Recent Changes (August 2025)
+
+**Authentication System Resolution:**
+- Fixed critical authentication token inconsistencies between api-client.ts and queryClient.ts
+- Standardized token name to 'parentjourney_token' across all client-side authentication functions
+- Updated DailyReflection component to use proper authentication headers for journal saving
+- Resolved journal entry saving failures for authenticated users
+- Successfully tested with user "Ernesto A. Bejarano" - authentication and journal saving now working properly
+
 **Core Technologies:**
 - **Frontend**: React-based single-page application with TypeScript, Vite, Wouter (routing), TanStack Query (server state), React Hook Form with Zod (forms), shadcn/ui and Radix UI (components), Tailwind CSS (styling), date-fns (date handling).
 - **Backend**: Express.js server with TypeScript, esbuild, PostgreSQL with Drizzle ORM, Zod (validation schemas), RESTful API design.

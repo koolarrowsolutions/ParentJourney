@@ -36,6 +36,7 @@ interface JournalHistoryProps {
 
 export default function InteractionHistory({ triggerSignUpPrompt }: JournalHistoryProps) {
   const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
+  const [selectedInteractionTypes, setSelectedInteractionTypes] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("all");
   const { toast } = useToast();
 
@@ -119,17 +120,21 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
     },
   });
 
-  // Filter entries based on selected children and active tab
+  // Filter entries based on selected children, interaction types, and active tab
   const filteredEntries = allEntries?.filter(entry => {
     // First filter by selected children (if any are selected)
     const childFilter = selectedChildIds.length === 0 || 
                        selectedChildIds.includes(entry.childProfileId || '') ||
                        (selectedChildIds.includes('no-child') && !entry.childProfileId);
     
+    // Filter by interaction types (if any are selected)
+    const interactionTypeFilter = selectedInteractionTypes.length === 0 ||
+                                 selectedInteractionTypes.includes(entry.entryType || 'shared_journey');
+    
     // Then filter by tab
     const tabFilter = activeTab === "favorites" ? entry.isFavorite === "true" : true;
     
-    return childFilter && tabFilter;
+    return childFilter && interactionTypeFilter && tabFilter;
   }) || [];
 
   const favoriteEntries = allEntries?.filter(entry => entry.isFavorite === "true") || [];
@@ -541,6 +546,54 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
               </div>
             </div>
             
+            {/* Interaction Type Filter */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-neutral-700 mb-3">Filter by Interaction Type:</label>
+              <div className="flex flex-wrap gap-4">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="shared-journey-filter"
+                    checked={selectedInteractionTypes.includes('shared_journey')}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedInteractionTypes([...selectedInteractionTypes, 'shared_journey']);
+                      } else {
+                        setSelectedInteractionTypes(selectedInteractionTypes.filter(type => type !== 'shared_journey'));
+                      }
+                    }}
+                    className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                  />
+                  <label htmlFor="shared-journey-filter" className="text-sm text-neutral-700 cursor-pointer">
+                    Parenting Journey Journal Entries
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="quick-moment-filter"
+                    checked={selectedInteractionTypes.includes('quick_moment')}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedInteractionTypes([...selectedInteractionTypes, 'quick_moment']);
+                      } else {
+                        setSelectedInteractionTypes(selectedInteractionTypes.filter(type => type !== 'quick_moment'));
+                      }
+                    }}
+                    className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                  />
+                  <label htmlFor="quick-moment-filter" className="text-sm text-neutral-700 cursor-pointer">
+                    Quick Moment Daily Reflections
+                  </label>
+                </div>
+              </div>
+              {selectedInteractionTypes.length === 0 && (
+                <p className="text-xs text-neutral-500 mt-2">
+                  All interaction types shown when no filters selected
+                </p>
+              )}
+            </div>
+
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="all" className="flex items-center gap-2">

@@ -13,7 +13,7 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   // Get auth token for iframe compatibility
-  const token = localStorage.getItem('parentjourney_token');
+  const token = localStorage.getItem('authToken');
   
   const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
   if (token) {
@@ -38,7 +38,7 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     // Get auth token for iframe compatibility
-    const token = localStorage.getItem('parentjourney_token');
+    const token = localStorage.getItem('authToken');
     
     const headers: Record<string, string> = {};
     if (token) {

@@ -456,6 +456,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = journalEntryWithAiSchema.parse(req.body);
       const { requestAiFeedback, ...entryData } = validatedData;
 
+      // Get the current user's family ID
+      const currentUser = await storage.getUserById(req.user.id);
+      if (!currentUser) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
       // Create the entry first
       let aiFeedback = null;
       let developmentalInsight = null;
@@ -518,6 +524,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const entry = await storage.createJournalEntry({
         ...entryData,
+        familyId: currentUser.familyId, // Use the authenticated user's family ID
         aiFeedback,
         developmentalInsight,
         hasAiFeedback,

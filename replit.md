@@ -108,6 +108,8 @@ The application employs a modern full-stack architecture with clear separation b
 - Enhanced error handling for empty update requests to prevent Drizzle "No values to set" errors
 - Fixed frontend mutation response handling - apiRequest now properly returns parsed JSON data
 - Added console logging for better error debugging in profile creation and update operations
+- **CRITICAL FIX: Corrected apiRequest parameter order** - was calling apiRequest(url, method, data) instead of correct apiRequest(method, url, data)
+- This parameter order error caused "'/api/parent-profile' is not a valid HTTP method" errors preventing all profile updates
 - Confirmed all profile update methods work correctly: PUT, PATCH, and POST endpoints all functional
 - Users can now successfully update parent profiles without "Update Failed" errors from endpoint mismatches
 

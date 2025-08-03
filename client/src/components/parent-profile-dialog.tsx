@@ -53,7 +53,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
 
   const createProfileMutation = useMutation({
     mutationFn: async (data: InsertParentProfile) => {
-      const response = await apiRequest("/api/parent-profile", "POST", data);
+      const response = await apiRequest("POST", "/api/parent-profile", data);
       return await response.json();
     },
     onSuccess: () => {
@@ -78,7 +78,7 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
     mutationFn: async (data: Partial<InsertParentProfile>) => {
       console.log("Frontend: About to update profile with data:", data);
       try {
-        const response = await apiRequest("/api/parent-profile", "PATCH", data);
+        const response = await apiRequest("PATCH", "/api/parent-profile", data);
         console.log("Frontend: Got response from apiRequest:", response.status, response.statusText);
         const jsonData = await response.json();
         console.log("Frontend: Parsed JSON response:", jsonData);

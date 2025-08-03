@@ -159,7 +159,7 @@ const GENTLE_WELLNESS_LIBRARY: Omit<WellnessSuggestion, 'id'>[] = [
     },
     isOptional: true,
     priority: 'low'
-  }
+  },
 
   {
     type: 'creative',
@@ -262,12 +262,14 @@ export class WellnessEngine {
       return this.matchesTriggerConditions(suggestion, context);
     });
 
-    // Sort by priority and select gently
+    // Sort by priority and select gently, ensuring variety
     const sortedSuggestions = matchingSuggestions
       .sort((a, b) => {
         const priorityOrder = { 'low': 1, 'medium': 2, 'high': 3 };
         return priorityOrder[a.priority] - priorityOrder[b.priority];
       })
+      // Add randomization to prevent always getting the same suggestions
+      .sort((a, b) => Math.random() - 0.5)
       .slice(0, Math.min(userPreferences.maxSuggestionsPerDay, 2)); // Never more than 2 per day
 
     // Personalize suggestions with user's family context

@@ -68,7 +68,7 @@ export function getStoredAuthData(): AuthData | null {
 // Clear authentication data
 export function clearAuthData(): void {
   localStorage.removeItem('parentjourney_auth');
-  localStorage.removeItem('parentjourney_token');
+  localStorage.removeItem('authToken');
   console.log('Cleared auth data');
 }
 
@@ -105,11 +105,11 @@ export async function performLogin(identifier: string, password: string): Promis
       
       // Store auth token for API requests
       if (result.authToken) {
-        localStorage.setItem('parentjourney_token', result.authToken);
+        localStorage.setItem('authToken', result.authToken);
         console.log('Stored auth token for API requests:', result.authToken.substring(0, 20) + '...');
         
         // Verify token was stored properly
-        const storedToken = localStorage.getItem('parentjourney_token');
+        const storedToken = localStorage.getItem('authToken');
         console.log('Token verification - stored successfully:', !!storedToken && storedToken === result.authToken);
         
         // Token stored successfully - no additional action needed
@@ -142,7 +142,7 @@ export async function checkAuthStatus(): Promise<{ success: boolean; user?: any;
     console.log('Checking auth status...');
     
     // Get auth token for iframe compatibility
-    const token = localStorage.getItem('parentjourney_token');
+    const token = localStorage.getItem('authToken');
     console.log('Auth check - checking token from localStorage:', !!token, token ? token.substring(0, 20) + '...' : 'none');
     
     const headers: Record<string, string> = {
@@ -176,7 +176,7 @@ export async function checkAuthStatus(): Promise<{ success: boolean; user?: any;
         
         // Store/update auth token if provided
         if (result.authToken) {
-          localStorage.setItem('parentjourney_token', result.authToken);
+          localStorage.setItem('authToken', result.authToken);
         }
         
         return result;

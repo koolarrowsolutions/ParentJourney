@@ -23,8 +23,13 @@ The application employs a modern full-stack architecture with clear separation b
 - Resolved journal entry saving failures for authenticated users
 - Successfully tested with user "Ernesto A. Bejarano" - authentication and journal saving now working properly
 
-**Deployment Authentication Fix (August 2025):**
-- Fixed production deployment authentication failures by implementing environment-aware cookie settings
+**Production Authentication Token Fix (August 2025):**
+- **Critical Issue Resolved:** Fixed production deployment where authenticated users couldn't access profile data, journal entries, or child information
+- **Root Cause:** Token storage inconsistency between authentication persistence ('authToken') and API client ('parentjourney_token')
+- **Solution:** Standardized all authentication token references to use 'parentjourney_token' across the entire application
+- **Impact:** Session cookies don't work in production environment, but Bearer token authentication functions perfectly
+- **Validation:** Confirmed working authentication for users "esanjosechicano" and "yesenia" in production deployment
+- **Files Updated:** client/src/utils/auth-persistence.ts, client/src/hooks/use-auth.tsx, client/src/utils/api-client.ts, client/src/lib/queryClient.ts
 - Updated session configuration to use `secure: true` and `sameSite: 'none'` for HTTPS production deployments
 - Maintained `secure: false` and `sameSite: 'lax'` for development environments
 - Synchronized session settings between server/routes.ts and server/auth.ts for consistency

@@ -100,7 +100,14 @@ The application employs a modern full-stack architecture with clear separation b
 - User "yesenia" confirmed to have full access to manage her children (Miguel, Isabella, Sofia) and parent profile
 - All authenticated users can now create, read, update, and delete their own family data with proper isolation
 - Child profile operations secure across family boundaries - users cannot modify other families' data
-- Profile update system fully functional with both PUT and POST endpoints for compatibility
+- Profile update system fully functional with PUT, POST, and PATCH endpoints for complete frontend compatibility
+
+**Frontend-Backend API Endpoint Alignment (August 3, 2025):**
+- Resolved critical issue where frontend used PATCH method but backend only had PUT endpoint for parent profile updates
+- Added missing PATCH /api/parent-profile endpoint to match frontend expectations
+- Enhanced error handling for empty update requests to prevent Drizzle "No values to set" errors
+- Confirmed all profile update methods work correctly: PUT, PATCH, and POST endpoints all functional
+- Users can now successfully update parent profiles without "Update Failed" errors from endpoint mismatches
 
 **Data Connectivity & Integration Fix (August 3, 2025):**
 - Resolved journal entry family linking issues causing inaccurate stats and streaks

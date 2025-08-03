@@ -882,6 +882,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PATCH endpoint for profile updates (used by frontend)
+  app.patch("/api/parent-profile", async (req, res) => {
+    try {
+      console.log("PATCH /api/parent-profile called with body:", JSON.stringify(req.body));
+      
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        console.log("Authentication failed for PATCH parent profile");
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      console.log("Authentication successful for user:", authResult.userId);
+      
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
+      const validatedData = insertParentProfileSchema.partial().parse(req.body);
+      console.log("Validated data:", validatedData);
+      
+      // Check if there's any data to update
+      if (Object.keys(validatedData).length === 0) {
+        console.log("No data to update");
+        return res.status(400).json({ message: "No data provided for update" });
+      }
+      
+      const profile = await storage.updateParentProfile(validatedData);
+      if (!profile) {
+        console.log("Profile not found for update");
+        return res.status(404).json({ message: "Parent profile not found" });
+      }
+      
+      console.log("Profile updated successfully:", profile.id);
+      res.json(profile);
+    } catch (error) {
+      console.error("Error in PATCH parent profile:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        console.error("Error updating parent profile:", error);
+        res.status(500).json({ message: "Failed to update parent profile" });
+      }
+    }
+  });
+
   // Alternative POST endpoint for profile updates
   app.post("/api/parent-profile/update", async (req, res) => {
     try {
@@ -897,6 +942,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       storage.setCurrentUser(authResult.userId);
       
       const validatedData = insertParentProfileSchema.partial().parse(req.body);
+      
+      // Check if there's any data to update
+      if (Object.keys(validatedData).length === 0) {
+        return res.status(400).json({ message: "No data provided for update" });
+      }
+      
       const profile = await storage.updateParentProfile(validatedData);
       if (!profile) {
         return res.status(404).json({ message: "Parent profile not found" });

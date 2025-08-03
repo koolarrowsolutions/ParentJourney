@@ -439,7 +439,7 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
         <DialogHeader>
           <DialogTitle className="text-center">
             {currentStep === 'welcome' ? 'Getting Started' :

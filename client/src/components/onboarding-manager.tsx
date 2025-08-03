@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { InteractiveOnboarding } from "./interactive-onboarding";
+import { OnboardingFlow } from "./onboarding-flow";
 import { FeatureTour, TOURS } from "./feature-tour";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -97,28 +97,33 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
     <>
       {children}
       
-      {/* Initial Interactive Onboarding */}
-      <InteractiveOnboarding
-        isOpen={currentPhase === 'initial'}
-        onClose={() => skipPhase('initial')}
-        onComplete={() => completePhase('initial')}
-      />
+      {/* Comprehensive Onboarding Flow */}
+      {currentPhase === 'initial' && (
+        <OnboardingFlow
+          isOpen={true}
+          onComplete={() => completePhase('initial')}
+          onClose={() => skipPhase('initial')}
+          showLaterButton={true}
+        />
+      )}
       
       {/* First Time Feature Tour */}
-      <FeatureTour
-        isActive={currentPhase === 'first-time-tour'}
-        tour={TOURS.firstTime}
-        onComplete={() => completePhase('first-time-tour')}
-        onSkip={() => skipPhase('first-time-tour')}
-      />
+      {currentPhase === 'first-time-tour' && (
+        <FeatureTour
+          tour={TOURS.firstTime}
+          onComplete={() => completePhase('first-time-tour')}
+          onSkip={() => skipPhase('first-time-tour')}
+        />
+      )}
       
       {/* Analytics Tour */}
-      <FeatureTour
-        isActive={currentPhase === 'analytics-tour'}
-        tour={TOURS.analytics}
-        onComplete={() => setCurrentPhase('completed')}
-        onSkip={() => setCurrentPhase('completed')}
-      />
+      {currentPhase === 'analytics-tour' && (
+        <FeatureTour
+          tour={TOURS.analytics}
+          onComplete={() => setCurrentPhase('completed')}
+          onSkip={() => setCurrentPhase('completed')}
+        />
+      )}
     </>
   );
 }

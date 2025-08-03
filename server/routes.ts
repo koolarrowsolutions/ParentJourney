@@ -592,8 +592,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Child profile routes (PROTECTED)
-  app.get("/api/child-profiles", requireAuth, async (req, res) => {
+  app.get("/api/child-profiles", async (req, res) => {
     try {
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
       const profiles = await storage.getChildProfiles();
       res.json(profiles);
     } catch (error) {
@@ -601,8 +610,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/child-profiles/:id", requireAuth, async (req, res) => {
+  app.get("/api/child-profiles/:id", async (req, res) => {
     try {
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
       const profile = await storage.getChildProfile(req.params.id);
       if (!profile) {
         return res.status(404).json({ message: "Child profile not found" });
@@ -613,10 +631,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/child-profiles", requireAuth, async (req, res) => {
+  app.post("/api/child-profiles", async (req, res) => {
     try {
-      const validatedData = insertChildProfileSchema.parse(req.body);
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      console.log("Creating child profile for user:", authResult.userId);
+      console.log("Child profile data:", JSON.stringify(req.body, null, 2));
+      
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
+      // Get or create a family for this user first
+      let familyId = null;
+      
+      // Check if user already has a family by looking at existing parent profile
+      const existingParentProfile = await storage.getParentProfile();
+      if (existingParentProfile && existingParentProfile.familyId) {
+        familyId = existingParentProfile.familyId;
+        console.log("Using existing family from parent profile:", familyId);
+      } else {
+        // Create a new family for this user
+        const user = await storage.getUserById(authResult.userId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        const newFamily = await storage.createFamily({
+          name: `${user.name}'s Family`
+        });
+        familyId = newFamily.id;
+        console.log("Created new family for child:", familyId);
+        
+        // Update existing parent profile if one exists to use this family
+        if (existingParentProfile) {
+          await storage.updateParentProfile({ familyId: familyId });
+          console.log("Updated parent profile with family ID:", familyId);
+        }
+      }
+      
+      // Add family ID to the child profile data
+      const childData = {
+        ...req.body,
+        familyId: familyId
+      };
+      
+      const validatedData = insertChildProfileSchema.parse(childData);
       const profile = await storage.createChildProfile(validatedData);
+      console.log("Created child profile:", JSON.stringify(profile, null, 2));
+      
       res.status(201).json(profile);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -628,8 +694,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/child-profiles/:id", requireAuth, async (req, res) => {
+  app.put("/api/child-profiles/:id", async (req, res) => {
     try {
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
       const validatedData = insertChildProfileSchema.partial().parse(req.body);
       const profile = await storage.updateChildProfile(req.params.id, validatedData);
       if (!profile) {
@@ -646,8 +721,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/child-profiles/:id", requireAuth, async (req, res) => {
+  app.delete("/api/child-profiles/:id", async (req, res) => {
     try {
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
       const success = await storage.deleteChildProfile(req.params.id);
       if (!success) {
         return res.status(404).json({ message: "Child profile not found" });
@@ -1089,8 +1173,17 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
   });
 
   // Parent profile endpoints
-  app.get("/api/parent-profile", requireAuth, async (req, res) => {
+  app.get("/api/parent-profile", async (req, res) => {
     try {
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
       const profile = await storage.getParentProfile();
       res.json(profile);
     } catch (error) {
@@ -1099,12 +1192,49 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
     }
   });
 
-  app.post("/api/parent-profile", requireAuth, async (req, res) => {
+  app.post("/api/parent-profile", async (req, res) => {
     try {
-      console.log("Creating parent profile with data:", JSON.stringify(req.body, null, 2));
-      console.log("Session user ID:", req.session?.userId);
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      console.log("Creating parent profile for user:", authResult.userId);
+      console.log("Profile data:", JSON.stringify(req.body, null, 2));
       
-      const validatedData = insertParentProfileSchema.parse(req.body);
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
+      // Get or create a family for this user first
+      let familyId = null;
+      
+      // Check if user already has a family by looking at existing profiles
+      const existingProfile = await storage.getParentProfile();
+      if (existingProfile && existingProfile.familyId) {
+        familyId = existingProfile.familyId;
+        console.log("Using existing family:", familyId);
+      } else {
+        // Create a new family for this user
+        const user = await storage.getUserById(authResult.userId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        const newFamily = await storage.createFamily({
+          name: `${user.name}'s Family`
+        });
+        familyId = newFamily.id;
+        console.log("Created new family:", familyId);
+      }
+      
+      // Add family ID to the profile data
+      const profileData = {
+        ...req.body,
+        familyId: familyId
+      };
+      
+      const validatedData = insertParentProfileSchema.parse(profileData);
       console.log("Validated data:", JSON.stringify(validatedData, null, 2));
       
       const profile = await storage.createParentProfile(validatedData);
@@ -1214,8 +1344,17 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
     }
   });
 
-  app.patch("/api/parent-profile", requireAuth, async (req, res) => {
+  app.patch("/api/parent-profile", async (req, res) => {
     try {
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
       const updates = req.body;
       const profile = await storage.updateParentProfile(updates);
       if (!profile) {

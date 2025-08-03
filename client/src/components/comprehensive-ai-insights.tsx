@@ -719,61 +719,69 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       id: "parenting-progress",
       title: "Your Growth as a Parent",
       description: "AI insights on your parenting strengths, patterns, and growth—based on your journal entries and reflections. We'll highlight key moments, trends, and tips you can use today.",
-      icon: <TrendingUp className="h-5 w-5" />,
-      color: "text-primary",
-      bgColor: "bg-primary/5",
-      borderColor: "border-primary/20",
-      hoverBorder: "hover:border-primary",
-      hoverBg: "hover:bg-primary/10"
+      tooltip: "Track your parenting journey progress through AI analysis of your journal entries",
+      icon: <TrendingUp className="h-5 w-5 stroke-1" />,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200",
+      hoverBorder: "hover:border-blue-400",
+      hoverBg: "hover:bg-blue-100"
     },
     {
       id: "child-development",
       title: "Your Children's Development",
       description: "Understand your child's developmental stages and behavior trends with personalized guidance just for your family. We'll highlight key moments, trends, and tips you can use today.",
-      icon: <Baby className="h-5 w-5" />,
-      color: "text-accent",
-      bgColor: "bg-accent/5",
-      borderColor: "border-accent/20",
-      hoverBorder: "hover:border-accent",
-      hoverBg: "hover:bg-accent/10"
+      tooltip: "Get developmental insights specific to each of your children's ages and personalities",
+      icon: <Baby className="h-5 w-5 stroke-1" />,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-200",
+      hoverBorder: "hover:border-purple-400",
+      hoverBg: "hover:bg-purple-100"
     },
     {
       id: "personalized-tips",
       title: "Personalized Tips",
       description: "Custom recommendations based on your parenting style, child's personality, and recent experiences",
-      icon: <Lightbulb className="h-5 w-5" />,
-      color: "text-secondary",
-      bgColor: "bg-secondary/5",
-      borderColor: "border-secondary/20",
-      hoverBorder: "hover:border-secondary",
-      hoverBg: "hover:bg-secondary/10"
+      tooltip: "Receive actionable tips tailored to your family's unique situation and parenting style",
+      icon: <Lightbulb className="h-5 w-5 stroke-1" />,
+      color: "text-amber-600",
+      bgColor: "bg-amber-50",
+      borderColor: "border-amber-200",
+      hoverBorder: "hover:border-amber-400",
+      hoverBg: "hover:bg-amber-100"
     },
     {
       id: "considerations",
       title: "Have You Considered",
       description: "Three thoughtful suggestions to enhance your parenting journey and family dynamics",
-      icon: <MessageSquare className="h-5 w-5" />,
-      color: "text-primary",
-      bgColor: "bg-primary/5",
-      borderColor: "border-primary/20",
-      hoverBorder: "hover:border-primary",
-      hoverBg: "hover:bg-primary/10"
+      tooltip: "Explore new parenting perspectives and strategies you might not have considered",
+      icon: <MessageSquare className="h-5 w-5 stroke-1" />,
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      borderColor: "border-emerald-200",
+      hoverBorder: "hover:border-emerald-400",
+      hoverBg: "hover:bg-emerald-100"
     }
   ];
 
   return (
     <>
-      <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-4 animate-pop-fade">
-        <h3 className="text-lg font-semibold text-neutral-800 mb-2 flex items-center">
-          <Sparkles className="mr-2 h-5 w-5 text-primary" />
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200 shadow-lg p-4 animate-pop-fade ring-2 ring-blue-100/50">
+        <h3 className="text-xl font-bold text-blue-900 mb-3 flex items-center">
+          <Sparkles className="mr-2 h-6 w-6 text-blue-600" />
           AI Insights & Guidance
         </h3>
+        <p className="text-sm text-blue-700 mb-4 leading-relaxed">
+          Personalized insights powered by your journal entries and parenting journey
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {insights.map((insight) => (
             <div
               key={insight.id}
               onClick={() => handleInsightClick(insight.id)}
               className={`${insight.bgColor} rounded-lg p-4 border ${insight.borderColor} interactive-card hover-lift button-press cursor-pointer ${insight.hoverBorder} ${insight.hoverBg} hover:shadow-md transition-all duration-200`}
+              title={insight.tooltip}
             >
               <div className="flex items-start mb-2">
                 <div className={`${insight.color} mr-2`}>

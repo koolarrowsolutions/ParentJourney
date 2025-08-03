@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { Heart, PenTool, Lightbulb, Sparkles } from "lucide-react";
 import { JournalForm } from "@/components/journal-form";
 import { DailyReflection } from "@/components/daily-reflection";
@@ -37,22 +38,27 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
           {/* Deep Reflection Option */}
           <Dialog open={showJournalDialog} onOpenChange={setShowJournalDialog}>
             <DialogTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200"
+              <TooltipWrapper 
+                content="Write or voice record your full thoughts and experiences - perfect for detailed reflection and deeper journaling"
+                position="top"
               >
-                <div className="bg-rose-100 p-1.5 sm:p-3 rounded-full group-hover:bg-rose-200 transition-colors">
-                  <PenTool className="h-4 w-4 sm:h-7 sm:w-7 text-rose-600" />
-                </div>
-                <div className="text-center px-2 sm:px-1">
-                  <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
-                    Share Journey
+                <Button 
+                  variant="outline" 
+                  className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200"
+                >
+                  <div className="bg-rose-100 p-1.5 sm:p-3 rounded-full group-hover:bg-rose-200 transition-colors">
+                    <PenTool className="h-4 w-4 sm:h-7 sm:w-7 text-rose-600" />
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed max-w-[110px] sm:max-w-none mx-auto">
-                    Share your day's moments
+                  <div className="text-center px-2 sm:px-1">
+                    <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
+                      Share Journey
+                    </div>
+                    <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed max-w-[110px] sm:max-w-none mx-auto">
+                      Share your day's moments
+                    </div>
                   </div>
-                </div>
-              </Button>
+                </Button>
+              </TooltipWrapper>
             </DialogTrigger>
             <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
@@ -71,22 +77,27 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
           {/* Quick Reflection Option */}
           <Dialog open={showDailyReflectionDialog} onOpenChange={setShowDailyReflectionDialog}>
             <DialogTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200"
+              <TooltipWrapper 
+                content="Quick reflection with a sentence or photo - perfect for capturing moments on the go"
+                position="top"
               >
-                <div className="bg-amber-100 p-1.5 sm:p-3 rounded-full group-hover:bg-amber-200 transition-colors">
-                  <Lightbulb className="h-4 w-4 sm:h-7 sm:w-7 text-amber-600" />
-                </div>
-                <div className="text-center px-2 sm:px-1">
-                  <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
-                    Quick Moment
+                <Button 
+                  variant="outline" 
+                  className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200"
+                >
+                  <div className="bg-amber-100 p-1.5 sm:p-3 rounded-full group-hover:bg-amber-200 transition-colors">
+                    <Lightbulb className="h-4 w-4 sm:h-7 sm:w-7 text-amber-600" />
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed max-w-[110px] sm:max-w-none mx-auto">
-                    Capture this moment
+                  <div className="text-center px-2 sm:px-1">
+                    <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
+                      Quick Moment
+                    </div>
+                    <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed max-w-[110px] sm:max-w-none mx-auto">
+                      Capture this moment
+                    </div>
                   </div>
-                </div>
-              </Button>
+                </Button>
+              </TooltipWrapper>
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>

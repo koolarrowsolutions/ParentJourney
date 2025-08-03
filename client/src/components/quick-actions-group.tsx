@@ -14,7 +14,7 @@ export function QuickActionsGroup({ selectedMood, triggerSignUpPrompt }: QuickAc
     <Card className="shadow-sm border border-neutral-200 hover-lift animate-bounce-in stagger-2">
       <CardContent className="p-4 sm:p-6">
         <h3 className="text-base sm:text-lg font-semibold text-neutral-800 mb-3 sm:mb-4 text-center">
-          Quick Actions
+          Family Profiles
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3">
 

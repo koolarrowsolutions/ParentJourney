@@ -267,14 +267,6 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
 
 
-        {/* Quick Actions Group */}
-        <div className="mb-4">
-          <QuickActionsGroup 
-            selectedMood={selectedMood} 
-            triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
-          />
-        </div>
-
         {/* Streamlined Content Layout */}
         <div className="space-y-3">
           {/* Child-specific entries overview */}
@@ -305,6 +297,14 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Family Profiles - Moved to Bottom */}
+        <div className="mb-4">
+          <QuickActionsGroup 
+            selectedMood={selectedMood} 
+            triggerSignUpPrompt={enhancedTriggerSignUpPrompt}
+          />
         </div>
         
 

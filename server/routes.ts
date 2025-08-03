@@ -75,13 +75,13 @@ function configureSession(app: Express) {
     resave: true, // Force save for mobile browser compatibility
     saveUninitialized: true, // Allow anonymous sessions
     cookie: { 
-      secure: false, // Disable secure for better compatibility across environments
+      secure: isProduction, // Use secure cookies in production for HTTPS
       httpOnly: false, // Allow JavaScript access for mobile compatibility
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax', // Use 'lax' for better compatibility
+      sameSite: isProduction ? 'none' : 'lax', // Use 'none' for production HTTPS, 'lax' for dev
       domain: undefined // Remove domain restriction for better compatibility
     },
-    name: 'connect.sid', // Use standard session name for better compatibility
+    name: 'parentjourney.sid', // Use consistent session name across environments
     // Force session store to handle mobile browser quirks
     rolling: true // Refresh session on each request
   }));

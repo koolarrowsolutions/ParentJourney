@@ -26,17 +26,20 @@ export function configureSession(app: Express) {
     }
   });
 
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
     resave: true, // Force session save for iframe compatibility
     saveUninitialized: true, // Create sessions for anonymous users
     cookie: {
-      secure: false, // Never use secure in development/iframe
+      secure: isProduction, // Use secure cookies in production for HTTPS
       httpOnly: false, // Allow JavaScript access for iframe environments
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'none' // Required for iframe/cross-origin scenarios
+      sameSite: isProduction ? 'none' : 'lax' // Use 'none' for production HTTPS, 'lax' for dev
     },
-    name: 'parentjourney.sid'
+    name: 'parentjourney.sid',
+    rolling: true // Refresh session on each request
   }));
 }
 

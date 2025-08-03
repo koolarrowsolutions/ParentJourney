@@ -23,6 +23,13 @@ The application employs a modern full-stack architecture with clear separation b
 - Resolved journal entry saving failures for authenticated users
 - Successfully tested with user "Ernesto A. Bejarano" - authentication and journal saving now working properly
 
+**Deployment Authentication Fix (August 2025):**
+- Fixed production deployment authentication failures by implementing environment-aware cookie settings
+- Updated session configuration to use `secure: true` and `sameSite: 'none'` for HTTPS production deployments
+- Maintained `secure: false` and `sameSite: 'lax'` for development environments
+- Synchronized session settings between server/routes.ts and server/auth.ts for consistency
+- Ensured proper CORS configuration for production .replit.app domains
+
 **Core Technologies:**
 - **Frontend**: React-based single-page application with TypeScript, Vite, Wouter (routing), TanStack Query (server state), React Hook Form with Zod (forms), shadcn/ui and Radix UI (components), Tailwind CSS (styling), date-fns (date handling).
 - **Backend**: Express.js server with TypeScript, esbuild, PostgreSQL with Drizzle ORM, Zod (validation schemas), RESTful API design.

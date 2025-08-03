@@ -48,7 +48,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
             <DialogTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-auto min-h-[120px] sm:min-h-[140px] p-3 sm:p-5 flex flex-col items-center justify-center space-y-2 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
+                className="h-auto min-h-[140px] sm:min-h-[160px] p-4 sm:p-5 flex flex-col items-center justify-center space-y-2 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
               >
                 <div className="bg-rose-100 p-1.5 sm:p-3 rounded-full group-hover:bg-rose-200 transition-colors">
                   <PenTool className="h-4 w-4 sm:h-7 sm:w-7 text-rose-600" />
@@ -57,7 +57,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
                   <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-1 sm:mb-2">
                     Share Journey
                   </div>
-                  <div className="text-[10px] sm:text-sm text-neutral-600 leading-snug text-center break-words hyphens-auto overflow-hidden">
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-relaxed text-center break-words hyphens-auto">
                     Write or voice record your full thoughts and experiences - perfect for detailed reflection and deeper journaling
                   </div>
                 </div>
@@ -82,7 +82,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
             <DialogTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-auto min-h-[120px] sm:min-h-[140px] p-3 sm:p-5 flex flex-col items-center justify-center space-y-2 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
+                className="h-auto min-h-[140px] sm:min-h-[160px] p-4 sm:p-5 flex flex-col items-center justify-center space-y-2 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
               >
                 <div className="bg-amber-100 p-1.5 sm:p-3 rounded-full group-hover:bg-amber-200 transition-colors">
                   <Lightbulb className="h-4 w-4 sm:h-7 sm:w-7 text-amber-600" />
@@ -91,7 +91,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
                   <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-1 sm:mb-2">
                     Quick Moment
                   </div>
-                  <div className="text-[10px] sm:text-sm text-neutral-600 leading-snug text-center break-words hyphens-auto overflow-hidden">
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-relaxed text-center break-words hyphens-auto">
                     Quick reflection with a sentence or photo - perfect for capturing moments on the go
                   </div>
                 </div>

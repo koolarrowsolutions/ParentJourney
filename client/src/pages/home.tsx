@@ -256,9 +256,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         </div>
 
         {/* Feeling Overwhelmed Element */}
-        <div className="mb-4 p-4 bg-gradient-to-r from-rose-50 to-pink-50 rounded-lg border border-rose-200 animate-pop-fade shadow-sm">
+        <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200 animate-pop-fade shadow-sm">
           <div className="flex items-center justify-between">
-            <p className="text-rose-800 font-medium">
+            <p className="text-emerald-800 font-medium">
               Feeling overwhelmed today? Take a moment to center yourself.
             </p>
             <CalmReset trigger="inline" />

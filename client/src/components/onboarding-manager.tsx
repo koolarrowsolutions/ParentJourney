@@ -35,7 +35,9 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
     const onboardingStatus = localStorage.getItem(`onboarding_${user.id}`);
     const parsedStatus = onboardingStatus ? JSON.parse(onboardingStatus) : {};
     
+    // Always show onboarding for demo/testing if any trigger is present
     if (forceOnboarding || debugOnboarding || !parsedStatus.initial) {
+      console.log('OnboardingManager: Showing initial onboarding', { forceOnboarding, debugOnboarding, parsedStatus });
       setCurrentPhase('initial');
     } else if (!parsedStatus.firstTimeTour) {
       setCurrentPhase('first-time-tour');

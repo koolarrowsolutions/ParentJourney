@@ -31,7 +31,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
 
           
           {/* AI Insights messaging - Informational, not clickable */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 select-none">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 select-none">
             <p className="text-xs sm:text-sm text-blue-800 text-center leading-relaxed pointer-events-none">
               <span className="font-semibold">✨ The more you check in, the smarter your parenting support gets.</span>
               <br className="hidden sm:block" />

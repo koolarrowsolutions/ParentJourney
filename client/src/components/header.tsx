@@ -97,7 +97,7 @@ export function Header() {
               </Link>
               <Link href="/wellness">
                 <button className="text-neutral-600 hover:text-primary transition-colors p-2 rounded-lg hover:bg-neutral-100 button-press hover-scale">
-                  <Sparkles className="h-5 w-5" />
+                  <Leaf className="h-5 w-5" />
                 </button>
               </Link>
               <Link href="/settings">

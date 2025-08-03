@@ -97,6 +97,7 @@ export function DailyReflection() {
   const [followUpReflection, setFollowUpReflection] = useState("");
   const [showFollowUp, setShowFollowUp] = useState(false);
   const [photos, setPhotos] = useState<string[]>([]);
+  const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -112,10 +113,11 @@ export function DailyReflection() {
     setFollowUpReflection("");
     setShowFollowUp(false);
     setPhotos([]);
+    setSelectedChildIds([]);
   };
 
   const saveReflectionMutation = useMutation({
-    mutationFn: async (data: { content: string; title: string; photos?: string[] }) => {
+    mutationFn: async (data: { content: string; title: string; photos?: string[]; childProfileIds?: string[] }) => {
       const token = localStorage.getItem('parentjourney_token');
       console.log("Daily reflection save - token present:", !!token);
       
@@ -181,6 +183,7 @@ export function DailyReflection() {
           photos: uploadedPhotoUrls,
           hasAiFeedback: "true", // Enable AI feedback for daily reflections
           entryType: "quick_moment",
+          childProfileIds: data.childProfileIds, // Support multiple children
         }),
       });
       
@@ -205,6 +208,7 @@ export function DailyReflection() {
       setCurrentPrompt(null);
       setShowFollowUp(false);
       setPhotos([]);
+      setSelectedChildIds([]);
     },
     onError: (error) => {
       console.error("Daily reflection save error:", error);
@@ -236,7 +240,7 @@ export function DailyReflection() {
       content += `\n\n**${currentPrompt.followUp}**\n\n${followUpReflection.trim()}`;
     }
 
-    saveReflectionMutation.mutate({ title, content, photos });
+    saveReflectionMutation.mutate({ title, content, photos, childProfileIds: selectedChildIds });
   };
 
   const getTodaysDate = () => {
@@ -334,6 +338,59 @@ export function DailyReflection() {
               />
             </div>
 
+            {/* Child Selection */}
+            {childProfiles && childProfiles.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  👶 Related to Children (Optional)
+                </label>
+                <div className="space-y-2">
+                  <div className="grid grid-cols-1 gap-2">
+                    {childProfiles.map((child) => (
+                      <div
+                        key={child.id}
+                        className={`flex items-center p-2 rounded-lg border transition-colors cursor-pointer ${
+                          selectedChildIds.includes(child.id)
+                            ? 'border-primary bg-primary/5'
+                            : 'border-neutral-200 hover:border-neutral-300'
+                        }`}
+                        onClick={() => {
+                          setSelectedChildIds(prev =>
+                            prev.includes(child.id)
+                              ? prev.filter(id => id !== child.id)
+                              : [...prev, child.id]
+                          );
+                        }}
+                      >
+                        <div className="flex items-center gap-2 flex-1">
+                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                            <Baby className="text-primary h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-medium text-neutral-800">{child.name}</h4>
+                            <p className="text-xs text-neutral-600">
+                              {new Date(child.dateOfBirth).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short' 
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        {selectedChildIds.includes(child.id) && (
+                          <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-neutral-500">
+                    Select children this reflection relates to for better tracking and insights
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Follow-up Question */}
             {currentPrompt.followUp && !showFollowUp && reflection.trim() && (
               <Button
@@ -372,6 +429,7 @@ export function DailyReflection() {
                   setFollowUpReflection("");
                   setShowFollowUp(false);
                   setPhotos([]);
+                  setSelectedChildIds([]);
                 }}
                 className="flex-1"
               >

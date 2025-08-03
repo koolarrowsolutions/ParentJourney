@@ -18,7 +18,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import * as schema from "@shared/schema";
-import { eq, desc, asc, and, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, asc, and, gte, lte, sql, or } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -70,6 +70,7 @@ export class DatabaseStorage implements IStorage {
       aiAnalyzedMood: schema.journalEntries.aiAnalyzedMood,
       emotionTags: schema.journalEntries.emotionTags,
       childProfileId: schema.journalEntries.childProfileId,
+      childProfileIds: schema.journalEntries.childProfileIds,
       aiFeedback: schema.journalEntries.aiFeedback,
       developmentalInsight: schema.journalEntries.developmentalInsight,
       hasAiFeedback: schema.journalEntries.hasAiFeedback,
@@ -88,7 +89,13 @@ export class DatabaseStorage implements IStorage {
     ];
     
     if (childId) {
-      conditions.push(eq(schema.journalEntries.childProfileId, childId));
+      // Check both single child and multiple children arrays
+      conditions.push(
+        or(
+          eq(schema.journalEntries.childProfileId, childId),
+          sql`${schema.journalEntries.childProfileIds} @> ARRAY[${childId}]::text[]`
+        )
+      );
     }
     
     if (search) {

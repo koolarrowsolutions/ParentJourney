@@ -148,9 +148,19 @@ export class MemStorage implements IStorage {
   async getJournalEntries(limit = 10, search?: string, childId?: string): Promise<JournalEntry[]> {
     let entries = Array.from(this.journalEntries.values());
     
-    // Apply child filter if provided
+    // Apply child filter if provided - check both single child and multiple children arrays
     if (childId && childId.trim()) {
-      entries = entries.filter(entry => entry.childProfileId === childId);
+      entries = entries.filter(entry => {
+        // Check single child association (backward compatibility)
+        if (entry.childProfileId === childId) {
+          return true;
+        }
+        // Check multiple children association (new feature)
+        if (entry.childProfileIds && Array.isArray(entry.childProfileIds)) {
+          return entry.childProfileIds.includes(childId);
+        }
+        return false;
+      });
     }
     
     // Apply search filter if provided

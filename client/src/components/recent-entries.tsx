@@ -149,7 +149,7 @@ export function RecentEntries() {
               {entries.length > 2 && (
                 <Link href="/journal-history">
                   <button className="w-full text-xs text-emerald-600 hover:text-emerald-700 text-center py-2 hover:bg-emerald-50 rounded transition-colors">
-                    See {entries.length - 2} more journal entries
+                    See more journal entries
                   </button>
                 </Link>
               )}

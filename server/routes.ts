@@ -797,6 +797,121 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Single parent profile routes (used by frontend)
+  app.get("/api/parent-profile", async (req, res) => {
+    try {
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
+      const profile = await storage.getParentProfile();
+      if (!profile) {
+        return res.status(404).json({ message: "Parent profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching parent profile:", error);
+      res.status(500).json({ message: "Failed to fetch parent profile" });
+    }
+  });
+
+  app.post("/api/parent-profile", async (req, res) => {
+    try {
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
+      const validatedData = insertParentProfileSchema.parse(req.body);
+      const profile = await storage.createParentProfile(validatedData);
+      res.status(201).json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        console.error("Error creating parent profile:", error);
+        res.status(500).json({ message: "Failed to create parent profile" });
+      }
+    }
+  });
+
+  app.put("/api/parent-profile", async (req, res) => {
+    try {
+      console.log("PUT /api/parent-profile called with body:", JSON.stringify(req.body));
+      
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        console.log("Authentication failed for PUT parent profile");
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      console.log("Authentication successful for user:", authResult.userId);
+      
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
+      const validatedData = insertParentProfileSchema.partial().parse(req.body);
+      console.log("Validated data:", validatedData);
+      
+      const profile = await storage.updateParentProfile(validatedData);
+      if (!profile) {
+        console.log("Profile not found for update");
+        return res.status(404).json({ message: "Parent profile not found" });
+      }
+      
+      console.log("Profile updated successfully:", profile.id);
+      res.json(profile);
+    } catch (error) {
+      console.error("Error in PUT parent profile:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        console.error("Error updating parent profile:", error);
+        res.status(500).json({ message: "Failed to update parent profile" });
+      }
+    }
+  });
+
+  // Alternative POST endpoint for profile updates
+  app.post("/api/parent-profile/update", async (req, res) => {
+    try {
+      console.log("POST /api/parent-profile/update called with body:", JSON.stringify(req.body));
+      
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Set current user context in storage
+      storage.setCurrentUser(authResult.userId);
+      
+      const validatedData = insertParentProfileSchema.partial().parse(req.body);
+      const profile = await storage.updateParentProfile(validatedData);
+      if (!profile) {
+        return res.status(404).json({ message: "Parent profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      } else {
+        console.error("Error updating parent profile:", error);
+        res.status(500).json({ message: "Failed to update parent profile" });
+      }
+    }
+  });
+
   // Community routes
   app.get("/api/community/posts", async (req, res) => {
     try {

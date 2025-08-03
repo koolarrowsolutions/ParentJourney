@@ -19,7 +19,16 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
   const { data: entries, isLoading } = useQuery<JournalEntry[]>({
     queryKey: ["/api/journal-entries", child.id],
     queryFn: async () => {
-      const response = await fetch(`/api/journal-entries?childId=${child.id}&limit=3`);
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`/api/journal-entries?childId=${child.id}&limit=3`, {
+        headers,
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },
@@ -116,8 +125,9 @@ export function ChildEntryOverview({ child }: ChildEntryOverviewProps) {
               )}
             </div>
           ) : (
-            <div className="text-center py-2">
-              <p className="text-xs text-neutral-500">No entries yet</p>
+            <div className="text-center py-3 bg-white/30 rounded-lg border border-dashed border-neutral-200">
+              <p className="text-xs text-neutral-500">No entries yet for {child.name}</p>
+              <p className="text-xs text-neutral-400 mt-1">Journal entries will appear here</p>
             </div>
           )}
         </div>

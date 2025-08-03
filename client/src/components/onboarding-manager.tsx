@@ -16,16 +16,6 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
 
   // Check onboarding status on auth change
   useEffect(() => {
-    // For development: allow testing onboarding with URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const forceOnboarding = urlParams.get('onboarding') === 'true';
-    
-    if (forceOnboarding) {
-      console.log('🎯 OnboardingManager: FORCING ONBOARDING DUE TO URL PARAMETER');
-      setCurrentPhase('initial');
-      return;
-    }
-    
     // Only show onboarding for authenticated users
     if (!isAuthenticated || !user) {
       setCurrentPhase(null);

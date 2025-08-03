@@ -110,65 +110,10 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     return triggerSignUpPrompt ? triggerSignUpPrompt(trigger) : false;
   };
 
-  // For non-authenticated users, show welcome screen
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
-        <Header />
-        <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center max-w-md mx-auto">
-              <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-800 mb-4">Welcome to ParentJourney</h1>
-                <p className="text-gray-600 mb-6">
-                  Your digital companion for documenting your parenting experiences, tracking milestones, 
-                  and receiving AI-powered insights.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button 
-                  onClick={() => setShowAuthDialog(true)}
-                  data-testid="button-get-started"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Get Started
-                </button>
-                <button 
-                  onClick={() => setShowAuthDialog(true)}
-                  data-testid="button-learn-more"
-                  className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                >
-                  Learn More
-                </button>
-              </div>
-              
-              {/* Development helper - only visible when needed */}
-              {window.location.hostname.includes('replit') && (
-                <div className="mt-4 text-center">
-                  <button 
-                    onClick={() => window.location.href = '/?onboarding=true'}
-                    className="text-xs text-gray-400 hover:text-gray-600 underline"
-                  >
-                    [Dev: Test Onboarding]
-                  </button>
-                </div>
-              )}
-              
-              {/* Auth Dialog */}
-              <AuthDialog 
-                open={showAuthDialog} 
-                setOpen={setShowAuthDialog}
-                defaultTab="signup"
-              />
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
-  // Show loading state while profile is loading for authenticated users
-  if (profileLoading) {
+
+  // Show loading state while profile is loading for authenticated users only
+  if (profileLoading && isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
         <Header />
@@ -431,6 +376,13 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
 
 
+
+      {/* Auth Dialog for non-authenticated users */}
+      <AuthDialog 
+        open={showAuthDialog} 
+        setOpen={setShowAuthDialog}
+        defaultTab="signup"
+      />
 
       {/* Login success popup disabled - using LoginConfirmationModal instead */}
     </div>

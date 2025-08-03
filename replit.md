@@ -27,8 +27,8 @@ The application employs a modern full-stack architecture with clear separation b
 - **Modal Positioning:** Fixed modal sliding off-screen issue with proper CSS positioning
 - **Demo Mode Support:** Added complete demo mode for testing onboarding without authentication, with simulated API calls and realistic delays
 - **Close Button Fix:** Fixed X button and skip button functionality in both demo and authenticated modes
-- **User Experience Optimization:** Default behavior shows regular welcome screen for non-authenticated users; onboarding only appears for new authenticated users on first visit
-- **Development Testing:** Added URL parameter trigger (?onboarding=true) for developers to test onboarding flow
+- **User Experience Optimization:** Non-authenticated users see full main dashboard with all elements in non-logged-in state; onboarding modal appears only for new authenticated users on first visit
+- **Development Testing:** Developer testing via URL parameter (?onboarding=true) available when needed
 - **Integration:** Seamlessly integrated with existing authentication system and user profiles
 - **Files Updated:** OnboardingManager uses OnboardingFlow component, authentication fixes in all mutation functions
 - **UX Enhancement:** Onboarding displays over main content without blocking functionality, allowing users to see the dashboard context

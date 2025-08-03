@@ -17,19 +17,18 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
 
   return (
     <Card className="shadow-lg border border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 hover-lift animate-bounce-in">
-      <CardContent className="p-4 sm:p-6">
+      <CardContent className="p-3 sm:p-6">
         {/* Header Section - Mobile Optimized */}
-        <div className="text-center mb-3 sm:mb-6">
-          <div className="flex items-center justify-center mb-2">
-            <Heart className="h-4 w-4 sm:h-6 sm:w-6 text-rose-500 mr-1 sm:mr-2" />
-            <h3 className="text-base sm:text-xl font-semibold text-neutral-800">
+        <div className="text-center mb-2 sm:mb-6">
+          <div className="flex items-center justify-center mb-1 sm:mb-2">
+            <Heart className="h-3 w-3 sm:h-6 sm:w-6 text-rose-500 mr-1 sm:mr-2" />
+            <h3 className="text-sm sm:text-xl font-semibold text-neutral-800">
               Tell Your Story
             </h3>
-            <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-amber-500 ml-1 sm:ml-2" />
+            <Sparkles className="h-3 w-3 sm:h-6 sm:w-6 text-amber-500 ml-1 sm:ml-2" />
           </div>
-          <p className="text-xs sm:text-base text-neutral-600 leading-tight sm:leading-relaxed max-w-2xl mx-auto px-2">
-            Every moment matters in your parenting journey. Share what's happening, 
-            celebrate your wins, work through challenges, or simply capture this moment in time.
+          <p className="text-xs sm:text-base text-neutral-600 leading-tight sm:leading-relaxed max-w-2xl mx-auto px-1 sm:px-2">
+            Every moment matters. Share what's happening, celebrate wins, work through challenges.
           </p>
         </div>
 
@@ -40,17 +39,17 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
             <DialogTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-auto p-3 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200"
+                className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200"
               >
-                <div className="bg-rose-100 p-2 sm:p-3 rounded-full group-hover:bg-rose-200 transition-colors">
-                  <PenTool className="h-5 w-5 sm:h-7 sm:w-7 text-rose-600" />
+                <div className="bg-rose-100 p-1.5 sm:p-3 rounded-full group-hover:bg-rose-200 transition-colors">
+                  <PenTool className="h-4 w-4 sm:h-7 sm:w-7 text-rose-600" />
                 </div>
-                <div className="text-center">
+                <div className="text-center px-1">
                   <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
-                    Share Your Full Journey
+                    Share Your Journey
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed px-1">
-                    Write about today's experiences, feelings, and insights. Perfect for deeper reflection.
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed">
+                    Write about today's experiences and insights.
                   </div>
                 </div>
               </Button>
@@ -74,17 +73,17 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
             <DialogTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-auto p-3 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200"
+                className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200"
               >
-                <div className="bg-amber-100 p-2 sm:p-3 rounded-full group-hover:bg-amber-200 transition-colors">
-                  <Lightbulb className="h-5 w-5 sm:h-7 sm:w-7 text-amber-600" />
+                <div className="bg-amber-100 p-1.5 sm:p-3 rounded-full group-hover:bg-amber-200 transition-colors">
+                  <Lightbulb className="h-4 w-4 sm:h-7 sm:w-7 text-amber-600" />
                 </div>
-                <div className="text-center">
+                <div className="text-center px-1">
                   <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
-                    Quick Moment Capture
+                    Quick Moment
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed px-1">
-                    Answer a thoughtful prompt about today. Just a few minutes to reflect and record.
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed">
+                    Answer a thoughtful prompt about today.
                   </div>
                 </div>
               </Button>
@@ -102,9 +101,9 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
         </div>
 
         {/* Encouragement Footer - Mobile Optimized */}
-        <div className="mt-3 sm:mt-6 text-center px-2">
+        <div className="mt-2 sm:mt-6 text-center px-1 sm:px-2">
           <p className="text-xs sm:text-sm text-neutral-500 italic leading-tight">
-            Your stories help you grow, help us understand you better, and create a meaningful record of your family's journey.
+            Your stories help you grow and create a meaningful record of your family's journey.
           </p>
         </div>
       </CardContent>

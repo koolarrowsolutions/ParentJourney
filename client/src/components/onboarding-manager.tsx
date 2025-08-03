@@ -62,7 +62,13 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
   }, [user, isAuthenticated]);
 
   const completePhase = (phase: OnboardingPhase) => {
-    if (!user) return;
+    // In demo mode (no user), just close the onboarding
+    if (!user) {
+      setCurrentPhase('completed');
+      // Clean up debug flag
+      localStorage.removeItem('debug_onboarding');
+      return;
+    }
     
     const onboardingStatus = localStorage.getItem(`onboarding_${user.id}`);
     const parsedStatus = onboardingStatus ? JSON.parse(onboardingStatus) : {};
@@ -90,6 +96,13 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
   };
 
   const skipPhase = (phase: OnboardingPhase) => {
+    // In demo mode (no user), just close the onboarding
+    if (!user) {
+      setCurrentPhase('completed');
+      // Clean up debug flag
+      localStorage.removeItem('debug_onboarding');
+      return;
+    }
     completePhase(phase);
   };
 

@@ -66,20 +66,13 @@ export function WellnessSuggestions() {
   const [showProgress, setShowProgress] = useState(false);
   const queryClient = useQueryClient();
 
-  // Get auth headers
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('authToken');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-  };
+  // Get auth headers - removed in favor of using apiRequest for consistency
 
   // Fetch wellness suggestions
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery<WellnessSuggestion[]>({
     queryKey: ['/api/wellness/suggestions'],
     queryFn: async () => {
-      const response = await fetch('/api/wellness/suggestions?status=suggested', {
-        headers: { ...getAuthHeaders() }
-      });
-      if (!response.ok) throw new Error('Failed to fetch suggestions');
+      const response = await apiRequest('GET', '/api/wellness/suggestions?status=suggested');
       return response.json();
     },
   });
@@ -88,10 +81,7 @@ export function WellnessSuggestions() {
   const { data: progress } = useQuery<WellnessProgress>({
     queryKey: ['/api/wellness/progress'],
     queryFn: async () => {
-      const response = await fetch('/api/wellness/progress', {
-        headers: { ...getAuthHeaders() }
-      });
-      if (!response.ok) throw new Error('Failed to fetch progress');
+      const response = await apiRequest('GET', '/api/wellness/progress');
       return response.json();
     },
   });
@@ -99,11 +89,7 @@ export function WellnessSuggestions() {
   // Generate new suggestions
   const generateSuggestionsMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch('/api/wellness/generate-suggestions', { 
-        method: 'POST',
-        headers: { ...getAuthHeaders() }
-      });
-      if (!response.ok) throw new Error('Failed to generate suggestions');
+      const response = await apiRequest('POST', '/api/wellness/generate-suggestions');
       return response.json();
     },
     onSuccess: () => {
@@ -114,15 +100,10 @@ export function WellnessSuggestions() {
   // Complete suggestion
   const completeSuggestionMutation = useMutation({
     mutationFn: async ({ id, points, badge }: { id: string; points: number; badge?: string }) => {
-      const response = await fetch(`/api/wellness/suggestions/${id}/complete`, {
-        method: 'PATCH',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
-        },
-        body: JSON.stringify({ pointsAwarded: points, badgeAwarded: badge }),
+      const response = await apiRequest('PATCH', `/api/wellness/suggestions/${id}/complete`, {
+        pointsAwarded: points,
+        badgeAwarded: badge
       });
-      if (!response.ok) throw new Error('Failed to complete suggestion');
       return response.json();
     },
     onSuccess: () => {
@@ -134,11 +115,7 @@ export function WellnessSuggestions() {
   // Dismiss suggestion
   const dismissSuggestionMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/wellness/suggestions/${id}/dismiss`, {
-        method: 'PATCH',
-        headers: { ...getAuthHeaders() }
-      });
-      if (!response.ok) throw new Error('Failed to dismiss suggestion');
+      const response = await apiRequest('PATCH', `/api/wellness/suggestions/${id}/dismiss`);
       return response.json();
     },
     onSuccess: () => {

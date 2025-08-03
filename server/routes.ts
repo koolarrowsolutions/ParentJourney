@@ -1100,11 +1100,19 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
 
   app.post("/api/parent-profile", requireAuth, async (req, res) => {
     try {
+      console.log("Creating parent profile with data:", JSON.stringify(req.body, null, 2));
+      console.log("Session user ID:", req.session?.userId);
+      
       const validatedData = insertParentProfileSchema.parse(req.body);
+      console.log("Validated data:", JSON.stringify(validatedData, null, 2));
+      
       const profile = await storage.createParentProfile(validatedData);
+      console.log("Created profile:", JSON.stringify(profile, null, 2));
+      
       res.status(201).json(profile);
     } catch (error) {
       if (error instanceof ZodError) {
+        console.error("Validation errors:", JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Invalid profile data", errors: error.errors });
       }
       console.error("Failed to create parent profile:", error);

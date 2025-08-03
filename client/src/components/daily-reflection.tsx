@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Lightbulb, RefreshCw, PenTool, Sparkles, Clock, BookOpen, Heart, Baby } from "lucide-react";
+import { PhotoUpload } from "@/components/photo-upload";
 import type { ChildProfile } from "@shared/schema";
 
 interface ReflectionPrompt {
@@ -95,6 +96,7 @@ export function DailyReflection() {
   const [reflection, setReflection] = useState("");
   const [followUpReflection, setFollowUpReflection] = useState("");
   const [showFollowUp, setShowFollowUp] = useState(false);
+  const [photos, setPhotos] = useState<string[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -109,10 +111,11 @@ export function DailyReflection() {
     setReflection("");
     setFollowUpReflection("");
     setShowFollowUp(false);
+    setPhotos([]);
   };
 
   const saveReflectionMutation = useMutation({
-    mutationFn: async (data: { content: string; title: string }) => {
+    mutationFn: async (data: { content: string; title: string; photos?: string[] }) => {
       const token = localStorage.getItem('parentjourney_token');
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) {
@@ -126,6 +129,7 @@ export function DailyReflection() {
         body: JSON.stringify({
           title: data.title,
           content: data.content,
+          photos: data.photos || [],
           hasAiFeedback: "false",
         }),
       });
@@ -143,6 +147,7 @@ export function DailyReflection() {
       setFollowUpReflection("");
       setCurrentPrompt(null);
       setShowFollowUp(false);
+      setPhotos([]);
     },
     onError: () => {
       toast({
@@ -163,7 +168,7 @@ export function DailyReflection() {
       content += `\n\n**${currentPrompt.followUp}**\n\n${followUpReflection.trim()}`;
     }
 
-    saveReflectionMutation.mutate({ title, content });
+    saveReflectionMutation.mutate({ title, content, photos });
   };
 
   const getTodaysDate = () => {
@@ -248,6 +253,19 @@ export function DailyReflection() {
               />
             </div>
 
+            {/* Photo Upload */}
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                📷 Add Photos (Optional)
+              </label>
+              <PhotoUpload
+                photos={photos}
+                onPhotosChange={setPhotos}
+                maxPhotos={3}
+                className="border-neutral-200"
+              />
+            </div>
+
             {/* Follow-up Question */}
             {currentPrompt.followUp && !showFollowUp && reflection.trim() && (
               <Button
@@ -285,6 +303,7 @@ export function DailyReflection() {
                   setReflection("");
                   setFollowUpReflection("");
                   setShowFollowUp(false);
+                  setPhotos([]);
                 }}
                 className="flex-1"
               >

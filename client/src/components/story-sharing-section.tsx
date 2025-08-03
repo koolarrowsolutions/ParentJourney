@@ -31,12 +31,10 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
 
           
           {/* AI Insights messaging - Informational, not clickable */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 select-none">
-            <p className="text-xs sm:text-sm text-blue-800 text-center leading-relaxed pointer-events-none">
-              <span className="font-semibold">✨ The more you check in, the smarter your parenting support gets.</span>
-              <br className="hidden sm:block" />
-              <span className="sm:hidden"> </span>
-              <span className="text-blue-700">Every entry helps us tailor tips, patterns, and reminders just for you and your family.</span>
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-2 sm:p-3 mt-2 sm:mt-3 select-none">
+            <p className="text-xs sm:text-sm text-blue-800 text-center leading-snug pointer-events-none">
+              <span className="font-semibold">✨ Get smarter parenting support with each entry.</span>
+              <span className="text-blue-700"> We personalize tips and insights for your family.</span>
             </p>
           </div>
         </div>

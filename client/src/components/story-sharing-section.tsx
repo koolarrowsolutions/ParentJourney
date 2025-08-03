@@ -53,11 +53,11 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
                 <div className="bg-rose-100 p-1.5 sm:p-3 rounded-full group-hover:bg-rose-200 transition-colors">
                   <PenTool className="h-4 w-4 sm:h-7 sm:w-7 text-rose-600" />
                 </div>
-                <div className="text-center px-2 sm:px-1">
-                  <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
+                <div className="text-center px-1 sm:px-2 w-full">
+                  <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-1 sm:mb-2">
                     Share Journey
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed max-w-[200px] sm:max-w-none mx-auto">
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight text-center mx-auto">
                     Write or voice record your full thoughts and experiences - perfect for detailed reflection and deeper journaling
                   </div>
                 </div>
@@ -87,11 +87,11 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
                 <div className="bg-amber-100 p-1.5 sm:p-3 rounded-full group-hover:bg-amber-200 transition-colors">
                   <Lightbulb className="h-4 w-4 sm:h-7 sm:w-7 text-amber-600" />
                 </div>
-                <div className="text-center px-2 sm:px-1">
-                  <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
+                <div className="text-center px-1 sm:px-2 w-full">
+                  <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-1 sm:mb-2">
                     Quick Moment
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed max-w-[200px] sm:max-w-none mx-auto">
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight text-center mx-auto">
                     Quick reflection with a sentence or photo - perfect for capturing moments on the go
                   </div>
                 </div>

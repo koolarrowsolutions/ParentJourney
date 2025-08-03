@@ -1,0 +1,8 @@
+{
+  "name": "parentjourney",
+  "version": "1.0.0", 
+  "scripts": {
+    "dev": "node simple-working-server.js",
+    "start": "node simple-working-server.js"
+  }
+}

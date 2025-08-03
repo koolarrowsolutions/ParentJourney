@@ -1,121 +1,93 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { checkAuthStatus, getStoredAuthData, checkLoginFlag, clearLoginFlag } from '@/utils/auth-persistence';
+import { useState, useEffect, createContext, useContext } from 'react';
 
-interface AuthUser {
+export interface User {
   id: string;
-  username: string;
-  name: string;
   email: string;
+  name: string;
 }
 
-interface AuthState {
-  user: AuthUser | null;
-  isAuthenticated: boolean;
-  hasJustSignedUp: boolean;
-  hasJustLoggedIn: boolean;
+export interface AuthState {
+  user: User | null;
   isLoading: boolean;
+  isAuthenticated: boolean;
 }
 
-export function useAuth(): AuthState & { clearLoginStatus: () => void } {
-  const [authState, setAuthState] = useState<AuthState>(() => {
-    // Check for existing auth data instead of clearing it
-    const storedAuth = getStoredAuthData();
-    
-    return {
-      user: storedAuth?.user || null,
-      isAuthenticated: storedAuth?.isAuthenticated || false,
-      hasJustSignedUp: storedAuth?.hasJustSignedUp || false,
-      hasJustLoggedIn: false, // Always false on initial load
-      isLoading: true,
-    };
-  });
+const AuthContext = createContext<{
+  authState: AuthState;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+} | null>(null);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['/api/auth/user'],
-    queryFn: checkAuthStatus,
-    retry: 1, // Allow one retry for network issues
-    refetchOnWindowFocus: true, // Allow refetch on focus to catch state changes
-    staleTime: 0, // Always fresh to prevent auth state confusion
-    refetchInterval: false, // Disable polling to reduce server load
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [authState, setAuthState] = useState<AuthState>({
+    user: null,
+    isLoading: true,
+    isAuthenticated: false
   });
 
   useEffect(() => {
-    if (isLoading) {
-      setAuthState(prev => ({ ...prev, isLoading: true }));
-    } else if (error) {
-      const newState = {
-        user: null,
-        isAuthenticated: false,
-        hasJustSignedUp: false,
-        hasJustLoggedIn: false,
-        isLoading: false,
-      };
-      setAuthState(newState);
-      // Clear saved auth state on error
-      localStorage.removeItem('authState');
-    } else if (data) {
-      const wasAuthenticated = authState.isAuthenticated;
-      const isNowAuthenticated = data.success || false;
-      
-      // Check for login flag without clearing it immediately
-      const justLoggedIn = checkLoginFlag();
-      console.log('Auth state transition:', { wasAuthenticated, isNowAuthenticated, justLoggedIn });
-      
-      const newState = {
-        user: data.user || null,
-        isAuthenticated: isNowAuthenticated,
-        hasJustSignedUp: data.hasJustSignedUp || false,
-        hasJustLoggedIn: justLoggedIn, // Use login flag
-        isLoading: false,
-      };
-      setAuthState(newState);
-      // Save successful auth state to localStorage
-      if (newState.isAuthenticated) {
-        localStorage.setItem('authState', JSON.stringify(newState));
-      }
-    }
-  }, [data, isLoading, error, authState.isAuthenticated]);
+    // Check for existing session
+    fetch('/api/auth/user')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.user) {
+          setAuthState({
+            user: data.user,
+            isLoading: false,
+            isAuthenticated: true
+          });
+        } else {
+          setAuthState({
+            user: null,
+            isLoading: false,
+            isAuthenticated: false
+          });
+        }
+      })
+      .catch(() => {
+        setAuthState({
+          user: null,
+          isLoading: false,
+          isAuthenticated: false
+        });
+      });
+  }, []);
 
-  const clearLoginStatus = () => {
-    console.log('Clearing login status...');
-    clearLoginFlag(); // Clear the localStorage flag
-    setAuthState(prev => ({ ...prev, hasJustLoggedIn: false }));
+  const login = async (email: string, password: string) => {
+    setAuthState(prev => ({ ...prev, isLoading: true }));
+    // Placeholder login logic
+    console.log('Login attempt:', email);
+    setAuthState({
+      user: { id: '1', email, name: 'Demo User' },
+      isLoading: false,
+      isAuthenticated: true
+    });
   };
 
-  return { ...authState, clearLoginStatus };
+  const logout = () => {
+    setAuthState({
+      user: null,
+      isLoading: false,
+      isAuthenticated: false
+    });
+  };
+
+  return (
+    <AuthContext.Provider value={{ authState, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
 }
 
 export function useLogout() {
-  const queryClient = useQueryClient();
-  
-  return async () => {
-    try {
-      // Clear all local storage auth data first
-      localStorage.removeItem('authState');
-      localStorage.removeItem('parentjourney_auth');
-      localStorage.removeItem('authToken');
-      
-      // Call server logout
-      await fetch('/api/auth/logout', { 
-        method: 'POST',
-        credentials: 'include'
-      });
-      
-      // Clear query cache
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      queryClient.clear(); // Clear all cached data
-      
-      // Force page reload to ensure clean state
-      window.location.reload();
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Still clear local data even if server request fails
-      localStorage.removeItem('authState');
-      localStorage.removeItem('parentjourney_auth');
-      localStorage.removeItem('authToken');
-      queryClient.clear();
-      window.location.reload();
-    }
-  };
+  const { logout } = useAuth();
+  return logout;
 }

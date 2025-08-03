@@ -37,29 +37,28 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    // Always use authenticatedFetch for consistency
-    const url = queryKey.join("/") as string;
+    // Get auth token for iframe compatibility
+    const token = localStorage.getItem('parentjourney_token');
     
-    try {
-      const res = await fetch(url, {
-        credentials: "include",
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('parentjourney_token') || ''}`,
-        },
-      });
-
-      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-        return null;
-      }
-
-      await throwIfResNotOk(res);
-      return await res.json();
-    } catch (error) {
-      if (unauthorizedBehavior === "returnNull" && error instanceof Error && error.message.includes('401')) {
-        return null;
-      }
-      throw error;
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+      console.log(`Query to ${queryKey.join("/")} with token: ${token.substring(0, 20)}...`);
+    } else {
+      console.log(`Query to ${queryKey.join("/")} without token`);
     }
+    
+    const res = await fetch(queryKey.join("/") as string, {
+      credentials: "include",
+      headers,
+    });
+
+    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+      return null;
+    }
+
+    await throwIfResNotOk(res);
+    return await res.json();
   };
 
 export const queryClient = new QueryClient({

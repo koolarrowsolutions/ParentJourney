@@ -68,33 +68,8 @@ export function getStoredAuthData(): AuthData | null {
 // Clear authentication data
 export function clearAuthData(): void {
   localStorage.removeItem('parentjourney_auth');
-  localStorage.removeItem('parentjourney_token');
   localStorage.removeItem('authToken');
-  localStorage.removeItem('parentjourney_just_logged_in');
-  localStorage.removeItem('hasCompletedOnboarding');
-  localStorage.removeItem('hasDismissedOnboarding');
-  console.log('Cleared all auth data');
-}
-
-// Complete authentication reset - clears everything and forces logout
-export async function completeAuthReset(): Promise<void> {
-  try {
-    // Call logout API to clear server-side session
-    await fetch('/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('parentjourney_token') || ''}`,
-      }
-    });
-  } catch (error) {
-    console.log('Logout API call failed, continuing with cleanup');
-  }
-  
-  // Clear all local storage
-  clearAuthData();
-  
-  console.log('Complete authentication reset performed');
+  console.log('Cleared auth data');
 }
 
 // Perform login with mobile browser compatibility
@@ -205,20 +180,36 @@ export async function checkAuthStatus(): Promise<{ success: boolean; user?: any;
         }
         
         return result;
-      } else {
-        // Server explicitly says user is not authenticated - clear all local storage
-        console.log('Server auth failed, clearing all local storage');
-        clearAuthData();
-        return { success: false };
       }
     }
 
-    // Only use stored data as fallback for network errors, not authentication failures
+    // If server auth fails, try stored data as fallback for iframe environments
+    console.log('Server auth failed, checking stored data...');
+    const storedAuth = getStoredAuthData();
+    if (storedAuth && storedAuth.isAuthenticated) {
+      console.log('Using stored auth data as fallback');
+      return {
+        success: true,
+        user: storedAuth.user,
+        hasJustSignedUp: storedAuth.hasJustSignedUp
+      };
+    }
+
     return { success: false };
   } catch (error) {
     console.error('Auth check error:', error);
-    // Clear auth data on network errors to prevent stale data
-    clearAuthData();
+    
+    // Try stored data as final fallback
+    const storedAuth = getStoredAuthData();
+    if (storedAuth && storedAuth.isAuthenticated) {
+      console.log('Using stored auth data after network error');
+      return {
+        success: true,
+        user: storedAuth.user,
+        hasJustSignedUp: storedAuth.hasJustSignedUp
+      };
+    }
+
     return { success: false };
   }
 }

@@ -93,11 +93,6 @@ export function useAuthOnboarding() {
     const hasDismissedOnboarding = localStorage.getItem("hasDismissedOnboarding") === "true";
     const hasCompletedOnboarding = localStorage.getItem("hasCompletedOnboarding") === "true";
     
-    // If user has a parent profile, always allow access - they've already set up their account
-    if (parentProfile) {
-      return false; // Profile access allowed - user already has profile
-    }
-    
     // Only trigger if user hasn't completed onboarding and doesn't have a profile
     if (!hasCompletedOnboarding && !parentProfile && !authState.showOnboarding) {
       setAuthState(prev => ({

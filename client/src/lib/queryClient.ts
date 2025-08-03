@@ -23,6 +23,8 @@ export async function apiRequest(
     console.log(`API Request to ${url} without token`);
   }
   
+  console.log(`apiRequest: ${method} ${url}`, data ? `with data: ${JSON.stringify(data)}` : 'without data');
+  
   const res = await fetch(url, {
     method,
     headers,
@@ -30,6 +32,7 @@ export async function apiRequest(
     credentials: "include",
   });
 
+  console.log(`apiRequest response: ${res.status} ${res.statusText}`);
   await throwIfResNotOk(res);
   return res;
 }

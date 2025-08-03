@@ -114,8 +114,8 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
       <Card className="bg-white shadow-lg border-2 border-primary/30 hover-lift opacity-100 visible">
         <CardContent className="p-3 sm:p-4">
           {/* Mobile: Stack layout, Desktop: Horizontal layout */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-            <div className="flex items-center space-x-3 flex-1">
+          <div className="space-y-3">
+            <div className="flex items-center space-x-3">
               <Heart className="text-blue-600 h-5 w-5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
@@ -124,14 +124,6 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
                 <p className="text-gray-600 text-xs sm:text-sm leading-tight mt-0.5">
                   Take a 2-minute check-in across 10 key areas of your life.
                 </p>
-                <div className="flex items-center mt-1 text-xs text-amber-600 flex-wrap">
-                  <span className="mr-1">🌟</span>
-                  <span className="font-semibold">{streakCount} day streak!</span>
-                  <span className="mx-2 text-gray-400 hidden xs:inline">•</span>
-                  <span className="text-gray-500 ml-2 xs:ml-0">
-                    Last: {lastCompleted ? format(lastCompleted, 'MMM d') : 'No entries yet'}
-                  </span>
-                </div>
               </div>
             </div>
             
@@ -164,6 +156,15 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
                   <Sparkles className="h-4 w-4" />
                 </Button>
               </TooltipWrapper>
+            </div>
+
+            <div className="flex items-center justify-center text-xs text-amber-600 flex-wrap">
+              <span className="mr-1">🌟</span>
+              <span className="font-semibold">{streakCount} day streak!</span>
+              <span className="mx-2 text-gray-400 hidden xs:inline">•</span>
+              <span className="text-gray-500 ml-2 xs:ml-0">
+                Last: {lastCompleted ? format(lastCompleted, 'MMM d') : 'No entries yet'}
+              </span>
             </div>
           </div>
         </CardContent>

@@ -721,11 +721,11 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       description: "AI insights on your parenting strengths, patterns, and growth—based on your journal entries and reflections. We'll highlight key moments, trends, and tips you can use today.",
       tooltip: "Track your parenting journey progress through AI analysis of your journal entries",
       icon: <TrendingUp className="h-5 w-5 stroke-1" />,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-      borderColor: "border-blue-200",
-      hoverBorder: "hover:border-blue-400",
-      hoverBg: "hover:bg-blue-100"
+      color: "text-blue-700",
+      bgColor: "bg-white",
+      borderColor: "border-blue-300",
+      hoverBorder: "hover:border-blue-500",
+      hoverBg: "hover:bg-blue-50"
     },
     {
       id: "child-development",

@@ -143,10 +143,63 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       const freshEntries = queryClient.getQueryData(["/api/journal-entries"]) as JournalEntry[] || [];
       const freshParentProfile = queryClient.getQueryData(["/api/parent-profile"]) as ParentProfile || null;
       
-      console.log(`🔄 FRESH DATA CHECK - entries: ${freshEntries?.length || 0}, children: ${freshChildProfiles?.length || 0} (${freshChildProfiles?.map(c => c.name).join(', ') || 'none'}), parent: ${freshParentProfile?.name || 'missing'}`);
+      // If cached data is empty, try direct fetch as backup
+      let finalEntries = freshEntries;
+      let finalChildProfiles = freshChildProfiles;
+      let finalParentProfile = freshParentProfile;
+      
+      if ((!finalEntries || finalEntries.length === 0) && token) {
+        console.log('🔄 Cache empty, fetching entries directly...');
+        try {
+          const directEntriesResponse = await fetch('/api/journal-entries', {
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            credentials: 'include'
+          });
+          if (directEntriesResponse.ok) {
+            finalEntries = await directEntriesResponse.json();
+            console.log(`✅ Direct fetch got ${finalEntries?.length || 0} entries`);
+          }
+        } catch (e) {
+          console.log('❌ Direct entries fetch failed:', e);
+        }
+      }
+      
+      if ((!finalChildProfiles || finalChildProfiles.length === 0) && token) {
+        console.log('🔄 Cache empty, fetching child profiles directly...');
+        try {
+          const directChildResponse = await fetch('/api/child-profiles', {
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            credentials: 'include'
+          });
+          if (directChildResponse.ok) {
+            finalChildProfiles = await directChildResponse.json();
+            console.log(`✅ Direct fetch got ${finalChildProfiles?.length || 0} child profiles`);
+          }
+        } catch (e) {
+          console.log('❌ Direct child profiles fetch failed:', e);
+        }
+      }
+      
+      if (!finalParentProfile && token) {
+        console.log('🔄 Cache empty, fetching parent profile directly...');
+        try {
+          const directParentResponse = await fetch('/api/parent-profile', {
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            credentials: 'include'
+          });
+          if (directParentResponse.ok) {
+            finalParentProfile = await directParentResponse.json();
+            console.log(`✅ Direct fetch got parent profile: ${finalParentProfile?.name || 'unknown'}`);
+          }
+        } catch (e) {
+          console.log('❌ Direct parent profile fetch failed:', e);
+        }
+      }
+      
+      console.log(`🔄 FINAL DATA CHECK - entries: ${finalEntries?.length || 0}, children: ${finalChildProfiles?.length || 0} (${finalChildProfiles?.map(c => c.name).join(', ') || 'none'}), parent: ${finalParentProfile?.name || 'missing'}`);
       
       // Force authentication by checking if we have data AND a token
-      const hasDataAndToken = token && ((freshEntries?.length ?? 0) > 0 || (freshChildProfiles?.length ?? 0) > 0 || freshParentProfile);
+      const hasDataAndToken = token && ((finalEntries?.length ?? 0) > 0 || (finalChildProfiles?.length ?? 0) > 0 || finalParentProfile);
       
       if (!hasDataAndToken) {
         // Show explainer content for unauthenticated users or users without data
@@ -155,9 +208,9 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       } else {
         // We have data and a token - proceed with real AI analysis
         console.log('✅ DATA AND TOKEN FOUND - Proceeding with REAL AI analysis');
-        console.log(`- Children found: ${freshChildProfiles?.map(c => c.name).join(', ') || 'none'}`);
-        console.log(`- Parent: ${freshParentProfile?.name || 'unknown'}`);
-        console.log(`- Journal entries: ${freshEntries?.length || 0}`);
+        console.log(`- Children found: ${finalChildProfiles?.map(c => c.name).join(', ') || 'none'}`);
+        console.log(`- Parent: ${finalParentProfile?.name || 'unknown'}`);
+        console.log(`- Journal entries: ${finalEntries?.length || 0}`);
         
         // Make the auth test to validate token
         const authTestResponse = await fetch('/api/auth/user', {
@@ -174,14 +227,33 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
         if (!authTest.success) {
           console.log('❌ Auth test failed, using fallback with available data');
           // Use available data for personalized fallback
-          const personalizedData = getUserSpecificData(insightType, freshEntries || [], freshChildProfiles || [], freshParentProfile);
+          const personalizedData = getUserSpecificData(insightType, finalEntries || [], finalChildProfiles || [], finalParentProfile);
           setAnalysisData(personalizedData);
           return;
         }
         // Use actual user data for authenticated users - call real AI API
         console.log(`🚀 Making REAL AI analysis request for: ${insightType}`);
-        console.log(`🚀 Children: ${freshChildProfiles?.map(c => c.name).join(', ') || 'none'}`);
-        console.log(`🚀 Parent: ${freshParentProfile?.name || 'unknown'}`);
+        console.log(`🚀 Children: ${finalChildProfiles?.map(c => c.name).join(', ') || 'none'}`);
+        console.log(`🚀 Parent: ${finalParentProfile?.name || 'unknown'}`);
+        console.log(`🚀 Journal Entries to send: ${finalEntries?.length || 0} entries`);
+        
+        // Additional detailed logging of data being sent
+        console.log('📝 ENTRIES TO BE SENT:', finalEntries?.map(entry => ({
+          title: entry.title || entry.content?.substring(0, 50),
+          content: entry.content?.substring(0, 100),
+          mood: entry.mood,
+          childName: finalChildProfiles?.find(child => child.id === entry.childProfileId)?.name || 'General'
+        })));
+        
+        console.log('👶 CHILD PROFILES TO BE SENT:', finalChildProfiles?.map(child => ({
+          name: child.name,
+          age: child.dateOfBirth ? Math.floor((Date.now() - new Date(child.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000)) : 'unknown'
+        })));
+        
+        console.log('👨‍👩‍👧‍👦 PARENT PROFILE TO BE SENT:', finalParentProfile ? {
+          name: finalParentProfile.name,
+          parentingStyle: finalParentProfile.parentingStyle
+        } : 'null');
         
         const response = await fetch(`/api/ai-analysis/${insightType}`, {
           method: 'POST',
@@ -191,9 +263,9 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
           },
           credentials: 'include',
           body: JSON.stringify({
-            entries: freshEntries || [],
-            childProfiles: freshChildProfiles || [],
-            parentProfile: freshParentProfile
+            entries: finalEntries || [],
+            childProfiles: finalChildProfiles || [],
+            parentProfile: finalParentProfile
           })
         });
         

@@ -1273,8 +1273,9 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
   // AI Analysis routes for comprehensive insights - authentication required
   app.post("/api/ai-analysis/:type", async (req, res) => {
     try {
-      // Check authentication first
-      if (!req.isAuthenticated()) {
+      // Check authentication first (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success) {
         console.log('AI Analysis: Authentication required');
         return res.status(401).json({ error: "Authentication required for AI analysis" });
       }

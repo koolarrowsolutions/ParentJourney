@@ -23,7 +23,9 @@ import {
   Download,
   FileText,
   Loader2,
-  ArrowLeft
+  ArrowLeft,
+  Users,
+  Zap
 } from "lucide-react";
 import { Link } from "wouter";
 import { format } from "date-fns";
@@ -151,6 +153,27 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
     } else {
       setSelectedChildIds(prev => prev.filter(id => id !== childId));
     }
+  };
+
+  const handleSelectAllFilters = () => {
+    // Select all children
+    if (childProfiles) {
+      const allChildIds = childProfiles.map(child => child.id);
+      // Also include entries with no child profile
+      const hasUnassignedEntries = allEntries?.some(entry => !entry.childProfileId);
+      if (hasUnassignedEntries) {
+        allChildIds.push('no-child');
+      }
+      setSelectedChildIds(allChildIds);
+    }
+    
+    // Select all interaction types
+    setSelectedInteractionTypes(['shared_journey', 'quick_moment']);
+  };
+
+  const handleClearAllFilters = () => {
+    setSelectedChildIds([]);
+    setSelectedInteractionTypes([]);
   };
 
   const handleSelectAllChildren = () => {
@@ -424,7 +447,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
         {/* Child Selection */}
         <Card className="mb-6">
           <CardContent className="p-6">
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Filter className="h-5 w-5 text-primary" />
@@ -434,7 +457,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleSelectAllChildren}
+                    onClick={handleSelectAllFilters}
                     className="text-xs"
                   >
                     Select All
@@ -442,7 +465,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleClearAllChildren}
+                    onClick={handleClearAllFilters}
                     className="text-xs"
                   >
                     Clear All
@@ -450,102 +473,135 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                 </div>
               </div>
 
-              {/* Select Children Section */}
-              <div>
-                <h3 className="text-sm font-medium text-neutral-700 mb-3">Select Children:</h3>
+              {/* Unified Filter Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                
+                {/* Select Children Section */}
+                <div className="col-span-full">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Baby className="h-4 w-4 text-primary" />
+                    <h3 className="text-sm font-medium text-neutral-700">Select Children</h3>
+                    <div className="flex-1 border-t border-neutral-200"></div>
+                    <Users className="h-4 w-4 text-primary" />
+                    <h3 className="text-sm font-medium text-neutral-700">Your Interactions</h3>
+                  </div>
+                </div>
+
+                {/* Children and General Interactions */}
                 {profilesLoading ? (
-                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 col-span-full" />
                 ) : (
-                  <div className="space-y-2">
-                    {childProfiles && childProfiles.length > 0 ? (
-                      childProfiles.map((child) => (
-                        <div key={child.id} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id={`history-child-${child.id}`}
-                            checked={selectedChildIds.includes(child.id)}
-                            onChange={(e) => handleChildToggle(child.id, e.target.checked)}
-                            className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
-                          />
-                          <label 
-                            htmlFor={`history-child-${child.id}`}
-                            className="text-sm text-neutral-700 flex items-center cursor-pointer"
-                          >
-                            <Baby className="h-4 w-4 mr-2 text-primary" />
-                            {child.name}
-                          </label>
+                  <>
+                    {childProfiles && childProfiles.length > 0 && childProfiles.map((child, index) => (
+                      <div
+                        key={child.id}
+                        className={`flex items-center p-3 rounded-lg border transition-colors cursor-pointer ${
+                          selectedChildIds.includes(child.id)
+                            ? 'border-primary bg-primary/5'
+                            : 'border-neutral-200 hover:border-neutral-300'
+                        }`}
+                        onClick={() => handleChildToggle(child.id, !selectedChildIds.includes(child.id))}
+                      >
+                        <div className="flex items-center gap-3 flex-1">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            index === 0 ? 'bg-blue-100 text-blue-600' :
+                            index === 1 ? 'bg-purple-100 text-purple-600' :
+                            index === 2 ? 'bg-pink-100 text-pink-600' :
+                            'bg-emerald-100 text-emerald-600'
+                          }`}>
+                            <Baby className="h-4 w-4" />
+                          </div>
+                          <div className="text-sm font-medium text-neutral-800">{child.name}</div>
                         </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-neutral-500 italic">No children added yet</p>
+                        {selectedChildIds.includes(child.id) && (
+                          <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                            <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* General Interactions Option */}
+                    {allEntries?.some(entry => !entry.childProfileId) && (
+                      <div
+                        className={`flex items-center p-3 rounded-lg border transition-colors cursor-pointer ${
+                          selectedChildIds.includes('no-child')
+                            ? 'border-primary bg-primary/5'
+                            : 'border-neutral-200 hover:border-neutral-300'
+                        }`}
+                        onClick={() => handleChildToggle('no-child', !selectedChildIds.includes('no-child'))}
+                      >
+                        <div className="flex items-center gap-3 flex-1">
+                          <div className="w-8 h-8 bg-neutral-100 text-neutral-600 rounded-full flex items-center justify-center">
+                            <FileText className="h-4 w-4" />
+                          </div>
+                          <div className="text-sm font-medium text-neutral-800">General Interactions</div>
+                        </div>
+                        {selectedChildIds.includes('no-child') && (
+                          <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                            <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                          </div>
+                        )}
+                      </div>
                     )}
-                  </div>
-                )}
-              </div>
 
-              {/* General Interactions Checkbox */}
-              {allEntries?.some(entry => !entry.childProfileId) && (
-                <div className="pt-2 border-t border-neutral-200">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="history-child-no-child"
-                      checked={selectedChildIds.includes('no-child')}
-                      onChange={(e) => handleChildToggle('no-child', e.target.checked)}
-                      className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
-                    />
-                    <label 
-                      htmlFor="history-child-no-child"
-                      className="text-sm text-neutral-700 flex items-center cursor-pointer"
-                    >
-                      <FileText className="h-4 w-4 mr-2 text-neutral-500" />
-                      General Interactions (no child assigned)
-                    </label>
-                  </div>
-                </div>
-              )}
-
-              {/* Your Interactions Section */}
-              <div className="pt-4 border-t border-neutral-200">
-                <h3 className="text-sm font-medium text-neutral-700 mb-3">Your Interactions:</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="shared-journey-filter"
-                      checked={selectedInteractionTypes.includes('shared_journey')}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedInteractionTypes([...selectedInteractionTypes, 'shared_journey']);
-                        } else {
+                    {/* Parenting Journey Entries */}
+                    <div
+                      className={`flex items-center p-3 rounded-lg border transition-colors cursor-pointer ${
+                        selectedInteractionTypes.includes('shared_journey')
+                          ? 'border-primary bg-primary/5'
+                          : 'border-neutral-200 hover:border-neutral-300'
+                      }`}
+                      onClick={() => {
+                        if (selectedInteractionTypes.includes('shared_journey')) {
                           setSelectedInteractionTypes(selectedInteractionTypes.filter(type => type !== 'shared_journey'));
-                        }
-                      }}
-                      className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
-                    />
-                    <label htmlFor="shared-journey-filter" className="text-sm text-neutral-700 cursor-pointer">
-                      Parenting Journey Journal Entries
-                    </label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="quick-moment-filter"
-                      checked={selectedInteractionTypes.includes('quick_moment')}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedInteractionTypes([...selectedInteractionTypes, 'quick_moment']);
                         } else {
-                          setSelectedInteractionTypes(selectedInteractionTypes.filter(type => type !== 'quick_moment'));
+                          setSelectedInteractionTypes([...selectedInteractionTypes, 'shared_journey']);
                         }
                       }}
-                      className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
-                    />
-                    <label htmlFor="quick-moment-filter" className="text-sm text-neutral-700 cursor-pointer">
-                      Quick Moment Daily Reflections
-                    </label>
-                  </div>
-                </div>
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
+                          <BookOpen className="h-4 w-4" />
+                        </div>
+                        <div className="text-sm font-medium text-neutral-800">Parenting Journey</div>
+                      </div>
+                      {selectedInteractionTypes.includes('shared_journey') && (
+                        <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                          <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Quick Moment Reflections */}
+                    <div
+                      className={`flex items-center p-3 rounded-lg border transition-colors cursor-pointer ${
+                        selectedInteractionTypes.includes('quick_moment')
+                          ? 'border-primary bg-primary/5'
+                          : 'border-neutral-200 hover:border-neutral-300'
+                      }`}
+                      onClick={() => {
+                        if (selectedInteractionTypes.includes('quick_moment')) {
+                          setSelectedInteractionTypes(selectedInteractionTypes.filter(type => type !== 'quick_moment'));
+                        } else {
+                          setSelectedInteractionTypes([...selectedInteractionTypes, 'quick_moment']);
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                          <Zap className="h-4 w-4" />
+                        </div>
+                        <div className="text-sm font-medium text-neutral-800">Quick Moments</div>
+                      </div>
+                      {selectedInteractionTypes.includes('quick_moment') && (
+                        <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                          <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Selected Filters Display */}
@@ -557,7 +613,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                       if (childId === 'no-child') {
                         return (
                           <Badge key={childId} variant="secondary" className="text-xs">
-                            General interactions (no child assigned)
+                            General Interactions
                           </Badge>
                         );
                       }
@@ -570,7 +626,7 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                     })}
                     {selectedInteractionTypes.map(type => (
                       <Badge key={type} variant="outline" className="text-xs">
-                        {type === 'shared_journey' ? 'Parenting Journey' : 'Quick Moment'}
+                        {type === 'shared_journey' ? 'Parenting Journey' : 'Quick Moments'}
                       </Badge>
                     ))}
                   </div>

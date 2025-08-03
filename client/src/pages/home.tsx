@@ -31,6 +31,8 @@ interface JournalStats {
   totalEntries: number;
   weekEntries: number;
   longestStreak: number;
+  weekSharedJourneys: number;
+  weekQuickMoments: number;
 }
 
 interface HomeProps {
@@ -188,55 +190,14 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {/* Balanced Stats and Wellness Row - Responsive grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
-                  {/* Total Entries - More encouraging */}
-                  <div className="bg-primary/5 rounded-lg p-2 sm:p-3 text-center border border-primary/20 animate-pop-in stagger-1">
-                    <div className="text-base sm:text-lg md:text-xl font-semibold text-primary">
-                      ✅ {stats?.totalEntries || 0}
-                    </div>
-                    <div className="text-xs sm:text-xs text-neutral-600 mt-1">Total Interactions</div>
-                  </div>
-
-                  {/* Week Entries */}
-                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 text-center border border-green-200 animate-pop-in stagger-2">
-                    <div className="text-base sm:text-lg md:text-xl font-semibold text-green-600">
-                      {stats?.weekEntries || 0}
-                    </div>
-                    <div className="text-xs sm:text-xs text-neutral-600 mt-1">Interactions This Week</div>
-                  </div>
-
-                  {/* Longest Streak - More motivational */}
-                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 text-center border border-orange-200 animate-pop-in stagger-3">
-                    <div className="text-base sm:text-lg md:text-xl font-semibold text-orange-600">
-                      {getStreakEmoji(stats?.longestStreak || 0)} {stats?.longestStreak || 'New'}
-                    </div>
-                    <div className="text-xs sm:text-xs text-neutral-600 mt-1">
-                      {(stats?.longestStreak || 0) > 1 ? 'Day streak!' : 'Current Daily Interaction Streak'}
-                    </div>
-                  </div>
-
-                  {/* Wellness Level */}
-                  <div className="bg-purple-50 rounded-lg p-2 sm:p-3 text-center border border-purple-200 animate-pop-in stagger-4">
-                    <div className="flex items-center justify-center mb-1">
-                      <Award className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 mr-1" />
-                      <div className="text-base sm:text-lg md:text-xl font-semibold text-purple-600">
-                        {(() => {
-                          const entries = stats?.totalEntries || 0;
-                          if (entries >= 100) return 15;
-                          if (entries >= 75) return 12;
-                          if (entries >= 50) return 9;
-                          if (entries >= 25) return 6;
-                          if (entries >= 10) return 3;
-                          return 1;
-                        })()}
-                      </div>
-                    </div>
-                    <div className="text-xs sm:text-xs text-neutral-600">
-                      Wellness Level
-                    </div>
-                  </div>
-                </div>
+                {/* Enhanced Progress Tracking with New Weekly Counters */}
+                <InteractiveProgress 
+                  totalEntries={stats?.totalEntries || 0}
+                  weekEntries={stats?.weekEntries || 0}
+                  longestStreak={stats?.longestStreak || 0}
+                  weekSharedJourneys={stats?.weekSharedJourneys || 0}
+                  weekQuickMoments={stats?.weekQuickMoments || 0}
+                />
 
                 {/* Wellness Journey Description - More motivational & Mobile responsive */}
                 <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-3 border border-purple-200 mt-3">

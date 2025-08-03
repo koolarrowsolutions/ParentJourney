@@ -21,6 +21,7 @@ import AdminDashboard from "@/pages/admin";
 import Checkout from "@/pages/checkout";
 import PaymentDemo from "@/pages/payment-demo";
 import { Wellness } from "@/pages/wellness";
+import PrivacyPolicy from "@/pages/privacy-policy";
 
 function AppRouter() {
   const {
@@ -111,6 +112,7 @@ function AppRouter() {
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/checkout" component={Checkout} />
         <Route path="/payment-demo" component={PaymentDemo} />
+        <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route component={NotFound} />
       </Switch>
       

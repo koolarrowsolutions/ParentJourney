@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Header } from "@/components/header";
@@ -379,12 +380,24 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
 
       {/* Auth Dialog for non-authenticated users */}
       <AuthDialog 
-        open={showAuthDialog} 
-        setOpen={setShowAuthDialog}
-        defaultTab="signup"
+        mode="signup"
+        trigger="manual"
       />
 
       {/* Login success popup disabled - using LoginConfirmationModal instead */}
+      
+      {/* Footer with Privacy Policy link */}
+      <footer className="mt-16 py-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="text-center">
+          <Link 
+            href="/privacy-policy" 
+            className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            data-testid="link-privacy-policy"
+          >
+            Privacy Policy & Terms of Use
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 }

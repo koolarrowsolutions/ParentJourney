@@ -33,6 +33,14 @@ The application employs a modern full-stack architecture with clear separation b
 - **Files Updated:** OnboardingManager uses OnboardingFlow component, authentication fixes in all mutation functions
 - **UX Enhancement:** Onboarding displays over main content without blocking functionality, allowing users to see the dashboard context
 
+**Privacy Policy & Terms of Use Implementation (August 2025):**
+- **Legal Compliance:** Added comprehensive Privacy Policy and Terms of Use covering data collection, usage, third-party services, and user rights
+- **Accessibility:** Created dedicated `/privacy-policy` route with professional, readable layout and proper navigation
+- **Disclosure:** Documents OpenAI API usage, Brevo email service, OAuth providers, and Neon Database storage
+- **User Rights:** Clearly outlines data deletion capabilities, account control options, and contact information
+- **Discreet Integration:** Added small footer link on main dashboard for easy access without disrupting user experience
+- **Business Details:** Operated by Kool Arrow Solutions LLC with proper contact information and legal jurisdiction
+
 **Progressive Streak Emoji System (August 2025):**
 - **Enhanced User Experience:** Implemented progressive emoji rewards based on actual streak length across all streak displays
 - **Motivational Design:** Replaced static fire emoji with dynamic progression: 🌱 (starting) → 👍 (1 day) → 💪 (2 days) → ⭐ (3-4 days) → 🏆 (5-6 days) → 🔥 (7-13 days) → 🚀 (14-20 days) → 💎 (21-29 days) → 👑 (30+ days)

@@ -1,0 +1,88 @@
+Privacy Policy & Terms of Use
+Effective Date: 8/1/25
+Operated by: Kool Arrow Solutions LLC
+
+By signing up, you agree to this Privacy Policy and the Terms of Use outlined below.
+
+1. Information We Collect
+We collect the following types of information:
+
+Account Information: Email, password (hashed), and optional profile data through Google, Facebook, GitHub, or Twitter login.
+
+Journal Entries & Reflections: Written content you submit in the app for personal wellness and parenting insights.
+
+Child Profiles: Information about your children that you provide (e.g., name, age range, personality traits).
+
+AI Feedback Context: Mood logs, selected prompts, and recent behavior insights you input for personalized support.
+
+2. How We Use Your Information
+We use your data to:
+
+Deliver personalized wellness reflections and parenting insights using AI
+
+Maintain secure authentication and session management
+
+Provide mood tracking, journaling features, and parenting tools
+
+Send optional notifications (e.g., reminders or progress reports)
+
+Improve user experience and support your parenting journey
+
+3. Data Sharing & Third-Party Services
+We do not sell or share your personal information with advertisers. However, we do share limited data with trusted third parties for functionality:
+
+OpenAI API: Journal entries and parenting context are processed via OpenAI's GPT-4o to generate personalized insights. Per OpenAI’s policy, API data is not stored long term or used for training.
+
+Brevo (formerly Sendinblue): We use Brevo to send optional email reminders and progress reports.
+
+OAuth Providers: If you sign in using Google, Facebook, GitHub, or Twitter, we receive only basic profile data (email and name).
+
+4. Data Security
+We take strong precautions to protect your data:
+
+All data in transit is encrypted using HTTPS
+
+Passwords are hashed using bcrypt
+
+Session tokens are securely generated and stored
+
+Database encryption and backups are managed by our provider, Neon Database
+
+5. Your Control Over Your Data
+You can:
+
+Delete individual journal entries or child profiles
+
+Revoke access or sign out at any time
+
+Delete your account
+
+6. Children’s Privacy
+This app is intended only for adult parents and caregivers. We do not knowingly collect information directly from children under 18. Any child-related data is provided by the parent or caregiver and used solely to support parenting goals.
+
+7. Service Availability
+We aim to maintain reliable access, but the App may experience occasional downtime due to maintenance, technical issues, or third-party outages. The service is provided "as is" without guarantees of uptime or availability.
+
+8. Accessibility
+We are committed to accessibility. If you require accommodations or support, please contact us at info@socialworkmagic.com and we will make reasonable efforts to assist you.
+
+9. Intellectual Property & Content Use
+All intellectual property within the App is owned by Ernesto Bejarano – Kool Arrow Solutions LLC. No content or code may be reused, modified, or redistributed without express written permission.
+
+10. Dispute Resolution
+In the event of a dispute, both parties agree to attempt resolution through good-faith negotiation. If unresolved, the matter will be settled through mediation, and if necessary, binding arbitration under the rules of the American Arbitration Association.
+
+11. Limitation of Liability
+This service is provided "as is" with no warranties of any kind. Ernesto Bejarano – Kool Arrow Solutions LLC shall not be liable for any indirect, incidental, special, or consequential damages resulting from your use of the App. Your sole remedy is to stop using the service.
+
+12. Governing Law
+These terms are governed by the laws of the State of California, United States, without regard to conflict of law principles.
+
+13. Updates and Modifications
+We may update this policy and terms of use from time to time. If changes are material, we will notify users by email or through the App.
+
+14. Contact Us
+If you have questions about this Privacy Policy or Terms of Use, contact us at:
+
+Kool Arrow Solutions LLC
+📧 info@socialworkmagic.com

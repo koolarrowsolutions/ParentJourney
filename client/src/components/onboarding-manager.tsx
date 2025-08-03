@@ -35,12 +35,20 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
         userID: user?.id 
       });
       setCurrentPhase('initial');
-    } else if (!parsedStatus.firstTimeTour) {
-      console.log('OnboardingManager: Showing first-time tour');
-      setCurrentPhase('first-time-tour');
     } else {
-      console.log('OnboardingManager: Onboarding completed');
+      // Skip the problematic first-time tour for now and mark as completed
+      console.log('OnboardingManager: Onboarding completed - skipping first-time tour');
       setCurrentPhase('completed');
+      
+      // Automatically mark first-time tour as completed to prevent the blank popup
+      if (!parsedStatus['first-time-tour']) {
+        const updatedStatus = {
+          ...parsedStatus,
+          'first-time-tour': true,
+          completedAt: new Date().toISOString(),
+        };
+        localStorage.setItem(`onboarding_${user.id}`, JSON.stringify(updatedStatus));
+      }
     }
     
     setHasCompletedInitial(!!parsedStatus.initial);
@@ -125,15 +133,15 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
         />
       )}
       
-      {/* First Time Feature Tour */}
-      {currentPhase === 'first-time-tour' && (
+      {/* First Time Feature Tour - Temporarily disabled to prevent blank popup */}
+      {/* {currentPhase === 'first-time-tour' && (
         <FeatureTour
           tour={TOURS.firstTime}
           isActive={true}
           onComplete={() => completePhase('first-time-tour')}
           onSkip={() => skipPhase('first-time-tour')}
         />
-      )}
+      )} */}
       
       {/* Analytics Tour */}
       {currentPhase === 'analytics-tour' && (

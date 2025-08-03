@@ -51,9 +51,13 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
 
   const createFamilyMutation = useMutation({
     mutationFn: async (data: InsertFamily) => {
+      const token = localStorage.getItem('parentjourney_token');
       const response = await fetch("/api/families", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token && { "Authorization": `Bearer ${token}` })
+        },
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to create family");
@@ -75,9 +79,13 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
 
   const createParentMutation = useMutation({
     mutationFn: async (data: InsertParentProfile) => {
+      const token = localStorage.getItem('parentjourney_token');
       const response = await fetch("/api/parent-profiles", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token && { "Authorization": `Bearer ${token}` })
+        },
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to create parent profile");
@@ -97,9 +105,13 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
 
   const createChildMutation = useMutation({
     mutationFn: async (data: InsertChildProfile) => {
+      const token = localStorage.getItem('parentjourney_token');
       const response = await fetch("/api/child-profiles", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token && { "Authorization": `Bearer ${token}` })
+        },
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("Failed to create child profile");

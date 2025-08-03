@@ -62,11 +62,22 @@ export function useAuth(): AuthState & { clearLoginStatus: () => void } {
       const justLoggedIn = checkLoginFlag();
       console.log('Auth state transition:', { wasAuthenticated, isNowAuthenticated, justLoggedIn });
       
+      // Detect successful login transition and ensure flag is honored
+      const isLoginTransition = !wasAuthenticated && isNowAuthenticated;
+      
+      // Additional debug for login flag timing
+      if (justLoggedIn) {
+        console.log('Login flag detected - welcome modal should appear');
+      }
+      
+      // For login transitions, ensure the flag is checked regardless of timing
+      const shouldShowLoginModal = justLoggedIn || isLoginTransition;
+      
       const newState = {
         user: data.user || null,
         isAuthenticated: isNowAuthenticated,
         hasJustSignedUp: data.hasJustSignedUp || false,
-        hasJustLoggedIn: justLoggedIn, // Use login flag
+        hasJustLoggedIn: shouldShowLoginModal, // Use flag or detect transition
         isLoading: false,
       };
       setAuthState(newState);
@@ -95,6 +106,7 @@ export function useLogout() {
       localStorage.removeItem('authState');
       localStorage.removeItem('parentjourney_auth');
       localStorage.removeItem('parentjourney_token');
+      localStorage.removeItem('parentjourney_just_logged_in'); // Clear login flag on logout
       
       // Call server logout
       await fetch('/api/auth/logout', { 

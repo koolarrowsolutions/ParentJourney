@@ -32,11 +32,13 @@ export function setLoginFlag(): void {
 // Check login flag without clearing it
 export function checkLoginFlag(): boolean {
   const flag = localStorage.getItem('parentjourney_just_logged_in');
+  console.log('Checking login flag:', flag);
   return flag === 'true';
 }
 
 // Clear login flag
 export function clearLoginFlag(): void {
+  console.log('Clearing login flag');
   localStorage.removeItem('parentjourney_just_logged_in');
 }
 
@@ -118,8 +120,9 @@ export async function performLogin(identifier: string, password: string): Promis
         console.warn('No auth token received in login response');
       }
       
-      // Set login flag to trigger modal
+      // Set login flag to trigger modal  
       setLoginFlag();
+      console.log('Login flag set after successful authentication');
       
       return { 
         success: true, 

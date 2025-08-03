@@ -89,6 +89,13 @@ function AppRouter() {
     console.log('Mobile simulation enabled - refresh page to see mobile features');
   };
 
+  // Test welcome modal functionality
+  (window as any).testWelcomeModal = () => {
+    localStorage.setItem('parentjourney_just_logged_in', 'true');
+    console.log('Login flag set - refresh page to see welcome modal');
+    window.location.reload();
+  };
+
   return (
     <>
       <Switch>

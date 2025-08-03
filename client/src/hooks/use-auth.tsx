@@ -94,7 +94,7 @@ export function useLogout() {
       // Clear all local storage auth data first
       localStorage.removeItem('authState');
       localStorage.removeItem('parentjourney_auth');
-      localStorage.removeItem('parentjourney_token');
+      localStorage.removeItem('authToken');
       
       // Call server logout
       await fetch('/api/auth/logout', { 
@@ -113,7 +113,7 @@ export function useLogout() {
       // Still clear local data even if server request fails
       localStorage.removeItem('authState');
       localStorage.removeItem('parentjourney_auth');
-      localStorage.removeItem('parentjourney_token');
+      localStorage.removeItem('authToken');
       queryClient.clear();
       window.location.reload();
     }

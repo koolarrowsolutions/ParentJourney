@@ -18,9 +18,11 @@ import { StorySharingSection } from "@/components/story-sharing-section";
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { WellnessProgressRing } from "@/components/wellness-progress-ring";
 import { OnboardingTrigger } from "@/components/onboarding-trigger";
+import { AuthDialog } from "@/components/auth-dialog";
 
 
 import { authenticatedFetch } from "@/utils/api-client";
+import { useAuth } from "@/hooks/use-auth";
 
 import type { ChildProfile, JournalEntry } from "@shared/schema";
 
@@ -52,15 +54,18 @@ function getStreakEmoji(streak: number): string {
 export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const { user, isAuthenticated } = useAuth();
   
-  // Query parent profile to check authentication
+  // Query parent profile only when authenticated
   const { data: parentProfile, isLoading: profileLoading, error: profileError } = useQuery({
     queryKey: ["/api/parent-profile"],
     queryFn: async () => {
       const response = await authenticatedFetch("/api/parent-profile");
       if (!response.ok) throw new Error("Failed to fetch parent profile");
       return response.json();
-    }
+    },
+    enabled: isAuthenticated // Only fetch when authenticated
   });
 
 
@@ -105,7 +110,55 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     return triggerSignUpPrompt ? triggerSignUpPrompt(trigger) : false;
   };
 
-  // Show loading state while profile is loading
+  // For non-authenticated users, show welcome screen
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
+        <Header />
+        <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center max-w-md mx-auto">
+              <div className="mb-6">
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">Welcome to ParentJourney</h1>
+                <p className="text-gray-600 mb-6">
+                  Your digital companion for documenting your parenting experiences, tracking milestones, 
+                  and receiving AI-powered insights.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button 
+                  onClick={() => setShowAuthDialog(true)}
+                  data-testid="button-get-started"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Get Started
+                </button>
+                <button 
+                  onClick={() => {
+                    localStorage.setItem('debug_onboarding', 'true');
+                    window.location.reload();
+                  }}
+                  data-testid="button-test-onboarding"
+                  className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                >
+                  Test Onboarding
+                </button>
+              </div>
+              
+              {/* Auth Dialog */}
+              <AuthDialog 
+                open={showAuthDialog} 
+                setOpen={setShowAuthDialog}
+                defaultTab="signup"
+              />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Show loading state while profile is loading for authenticated users
   if (profileLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
@@ -122,8 +175,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     );
   }
 
-  // Show error state if profile failed to load
-  if (profileError) {
+  // Show error state if profile failed to load for authenticated users
+  if (profileError && isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
         <Header />

@@ -1,0 +1,15 @@
+HTTP/2 200 
+access-control-allow-credentials: true
+access-control-allow-headers: Content-Type, Authorization, Cookie, Set-Cookie
+access-control-allow-methods: GET,PUT,POST,DELETE,OPTIONS
+content-length: 335
+content-type: application/json; charset=utf-8
+date: Sun, 03 Aug 2025 16:37:04 GMT
+etag: W/"14f-OyYe1OpXxFuuzPcoe6NdoNpo0U8"
+server: Google Frontend
+strict-transport-security: max-age=63072000; includeSubDomains
+x-cloud-trace-context: 7406dc3fb4453ff7420abe7f9ed51887;o=1
+x-powered-by: Express
+via: 1.1 google
+alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+

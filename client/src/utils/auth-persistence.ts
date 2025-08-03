@@ -68,7 +68,7 @@ export function getStoredAuthData(): AuthData | null {
 // Clear authentication data
 export function clearAuthData(): void {
   localStorage.removeItem('parentjourney_auth');
-  localStorage.removeItem('authToken');
+  localStorage.removeItem('parentjourney_token');
   console.log('Cleared auth data');
 }
 
@@ -103,13 +103,13 @@ export async function performLogin(identifier: string, password: string): Promis
         hasJustSignedUp: result.hasJustSignedUp || false
       });
       
-      // Store auth token for API requests
+      // Store auth token for API requests (use consistent token name)
       if (result.authToken) {
-        localStorage.setItem('authToken', result.authToken);
+        localStorage.setItem('parentjourney_token', result.authToken);
         console.log('Stored auth token for API requests:', result.authToken.substring(0, 20) + '...');
         
         // Verify token was stored properly
-        const storedToken = localStorage.getItem('authToken');
+        const storedToken = localStorage.getItem('parentjourney_token');
         console.log('Token verification - stored successfully:', !!storedToken && storedToken === result.authToken);
         
         // Token stored successfully - no additional action needed
@@ -124,8 +124,7 @@ export async function performLogin(identifier: string, password: string): Promis
       return { 
         success: true, 
         user: result.user, 
-        authToken: result.authToken,
-        hasJustSignedUp: result.hasJustSignedUp || false
+        authToken: result.authToken
       };
     } else {
       return { success: false, error: result.error || 'Login failed' };
@@ -142,7 +141,7 @@ export async function checkAuthStatus(): Promise<{ success: boolean; user?: any;
     console.log('Checking auth status...');
     
     // Get auth token for iframe compatibility
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('parentjourney_token');
     console.log('Auth check - checking token from localStorage:', !!token, token ? token.substring(0, 20) + '...' : 'none');
     
     const headers: Record<string, string> = {

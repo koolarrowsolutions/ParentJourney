@@ -757,11 +757,11 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       description: "Three thoughtful suggestions to enhance your parenting journey and family dynamics",
       tooltip: "Explore new parenting perspectives and strategies you might not have considered",
       icon: <MessageSquare className="h-5 w-5 stroke-1" />,
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-50",
-      borderColor: "border-emerald-200",
-      hoverBorder: "hover:border-emerald-400",
-      hoverBg: "hover:bg-emerald-100"
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+      borderColor: "border-indigo-200",
+      hoverBorder: "hover:border-indigo-400",
+      hoverBg: "hover:bg-indigo-100"
     }
   ];
 

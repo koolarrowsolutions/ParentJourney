@@ -48,7 +48,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
             <DialogTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
+                className="h-auto min-h-[120px] sm:min-h-[140px] p-3 sm:p-5 flex flex-col items-center justify-center space-y-2 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
               >
                 <div className="bg-rose-100 p-1.5 sm:p-3 rounded-full group-hover:bg-rose-200 transition-colors">
                   <PenTool className="h-4 w-4 sm:h-7 sm:w-7 text-rose-600" />
@@ -82,7 +82,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
             <DialogTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
+                className="h-auto min-h-[120px] sm:min-h-[140px] p-3 sm:p-5 flex flex-col items-center justify-center space-y-2 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
               >
                 <div className="bg-amber-100 p-1.5 sm:p-3 rounded-full group-hover:bg-amber-200 transition-colors">
                   <Lightbulb className="h-4 w-4 sm:h-7 sm:w-7 text-amber-600" />
@@ -109,12 +109,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
           </Dialog>
         </div>
 
-        {/* Encouragement Footer - Mobile Optimized */}
-        <div className="mt-2 sm:mt-6 text-center px-1 sm:px-2">
-          <p className="text-xs sm:text-sm text-neutral-500 italic leading-tight">
-            Your stories help you grow and create a meaningful record of your family's journey.
-          </p>
-        </div>
+
       </CardContent>
     </Card>
   );

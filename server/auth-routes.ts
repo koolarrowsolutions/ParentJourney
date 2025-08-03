@@ -68,13 +68,16 @@ export function setupAuthRoutes(app: Express) {
   // Signup route
   app.post('/auth/signup', async (req, res) => {
     try {
+      console.log('Signup request received:', { body: req.body, headers: req.headers['content-type'] });
       const { username, name, email, password } = req.body;
       
       if (!username || !name || !email || !password) {
+        console.log('Signup validation failed - missing fields');
         return res.status(400).json({ error: 'All fields are required' });
       }
 
       if (password.length < 8) {
+        console.log('Signup validation failed - password too short');
         return res.status(400).json({ error: 'Password must be at least 8 characters long' });
       }
 

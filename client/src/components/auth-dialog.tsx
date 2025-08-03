@@ -73,7 +73,7 @@ export function AuthDialog({ mode: initialMode, trigger }: AuthDialogProps) {
       console.log('Attempting signup with:', { username: data.username, email: data.email, passwordLength: data.password.length }); // Debug log
       console.log('Form validation state:', signUpForm.formState.errors); // Debug form errors
       
-      const response = await fetch('/auth/signup', {
+      const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -30,9 +30,9 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
           </div>
 
           
-          {/* AI Insights messaging - Moved from welcome section */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">
-            <p className="text-xs sm:text-sm text-blue-800 text-center leading-relaxed">
+          {/* AI Insights messaging - Informational, not clickable */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4 select-none">
+            <p className="text-xs sm:text-sm text-blue-800 text-center leading-relaxed pointer-events-none">
               <span className="font-semibold">✨ The more you check in, the smarter your parenting support gets.</span>
               <br className="hidden sm:block" />
               <span className="sm:hidden"> </span>
@@ -52,7 +52,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
               >
                 <Button 
                   variant="outline" 
-                  className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200"
+                  className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-rose-200 bg-gradient-to-br from-white to-rose-50 hover:border-rose-300 hover:bg-rose-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
                 >
                   <div className="bg-rose-100 p-1.5 sm:p-3 rounded-full group-hover:bg-rose-200 transition-colors">
                     <PenTool className="h-4 w-4 sm:h-7 sm:w-7 text-rose-600" />
@@ -91,7 +91,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
               >
                 <Button 
                   variant="outline" 
-                  className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200"
+                  className="h-auto p-2 sm:p-5 flex flex-col items-center justify-center space-y-1 sm:space-y-3 border-amber-200 bg-gradient-to-br from-white to-amber-50 hover:border-amber-300 hover:bg-amber-100/50 hover-lift button-press w-full group transition-all duration-200 cursor-pointer hover:shadow-md active:scale-[0.98]"
                 >
                   <div className="bg-amber-100 p-1.5 sm:p-3 rounded-full group-hover:bg-amber-200 transition-colors">
                     <Lightbulb className="h-4 w-4 sm:h-7 sm:w-7 text-amber-600" />

@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 export default function PrivacyPolicy() {
@@ -7,13 +8,11 @@ export default function PrivacyPolicy() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header with back button */}
         <div className="mb-8">
-          <Link 
-            href="/" 
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 mb-4 transition-colors"
-            data-testid="link-back-home"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to ParentJourney
+          <Link href="/">
+            <Button variant="outline" className="hover-scale mb-4" data-testid="button-back-home">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Main
+            </Button>
           </Link>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Privacy Policy & Terms of Use

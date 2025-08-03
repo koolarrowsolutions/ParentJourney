@@ -76,20 +76,10 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: Partial<InsertParentProfile>) => {
-      console.log("Frontend: About to update profile with data:", data);
-      try {
-        const response = await apiRequest("PATCH", "/api/parent-profile", data);
-        console.log("Frontend: Got response from apiRequest:", response.status, response.statusText);
-        const jsonData = await response.json();
-        console.log("Frontend: Parsed JSON response:", jsonData);
-        return jsonData;
-      } catch (error) {
-        console.error("Frontend: Error in mutation function:", error);
-        throw error;
-      }
+      const response = await apiRequest("PATCH", "/api/parent-profile", data);
+      return await response.json();
     },
-    onSuccess: (data) => {
-      console.log("Frontend: Update mutation succeeded with data:", data);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/parent-profile"] });
       toast({
         title: "✨ Profile Updated!",
@@ -98,7 +88,6 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
       onSuccess();
     },
     onError: (error) => {
-      console.error("Frontend: Profile update error in onError:", error);
       toast({
         title: "❌ Update Failed",
         description: `Failed to update your profile. Error: ${error.message || 'Unknown error'}`,
@@ -134,14 +123,9 @@ function ParentProfileForm({ existingProfile, onSuccess }: { existingProfile?: P
       stressors: selectedStressors,
     };
 
-    console.log("Frontend: Form submitted with data:", profileData);
-    console.log("Frontend: existingProfile:", !!existingProfile);
-
     if (existingProfile) {
-      console.log("Frontend: About to call updateProfileMutation.mutate");
       updateProfileMutation.mutate(profileData);
     } else {
-      console.log("Frontend: About to call createProfileMutation.mutate");
       createProfileMutation.mutate(profileData);
     }
   };

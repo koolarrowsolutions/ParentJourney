@@ -18,12 +18,7 @@ export async function apiRequest(
   const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
-    console.log(`API Request to ${url} with token: ${token.substring(0, 20)}...`);
-  } else {
-    console.log(`API Request to ${url} without token`);
   }
-  
-  console.log(`apiRequest: ${method} ${url}`, data ? `with data: ${JSON.stringify(data)}` : 'without data');
   
   const res = await fetch(url, {
     method,
@@ -32,7 +27,6 @@ export async function apiRequest(
     credentials: "include",
   });
 
-  console.log(`apiRequest response: ${res.status} ${res.statusText}`);
   await throwIfResNotOk(res);
   return res;
 }

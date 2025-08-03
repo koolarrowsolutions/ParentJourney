@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SignUpPrompt } from "@/components/signup-prompt";
 import { OnboardingTour } from "@/components/onboarding-tour";
+import { OnboardingManager } from "@/components/onboarding-manager";
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginConfirmationModal } from "@/components/login-confirmation-modal";
@@ -141,8 +142,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <AppRouter />
+        <OnboardingManager>
+          <Toaster />
+          <AppRouter />
+        </OnboardingManager>
       </TooltipProvider>
     </QueryClientProvider>
   );

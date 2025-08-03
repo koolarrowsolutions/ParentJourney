@@ -240,7 +240,7 @@ export function MoodAnalytics() {
             )}
 
             {/* Mood Distribution */}
-            <div>
+            <div data-tour="mood-chart">
               <h3 className="font-medium text-neutral-800 mb-4 flex items-center">
                 <BarChart3 className="mr-2 h-4 w-4 text-blue-500" />
                 💕 Mood Distribution
@@ -273,7 +273,9 @@ export function MoodAnalytics() {
 
             {/* Current Streak */}
             {stats.moodStreak.days > 1 && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <div 
+                data-tour="streak-display"
+                className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <div className="flex items-center space-x-3">
                   <TrendingUp className="h-5 w-5 text-amber-600" />
                   <div>

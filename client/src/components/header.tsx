@@ -38,7 +38,9 @@ export function Header() {
                 </button>
               </Link>
               <Link href="/analytics">
-                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
+                <button 
+                  data-onboarding="analytics-link"
+                  className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
                   <BarChart3 className="h-4 w-4 mr-1 inline" />
                   Analytics
                 </button>
@@ -62,7 +64,9 @@ export function Header() {
                 </button>
               </Link>
               <Link href="/settings">
-                <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
+                <button 
+                  data-onboarding="profile-link"
+                  className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
                   <Settings className="h-4 w-4 mr-1 inline" />
                   Settings
                 </button>

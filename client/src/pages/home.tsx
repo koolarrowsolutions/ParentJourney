@@ -17,6 +17,7 @@ import { StorySharingSection } from "@/components/story-sharing-section";
 
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { WellnessProgressRing } from "@/components/wellness-progress-ring";
+import { OnboardingTrigger } from "@/components/onboarding-trigger";
 
 import { OnboardingFlow } from "@/components/onboarding-flow";
 import { useAuthOnboarding } from "@/hooks/use-auth-onboarding";
@@ -114,12 +115,19 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         {/* Welcome Section */}
         <div className="mb-4 sm:mb-6 lg:mb-8">
           <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-3">
-              Welcome back, {parentProfile?.name || 'there'}!
-            </h2>
-            <p className="text-sm text-neutral-600 mb-4">
-              You're one step closer to better parenting self-awareness.
-            </p>
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-neutral-800 mb-2">
+                  Welcome back, {parentProfile?.name || 'there'}!
+                </h2>
+                <p className="text-sm text-neutral-600">
+                  You're one step closer to better parenting self-awareness.
+                </p>
+              </div>
+              <div className="hidden sm:block">
+                <OnboardingTrigger variant="help" />
+              </div>
+            </div>
             
 
             

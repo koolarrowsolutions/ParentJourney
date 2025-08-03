@@ -35,13 +35,32 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
     const onboardingStatus = localStorage.getItem(`onboarding_${user.id}`);
     const parsedStatus = onboardingStatus ? JSON.parse(onboardingStatus) : {};
     
-    // Always show onboarding for demo/testing if any trigger is present
-    if (forceOnboarding || debugOnboarding || !parsedStatus.initial) {
-      console.log('OnboardingManager: Showing initial onboarding', { forceOnboarding, debugOnboarding, parsedStatus });
+    // For testing - force onboarding to show always during development
+    console.log('OnboardingManager: Auth check', { isAuthenticated, user: user?.username, forceOnboarding, debugOnboarding, parsedStatus });
+    
+    // FORCE COMPREHENSIVE ONBOARDING for any trigger
+    if (forceOnboarding || debugOnboarding) {
+      console.log('🎯 OnboardingManager: FORCING COMPREHENSIVE ONBOARDING DUE TO TRIGGER', { 
+        forceOnboarding, 
+        debugOnboarding,
+        userID: user?.id 
+      });
+      setCurrentPhase('initial');
+      return; // Exit early to force onboarding
+    }
+    
+    // Normal flow - check if user needs onboarding
+    if (!parsedStatus.initial) {
+      console.log('OnboardingManager: ✅ SHOWING COMPREHENSIVE ONBOARDING - New User', { 
+        hasInitial: !!parsedStatus.initial,
+        userID: user?.id 
+      });
       setCurrentPhase('initial');
     } else if (!parsedStatus.firstTimeTour) {
+      console.log('OnboardingManager: Showing first-time tour');
       setCurrentPhase('first-time-tour');
     } else {
+      console.log('OnboardingManager: Onboarding completed');
       setCurrentPhase('completed');
     }
     

@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { startNotificationScheduler, stopNotificationScheduler } from "./notification-scheduler";
 
 const app = express();
 app.use(express.json());
@@ -67,5 +68,20 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    // Start the notification scheduler
+    startNotificationScheduler();
+  });
+
+  // Graceful shutdown
+  process.on('SIGTERM', () => {
+    console.log('Received SIGTERM, shutting down gracefully...');
+    stopNotificationScheduler();
+    process.exit(0);
+  });
+
+  process.on('SIGINT', () => {
+    console.log('Received SIGINT, shutting down gracefully...');
+    stopNotificationScheduler();
+    process.exit(0);
   });
 })();

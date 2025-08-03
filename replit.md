@@ -16,6 +16,18 @@ The application employs a modern full-stack architecture with clear separation b
 
 ## Recent Changes (August 2025)
 
+**Automated Email Notification System Implementation (August 2025):**
+- **Major Feature Added:** Implemented comprehensive background job scheduler using node-cron for automated email reminders
+- **Daily Reminders:** System now automatically sends daily journal reminders to users at their preferred time (configurable in notification settings)
+- **Weekly Progress Reports:** Automated weekly progress emails sent every Sunday at 9:00 AM EST with user statistics, mood trends, and recent entries
+- **Professional Email Templates:** Created rich HTML and plain text email templates with ParentJourney branding and personalized content
+- **Smart User Stats:** Weekly reports include entries count, current streak, most common mood, and recent journal excerpts
+- **Production Ready:** Utilizes existing Brevo API integration with proper error handling and logging
+- **Graceful Startup/Shutdown:** Scheduler starts automatically with server and handles graceful termination
+- **Timezone Support:** Configurable timezone support (default: America/New_York)
+- **Files Added:** server/notification-scheduler.ts with comprehensive email scheduling functionality
+- **Integration:** Seamlessly integrated with existing notification settings UI and database schema
+
 **Authentication System Resolution:**
 - Fixed critical authentication token inconsistencies between api-client.ts and queryClient.ts
 - Standardized token name to 'parentjourney_token' across all client-side authentication functions

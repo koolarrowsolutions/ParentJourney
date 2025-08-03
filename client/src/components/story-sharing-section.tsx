@@ -24,7 +24,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
           <div className="flex items-center justify-center mb-1 sm:mb-2">
             <Heart className="h-3 w-3 sm:h-6 sm:w-6 text-rose-500 mr-1 sm:mr-2" />
             <h3 className="text-sm sm:text-xl font-semibold text-neutral-800">
-              Tell Your Story
+              Record your journey
             </h3>
             <Sparkles className="h-3 w-3 sm:h-6 sm:w-6 text-amber-500 ml-1 sm:ml-2" />
           </div>

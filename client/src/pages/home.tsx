@@ -128,7 +128,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                     <div className="text-base sm:text-lg md:text-xl font-semibold text-primary">
                       ✅ {stats?.totalEntries || 0}
                     </div>
-                    <div className="text-xs sm:text-xs text-neutral-600 mt-1">Reflections logged</div>
+                    <div className="text-xs sm:text-xs text-neutral-600 mt-1">Total Interactions</div>
                   </div>
 
                   {/* Week Entries */}
@@ -136,7 +136,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                     <div className="text-base sm:text-lg md:text-xl font-semibold text-green-600">
                       {stats?.weekEntries || 0}
                     </div>
-                    <div className="text-xs sm:text-xs text-neutral-600 mt-1">This Week</div>
+                    <div className="text-xs sm:text-xs text-neutral-600 mt-1">Interactions This Week</div>
                   </div>
 
                   {/* Longest Streak - More motivational */}
@@ -145,7 +145,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                       🔥 {stats?.longestStreak || 'New'}
                     </div>
                     <div className="text-xs sm:text-xs text-neutral-600 mt-1">
-                      {(stats?.longestStreak || 0) > 1 ? 'Day streak!' : 'Streak started!'}
+                      {(stats?.longestStreak || 0) > 1 ? 'Day streak!' : 'Daily Consistency!'}
                     </div>
                   </div>
 

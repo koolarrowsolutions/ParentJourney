@@ -34,7 +34,7 @@ interface JournalHistoryProps {
   triggerSignUpPrompt?: (trigger: 'save' | 'bookmark' | 'export' | 'settings') => boolean;
 }
 
-export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryProps) {
+export default function InteractionHistory({ triggerSignUpPrompt }: JournalHistoryProps) {
   const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("all");
   const { toast } = useToast();
@@ -174,7 +174,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to export entry",
+        description: "Failed to export interaction",
         variant: "destructive",
       });
     }
@@ -184,7 +184,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
     if (favoriteEntries.length === 0) {
       toast({
         title: "No Favorites",
-        description: "You don't have any favorite entries to export",
+        description: "You don't have any favorite interactions to export",
         variant: "destructive",
       });
       return;
@@ -197,7 +197,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
       });
       toast({
         title: "Success",
-        description: `Exported ${favoriteEntries.length} favorite entries to PDF`,
+        description: `Exported ${favoriteEntries.length} favorite interactions to PDF`,
       });
     } catch (error) {
       toast({
@@ -377,9 +377,9 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
             <AiFeedbackDisplay feedback={entry.aiFeedback} />
           )}
           
-          {entry.hasAiFeedback && !entry.aiFeedback && (
-            <div className="mt-4 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
-              <div className="flex items-center gap-2 text-sm text-neutral-600">
+          {(entry.hasAiFeedback && !entry.aiFeedback) || (entry.entryType === 'quick_moment' && !entry.aiFeedback) && (
+            <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+              <div className="flex items-center gap-2 text-sm text-amber-700">
                 <Clock className="h-4 w-4" />
                 Don't see AI feedback? It may take a moment to appear after entry is submitted.
               </div>
@@ -404,9 +404,9 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
             </Link>
           </div>
           <div className="text-center mt-4">
-            <h1 className="text-3xl font-bold text-neutral-800">📚 Journal History</h1>
+            <h1 className="text-3xl font-bold text-neutral-800">📚 Interaction History</h1>
             <p className="text-neutral-600">
-              Browse through your parenting journey entries and AI insights
+              Browse through your parenting journey interactions and AI insights
             </p>
           </div>
         </div>
@@ -496,7 +496,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
                     className="text-sm text-neutral-700 flex items-center cursor-pointer"
                   >
                     <FileText className="h-4 w-4 mr-2 text-neutral-500" />
-                    General entries (no child assigned)
+                    General interactions (no child assigned)
                   </label>
                 </div>
               )}
@@ -511,13 +511,13 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
               <div className="flex items-center gap-3">
                 <BookOpen className="h-5 w-5 text-primary" />
                 <h2 className="text-lg font-semibold text-neutral-800">
-                  Journal Entries
+                  Your Interactions
                   {selectedChildIds.length > 0 && (
                     <span className="text-sm font-normal text-neutral-600 ml-2">
                       ({selectedChildIds.length === 1 && selectedChildIds[0] !== 'no-child' 
                         ? childProfiles?.find(c => c.id === selectedChildIds[0])?.name || 'Unknown'
                         : selectedChildIds.length === 1 && selectedChildIds[0] === 'no-child'
-                        ? 'General entries'
+                        ? 'General interactions'
                         : `${selectedChildIds.length} selected`})
                     </span>
                   )}
@@ -525,7 +525,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs">
-                  {filteredEntries.length} entries
+                  {filteredEntries.length} interactions
                 </Badge>
                 {favoriteEntries.length > 0 && (
                   <Button
@@ -545,7 +545,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="all" className="flex items-center gap-2">
                   <Archive className="h-4 w-4" />
-                  All Entries ({filteredEntries.length})
+                  All Interactions ({filteredEntries.length})
                 </TabsTrigger>
                 <TabsTrigger value="favorites" className="flex items-center gap-2">
                   <Star className="h-4 w-4" />
@@ -556,7 +556,7 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
           </CardContent>
         </Card>
         
-        {/* Journal Entries Display */}
+        {/* Interactions Display */}
         <div className="space-y-6">
           {entriesLoading ? (
             <div className="space-y-6">
@@ -583,17 +583,17 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
               <CardContent className="p-8 text-center">
                 <Star className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-neutral-800 mb-2">
-                  No favorite entries found
+                  No favorite interactions found
                 </h3>
                 <p className="text-neutral-600 mb-4">
                   {selectedChildIds.length > 0 
-                    ? "No favorite entries for the selected children. Click the star icon on entries to save as favorites."
-                    : "Click the star icon on entries you want to save as favorites"
+                    ? "No favorite interactions for the selected children. Click the star icon on interactions to save as favorites."
+                    : "Click the star icon on interactions you want to save as favorites"
                   }
                 </p>
                 <Button onClick={() => setActiveTab("all")} variant="outline">
                   <Archive className="h-4 w-4 mr-2" />
-                  View All Entries
+                  View All Interactions
                 </Button>
               </CardContent>
             </Card>
@@ -602,14 +602,14 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
               <CardContent className="p-8 text-center">
                 <BookOpen className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-neutral-800 mb-2">
-                  No journal entries found
+                  No interactions found
                 </h3>
                 <p className="text-neutral-600 mb-4">
-                  No entries found for the selected children. Try selecting different children or create new entries.
+                  No interactions found for the selected children. Try selecting different children or create new interactions.
                 </p>
                 <Button onClick={() => window.history.back()}>
                   <BookOpen className="h-4 w-4 mr-2" />
-                  Write New Entry
+                  Create New Interaction
                 </Button>
               </CardContent>
             </Card>
@@ -618,14 +618,14 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
               <CardContent className="p-8 text-center">
                 <Baby className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-neutral-800 mb-2">
-                  Select children to view their journal entries
+                  Select children to view their interactions
                 </h3>
                 <p className="text-neutral-600 mb-4">
-                  Use the checkboxes above to select which children's entries you want to view, or leave unselected to see all entries.
+                  Use the checkboxes above to select which children's interactions you want to view, or leave unselected to see all interactions.
                 </p>
                 <Button onClick={handleSelectAllChildren} variant="outline">
                   <Baby className="h-4 w-4 mr-2" />
-                  Show All Entries
+                  Show All Interactions
                 </Button>
               </CardContent>
             </Card>
@@ -634,14 +634,14 @@ export default function JournalHistory({ triggerSignUpPrompt }: JournalHistoryPr
               <CardContent className="p-8 text-center">
                 <BookOpen className="h-12 w-12 text-neutral-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-neutral-800 mb-2">
-                  No journal entries yet
+                  No interactions yet
                 </h3>
                 <p className="text-neutral-600 mb-4">
-                  Start documenting your parenting journey by creating your first entry.
+                  Start documenting your parenting journey by creating your first interaction.
                 </p>
                 <Button onClick={() => window.history.back()}>
                   <BookOpen className="h-4 w-4 mr-2" />
-                  Write First Entry
+                  Create First Interaction
                 </Button>
               </CardContent>
             </Card>

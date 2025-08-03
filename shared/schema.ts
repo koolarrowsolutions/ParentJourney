@@ -104,6 +104,7 @@ export const journalEntries = pgTable("journal_entries", {
   aiAnalyzedMood: text("ai_analyzed_mood"), // AI-detected mood for trend analysis
   emotionTags: text("emotion_tags").array(),
   childProfileId: varchar("child_profile_id").references(() => childProfiles.id),
+  childProfileIds: text("child_profile_ids").array(), // Support multiple children per entry
   aiFeedback: text("ai_feedback"),
   developmentalInsight: text("developmental_insight"),
   hasAiFeedback: text("has_ai_feedback").notNull().default("false"),
@@ -160,6 +161,7 @@ export const insertUserNotificationSettingsSchema = createInsertSchema(userNotif
 
 export const journalEntryWithAiSchema = insertJournalEntrySchema.extend({
   requestAiFeedback: z.boolean().default(false),
+  childProfileIds: z.array(z.string()).optional().nullable(), // Support multiple children
 });
 
 export type InsertFamily = z.infer<typeof insertFamilySchema>;

@@ -182,6 +182,7 @@ export class MemStorage implements IStorage {
       aiAnalyzedMood: insertEntry.aiAnalyzedMood ?? null,
       emotionTags: insertEntry.emotionTags ?? null,
       childProfileId: insertEntry.childProfileId ?? null,
+      childProfileIds: insertEntry.childProfileIds ?? null,
       aiFeedback: insertEntry.aiFeedback ?? null,
       developmentalInsight: insertEntry.developmentalInsight ?? null,
       hasAiFeedback: insertEntry.hasAiFeedback ?? "false",

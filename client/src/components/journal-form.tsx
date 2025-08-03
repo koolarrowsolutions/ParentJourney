@@ -272,7 +272,8 @@ export function JournalForm({ triggerSignUpPrompt, selectedMood = "" }: JournalF
       ...data,
       mood: selectedMood || null,
       emotionTags: null,
-      childProfileId: selectedChildIds.length > 0 ? selectedChildIds[0] : null,
+      childProfileId: selectedChildIds.length > 0 ? selectedChildIds[0] : null, // Keep for backward compatibility
+      childProfileIds: selectedChildIds.length > 0 ? selectedChildIds : null, // Support multiple children
       requestAiFeedback,
       photos: photos.length > 0 ? photos : null,
       entryType: 'shared_journey',

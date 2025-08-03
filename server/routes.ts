@@ -530,6 +530,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         developmentalInsight,
         hasAiFeedback,
         aiAnalyzedMood,
+        childProfileIds: entryData.childProfileIds, // Save multiple children associations
       });
 
       res.status(201).json(entry);

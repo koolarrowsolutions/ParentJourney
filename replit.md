@@ -30,6 +30,13 @@ The application employs a modern full-stack architecture with clear separation b
 - Synchronized session settings between server/routes.ts and server/auth.ts for consistency
 - Ensured proper CORS configuration for production .replit.app domains
 
+**Journal Entry Saving Issue Resolution (August 2025):**
+- Fixed critical bug where authenticated users were prompted to create accounts when saving journal entries
+- Updated onboarding logic in use-onboarding.tsx to check actual server authentication state instead of relying solely on localStorage
+- Synchronized localStorage onboarding state with server authentication status automatically
+- Modified triggerSignUpPrompt() function to prevent signup prompts for already authenticated users
+- Validated fix works in both preview and production environments
+
 **Core Technologies:**
 - **Frontend**: React-based single-page application with TypeScript, Vite, Wouter (routing), TanStack Query (server state), React Hook Form with Zod (forms), shadcn/ui and Radix UI (components), Tailwind CSS (styling), date-fns (date handling).
 - **Backend**: Express.js server with TypeScript, esbuild, PostgreSQL with Drizzle ORM, Zod (validation schemas), RESTful API design.

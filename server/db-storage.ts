@@ -245,22 +245,35 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateChildProfile(id: string, updates: Partial<InsertChildProfile>): Promise<ChildProfile | undefined> {
+    const familyId = await this.getCurrentUserFamilyId();
+    if (!familyId) return undefined;
+    
     const result = await db.update(schema.childProfiles)
       .set(updates)
-      .where(eq(schema.childProfiles.id, id))
+      .where(and(
+        eq(schema.childProfiles.id, id),
+        eq(schema.childProfiles.familyId, familyId)
+      ))
       .returning();
     return result[0];
   }
 
   async deleteChildProfile(id: string): Promise<boolean> {
     try {
+      const familyId = await this.getCurrentUserFamilyId();
+      if (!familyId) return false;
+      
       // First, update any journal entries that reference this child to remove the reference
       await db.update(schema.journalEntries)
         .set({ childProfileId: null })
         .where(eq(schema.journalEntries.childProfileId, id));
       
-      // Then delete the child profile
-      const result = await db.delete(schema.childProfiles).where(eq(schema.childProfiles.id, id));
+      // Then delete the child profile (only if it belongs to current user's family)
+      const result = await db.delete(schema.childProfiles)
+        .where(and(
+          eq(schema.childProfiles.id, id),
+          eq(schema.childProfiles.familyId, familyId)
+        ));
       return (result.rowCount ?? 0) > 0;
     } catch (error) {
       console.error('Error deleting child profile:', error);

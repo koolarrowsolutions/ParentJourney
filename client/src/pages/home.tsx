@@ -54,6 +54,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch stats");
       return response.json();
     },
+    enabled: !!parentProfile, // Only fetch when authenticated with profile
   });
 
   const { data: childProfiles } = useQuery<ChildProfile[]>({
@@ -63,6 +64,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },
+    enabled: !!parentProfile, // Only fetch when authenticated with profile
   });
 
   const { data: entries } = useQuery<JournalEntry[]>({
@@ -72,6 +74,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },
+    enabled: !!parentProfile, // Only fetch when authenticated with profile
   });
 
   // Login success popup disabled - using LoginConfirmationModal instead

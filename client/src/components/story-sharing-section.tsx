@@ -27,7 +27,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
             </h3>
             <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-amber-500 ml-1 sm:ml-2" />
           </div>
-          <p className="text-xs sm:text-base text-neutral-600 leading-relaxed max-w-2xl mx-auto px-2">
+          <p className="text-xs sm:text-base text-neutral-600 leading-tight sm:leading-relaxed max-w-2xl mx-auto px-2">
             Every moment matters in your parenting journey. Share what's happening, 
             celebrate your wins, work through challenges, or simply capture this moment in time.
           </p>
@@ -49,7 +49,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
                   <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
                     Share Your Full Journey
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed">
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed px-1">
                     Write about today's experiences, feelings, and insights. Perfect for deeper reflection.
                   </div>
                 </div>
@@ -83,7 +83,7 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
                   <div className="font-semibold text-xs sm:text-base text-neutral-800 mb-0.5 sm:mb-1">
                     Quick Moment Capture
                   </div>
-                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed">
+                  <div className="text-xs sm:text-sm text-neutral-600 leading-tight sm:leading-relaxed px-1">
                     Answer a thoughtful prompt about today. Just a few minutes to reflect and record.
                   </div>
                 </div>

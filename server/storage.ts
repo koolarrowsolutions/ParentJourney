@@ -14,7 +14,11 @@ import {
   type User,
   type InsertUser,
   type UserNotificationSettings,
-  type InsertUserNotificationSettings
+  type InsertUserNotificationSettings,
+  type WellnessSuggestion,
+  type InsertWellnessSuggestion,
+  type UserWellnessProgress,
+  type InsertUserWellnessProgress
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -92,6 +96,21 @@ export interface IStorage {
   createUserNotificationSettings(settings: InsertUserNotificationSettings): Promise<UserNotificationSettings>;
   updateUserNotificationSettings(userId: string, updates: Partial<InsertUserNotificationSettings>): Promise<UserNotificationSettings | undefined>;
   deleteUserNotificationSettings(userId: string): Promise<boolean>;
+  
+  // Wellness suggestions
+  getWellnessSuggestion(id: string): Promise<WellnessSuggestion | undefined>;
+  getWellnessSuggestions(status?: string, limit?: number): Promise<WellnessSuggestion[]>;
+  createWellnessSuggestion(suggestion: InsertWellnessSuggestion): Promise<WellnessSuggestion>;
+  updateWellnessSuggestion(id: string, updates: Partial<InsertWellnessSuggestion>): Promise<WellnessSuggestion | undefined>;
+  completeWellnessSuggestion(id: string, pointsAwarded: number, badgeAwarded?: string): Promise<WellnessSuggestion | undefined>;
+  dismissWellnessSuggestion(id: string): Promise<WellnessSuggestion | undefined>;
+  
+  // User wellness progress
+  getUserWellnessProgress(): Promise<UserWellnessProgress | undefined>;
+  createUserWellnessProgress(progress: InsertUserWellnessProgress): Promise<UserWellnessProgress>;
+  updateUserWellnessProgress(updates: Partial<InsertUserWellnessProgress>): Promise<UserWellnessProgress | undefined>;
+  awardPoints(points: number, badge?: string): Promise<UserWellnessProgress | undefined>;
+  updateWellnessStreak(): Promise<UserWellnessProgress | undefined>;
 }
 
 export class MemStorage implements IStorage {

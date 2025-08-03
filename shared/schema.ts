@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, json, jsonb, date } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, json, jsonb, date, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -174,7 +174,56 @@ export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
 export type CommunityPost = typeof communityPosts.$inferSelect;
 export type InsertCommunityComment = z.infer<typeof insertCommunityCommentSchema>;
 export type CommunityComment = typeof communityComments.$inferSelect;
+// Wellness Suggestions and Gamification Tables
+export const wellnessSuggestions = pgTable('wellness_suggestions', {
+  id: varchar('id', { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id', { length: 255 }).notNull().references(() => users.id, { onDelete: 'cascade' }),
+  suggestionId: varchar('suggestion_id', { length: 255 }).notNull(),
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description').notNull(),
+  type: varchar('type', { length: 50 }).notNull(),
+  category: varchar('category', { length: 50 }).notNull(),
+  status: varchar('status', { length: 20 }).notNull().default('suggested'), // 'suggested', 'completed', 'dismissed', 'skipped'
+  completedAt: timestamp('completed_at'),
+  dismissedAt: timestamp('dismissed_at'),
+  pointsAwarded: integer('points_awarded').default(0),
+  badgeAwarded: varchar('badge_awarded', { length: 100 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+export const userWellnessProgress = pgTable('user_wellness_progress', {
+  id: varchar('id', { length: 255 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id', { length: 255 }).notNull().references(() => users.id, { onDelete: 'cascade' }).unique(),
+  totalPoints: integer('total_points').notNull().default(0),
+  currentStreak: integer('current_streak').notNull().default(0),
+  longestStreak: integer('longest_streak').notNull().default(0),
+  badges: json('badges').default([]),
+  completedSuggestions: json('completed_suggestions').default([]),
+  preferences: json('preferences').default({}),
+  lastActivityDate: timestamp('last_activity_date'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
+// Insert schemas for wellness tables
+export const insertWellnessSuggestionSchema = createInsertSchema(wellnessSuggestions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserWellnessProgressSchema = createInsertSchema(userWellnessProgress).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UserNotificationSettings = typeof userNotificationSettings.$inferSelect;
 export type InsertUserNotificationSettings = z.infer<typeof insertUserNotificationSettingsSchema>;
+export type WellnessSuggestion = typeof wellnessSuggestions.$inferSelect;
+export type InsertWellnessSuggestion = z.infer<typeof insertWellnessSuggestionSchema>;
+export type UserWellnessProgress = typeof userWellnessProgress.$inferSelect;
+export type InsertUserWellnessProgress = z.infer<typeof insertUserWellnessProgressSchema>;

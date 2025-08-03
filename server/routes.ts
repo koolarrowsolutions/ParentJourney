@@ -17,6 +17,17 @@ import {
 import { generateParentingFeedback, analyzeMood, openai } from "./services/openai";
 import { generateDevelopmentalInsight, calculateAgeInMonths } from "./services/developmental-insights";
 import { z, ZodError } from "zod";
+import { randomUUID } from "crypto";
+import { db } from "./db";
+import { 
+  wellnessSuggestions, 
+  userWellnessProgress, 
+  journalEntries, 
+  childProfiles, 
+  parentProfiles 
+} from "@shared/schema";
+import { eq, desc, and } from "drizzle-orm";
+import { extractToken, validateAuthToken } from "./auth-token";
 
 // Configure session with enhanced mobile browser compatibility
 function configureSession(app: Express) {
@@ -243,6 +254,25 @@ function requireAuth(req: any, res: any, next: any) {
   
   console.log('Auth check failed - no valid session or token');
   return res.status(401).json({ message: 'Authentication required' });
+}
+
+// Authentication helper function for wellness endpoints
+async function authenticateRequest(req: any): Promise<{ success: boolean; userId?: string }> {
+  // Try session-based auth first
+  if (req.session?.userId) {
+    return { success: true, userId: req.session.userId };
+  }
+  
+  // Try token-based auth for iframe environments
+  const token = extractToken(req);
+  if (token) {
+    const tokenData = validateAuthToken(token);
+    if (tokenData) {
+      return { success: true, userId: tokenData.userId };
+    }
+  }
+  
+  return { success: false };
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -2046,6 +2076,294 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
       res.status(500).json({ message: "Failed to add admin note" });
     }
   });
+
+  // Wellness Suggestion endpoints
+  app.get('/api/wellness/suggestions', async (req, res) => {
+    try {
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+
+      const userId = authResult.userId;
+      const { status, limit } = req.query;
+      
+      // Get suggestions from database
+      const suggestions = await db
+        .select()
+        .from(wellnessSuggestions)
+        .where(eq(wellnessSuggestions.userId, userId))
+        .where(status ? eq(wellnessSuggestions.status, status as string) : undefined)
+        .limit(limit ? parseInt(limit as string) : 10)
+        .orderBy(desc(wellnessSuggestions.createdAt));
+
+      res.json(suggestions);
+    } catch (error) {
+      console.error('Error fetching wellness suggestions:', error);
+      res.status(500).json({ error: 'Failed to fetch wellness suggestions' });
+    }
+  });
+
+  app.post('/api/wellness/suggestions', async (req, res) => {
+    try {
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+
+      const userId = authResult.userId;
+      const suggestionData = req.body;
+      
+      const newSuggestion = await db
+        .insert(wellnessSuggestions)
+        .values({
+          ...suggestionData,
+          userId,
+          id: randomUUID()
+        })
+        .returning();
+
+      res.json(newSuggestion[0]);
+    } catch (error) {
+      console.error('Error creating wellness suggestion:', error);
+      res.status(500).json({ error: 'Failed to create wellness suggestion' });
+    }
+  });
+
+  app.patch('/api/wellness/suggestions/:id/complete', async (req, res) => {
+    try {
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+
+      const userId = authResult.userId;
+      const { id } = req.params;
+      const { pointsAwarded, badgeAwarded } = req.body;
+      
+      const updatedSuggestion = await db
+        .update(wellnessSuggestions)
+        .set({
+          status: 'completed',
+          completedAt: new Date(),
+          pointsAwarded,
+          badgeAwarded,
+          updatedAt: new Date()
+        })
+        .where(and(eq(wellnessSuggestions.id, id), eq(wellnessSuggestions.userId, userId)))
+        .returning();
+
+      if (updatedSuggestion.length === 0) {
+        return res.status(404).json({ error: 'Suggestion not found' });
+      }
+
+      // Update user wellness progress
+      await updateUserWellnessPoints(userId, pointsAwarded, badgeAwarded);
+
+      res.json(updatedSuggestion[0]);
+    } catch (error) {
+      console.error('Error completing wellness suggestion:', error);
+      res.status(500).json({ error: 'Failed to complete wellness suggestion' });
+    }
+  });
+
+  app.patch('/api/wellness/suggestions/:id/dismiss', async (req, res) => {
+    try {
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+
+      const userId = authResult.userId;
+      const { id } = req.params;
+      
+      const updatedSuggestion = await db
+        .update(wellnessSuggestions)
+        .set({
+          status: 'dismissed',
+          dismissedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(and(eq(wellnessSuggestions.id, id), eq(wellnessSuggestions.userId, userId)))
+        .returning();
+
+      if (updatedSuggestion.length === 0) {
+        return res.status(404).json({ error: 'Suggestion not found' });
+      }
+
+      res.json(updatedSuggestion[0]);
+    } catch (error) {
+      console.error('Error dismissing wellness suggestion:', error);
+      res.status(500).json({ error: 'Failed to dismiss wellness suggestion' });
+    }
+  });
+
+  app.get('/api/wellness/progress', async (req, res) => {
+    try {
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success) {
+        return res.status(401).json({ message: 'Authentication required' });  
+      }
+
+      const userId = authResult.userId;
+      
+      let progress = await db
+        .select()
+        .from(userWellnessProgress)
+        .where(eq(userWellnessProgress.userId, userId))
+        .limit(1);
+
+      if (progress.length === 0) {
+        // Create initial progress record
+        const newProgress = await db
+          .insert(userWellnessProgress)
+          .values({
+            userId,
+            totalPoints: 0,
+            currentStreak: 0,
+            longestStreak: 0,
+            badges: [],
+            completedSuggestions: [],
+            preferences: {
+              frequencyPreference: 'occasional',
+              preferredTimes: ['evening'],
+              enableGamification: true,
+              maxSuggestionsPerDay: 2
+            }
+          })
+          .returning();
+        
+        progress = newProgress;
+      }
+
+      res.json(progress[0]);
+    } catch (error) {
+      console.error('Error fetching wellness progress:', error);
+      res.status(500).json({ error: 'Failed to fetch wellness progress' });
+    }
+  });
+
+  app.post('/api/wellness/generate-suggestions', async (req, res) => {
+    try {
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success) {
+        return res.status(401).json({ message: 'Authentication required' });
+      }
+
+      const userId = authResult.userId;
+      
+      // Get user context for personalization
+      const recentEntries = await db
+        .select()
+        .from(journalEntries)
+        .where(eq(journalEntries.userId, userId))
+        .orderBy(desc(journalEntries.createdAt))
+        .limit(5);
+
+      const childProfilesData = await db
+        .select()
+        .from(childProfiles)
+        .where(eq(childProfiles.familyId, userId))
+        .limit(5);
+
+      const parentProfile = await db
+        .select()
+        .from(parentProfiles)
+        .where(eq(parentProfiles.familyId, userId))
+        .limit(1);
+
+      // Build context for wellness engine
+      const context = {
+        recentMoodScores: recentEntries.map(e => e.moodScore || 5).filter(Boolean),
+        recentEntryKeywords: recentEntries.flatMap(e => e.content.split(' ').slice(0, 10)),
+        stressPatterns: recentEntries.filter(e => e.moodScore && e.moodScore < 6).map(e => e.content.slice(0, 100)),
+        successPatterns: recentEntries.filter(e => e.moodScore && e.moodScore >= 7).map(e => e.content.slice(0, 100)),
+        familyDynamics: {
+          childAges: childProfilesData.map(c => ({
+            name: c.name,
+            age: new Date().getFullYear() - new Date(c.dateOfBirth).getFullYear()
+          })),
+          recentChallenges: recentEntries.filter(e => e.moodScore && e.moodScore < 6).map(e => e.title || '').slice(0, 3),
+          parentName: parentProfile[0]?.name || 'Parent'
+        },
+        timeOfDay: (new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening') as 'morning' | 'afternoon' | 'evening',
+        daysSinceLastSuggestion: 1
+      };
+
+      // Generate personalized suggestions using wellness engine
+      const { wellnessEngine } = await import('../server/wellness-engine.js');
+      const suggestions = await wellnessEngine.generatePersonalizedSuggestions(context, {
+        maxSuggestionsPerDay: 2,
+        frequencyPreference: 'occasional',
+        enableGamification: true
+      });
+
+      // Store suggestions in database
+      const storedSuggestions = [];
+      for (const suggestion of suggestions) {
+        const stored = await db
+          .insert(wellnessSuggestions)
+          .values({
+            userId,
+            id: randomUUID(),
+            suggestionId: suggestion.id,
+            title: suggestion.title,
+            description: suggestion.description,
+            type: suggestion.type,
+            category: suggestion.category,
+            status: 'suggested'
+          })
+          .returning();
+        
+        storedSuggestions.push(stored[0]);
+      }
+
+      res.json(storedSuggestions);
+    } catch (error) {
+      console.error('Error generating wellness suggestions:', error);
+      res.status(500).json({ error: 'Failed to generate wellness suggestions' });
+    }
+  });
+
+  // Helper function to update user wellness points
+  async function updateUserWellnessPoints(userId: string, points: number, badge?: string) {
+    const existingProgress = await db
+      .select()
+      .from(userWellnessProgress)
+      .where(eq(userWellnessProgress.userId, userId))
+      .limit(1);
+
+    if (existingProgress.length === 0) {
+      // Create new progress record
+      await db
+        .insert(userWellnessProgress)
+        .values({
+          userId,
+          totalPoints: points,
+          currentStreak: 1,
+          longestStreak: 1,
+          badges: badge ? [badge] : [],
+          completedSuggestions: [],
+          preferences: {}
+        });
+    } else {
+      // Update existing progress
+      const current = existingProgress[0];
+      const newBadges = badge && !current.badges.includes(badge) 
+        ? [...current.badges, badge] 
+        : current.badges;
+      
+      await db
+        .update(userWellnessProgress)
+        .set({
+          totalPoints: current.totalPoints + points,
+          badges: newBadges,
+          lastActivityDate: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(userWellnessProgress.userId, userId));
+    }
+  }
 
   const httpServer = createServer(app);
   return httpServer;

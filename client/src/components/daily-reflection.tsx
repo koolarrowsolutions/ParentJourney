@@ -119,6 +119,53 @@ export function DailyReflection() {
       const token = localStorage.getItem('parentjourney_token');
       console.log("Daily reflection save - token present:", !!token);
       
+      // Upload photos to object storage first if any exist
+      let uploadedPhotoUrls: string[] = [];
+      if (data.photos && data.photos.length > 0) {
+        for (const photo of data.photos) {
+          if (photo.startsWith('data:')) {
+            // Convert base64 to blob and upload
+            const response = await fetch(photo);
+            const blob = await response.blob();
+            
+            // Get upload URL
+            const uploadResponse = await fetch('/api/objects/upload', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              credentials: 'include'
+            });
+            
+            if (!uploadResponse.ok) {
+              throw new Error('Failed to get upload URL');
+            }
+            
+            const { uploadURL } = await uploadResponse.json();
+            
+            // Upload to object storage
+            const putResponse = await fetch(uploadURL, {
+              method: 'PUT',
+              body: blob,
+              headers: {
+                'Content-Type': blob.type
+              }
+            });
+            
+            if (!putResponse.ok) {
+              throw new Error('Failed to upload photo');
+            }
+            
+            // Extract object path from upload URL
+            const objectPath = uploadURL.split('?')[0].split('/').slice(-2).join('/');
+            uploadedPhotoUrls.push(`/objects/${objectPath}`);
+          } else {
+            uploadedPhotoUrls.push(photo);
+          }
+        }
+      }
+      
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
@@ -131,8 +178,8 @@ export function DailyReflection() {
         body: JSON.stringify({
           title: data.title,
           content: data.content,
-          photos: data.photos || [],
-          hasAiFeedback: "false",
+          photos: uploadedPhotoUrls,
+          hasAiFeedback: "true", // Enable AI feedback for daily reflections
           entryType: "quick_moment",
         }),
       });

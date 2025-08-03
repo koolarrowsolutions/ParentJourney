@@ -29,6 +29,7 @@ import {
 } from "@shared/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
 import { extractToken, validateAuthToken } from "./auth-token";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 // Configure session with enhanced mobile browser compatibility
 function configureSession(app: Express) {
@@ -1430,10 +1431,21 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
   });
 
   // Object storage endpoints for profile photos
-  app.post("/api/objects/upload", requireAuth, async (req, res) => {
-    const objectStorageService = new ObjectStorageService();
-    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-    res.json({ uploadURL });
+  app.post("/api/objects/upload", async (req, res) => {
+    try {
+      // Check authentication (session or token)
+      const authResult = await authenticateRequest(req);
+      if (!authResult.success || !authResult.userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error getting upload URL:", error);
+      res.status(500).json({ error: "Failed to get upload URL" });
+    }
   });
 
   app.put("/api/profile-photos", requireAuth, async (req, res) => {
@@ -1494,12 +1506,7 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
     }
   });
 
-  app.post("/api/objects/upload", async (req, res) => {
-    const { ObjectStorageService } = await import("./objectStorage");
-    const objectStorageService = new ObjectStorageService();
-    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-    res.json({ uploadURL });
-  });
+
 
   app.put("/api/profile-images", async (req, res) => {
     if (!req.body.imageURL) {

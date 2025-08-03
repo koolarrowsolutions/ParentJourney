@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,11 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
   const [selectedInteractionTypes, setSelectedInteractionTypes] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("all");
   const { toast } = useToast();
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   // Fetch all child profiles
   const { data: childProfiles, isLoading: profilesLoading } = useQuery<ChildProfile[]>({
@@ -419,54 +424,13 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
         {/* Child Selection */}
         <Card className="mb-6">
           <CardContent className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Baby className="h-5 w-5 text-primary" />
-                <h2 className="text-lg font-semibold text-neutral-800">Select Children</h2>
-              </div>
-              
-              {profilesLoading ? (
-                <Skeleton className="h-10 w-full" />
-              ) : (
-                <div className="space-y-2">
-                  {childProfiles && childProfiles.length > 0 ? (
-                    childProfiles.map((child) => (
-                      <div key={child.id} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={`history-child-${child.id}`}
-                          checked={selectedChildIds.includes(child.id)}
-                          onChange={(e) => handleChildToggle(child.id, e.target.checked)}
-                          className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
-                        />
-                        <label 
-                          htmlFor={`history-child-${child.id}`}
-                          className="text-sm text-neutral-700 flex items-center cursor-pointer"
-                        >
-                          <Baby className="h-4 w-4 mr-2 text-primary" />
-                          {child.name}
-                        </label>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-neutral-500 italic">No children added yet</p>
-                  )}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-5 w-5 text-primary" />
+                  <h2 className="text-lg font-semibold text-neutral-800">Filter Your Interactions</h2>
                 </div>
-              )}
-              
-              {childProfiles?.length === 0 && !profilesLoading && (
-                <div className="text-center py-4">
-                  <p className="text-neutral-600 mb-3">No child profiles found.</p>
-                  <Button variant="outline" onClick={() => window.history.back()}>
-                    <Baby className="h-4 w-4 mr-2" />
-                    Add Child Profile
-                  </Button>
-                </div>
-              )}
-              
-              {/* Selection controls */}
-              {childProfiles && childProfiles.length > 0 && (
-                <div className="flex gap-2 mt-4">
+                <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -484,26 +448,139 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
                     Clear All
                   </Button>
                 </div>
-              )}
-              
-              {/* Add checkbox for entries without child profiles */}
+              </div>
+
+              {/* Select Children Section */}
+              <div>
+                <h3 className="text-sm font-medium text-neutral-700 mb-3">Select Children:</h3>
+                {profilesLoading ? (
+                  <Skeleton className="h-10 w-full" />
+                ) : (
+                  <div className="space-y-2">
+                    {childProfiles && childProfiles.length > 0 ? (
+                      childProfiles.map((child) => (
+                        <div key={child.id} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`history-child-${child.id}`}
+                            checked={selectedChildIds.includes(child.id)}
+                            onChange={(e) => handleChildToggle(child.id, e.target.checked)}
+                            className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                          />
+                          <label 
+                            htmlFor={`history-child-${child.id}`}
+                            className="text-sm text-neutral-700 flex items-center cursor-pointer"
+                          >
+                            <Baby className="h-4 w-4 mr-2 text-primary" />
+                            {child.name}
+                          </label>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-neutral-500 italic">No children added yet</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* General Interactions Checkbox */}
               {allEntries?.some(entry => !entry.childProfileId) && (
-                <div className="flex items-center space-x-2 mt-2 pt-2 border-t">
-                  <input
-                    type="checkbox"
-                    id="history-child-no-child"
-                    checked={selectedChildIds.includes('no-child')}
-                    onChange={(e) => handleChildToggle('no-child', e.target.checked)}
-                    className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
-                  />
-                  <label 
-                    htmlFor="history-child-no-child"
-                    className="text-sm text-neutral-700 flex items-center cursor-pointer"
-                  >
-                    <FileText className="h-4 w-4 mr-2 text-neutral-500" />
-                    General interactions (no child assigned)
-                  </label>
+                <div className="pt-2 border-t border-neutral-200">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="history-child-no-child"
+                      checked={selectedChildIds.includes('no-child')}
+                      onChange={(e) => handleChildToggle('no-child', e.target.checked)}
+                      className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                    />
+                    <label 
+                      htmlFor="history-child-no-child"
+                      className="text-sm text-neutral-700 flex items-center cursor-pointer"
+                    >
+                      <FileText className="h-4 w-4 mr-2 text-neutral-500" />
+                      General Interactions (no child assigned)
+                    </label>
+                  </div>
                 </div>
+              )}
+
+              {/* Your Interactions Section */}
+              <div className="pt-4 border-t border-neutral-200">
+                <h3 className="text-sm font-medium text-neutral-700 mb-3">Your Interactions:</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="shared-journey-filter"
+                      checked={selectedInteractionTypes.includes('shared_journey')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedInteractionTypes([...selectedInteractionTypes, 'shared_journey']);
+                        } else {
+                          setSelectedInteractionTypes(selectedInteractionTypes.filter(type => type !== 'shared_journey'));
+                        }
+                      }}
+                      className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                    />
+                    <label htmlFor="shared-journey-filter" className="text-sm text-neutral-700 cursor-pointer">
+                      Parenting Journey Journal Entries
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="quick-moment-filter"
+                      checked={selectedInteractionTypes.includes('quick_moment')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedInteractionTypes([...selectedInteractionTypes, 'quick_moment']);
+                        } else {
+                          setSelectedInteractionTypes(selectedInteractionTypes.filter(type => type !== 'quick_moment'));
+                        }
+                      }}
+                      className="rounded border-neutral-300 text-primary focus:ring-primary focus:ring-2"
+                    />
+                    <label htmlFor="quick-moment-filter" className="text-sm text-neutral-700 cursor-pointer">
+                      Quick Moment Daily Reflections
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Selected Filters Display */}
+              {(selectedChildIds.length > 0 || selectedInteractionTypes.length > 0) && (
+                <div className="pt-4 border-t border-neutral-200">
+                  <h4 className="text-xs font-medium text-neutral-600 mb-2">Active Filters:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedChildIds.map(childId => {
+                      if (childId === 'no-child') {
+                        return (
+                          <Badge key={childId} variant="secondary" className="text-xs">
+                            General interactions (no child assigned)
+                          </Badge>
+                        );
+                      }
+                      const child = childProfiles?.find(c => c.id === childId);
+                      return child ? (
+                        <Badge key={childId} variant="secondary" className="text-xs">
+                          {child.name}
+                        </Badge>
+                      ) : null;
+                    })}
+                    {selectedInteractionTypes.map(type => (
+                      <Badge key={type} variant="outline" className="text-xs">
+                        {type === 'shared_journey' ? 'Parenting Journey' : 'Quick Moment'}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedChildIds.length === 0 && selectedInteractionTypes.length === 0 && (
+                <p className="text-xs text-neutral-500 pt-2 border-t border-neutral-200">
+                  All interactions shown when no filters selected
+                </p>
               )}
             </div>
           </CardContent>

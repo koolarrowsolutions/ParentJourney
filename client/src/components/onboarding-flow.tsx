@@ -222,7 +222,7 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
               <Clock className="h-4 w-4" />
               <span>Takes about 3-4 minutes</span>
             </div>
-            <div className="flex justify-center space-x-4">
+            <div className="flex justify-center space-x-4 mb-4">
               <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
                 <User className="h-3 w-3 mr-1" />
                 Family Setup
@@ -231,6 +231,9 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
                 <Baby className="h-3 w-3 mr-1" />
                 Child Profiles
               </Badge>
+            </div>
+            <div className="bg-neutral-50 rounded-lg p-3 text-sm text-neutral-600">
+              You can skip this setup and complete your profile information later in the main app
             </div>
           </div>
         );
@@ -484,7 +487,7 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
                 onClick={onClose}
                 className="text-neutral-500 hover:text-neutral-700"
               >
-                Later
+                I'll complete my info in the app
               </Button>
             )}
           </div>

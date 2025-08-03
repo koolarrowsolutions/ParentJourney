@@ -21,12 +21,7 @@ export function OnboardingManager({ children }: OnboardingManagerProps) {
       return;
     }
 
-    // For testing - always show onboarding for user "yesenia"
-    if (user.username === 'yesenia') {
-      setCurrentPhase('initial');
-      setHasCompletedInitial(false);
-      return;
-    }
+
 
     // Check if user has completed onboarding
     const onboardingStatus = localStorage.getItem(`onboarding_${user.id}`);

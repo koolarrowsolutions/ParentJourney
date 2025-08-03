@@ -54,13 +54,21 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
   
   // Query parent profile to check authentication
-  const { data: parentProfile } = useQuery({
+  const { data: parentProfile, isLoading: profileLoading, error: profileError } = useQuery({
     queryKey: ["/api/parent-profile"],
     queryFn: async () => {
       const response = await authenticatedFetch("/api/parent-profile");
       if (!response.ok) throw new Error("Failed to fetch parent profile");
       return response.json();
     }
+  });
+
+  // Debug logging
+  console.log("Home component render:", {
+    parentProfile,
+    profileLoading,
+    profileError,
+    hasAuth: !!parentProfile
   });
 
   const { data: stats, isLoading } = useQuery<JournalStats>({
@@ -102,6 +110,45 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     // Use the regular trigger function if available
     return triggerSignUpPrompt ? triggerSignUpPrompt(trigger) : false;
   };
+
+  // Show loading state while profile is loading
+  if (profileLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
+        <Header />
+        <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading your parenting journey...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Show error state if profile failed to load
+  if (profileError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
+        <Header />
+        <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <p className="text-red-600">Failed to load profile: {profileError.message}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">

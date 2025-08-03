@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 import { User, Baby, Users, Clock, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
 import type { InsertParentProfile, InsertChildProfile, InsertFamily } from "@shared/schema";
@@ -48,9 +49,22 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
+  
+  // Check if we're in demo mode (testing without authentication)
+  const isDemoMode = !isAuthenticated;
 
   const createFamilyMutation = useMutation({
     mutationFn: async (data: InsertFamily) => {
+      // In demo mode, simulate family creation
+      if (isDemoMode) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve({ id: "demo-family-id", name: data.name });
+          }, 500);
+        });
+      }
+      
       const token = localStorage.getItem('parentjourney_token');
       const response = await fetch("/api/families", {
         method: "POST",
@@ -71,7 +85,7 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to create family profile. Please try again.",
+        description: isDemoMode ? "Demo mode error" : "Failed to create family profile. Please try again.",
         variant: "destructive",
       });
     },
@@ -79,6 +93,15 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
 
   const createParentMutation = useMutation({
     mutationFn: async (data: InsertParentProfile) => {
+      // In demo mode, simulate parent profile creation
+      if (isDemoMode) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve({ id: "demo-parent-id", ...data });
+          }, 500);
+        });
+      }
+      
       const token = localStorage.getItem('parentjourney_token');
       const response = await fetch("/api/parent-profiles", {
         method: "POST",
@@ -97,7 +120,7 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to create parent profile. Please try again.",
+        description: isDemoMode ? "Demo mode error" : "Failed to create parent profile. Please try again.",
         variant: "destructive",
       });
     },
@@ -105,6 +128,15 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
 
   const createChildMutation = useMutation({
     mutationFn: async (data: InsertChildProfile) => {
+      // In demo mode, simulate child profile creation
+      if (isDemoMode) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve({ id: "demo-child-id", ...data });
+          }, 500);
+        });
+      }
+      
       const token = localStorage.getItem('parentjourney_token');
       const response = await fetch("/api/child-profiles", {
         method: "POST",
@@ -118,14 +150,16 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/parent-profiles"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/child-profiles"] });
+      if (!isDemoMode) {
+        queryClient.invalidateQueries({ queryKey: ["/api/parent-profiles"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/child-profiles"] });
+      }
       setCurrentStep('complete');
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to create child profile. Please try again.",
+        description: isDemoMode ? "Demo mode error" : "Failed to create child profile. Please try again.",
         variant: "destructive",
       });
     },
@@ -207,6 +241,13 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
       case 'welcome':
         return (
           <div className="text-center py-8">
+            {isDemoMode && (
+              <div className="mb-4 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <strong>Demo Mode:</strong> This is a preview of the onboarding experience. No data will be saved.
+                </p>
+              </div>
+            )}
             <div className="mb-6">
               <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <Users className="h-8 w-8 text-primary" />
@@ -428,15 +469,25 @@ export function OnboardingFlow({ isOpen, onClose, onComplete, showLaterButton = 
       case 'complete':
         return (
           <div className="text-center py-8">
+            {isDemoMode && (
+              <div className="mb-4 px-4 py-2 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-700">
+                  <strong>Demo Complete!</strong> You've experienced the full onboarding flow. To actually create an account, click "Get Started" and sign up.
+                </p>
+              </div>
+            )}
             <div className="mb-6">
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
               <h2 className="text-2xl font-semibold text-neutral-800 mb-2">
-                Welcome to Your Parenting Journey!
+                {isDemoMode ? "Demo Complete!" : "Welcome to Your Parenting Journey!"}
               </h2>
               <p className="text-neutral-600 max-w-md mx-auto">
-                Your profile is all set up. You can now start documenting your parenting experiences and receive personalized AI insights.
+                {isDemoMode 
+                  ? "You've seen how easy it is to set up your profile. Ready to start your real parenting journey with us?"
+                  : "Your profile is all set up. You can now start documenting your parenting experiences and receive personalized AI insights."
+                }
               </p>
             </div>
             <div className="bg-primary/5 rounded-lg p-4 mb-6">

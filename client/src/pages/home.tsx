@@ -107,15 +107,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
               You're one step closer to better parenting self-awareness.
             </p>
             
-            {/* Clearer messaging about AI insights - Mobile optimized */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4">
-              <p className="text-xs sm:text-sm text-blue-800 text-center leading-relaxed">
-                <span className="font-semibold">✨ The more you check in, the smarter your parenting support gets.</span>
-                <br className="hidden sm:block" />
-                <span className="sm:hidden"> </span>
-                <span className="text-blue-700">Every entry helps us tailor tips, patterns, and reminders just for you and your family.</span>
-              </p>
-            </div>
+
             
 
             {isLoading ? (

@@ -31,6 +31,16 @@ export function StorySharingSection({ selectedMood, triggerSignUpPrompt }: Story
           <p className="text-xs sm:text-base text-neutral-600 leading-tight sm:leading-relaxed max-w-2xl mx-auto px-1 sm:px-2">
             Every moment matters. Share what's happening, celebrate wins, work through challenges.
           </p>
+          
+          {/* AI Insights messaging - Moved from welcome section */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4">
+            <p className="text-xs sm:text-sm text-blue-800 text-center leading-relaxed">
+              <span className="font-semibold">✨ The more you check in, the smarter your parenting support gets.</span>
+              <br className="hidden sm:block" />
+              <span className="sm:hidden"> </span>
+              <span className="text-blue-700">Every entry helps us tailor tips, patterns, and reminders just for you and your family.</span>
+            </p>
+          </div>
         </div>
 
         {/* Story Sharing Options - Mobile Optimized */}

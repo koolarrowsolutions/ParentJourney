@@ -1,4 +1,4 @@
-import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus, MessageCircle, LogOut, Sparkles } from "lucide-react";
+import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus, MessageCircle, LogOut, Sparkles, Leaf } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AuthDialog } from "./auth-dialog";
@@ -59,7 +59,7 @@ export function Header() {
               </Link>
               <Link href="/wellness">
                 <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
-                  <Sparkles className="h-4 w-4 mr-1 inline" />
+                  <Leaf className="h-4 w-4 mr-1 inline" />
                   Wellness
                 </button>
               </Link>

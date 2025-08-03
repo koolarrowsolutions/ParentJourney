@@ -16,6 +16,18 @@ The application employs a modern full-stack architecture with clear separation b
 
 ## Recent Changes (August 2025)
 
+**Progressive Streak Emoji System (August 2025):**
+- **Enhanced User Experience:** Implemented progressive emoji rewards based on actual streak length across all streak displays
+- **Motivational Design:** Replaced static fire emoji with dynamic progression: 🌱 (starting) → 👍 (1 day) → 💪 (2 days) → ⭐ (3-4 days) → 🏆 (5-6 days) → 🔥 (7-13 days) → 🚀 (14-20 days) → 💎 (21-29 days) → 👑 (30+ days)
+- **Comprehensive Integration:** Updated home page stats, mood analytics streak display, and daily check-in selector components
+- **User Feedback Implementation:** Responded to user request for more meaningful streak visualization that reflects actual achievement level
+
+**Journal History Bug Fix (August 2025):**
+- **Critical Issue Resolved:** Fixed journal entries not displaying in history for user yesenia due to null family_id values
+- **Database Repair:** Updated 2 orphaned journal entries to correct family_id association
+- **API Enhancement:** Modified journal entry creation route to automatically set family_id from authenticated user context
+- **Data Integrity:** Ensures all future journal entries properly associate with user's family for correct filtering and display
+
 **Automated Email Notification System Implementation (August 2025):**
 - **Major Feature Added:** Implemented comprehensive background job scheduler using node-cron for automated email reminders
 - **Daily Reminders:** System now automatically sends daily journal reminders to users at their preferred time (configurable in notification settings)

@@ -35,6 +35,20 @@ interface HomeProps {
   onProfileAccessAttempt?: () => boolean;
 }
 
+// Helper function to get progressive emoji based on streak length
+function getStreakEmoji(streak: number): string {
+  if (streak === 0) return '🌱'; // Just starting
+  if (streak === 1) return '👍'; // First day
+  if (streak === 2) return '💪'; // Building momentum
+  if (streak >= 3 && streak <= 4) return '⭐'; // Good progress
+  if (streak >= 5 && streak <= 6) return '🏆'; // Great achievement
+  if (streak >= 7 && streak <= 13) return '🔥'; // On fire weekly streak
+  if (streak >= 14 && streak <= 20) return '🚀'; // Rocket momentum  
+  if (streak >= 21 && streak <= 29) return '💎'; // Diamond persistence
+  if (streak >= 30) return '👑'; // Crown achievement
+  return '🌟'; // Fallback star
+}
+
 export default function Home({ triggerSignUpPrompt }: HomeProps) {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [showMoodAnalytics, setShowMoodAnalytics] = useState<boolean>(false);
@@ -142,7 +156,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                   {/* Longest Streak - More motivational */}
                   <div className="bg-orange-50 rounded-lg p-2 sm:p-3 text-center border border-orange-200 animate-pop-in stagger-3">
                     <div className="text-base sm:text-lg md:text-xl font-semibold text-orange-600">
-                      🔥 {stats?.longestStreak || 'New'}
+                      {getStreakEmoji(stats?.longestStreak || 0)} {stats?.longestStreak || 'New'}
                     </div>
                     <div className="text-xs sm:text-xs text-neutral-600 mt-1">
                       {(stats?.longestStreak || 0) > 1 ? 'Day streak!' : 'Current Daily Interaction Streak'}

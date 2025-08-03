@@ -278,7 +278,16 @@ export function MoodAnalytics() {
                   <TrendingUp className="h-5 w-5 text-amber-600" />
                   <div>
                     <div className="font-medium text-amber-800">
-                      🔥 Current Streak: {stats.moodStreak.days} days
+                      {(() => {
+                        const streak = stats.moodStreak.days;
+                        if (streak <= 2) return '👍';
+                        if (streak <= 4) return '⭐';
+                        if (streak <= 6) return '🏆';
+                        if (streak <= 13) return '🔥';
+                        if (streak <= 20) return '🚀';
+                        if (streak <= 29) return '💎';
+                        return '👑';
+                      })()} Current Streak: {stats.moodStreak.days} days
                     </div>
                     <div className="text-sm text-amber-700">
                       You've been feeling {MOOD_LABELS[stats.moodStreak.mood]} {stats.moodStreak.mood} consistently!

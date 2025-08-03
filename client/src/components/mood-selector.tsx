@@ -159,7 +159,20 @@ export function DailyCheckInSelector({ onCheckInComplete }: DailyCheckInSelector
             </div>
 
             <div className="flex items-center justify-center text-xs text-amber-600 flex-wrap">
-              <span className="mr-1">🌟</span>
+              <span className="mr-1">
+                {(() => {
+                  if (streakCount === 0) return '🌱';
+                  if (streakCount === 1) return '👍';
+                  if (streakCount === 2) return '💪';
+                  if (streakCount >= 3 && streakCount <= 4) return '⭐';
+                  if (streakCount >= 5 && streakCount <= 6) return '🏆';
+                  if (streakCount >= 7 && streakCount <= 13) return '🔥';
+                  if (streakCount >= 14 && streakCount <= 20) return '🚀';
+                  if (streakCount >= 21 && streakCount <= 29) return '💎';
+                  if (streakCount >= 30) return '👑';
+                  return '🌟';
+                })()}
+              </span>
               <span className="font-semibold">{streakCount} day streak!</span>
               <span className="mx-2 text-gray-400 hidden xs:inline">•</span>
               <span className="text-gray-500 ml-2 xs:ml-0">

@@ -24,9 +24,10 @@ import {
   userWellnessProgress, 
   journalEntries, 
   childProfiles, 
-  parentProfiles 
+  parentProfiles,
+  users
 } from "@shared/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { extractToken, validateAuthToken } from "./auth-token";
 
 // Configure session with enhanced mobile browser compatibility
@@ -2100,8 +2101,10 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
       const suggestions = await db
         .select()
         .from(wellnessSuggestions)
-        .where(eq(wellnessSuggestions.userId, userId))
-        .where(status ? eq(wellnessSuggestions.status, status as string) : undefined)
+        .where(and(
+          eq(wellnessSuggestions.userId, userId),
+          status ? eq(wellnessSuggestions.status, status as string) : sql`1=1`
+        ))
         .limit(limit ? parseInt(limit as string) : 10)
         .orderBy(desc(wellnessSuggestions.createdAt));
 
@@ -2226,7 +2229,7 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         const newProgress = await db
           .insert(userWellnessProgress)
           .values({
-            userId,
+            userId: userId,
             totalPoints: 0,
             currentStreak: 0,
             longestStreak: 0,
@@ -2260,38 +2263,60 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
 
       const userId = authResult.userId;
       
-      // Get user context for personalization
-      const recentEntries = await db
+      // Get the user's family ID first - using users table since parentProfiles doesn't have userId
+      const user = await db
+        .select({ familyId: users.familyId })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+      
+      const familyId = user[0]?.familyId;
+      
+      // Get user context for personalization using the family ID
+      const recentEntries = familyId ? await db
         .select()
         .from(journalEntries)
-        .where(eq(journalEntries.userId, userId))
+        .where(eq(journalEntries.familyId, familyId))
         .orderBy(desc(journalEntries.createdAt))
-        .limit(5);
-
-      const childProfilesData = await db
+        .limit(5) : [];
+      
+      const childProfilesData = familyId ? await db
         .select()
         .from(childProfiles)
-        .where(eq(childProfiles.familyId, userId))
-        .limit(5);
+        .where(eq(childProfiles.familyId, familyId))
+        .limit(5) : [];
 
-      const parentProfile = await db
+      const parentProfile = familyId ? await db
         .select()
         .from(parentProfiles)
-        .where(eq(parentProfiles.familyId, userId))
-        .limit(1);
+        .where(eq(parentProfiles.familyId, familyId))
+        .limit(1) : [];
 
       // Build context for wellness engine
       const context = {
-        recentMoodScores: recentEntries.map(e => e.moodScore || 5).filter(Boolean),
+        recentMoodScores: recentEntries.map(e => {
+          // Use aiAnalyzedMood if available, otherwise default to 5
+          const moodNum = e.aiAnalyzedMood ? parseInt(e.aiAnalyzedMood) : 5;
+          return isNaN(moodNum) ? 5 : moodNum;
+        }).filter(Boolean),
         recentEntryKeywords: recentEntries.flatMap(e => e.content.split(' ').slice(0, 10)),
-        stressPatterns: recentEntries.filter(e => e.moodScore && e.moodScore < 6).map(e => e.content.slice(0, 100)),
-        successPatterns: recentEntries.filter(e => e.moodScore && e.moodScore >= 7).map(e => e.content.slice(0, 100)),
+        stressPatterns: recentEntries.filter(e => {
+          const moodNum = e.aiAnalyzedMood ? parseInt(e.aiAnalyzedMood) : 5;
+          return !isNaN(moodNum) && moodNum < 6;
+        }).map(e => e.content.slice(0, 100)),
+        successPatterns: recentEntries.filter(e => {
+          const moodNum = e.aiAnalyzedMood ? parseInt(e.aiAnalyzedMood) : 5;
+          return !isNaN(moodNum) && moodNum >= 7;
+        }).map(e => e.content.slice(0, 100)),
         familyDynamics: {
           childAges: childProfilesData.map(c => ({
             name: c.name,
             age: new Date().getFullYear() - new Date(c.dateOfBirth).getFullYear()
           })),
-          recentChallenges: recentEntries.filter(e => e.moodScore && e.moodScore < 6).map(e => e.title || '').slice(0, 3),
+          recentChallenges: recentEntries.filter(e => {
+            const moodNum = e.aiAnalyzedMood ? parseInt(e.aiAnalyzedMood) : 5;
+            return !isNaN(moodNum) && moodNum < 6;
+          }).map(e => e.title || '').slice(0, 3),
           parentName: parentProfile[0]?.name || 'Parent'
         },
         timeOfDay: (new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening') as 'morning' | 'afternoon' | 'evening',
@@ -2312,7 +2337,7 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         const stored = await db
           .insert(wellnessSuggestions)
           .values({
-            userId,
+            userId: userId,
             id: randomUUID(),
             suggestionId: suggestion.id,
             title: suggestion.title,

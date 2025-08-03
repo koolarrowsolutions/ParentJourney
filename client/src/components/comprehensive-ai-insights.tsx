@@ -733,11 +733,11 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       description: "Understand your child's developmental stages and behavior trends with personalized guidance just for your family. We'll highlight key moments, trends, and tips you can use today.",
       tooltip: "Get developmental insights specific to each of your children's ages and personalities",
       icon: <Baby className="h-5 w-5 stroke-1" />,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      borderColor: "border-purple-200",
-      hoverBorder: "hover:border-purple-400",
-      hoverBg: "hover:bg-purple-100"
+      color: "text-purple-700",
+      bgColor: "bg-white",
+      borderColor: "border-purple-300",
+      hoverBorder: "hover:border-purple-500",
+      hoverBg: "hover:bg-purple-50"
     },
     {
       id: "personalized-tips",
@@ -745,11 +745,11 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       description: "Custom recommendations based on your parenting style, child's personality, and recent experiences",
       tooltip: "Receive actionable tips tailored to your family's unique situation and parenting style",
       icon: <Lightbulb className="h-5 w-5 stroke-1" />,
-      color: "text-amber-600",
-      bgColor: "bg-amber-50",
-      borderColor: "border-amber-200",
-      hoverBorder: "hover:border-amber-400",
-      hoverBg: "hover:bg-amber-100"
+      color: "text-amber-700",
+      bgColor: "bg-white",
+      borderColor: "border-amber-300",
+      hoverBorder: "hover:border-amber-500",
+      hoverBg: "hover:bg-amber-50"
     },
     {
       id: "considerations",
@@ -757,11 +757,11 @@ export function ComprehensiveAIInsights({ onInsightClick }: ComprehensiveAIInsig
       description: "Three thoughtful suggestions to enhance your parenting journey and family dynamics",
       tooltip: "Explore new parenting perspectives and strategies you might not have considered",
       icon: <MessageSquare className="h-5 w-5 stroke-1" />,
-      color: "text-pink-600",
-      bgColor: "bg-pink-50",
-      borderColor: "border-pink-200",
-      hoverBorder: "hover:border-pink-400",
-      hoverBg: "hover:bg-pink-100"
+      color: "text-pink-700",
+      bgColor: "bg-white",
+      borderColor: "border-pink-300",
+      hoverBorder: "hover:border-pink-500",
+      hoverBg: "hover:bg-pink-50"
     }
   ];
 

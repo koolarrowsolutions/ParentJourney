@@ -73,7 +73,7 @@ export default function ChildEntries() {
                     <h1 className="text-2xl font-bold text-neutral-800">{child.name}'s Journal Entries</h1>
                     <p className="text-neutral-600">
                       {formatAge(child.dateOfBirth)}
-                      {child.pronouns && <span className="ml-2">• {child.pronouns}</span>}
+                      {child.gender && <span className="ml-2">• {child.gender}</span>}
                     </p>
                     {developmentalStage && (
                       <Badge variant="secondary" className="mt-1">

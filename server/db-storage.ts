@@ -83,7 +83,7 @@ export class DatabaseStorage implements IStorage {
     .leftJoin(schema.childProfiles, eq(schema.journalEntries.childProfileId, schema.childProfiles.id));
 
     const conditions = [
-      sql`(${schema.journalEntries.familyId} = ${familyId} OR ${schema.childProfiles.familyId} = ${familyId})`
+      eq(schema.journalEntries.familyId, familyId)
     ];
     
     if (childId) {

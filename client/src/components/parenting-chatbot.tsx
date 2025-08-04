@@ -50,8 +50,13 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
+  const [showWelcomeNotification, setShowWelcomeNotification] = useState(false);
+  const [isBouncing, setIsBouncing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lastActivityRef = useRef<number>(Date.now());
+  const welcomeShownRef = useRef(false);
+  const reminderIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,6 +78,83 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
       setMessages([welcomeMessage]);
     }
   }, [isOpen, messages.length]);
+
+  // Show welcome notification on first visit
+  useEffect(() => {
+    if (!welcomeShownRef.current) {
+      // Show welcome notification after a short delay
+      const timer = setTimeout(() => {
+        setIsBouncing(true);
+        setShowWelcomeNotification(true);
+        welcomeShownRef.current = true;
+        
+        // Auto-hide notification after 4 seconds
+        setTimeout(() => {
+          setShowWelcomeNotification(false);
+        }, 4000);
+        
+        // Stop bouncing after 2 seconds
+        setTimeout(() => {
+          setIsBouncing(false);
+        }, 2000);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // Track user activity and set up periodic reminders
+  useEffect(() => {
+    const updateActivity = () => {
+      lastActivityRef.current = Date.now();
+    };
+
+    // Add activity listeners
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => {
+      document.addEventListener(event, updateActivity, true);
+    });
+
+    // Set up periodic reminder check
+    const setupReminder = () => {
+      if (reminderIntervalRef.current) {
+        clearInterval(reminderIntervalRef.current);
+      }
+      
+      reminderIntervalRef.current = setInterval(() => {
+        const timeSinceActivity = Date.now() - lastActivityRef.current;
+        const randomDelay = Math.random() * (10 * 60 * 1000 - 5 * 60 * 1000) + 5 * 60 * 1000; // 5-10 minutes
+        
+        if (timeSinceActivity >= randomDelay && !isOpen && welcomeShownRef.current) {
+          setIsBouncing(true);
+          setTimeout(() => {
+            setIsBouncing(false);
+          }, 2000);
+          lastActivityRef.current = Date.now(); // Reset to prevent frequent bouncing
+        }
+      }, 30000); // Check every 30 seconds
+    };
+
+    setupReminder();
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, updateActivity, true);
+      });
+      if (reminderIntervalRef.current) {
+        clearInterval(reminderIntervalRef.current);
+      }
+    };
+  }, [isOpen]);
+
+  // Clean up intervals when component unmounts
+  useEffect(() => {
+    return () => {
+      if (reminderIntervalRef.current) {
+        clearInterval(reminderIntervalRef.current);
+      }
+    };
+  }, []);
 
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
@@ -143,17 +225,38 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
 
   if (!isOpen) {
     return (
-      <TooltipWrapper content="Ask your parenting AI assistant">
-        <Button
-          onClick={() => setIsOpen(true)}
-          className={cn(
-            "fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-50 animate-bounce-in",
-            className
-          )}
-        >
-          <MessageCircle className="h-6 w-6 text-white" />
-        </Button>
-      </TooltipWrapper>
+      <div className="fixed bottom-6 right-6 z-50">
+        {/* Welcome Notification */}
+        {showWelcomeNotification && (
+          <div className="absolute bottom-16 right-0 mb-2 mr-2 bg-white border border-neutral-200 rounded-lg shadow-lg p-3 max-w-xs animate-pop-fade">
+            <div className="flex items-start gap-2">
+              <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Bot className="h-3 w-3 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-neutral-800 mb-1">AI Assistant Available!</p>
+                <p className="text-xs text-neutral-600">Get personalized parenting support and guidance anytime.</p>
+              </div>
+            </div>
+            <div className="absolute bottom-0 right-6 transform translate-y-1/2 rotate-45 w-2 h-2 bg-white border-r border-b border-neutral-200"></div>
+          </div>
+        )}
+        
+        {/* Chatbot Button */}
+        <TooltipWrapper content="Ask your parenting AI assistant">
+          <Button
+            onClick={() => setIsOpen(true)}
+            className={cn(
+              "w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 animate-bounce-in hover-scale",
+              isBouncing && "animate-bounce",
+              className
+            )}
+            data-testid="button-open-chatbot"
+          >
+            <MessageCircle className="h-6 w-6 text-white" />
+          </Button>
+        </TooltipWrapper>
+      </div>
     );
   }
 

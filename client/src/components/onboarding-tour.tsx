@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PenTool, Heart, Bot, History, Leaf, ArrowRight, X } from "lucide-react";
+import { PenTool, Heart, Bot, History, Leaf, ArrowRight, X, MessageCircle } from "lucide-react";
 import { markTourCompleted, markTourSkipped } from "@/utils/onboarding-storage";
 
 interface OnboardingTourProps {
@@ -37,6 +37,14 @@ const TOUR_STEPS = [
   },
   {
     step: 4,
+    icon: MessageCircle,
+    title: "Chat with your AI Assistant",
+    description: "Need immediate support? Click the chat bubble in the bottom-right corner for real-time parenting guidance and advice.",
+    illustration: "💬",
+    color: "bg-indigo-500"
+  },
+  {
+    step: 5,
     icon: History,
     title: "See your full history here",
     description: "Browse, favorite, and reflect on past entries. You'll see growth over time.",
@@ -44,7 +52,7 @@ const TOUR_STEPS = [
     color: "bg-green-500"
   },
   {
-    step: 5,
+    step: 6,
     icon: Leaf,
     title: "Need a moment to reset?",
     description: "Try the Calm Reset if things feel heavy. You'll find it after tough entries.",
@@ -59,6 +67,7 @@ export function OnboardingTour({ isOpen, onClose }: OnboardingTourProps) {
 
   const currentTourStep = TOUR_STEPS[currentStep - 1];
   const isLastStep = currentStep === TOUR_STEPS.length;
+  const isChatbotStep = currentStep === 4;
 
   const handleNext = () => {
     if (isLastStep) {
@@ -71,6 +80,29 @@ export function OnboardingTour({ isOpen, onClose }: OnboardingTourProps) {
       }, 200);
     }
   };
+
+  // Add visual highlight to chatbot button during step 4
+  useEffect(() => {
+    if (isChatbotStep && isOpen) {
+      const chatbotButton = document.querySelector('[data-testid="chatbot-button"]');
+      if (chatbotButton) {
+        chatbotButton.classList.add('onboarding-highlight');
+      }
+    } else {
+      const chatbotButton = document.querySelector('[data-testid="chatbot-button"]');
+      if (chatbotButton) {
+        chatbotButton.classList.remove('onboarding-highlight');
+      }
+    }
+
+    // Cleanup when component unmounts
+    return () => {
+      const chatbotButton = document.querySelector('[data-testid="chatbot-button"]');
+      if (chatbotButton) {
+        chatbotButton.classList.remove('onboarding-highlight');
+      }
+    };
+  }, [isChatbotStep, isOpen]);
 
   const handleComplete = () => {
     markTourCompleted();

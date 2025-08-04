@@ -607,3 +607,51 @@
     max-width: 80vw !important;
   }
 }
+
+/* Onboarding highlight for chatbot */
+.onboarding-highlight {
+  position: relative;
+  z-index: 9999 !important;
+}
+
+.onboarding-highlight::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 3px solid #6366f1;
+  border-radius: 50%;
+  animation: pulse-ring 2s infinite;
+  z-index: -1;
+}
+
+.onboarding-highlight::after {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  border: 2px solid #6366f1;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: pulse-ring 2s infinite 0.5s;
+  z-index: -2;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}

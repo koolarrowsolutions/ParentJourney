@@ -272,7 +272,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
               isBouncing && "animate-bounce",
               className
             )}
-            data-testid="button-open-chatbot"
+            data-testid="chatbot-button"
           >
             <MessageCircle className="h-6 w-6 text-white" />
           </Button>

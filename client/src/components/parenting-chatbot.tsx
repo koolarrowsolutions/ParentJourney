@@ -22,6 +22,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 interface Message {
   id: string;
@@ -55,8 +56,10 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lastActivityRef = useRef<number>(Date.now());
-  const welcomeShownRef = useRef(false);
   const reminderIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastLoginTimeRef = useRef<number>(0);
+
+  const { user, isAuthenticated, hasJustLoggedIn } = useAuth();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -79,29 +82,45 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
     }
   }, [isOpen, messages.length]);
 
-  // Show welcome notification on first visit
+  // Show welcome notification on every login
   useEffect(() => {
-    if (!welcomeShownRef.current) {
-      // Show welcome notification after a short delay
-      const timer = setTimeout(() => {
-        setIsBouncing(true);
-        setShowWelcomeNotification(true);
-        welcomeShownRef.current = true;
-        
-        // Auto-hide notification after 4 seconds
-        setTimeout(() => {
-          setShowWelcomeNotification(false);
-        }, 4000);
-        
-        // Stop bouncing after 2 seconds
-        setTimeout(() => {
-          setIsBouncing(false);
-        }, 2000);
-      }, 1000);
+    console.log('Chatbot login effect:', { isAuthenticated, hasJustLoggedIn, user: user?.username });
+    
+    if (isAuthenticated && hasJustLoggedIn && user) {
+      const currentTime = Date.now();
       
-      return () => clearTimeout(timer);
+      console.log('Login detected for chatbot animation:', { 
+        currentTime, 
+        lastLoginTime: lastLoginTimeRef.current, 
+        timeDiff: currentTime - lastLoginTimeRef.current 
+      });
+      
+      // Check if this is a new login session (not just a page refresh)
+      if (currentTime - lastLoginTimeRef.current > 30000) { // 30 second threshold
+        lastLoginTimeRef.current = currentTime;
+        
+        console.log('Triggering chatbot welcome animation');
+        
+        // Show welcome notification after a short delay
+        const timer = setTimeout(() => {
+          setIsBouncing(true);
+          setShowWelcomeNotification(true);
+          
+          // Auto-hide notification after 4 seconds
+          setTimeout(() => {
+            setShowWelcomeNotification(false);
+          }, 4000);
+          
+          // Stop bouncing after 2 seconds
+          setTimeout(() => {
+            setIsBouncing(false);
+          }, 2000);
+        }, 1000);
+        
+        return () => clearTimeout(timer);
+      }
     }
-  }, []);
+  }, [isAuthenticated, hasJustLoggedIn, user]);
 
   // Track user activity and set up periodic reminders
   useEffect(() => {
@@ -125,7 +144,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
         const timeSinceActivity = Date.now() - lastActivityRef.current;
         const randomDelay = Math.random() * (10 * 60 * 1000 - 5 * 60 * 1000) + 5 * 60 * 1000; // 5-10 minutes
         
-        if (timeSinceActivity >= randomDelay && !isOpen && welcomeShownRef.current) {
+        if (timeSinceActivity >= randomDelay && !isOpen && isAuthenticated) {
           setIsBouncing(true);
           setTimeout(() => {
             setIsBouncing(false);
@@ -228,14 +247,16 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
       <div className="fixed bottom-6 right-6 z-50">
         {/* Welcome Notification */}
         {showWelcomeNotification && (
-          <div className="absolute bottom-16 right-0 mb-2 mr-2 bg-white border border-neutral-200 rounded-lg shadow-lg p-3 max-w-xs animate-pop-fade">
+          <div className="absolute bottom-16 right-0 mb-2 mr-2 bg-white border border-neutral-200 rounded-lg shadow-lg p-3 max-w-xs animate-pop-fade z-50">
             <div className="flex items-start gap-2">
               <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                 <Bot className="h-3 w-3 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium text-neutral-800 mb-1">AI Assistant Available!</p>
-                <p className="text-xs text-neutral-600">Get personalized parenting support and guidance anytime.</p>
+                <p className="text-sm font-medium text-neutral-800 mb-1">
+                  Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}! 
+                </p>
+                <p className="text-xs text-neutral-600">Your AI parenting assistant is ready to help you today.</p>
               </div>
             </div>
             <div className="absolute bottom-0 right-6 transform translate-y-1/2 rotate-45 w-2 h-2 bg-white border-r border-b border-neutral-200"></div>

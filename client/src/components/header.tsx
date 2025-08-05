@@ -10,12 +10,26 @@ export function Header() {
   const logout = useLogout();
 
   return (
+    <>
+    {/* Mobile Brand Banner - Only visible on mobile */}
+    <div className="sm:hidden bg-gradient-to-r from-primary/5 to-primary/10 border-b border-primary/20 py-3 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 flex items-center justify-center space-x-3">
+        <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+          <Heart className="text-white h-4 w-4" />
+        </div>
+        <div className="text-center">
+          <h1 className="text-lg font-semibold text-neutral-800">ParentJourney 🌱</h1>
+          <p className="text-xs text-neutral-600">✨ Reflect. Grow. Thrive. ✨</p>
+        </div>
+      </div>
+    </div>
+    
     <header className="bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-50 animate-pop-fade">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
             <Link href="/">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-primary/90 transition-colors hover-scale button-press animate-gentle-bounce">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-primary/90 transition-colors hover-scale button-press">
                 <Heart className="text-white h-4 w-4 sm:h-5 sm:w-5" />
               </div>
             </Link>
@@ -167,5 +181,6 @@ export function Header() {
         </div>
       </div>
     </header>
+    </>
   );
 }

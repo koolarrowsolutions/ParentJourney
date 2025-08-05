@@ -472,11 +472,18 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
 
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch("/api/parenting-chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({
           message,
           conversationHistory: messages.slice(-10) // Send last 10 messages for context

@@ -32,10 +32,22 @@ export function Community() {
   const { data: posts = [], isLoading } = useQuery<CommunityPost[]>({
     queryKey: ["/api/community/posts"],
     queryFn: async () => {
-      const response = await fetch("/api/community/posts");
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch("/api/community/posts", {
+        headers,
+        credentials: "include",
+      });
       if (!response.ok) throw new Error("Failed to fetch posts");
       return response.json();
     },
+    enabled: !!localStorage.getItem('parentjourney_token'), // Only fetch when authenticated
+    staleTime: 30000, // Cache for 30 seconds
+    retry: false // Don't retry on auth failures
   });
 
   // Create new post mutation

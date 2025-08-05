@@ -70,6 +70,9 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
       if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },
+    enabled: !!localStorage.getItem('parentjourney_token'), // Only fetch when authenticated
+    staleTime: 60000, // Cache for 1 minute
+    retry: false // Don't retry on auth failures
   });
 
   // Fetch all journal entries (no child filtering in API call)
@@ -93,6 +96,9 @@ export default function InteractionHistory({ triggerSignUpPrompt }: JournalHisto
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },
+    enabled: !!localStorage.getItem('parentjourney_token'), // Only fetch when authenticated
+    staleTime: 10000, // Cache for 10 seconds
+    retry: false // Don't retry on auth failures
   });
 
   // Mutation for updating favorite status

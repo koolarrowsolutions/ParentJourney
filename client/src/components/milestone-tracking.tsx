@@ -38,6 +38,23 @@ export function MilestoneTracking() {
   // Fetch child profiles
   const { data: childProfiles = [] } = useQuery<ChildProfile[]>({
     queryKey: ["/api/child-profiles"],
+    queryFn: async () => {
+      const token = localStorage.getItem('parentjourney_token');
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch("/api/child-profiles", {
+        headers,
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch profiles");
+      return response.json();
+    },
+    enabled: !!localStorage.getItem('parentjourney_token'), // Only fetch when authenticated
+    staleTime: 60000, // Cache for 1 minute
+    retry: false // Don't retry on auth failures
   });
 
   // Get selected child data

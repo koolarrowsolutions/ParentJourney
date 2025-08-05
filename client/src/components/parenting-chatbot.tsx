@@ -455,12 +455,12 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
           {messages.length <= 1 && (
             <div className="p-4 border-t border-neutral-100">
               <p className="text-xs text-neutral-600 mb-2">Quick topics:</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 max-w-full">
                 {SUGGESTED_TOPICS.slice(0, 6).map((topic) => (
                   <Badge
                     key={topic}
                     variant="secondary"
-                    className="text-xs cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors px-3 py-1.5 min-w-[110px] text-center justify-center"
+                    className="text-[10px] cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors px-2 py-1 min-w-[100px] text-center justify-center flex-shrink-0"
                     onClick={() => handleSuggestedTopic(topic)}
                   >
                     {topic}

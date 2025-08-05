@@ -41,6 +41,7 @@ import { Link } from "wouter";
 import { exportToJSON, exportToCSV, exportFavoritesToPDF, importFromJSON, validateImportData } from "@/utils/data-export";
 import { VoiceInputButton } from "@/components/voice-input";
 import { OnboardingTour } from "@/components/onboarding-tour";
+import { OnboardingTrigger } from "@/components/onboarding-trigger";
 import { EnhancedNotificationSettings } from "@/components/enhanced-notification-settings";
 import { getSettings, saveSettings, resetSettings, clearAllAppData, type UserSettings } from "@/utils/settings-storage";
 import { shouldShowTour } from "@/utils/onboarding-storage";
@@ -736,14 +737,17 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
                   <Sparkles className="h-4 w-4" />
                   App Tutorial
                 </Label>
-                <Button 
-                  onClick={() => setShowTour(true)}
-                  variant="outline"
-                  className="w-full dark:border-neutral-600 dark:text-neutral-100"
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Take Tour Again
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => setShowTour(true)}
+                    variant="outline"
+                    className="flex-1 dark:border-neutral-600 dark:text-neutral-100"
+                  >
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Take Tour Again
+                  </Button>
+                  <OnboardingTrigger variant="restart" size="default" />
+                </div>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   Revisit key features and learn how to make the most of ParentJourney
                 </p>

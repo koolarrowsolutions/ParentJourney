@@ -30,7 +30,7 @@ export function Header() {
                   ParentJourney 🌱
                 </h1>
               </Link>
-              <p className="text-xs text-neutral-500 truncate">✨ Reflect. Grow. Thrive. ✨</p>
+              <p className="text-xs text-neutral-500 truncate pr-2">✨ Reflect. Grow. Thrive. ✨</p>
             </div>
           </div>
 
@@ -76,7 +76,6 @@ export function Header() {
                 Settings
               </button>
             </Link>
-            <OnboardingTrigger variant="help" size="sm" />
           </div>
 
           {/* Right side - Authentication and Mobile Menu */}

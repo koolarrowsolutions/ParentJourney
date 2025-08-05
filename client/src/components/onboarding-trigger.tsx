@@ -4,7 +4,7 @@ import { useOnboardingContext } from "@/contexts/onboarding-context";
 import { ReactNode } from "react";
 
 interface OnboardingTriggerProps {
-  variant?: "button" | "help";
+  variant?: "button" | "help" | "restart";
   size?: "sm" | "default" | "lg";
   children?: ReactNode;
 }
@@ -63,6 +63,20 @@ export function OnboardingTrigger({ variant = "button", size = "sm", children }:
       >
         <HelpCircle className="h-4 w-4 mr-1" />
         Help & Tour
+      </Button>
+    );
+  }
+
+  if (variant === "restart") {
+    return (
+      <Button
+        variant="outline"
+        size={size}
+        onClick={handleRestartOnboarding}
+        className="text-primary border-primary hover:bg-primary/5"
+      >
+        <Sparkles className="h-4 w-4 mr-1" />
+        Restart Onboarding
       </Button>
     );
   }

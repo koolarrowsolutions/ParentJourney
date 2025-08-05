@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { format } from "date-fns";
 
 interface AdminUser {
@@ -49,6 +51,16 @@ export default function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isAuthenticated, isLoading } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Redirect to home page if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      console.log('Admin dashboard: Not authenticated, redirecting to home');
+      setLocation('/');
+    }
+  }, [isAuthenticated, isLoading, setLocation]);
 
   // Fetch admin stats
   const { data: stats, isLoading: statsLoading } = useQuery({
@@ -57,7 +69,8 @@ export default function AdminDashboard() {
       const response = await apiRequest('GET', '/api/admin/stats');
       if (!response.ok) throw new Error('Failed to fetch admin stats');
       return response.json() as Promise<AdminStats>;
-    }
+    },
+    enabled: isAuthenticated // Only fetch when authenticated
   });
 
   // Fetch users list
@@ -67,7 +80,8 @@ export default function AdminDashboard() {
       const response = await apiRequest('GET', `/api/admin/users?search=${searchTerm}`);
       if (!response.ok) throw new Error('Failed to fetch users');
       return response.json() as Promise<AdminUser[]>;
-    }
+    },
+    enabled: isAuthenticated // Only fetch when authenticated
   });
 
   // Grant free access mutation

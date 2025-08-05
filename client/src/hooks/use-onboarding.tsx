@@ -60,7 +60,9 @@ export function useOnboarding() {
   };
 
   const startTourManually = () => {
+    console.log('startTourManually called, current showTour:', showTour);
     setShowTour(true);
+    console.log('startTourManually - setShowTour(true) called');
   };
 
   return {

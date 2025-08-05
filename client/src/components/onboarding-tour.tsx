@@ -65,6 +65,10 @@ export function OnboardingTour({ isOpen, onClose }: OnboardingTourProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  useEffect(() => {
+    console.log('OnboardingTour: isOpen changed to', isOpen);
+  }, [isOpen]);
+
   const currentTourStep = TOUR_STEPS[currentStep - 1];
   const isLastStep = currentStep === TOUR_STEPS.length;
   const isChatbotStep = currentStep === 4;

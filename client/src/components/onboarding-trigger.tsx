@@ -29,7 +29,7 @@ export function OnboardingTrigger({ variant = "button", size = "sm" }: Onboardin
         variant="ghost"
         size={size}
         onClick={handleRestartOnboarding}
-        className="text-muted-foreground hover:text-primary"
+        className="text-muted-foreground hover:text-white hover:bg-primary"
       >
         <HelpCircle className="h-4 w-4 mr-1" />
         Help & Tour
@@ -52,7 +52,7 @@ export function OnboardingTrigger({ variant = "button", size = "sm" }: Onboardin
         variant="ghost"
         size={size}
         onClick={handleStartAnalyticsTour}
-        className="text-muted-foreground hover:text-primary"
+        className="text-muted-foreground hover:text-white hover:bg-primary"
       >
         <HelpCircle className="h-4 w-4 mr-1" />
         Analytics Tour

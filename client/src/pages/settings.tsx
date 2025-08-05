@@ -732,6 +732,32 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
 
               <Separator className="dark:bg-neutral-600" />
 
+              {/* Admin Portal Access - Only for specific user */}
+              {user?.username === 'esanjosechicano' && (
+                <>
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-2">
+                      <SettingsIcon className="h-4 w-4" />
+                      Admin Portal
+                    </Label>
+                    <Link href="/admin">
+                      <Button 
+                        variant="outline"
+                        className="w-full dark:border-neutral-600 dark:text-neutral-100 bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 border-orange-200 dark:border-orange-800"
+                      >
+                        <SettingsIcon className="mr-2 h-4 w-4" />
+                        Access Admin Dashboard
+                      </Button>
+                    </Link>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      Manage users, subscriptions, and system settings
+                    </p>
+                  </div>
+
+                  <Separator className="dark:bg-neutral-600" />
+                </>
+              )}
+
               {/* Tour Again */}
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-2">

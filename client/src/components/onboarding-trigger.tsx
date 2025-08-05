@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { HelpCircle, Sparkles } from "lucide-react";
-import { useOnboarding } from "./onboarding-manager";
+import { useOnboarding } from "@/hooks/use-onboarding";
 
 interface OnboardingTriggerProps {
   variant?: "button" | "help";
@@ -8,19 +8,26 @@ interface OnboardingTriggerProps {
 }
 
 export function OnboardingTrigger({ variant = "button", size = "sm" }: OnboardingTriggerProps) {
-  const { startTour } = useOnboarding();
+  const { startTourManually } = useOnboarding();
 
   const handleRestartOnboarding = () => {
     // Clear onboarding status for current user to restart
-    const user = JSON.parse(localStorage.getItem('auth_data') || '{}')?.user;
-    if (user?.id) {
-      localStorage.removeItem(`onboarding_${user.id}`);
-      window.location.reload(); // Reload to trigger onboarding
+    const authData = localStorage.getItem('parentjourney_auth');
+    if (authData) {
+      try {
+        const user = JSON.parse(authData)?.user;
+        if (user?.id) {
+          localStorage.removeItem(`onboarding_${user.id}`);
+          window.location.reload(); // Reload to trigger onboarding
+        }
+      } catch (error) {
+        console.error('Error parsing auth data:', error);
+      }
     }
   };
 
-  const handleStartAnalyticsTour = () => {
-    startTour('analytics');
+  const handleStartTour = () => {
+    startTourManually();
   };
 
   if (variant === "help") {
@@ -28,7 +35,7 @@ export function OnboardingTrigger({ variant = "button", size = "sm" }: Onboardin
       <Button
         variant="ghost"
         size={size}
-        onClick={handleRestartOnboarding}
+        onClick={handleStartTour}
         className="text-muted-foreground hover:text-white hover:bg-primary"
       >
         <HelpCircle className="h-4 w-4 mr-1" />
@@ -51,11 +58,11 @@ export function OnboardingTrigger({ variant = "button", size = "sm" }: Onboardin
       <Button
         variant="ghost"
         size={size}
-        onClick={handleStartAnalyticsTour}
+        onClick={handleStartTour}
         className="text-muted-foreground hover:text-white hover:bg-primary"
       >
         <HelpCircle className="h-4 w-4 mr-1" />
-        Analytics Tour
+        Quick Tour
       </Button>
     </div>
   );

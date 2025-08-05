@@ -65,7 +65,7 @@ export function useOnboarding() {
     console.log('startTourManually - setShowTour(true) called');
   };
 
-  return {
+  const returnObject = {
     showSignUpPrompt,
     setShowSignUpPrompt,
     showTour,
@@ -77,4 +77,8 @@ export function useOnboarding() {
     startTourManually,
     onboardingState: getOnboardingState()
   };
+
+  console.log('useOnboarding hook returning:', returnObject);
+  console.log('startTourManually function definition:', startTourManually);
+  return returnObject;
 }

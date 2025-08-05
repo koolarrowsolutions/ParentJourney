@@ -8,7 +8,11 @@ interface OnboardingTriggerProps {
 }
 
 export function OnboardingTrigger({ variant = "button", size = "sm" }: OnboardingTriggerProps) {
-  const { startTourManually } = useOnboarding();
+  const onboardingHook = useOnboarding();
+  const { startTourManually, setShowTour } = onboardingHook;
+  
+  console.log('OnboardingTrigger: onboardingHook:', onboardingHook);
+  console.log('OnboardingTrigger: startTourManually:', startTourManually);
 
   const handleRestartOnboarding = () => {
     // Clear onboarding status for current user to restart
@@ -29,11 +33,22 @@ export function OnboardingTrigger({ variant = "button", size = "sm" }: Onboardin
   const handleStartTour = () => {
     console.log('OnboardingTrigger: handleStartTour clicked');
     console.log('startTourManually function:', startTourManually);
+    console.log('setShowTour function:', setShowTour);
+    
+    // Try both approaches to trigger the tour
     try {
-      startTourManually();
-      console.log('OnboardingTrigger: startTourManually called successfully');
+      if (startTourManually) {
+        startTourManually();
+        console.log('OnboardingTrigger: startTourManually called successfully');
+      } else if (setShowTour) {
+        console.log('OnboardingTrigger: Using setShowTour directly');
+        setShowTour(true);
+        console.log('OnboardingTrigger: setShowTour(true) called directly');
+      } else {
+        console.error('OnboardingTrigger: No tour functions available');
+      }
     } catch (error) {
-      console.error('OnboardingTrigger: Error calling startTourManually:', error);
+      console.error('OnboardingTrigger: Error calling tour functions:', error);
     }
   };
 

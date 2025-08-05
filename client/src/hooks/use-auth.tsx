@@ -34,10 +34,11 @@ export function useAuth(): AuthState & { clearLoginStatus: () => void } {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/auth/user'],
     queryFn: checkAuthStatus,
-    retry: 1, // Allow one retry for network issues
+    retry: false, // Don't retry auth failures - they're usually intentional
     refetchOnWindowFocus: false, // Reduce unnecessary refetches
-    staleTime: 5000, // Cache for 5 seconds to prevent duplicate calls
+    staleTime: 10000, // Cache for 10 seconds to prevent duplicate calls
     refetchInterval: false, // Disable polling to reduce server load
+    gcTime: 300000, // Keep in cache for 5 minutes
   });
 
   useEffect(() => {

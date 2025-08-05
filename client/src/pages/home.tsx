@@ -68,7 +68,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch parent profile");
       return response.json();
     },
-    enabled: isAuthenticated // Only fetch when authenticated
+    enabled: isAuthenticated, // Only fetch when authenticated
+    staleTime: 300000, // Cache for 5 minutes - profile data rarely changes
+    retry: false // Don't retry on auth failures
   });
 
 
@@ -93,6 +95,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     },
     enabled: isAuthenticated && !!parentProfile, // Only fetch when fully authenticated
     staleTime: 60000, // Cache for 1 minute - child profiles change rarely
+    retry: false // Don't retry on auth failures
   });
 
   const { data: entries } = useQuery<JournalEntry[]>({
@@ -104,6 +107,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     },
     enabled: isAuthenticated && !!parentProfile, // Only fetch when fully authenticated
     staleTime: 10000, // Cache for 10 seconds
+    retry: false // Don't retry on auth failures
   });
 
   // Login success popup disabled - using LoginConfirmationModal instead

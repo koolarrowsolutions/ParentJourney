@@ -1034,8 +1034,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      const searchTerm = req.query.search as string;
-      const users = await storage.getAllUsers(searchTerm);
+      const searchTerm = (req.query.search as string) || "";
+      const filterStatus = (req.query.status as string) || "all";
+      const filterRole = (req.query.role as string) || "all";
+      const sortBy = (req.query.sortBy as string) || "createdAt";
+      const sortOrder = (req.query.sortOrder as string) || "desc";
+      
+      const users = await storage.getAllUsers(searchTerm, {
+        status: filterStatus,
+        role: filterRole,
+        sortBy,
+        sortOrder
+      });
       res.json(users);
     } catch (error) {
       console.error('Error getting users:', error);
@@ -1073,6 +1083,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting families:', error);
       res.status(500).json({ message: "Failed to get families" });
+    }
+  });
+
+  // Delete user endpoint
+  app.delete("/api/admin/delete-user/:userId", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const { userId: targetUserId } = req.params;
+      await storage.deleteUser(targetUserId);
+      res.json({ success: true, message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ error: "Failed to delete user" });
+    }
+  });
+
+  // Pause/unpause user endpoint
+  app.post("/api/admin/pause-user", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const { userId: targetUserId, paused } = req.body;
+      await storage.pauseUser(targetUserId, paused);
+      res.json({ success: true, message: `User ${paused ? 'paused' : 'unpaused'} successfully` });
+    } catch (error) {
+      console.error("Error updating user pause status:", error);
+      res.status(500).json({ error: "Failed to update user status" });
     }
   });
 

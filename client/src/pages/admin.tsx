@@ -26,7 +26,13 @@ import {
   Settings,
   UserPlus,
   ArrowLeft,
-  Building
+  Building,
+  Trash2,
+  Pause,
+  Play,
+  Edit,
+  Eye,
+  MoreHorizontal
 } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
@@ -103,6 +109,10 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterRole, setFilterRole] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<string>("desc");
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [selectedFamily, setSelectedFamily] = useState<FamilyData | null>(null);
   const [showGrantAccessDialog, setShowGrantAccessDialog] = useState(false);
@@ -111,6 +121,8 @@ export default function AdminDashboard() {
   const [showUpdateSubscriptionDialog, setShowUpdateSubscriptionDialog] = useState(false);
   const [showAddParentDialog, setShowAddParentDialog] = useState(false);
   const [showCreateUserDialog, setShowCreateUserDialog] = useState(false);
+  const [showDeleteUserDialog, setShowDeleteUserDialog] = useState(false);
+  const [showPauseUserDialog, setShowPauseUserDialog] = useState(false);
   const [newParentId, setNewParentId] = useState<string | null>(null);
 
   // Check if user has admin access
@@ -143,10 +155,10 @@ export default function AdminDashboard() {
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  // Fetch all users
+  // Fetch all users with filters
   const { data: users = [], isLoading: usersLoading, refetch: refetchUsers } = useQuery({
-    queryKey: ["/api/admin/users", searchTerm],
-    queryFn: () => apiRequest(`/api/admin/users?search=${encodeURIComponent(searchTerm)}`),
+    queryKey: ["/api/admin/users", searchTerm, filterStatus, filterRole, sortBy, sortOrder],
+    queryFn: () => apiRequest(`/api/admin/users?search=${encodeURIComponent(searchTerm)}&status=${filterStatus}&role=${filterRole}&sortBy=${sortBy}&sortOrder=${sortOrder}`),
   });
 
   // Fetch all families
@@ -244,6 +256,47 @@ export default function AdminDashboard() {
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message || "Failed to create user account", variant: "destructive" });
+    },
+  });
+
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: string) =>
+      apiRequest(`/api/admin/delete-user/${userId}`, "DELETE"),
+    onSuccess: () => {
+      toast({ title: "Success", description: "User deleted successfully" });
+      setShowDeleteUserDialog(false);
+      setSelectedUser(null);
+      refetchUsers();
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Error", 
+        description: error.message || "Failed to delete user",
+        variant: "destructive"
+      });
+    },
+  });
+
+  // Pause/unpause user mutation
+  const pauseUserMutation = useMutation({
+    mutationFn: async ({ userId, paused }: { userId: string; paused: boolean }) =>
+      apiRequest("/api/admin/pause-user", "POST", { userId, paused }),
+    onSuccess: (_, { paused }) => {
+      toast({ 
+        title: "Success", 
+        description: `User ${paused ? 'paused' : 'unpaused'} successfully` 
+      });
+      setShowPauseUserDialog(false);
+      setSelectedUser(null);
+      refetchUsers();
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Error", 
+        description: error.message || "Failed to update user status",
+        variant: "destructive"
+      });
     },
   });
 
@@ -465,16 +518,66 @@ export default function AdminDashboard() {
                 <CardDescription>
                   Manage user accounts, subscriptions, and permissions
                 </CardDescription>
-                <div className="flex items-center gap-4">
-                  <div className="relative flex-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
+                  <div className="relative">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-neutral-500" />
                     <Input
-                      placeholder="Search users by name, email, or username..."
+                      placeholder="Search users..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
+                      data-testid="input-user-search"
                     />
                   </div>
+                  
+                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                    <SelectTrigger data-testid="select-filter-status">
+                      <SelectValue placeholder="Filter by Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="free">Free</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                      <SelectItem value="past_due">Past Due</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={filterRole} onValueChange={setFilterRole}>
+                    <SelectTrigger data-testid="select-filter-role">
+                      <SelectValue placeholder="Filter by Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Roles</SelectItem>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="support">Support</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger data-testid="select-sort-by">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="createdAt">Sign Up Date</SelectItem>
+                      <SelectItem value="name">Name</SelectItem>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="subscriptionStatus">Status</SelectItem>
+                      <SelectItem value="totalEntries">Total Entries</SelectItem>
+                      <SelectItem value="lastLoginAt">Last Login</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={sortOrder} onValueChange={setSortOrder}>
+                    <SelectTrigger data-testid="select-sort-order">
+                      <SelectValue placeholder="Order" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="desc">Newest First</SelectItem>
+                      <SelectItem value="asc">Oldest First</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardHeader>
               <CardContent>
@@ -512,7 +615,33 @@ export default function AdminDashboard() {
                             </p>
                           )}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowDeleteUserDialog(true);
+                            }}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            data-testid={`button-delete-user-${user.id}`}
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Delete
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowPauseUserDialog(true);
+                            }}
+                            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                            data-testid={`button-pause-user-${user.id}`}
+                          >
+                            <Pause className="h-4 w-4 mr-1" />
+                            Pause
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
@@ -520,7 +649,9 @@ export default function AdminDashboard() {
                               setSelectedUser(user);
                               setShowGrantAccessDialog(true);
                             }}
+                            data-testid={`button-grant-access-${user.id}`}
                           >
+                            <Plus className="h-4 w-4 mr-1" />
                             Grant Access
                           </Button>
                           <Button
@@ -530,7 +661,9 @@ export default function AdminDashboard() {
                               setSelectedUser(user);
                               setShowAddNoteDialog(true);
                             }}
+                            data-testid={`button-add-note-${user.id}`}
                           >
+                            <Edit className="h-4 w-4 mr-1" />
                             Add Note
                           </Button>
                           <Button
@@ -541,7 +674,9 @@ export default function AdminDashboard() {
                               updateRoleForm.setValue("role", user.role as any);
                               setShowUpdateRoleDialog(true);
                             }}
+                            data-testid={`button-update-role-${user.id}`}
                           >
+                            <Shield className="h-4 w-4 mr-1" />
                             Update Role
                           </Button>
                           <Button
@@ -556,7 +691,9 @@ export default function AdminDashboard() {
                               );
                               setShowUpdateSubscriptionDialog(true);
                             }}
+                            data-testid={`button-update-subscription-${user.id}`}
                           >
+                            <Calendar className="h-4 w-4 mr-1" />
                             Update Subscription
                           </Button>
                         </div>
@@ -1062,6 +1199,92 @@ export default function AdminDashboard() {
                 </div>
               </form>
             </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete User Dialog */}
+        <Dialog open={showDeleteUserDialog} onOpenChange={setShowDeleteUserDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-red-600 flex items-center gap-2">
+                <Trash2 className="h-5 w-5" />
+                Delete User Account
+              </DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. This will permanently delete the user account and all associated data.
+              </DialogDescription>
+            </DialogHeader>
+            {selectedUser && (
+              <div className="space-y-4">
+                <div className="p-4 border rounded-lg bg-red-50 border-red-200">
+                  <p className="font-medium">User to delete:</p>
+                  <p className="text-sm">{selectedUser.name} (@{selectedUser.username})</p>
+                  <p className="text-sm text-neutral-600">{selectedUser.email}</p>
+                </div>
+                <div className="flex items-center gap-2 justify-end">
+                  <Button variant="outline" onClick={() => setShowDeleteUserDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    onClick={() => deleteUserMutation.mutate(selectedUser.id)}
+                    disabled={deleteUserMutation.isPending}
+                    data-testid="button-confirm-delete-user"
+                  >
+                    {deleteUserMutation.isPending ? "Deleting..." : "Delete User"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Pause User Dialog */}
+        <Dialog open={showPauseUserDialog} onOpenChange={setShowPauseUserDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-orange-600 flex items-center gap-2">
+                <Pause className="h-5 w-5" />
+                Pause/Unpause User Access
+              </DialogTitle>
+              <DialogDescription>
+                Temporarily suspend or restore user access to the application.
+              </DialogDescription>
+            </DialogHeader>
+            {selectedUser && (
+              <div className="space-y-4">
+                <div className="p-4 border rounded-lg bg-orange-50 border-orange-200">
+                  <p className="font-medium">User to modify:</p>
+                  <p className="text-sm">{selectedUser.name} (@{selectedUser.username})</p>
+                  <p className="text-sm text-neutral-600">{selectedUser.email}</p>
+                </div>
+                <div className="flex items-center gap-2 justify-end">
+                  <Button variant="outline" onClick={() => setShowPauseUserDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant="default" 
+                    onClick={() => pauseUserMutation.mutate({ userId: selectedUser.id, paused: false })}
+                    disabled={pauseUserMutation.isPending}
+                    className="bg-green-600 hover:bg-green-700"
+                    data-testid="button-unpause-user"
+                  >
+                    <Play className="h-4 w-4 mr-1" />
+                    {pauseUserMutation.isPending ? "Unpausing..." : "Unpause User"}
+                  </Button>
+                  <Button 
+                    variant="default" 
+                    onClick={() => pauseUserMutation.mutate({ userId: selectedUser.id, paused: true })}
+                    disabled={pauseUserMutation.isPending}
+                    className="bg-orange-600 hover:bg-orange-700"
+                    data-testid="button-pause-user"
+                  >
+                    <Pause className="h-4 w-4 mr-1" />
+                    {pauseUserMutation.isPending ? "Pausing..." : "Pause User"}
+                  </Button>
+                </div>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>

@@ -80,7 +80,14 @@ export interface IStorage {
   updateUserEmail(id: string, email: string): Promise<User | undefined>;
   
   // Admin functions
-  getAllUsers(searchTerm?: string): Promise<User[]>;
+  getAllUsers(searchTerm?: string, filters?: {
+    status?: string;
+    role?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }): Promise<User[]>;
+  deleteUser(userId: string): Promise<void>;
+  pauseUser(userId: string, paused: boolean): Promise<void>;
   getAdminStats(): Promise<{
     totalUsers: number;
     activeSubscriptions: number;
@@ -672,16 +679,117 @@ export class MemStorage implements IStorage {
   }
 
   // Admin methods
-  async getAllUsers(searchTerm?: string): Promise<User[]> {
-    const users = Array.from(this.users.values());
-    if (!searchTerm) return users;
+  async getAllUsers(searchTerm?: string, filters?: {
+    status?: string;
+    role?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }): Promise<User[]> {
+    let users = Array.from(this.users.values());
     
-    const term = searchTerm.toLowerCase();
-    return users.filter(user => 
-      user.name.toLowerCase().includes(term) ||
-      user.email.toLowerCase().includes(term) ||
-      user.username.toLowerCase().includes(term)
-    );
+    // Apply search term filter
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      users = users.filter(user => 
+        user.name.toLowerCase().includes(term) ||
+        user.email.toLowerCase().includes(term) ||
+        user.username.toLowerCase().includes(term)
+      );
+    }
+    
+    // Apply status filter
+    if (filters?.status && filters.status !== "all") {
+      users = users.filter(user => {
+        if (filters.status === "active") {
+          return user.subscriptionStatus === "active" || 
+                 (user.freeAccessGrantedUntil && new Date(user.freeAccessGrantedUntil) > new Date());
+        }
+        return user.subscriptionStatus === filters.status;
+      });
+    }
+    
+    // Apply role filter
+    if (filters?.role && filters.role !== "all") {
+      users = users.filter(user => user.role === filters.role);
+    }
+    
+    // Apply sorting
+    if (filters?.sortBy) {
+      users.sort((a, b) => {
+        let aValue: any = a[filters.sortBy as keyof User];
+        let bValue: any = b[filters.sortBy as keyof User];
+        
+        // Handle date values
+        if (filters.sortBy === "createdAt" || filters.sortBy === "lastLoginAt") {
+          aValue = new Date(aValue || 0).getTime();
+          bValue = new Date(bValue || 0).getTime();
+        }
+        
+        // Handle string values
+        if (typeof aValue === "string") {
+          aValue = aValue.toLowerCase();
+          bValue = bValue?.toLowerCase() || "";
+        }
+        
+        if (filters.sortOrder === "desc") {
+          return bValue > aValue ? 1 : -1;
+        }
+        return aValue > bValue ? 1 : -1;
+      });
+    }
+    
+    return users;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    // Delete user and all associated data
+    this.users.delete(userId);
+    
+    // Delete associated parent profiles
+    for (const [id, profile] of this.parentProfiles.entries()) {
+      if (profile.userId === userId) {
+        this.parentProfiles.delete(id);
+      }
+    }
+    
+    // Delete associated journal entries
+    for (const [id, entry] of this.journalEntries.entries()) {
+      if (entry.userId === userId) {
+        this.journalEntries.delete(id);
+      }
+    }
+    
+    // Delete associated community posts and comments
+    for (const [id, post] of this.communityPosts.entries()) {
+      if (post.userId === userId) {
+        this.communityPosts.delete(id);
+      }
+    }
+    
+    for (const [id, comment] of this.communityComments.entries()) {
+      if (comment.userId === userId) {
+        this.communityComments.delete(id);
+      }
+    }
+    
+    // Delete notification settings
+    this.userNotificationSettings.delete(userId);
+  }
+
+  async pauseUser(userId: string, paused: boolean): Promise<void> {
+    const user = this.users.get(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    
+    // Update user subscription status based on pause state
+    const updatedUser = {
+      ...user,
+      subscriptionStatus: paused ? "paused" : "active",
+      updatedAt: new Date().toISOString()
+    };
+    
+    this.users.set(userId, updatedUser);
   }
 
   async getAdminStats(): Promise<{

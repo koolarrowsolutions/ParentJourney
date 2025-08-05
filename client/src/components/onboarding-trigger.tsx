@@ -1,13 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { HelpCircle, Sparkles } from "lucide-react";
 import { useOnboardingContext } from "@/contexts/onboarding-context";
+import { ReactNode } from "react";
 
 interface OnboardingTriggerProps {
   variant?: "button" | "help";
   size?: "sm" | "default" | "lg";
+  children?: ReactNode;
 }
 
-export function OnboardingTrigger({ variant = "button", size = "sm" }: OnboardingTriggerProps) {
+export function OnboardingTrigger({ variant = "button", size = "sm", children }: OnboardingTriggerProps) {
   const onboardingContext = useOnboardingContext();
   const { startTourManually, setShowTour } = onboardingContext;
   
@@ -42,6 +44,15 @@ export function OnboardingTrigger({ variant = "button", size = "sm" }: Onboardin
     }
   };
 
+  // If children are provided, wrap them with click handler
+  if (children) {
+    return (
+      <div onClick={handleStartTour} className="cursor-pointer">
+        {children}
+      </div>
+    );
+  }
+
   if (variant === "help") {
     return (
       <Button
@@ -57,25 +68,14 @@ export function OnboardingTrigger({ variant = "button", size = "sm" }: Onboardin
   }
 
   return (
-    <div className="flex gap-2">
-      <Button
-        variant="outline"
-        size={size}
-        onClick={handleRestartOnboarding}
-        className="text-primary border-primary hover:bg-primary/5"
-      >
-        <Sparkles className="h-4 w-4 mr-1" />
-        Restart Onboarding
-      </Button>
-      <Button
-        variant="ghost"
-        size={size}
-        onClick={handleStartTour}
-        className="text-muted-foreground hover:text-white hover:bg-primary"
-      >
-        <HelpCircle className="h-4 w-4 mr-1" />
-        Quick Tour
-      </Button>
-    </div>
+    <Button
+      variant="ghost"
+      size={size}
+      onClick={handleStartTour}
+      className="text-muted-foreground hover:text-white hover:bg-primary"
+    >
+      <HelpCircle className="h-4 w-4 mr-1" />
+      Help & Tour
+    </Button>
   );
 }

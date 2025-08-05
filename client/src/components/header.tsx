@@ -76,6 +76,7 @@ export function Header() {
                 Settings
               </button>
             </Link>
+            <OnboardingTrigger variant="help" size="sm" />
           </div>
 
           {/* Right side - Authentication and Mobile Menu */}
@@ -228,11 +229,11 @@ export function Header() {
                     <OnboardingTrigger>
                       <button 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-lg transition-colors button-press"
+                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-lg transition-colors button-press text-sm sm:text-base"
                         data-testid="mobile-help-tour-button"
                       >
-                        <HelpCircle className="h-5 w-5" />
-                        <span>Help & Tour</span>
+                        <HelpCircle className="h-5 w-5 flex-shrink-0" />
+                        <span className="truncate">Help & Tour</span>
                       </button>
                     </OnboardingTrigger>
                   </div>

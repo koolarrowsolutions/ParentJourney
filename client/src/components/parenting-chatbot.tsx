@@ -296,7 +296,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
             )}
             data-testid="chatbot-button"
           >
-            <ChatBubbleIcon className="w-12 h-12" />
+            <ChatBubbleIcon className="w-16 h-16" />
           </Button>
         </TooltipWrapper>
       </div>

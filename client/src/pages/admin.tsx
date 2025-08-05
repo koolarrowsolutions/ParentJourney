@@ -303,7 +303,7 @@ export default function AdminDashboard() {
 
   // Fetch admin statistics (use demo data when in demo mode)
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
-    queryKey: ["/api/admin/stats"],
+    queryKey: ["/api/admin/stats", showDemoMode],
     queryFn: () => showDemoMode ? Promise.resolve(demoStats) : apiRequest("/api/admin/stats"),
     refetchInterval: showDemoMode ? false : 30000, // Don't refresh in demo mode
   });

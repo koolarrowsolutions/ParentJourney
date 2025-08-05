@@ -507,16 +507,38 @@ export class DatabaseStorage implements IStorage {
     newUsersThisMonth: number;
     churnRate: number;
   }> {
+    // Get total users
     const totalUsersResult = await db.select({ count: sql<number>`count(*)` }).from(schema.users);
     const totalUsers = totalUsersResult[0]?.count || 0;
 
-    // For now, return demo stats since we don't have subscription schema
+    // Get active subscriptions
+    const activeSubscriptionsResult = await db.select({ count: sql<number>`count(*)` })
+      .from(schema.users)
+      .where(eq(schema.users.subscriptionStatus, 'active'));
+    const activeSubscriptions = activeSubscriptionsResult[0]?.count || 0;
+
+    // Get new users this month
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    
+    const newUsersThisMonthResult = await db.select({ count: sql<number>`count(*)` })
+      .from(schema.users)
+      .where(gte(schema.users.createdAt, startOfMonth));
+    const newUsersThisMonth = newUsersThisMonthResult[0]?.count || 0;
+
+    // Calculate monthly revenue (active subscriptions * $9.99)
+    const monthlyRevenue = activeSubscriptions * 9.99;
+
+    // Calculate basic churn rate (simplified calculation)
+    const churnRate = totalUsers > 0 ? Math.max(0, (totalUsers - activeSubscriptions) / totalUsers * 100) : 0;
+
     return {
       totalUsers,
-      activeSubscriptions: 0,
-      monthlyRevenue: 0,
-      newUsersThisMonth: 0,
-      churnRate: 0,
+      activeSubscriptions,
+      monthlyRevenue: Math.round(monthlyRevenue * 100) / 100, // Round to 2 decimal places
+      newUsersThisMonth,
+      churnRate: Math.round(churnRate * 100) / 100, // Round to 2 decimal places
     };
   }
 

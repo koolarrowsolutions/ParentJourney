@@ -35,8 +35,8 @@ export function useAuth(): AuthState & { clearLoginStatus: () => void } {
     queryKey: ['/api/auth/user'],
     queryFn: checkAuthStatus,
     retry: 1, // Allow one retry for network issues
-    refetchOnWindowFocus: true, // Allow refetch on focus to catch state changes
-    staleTime: 0, // Always fresh to prevent auth state confusion
+    refetchOnWindowFocus: false, // Reduce unnecessary refetches
+    staleTime: 5000, // Cache for 5 seconds to prevent duplicate calls
     refetchInterval: false, // Disable polling to reduce server load
   });
 

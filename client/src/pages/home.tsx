@@ -80,7 +80,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch stats");
       return response.json();
     },
-    enabled: !!parentProfile, // Only fetch when authenticated with profile
+    enabled: isAuthenticated && !!parentProfile, // Only fetch when fully authenticated
+    staleTime: 30000, // Cache for 30 seconds
   });
 
   const { data: childProfiles } = useQuery<ChildProfile[]>({
@@ -90,7 +91,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },
-    enabled: !!parentProfile, // Only fetch when authenticated with profile
+    enabled: isAuthenticated && !!parentProfile, // Only fetch when fully authenticated
+    staleTime: 60000, // Cache for 1 minute - child profiles change rarely
   });
 
   const { data: entries } = useQuery<JournalEntry[]>({
@@ -100,7 +102,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },
-    enabled: !!parentProfile, // Only fetch when authenticated with profile
+    enabled: isAuthenticated && !!parentProfile, // Only fetch when fully authenticated
+    staleTime: 10000, // Cache for 10 seconds
   });
 
   // Login success popup disabled - using LoginConfirmationModal instead

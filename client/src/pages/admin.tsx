@@ -57,10 +57,14 @@ export default function AdminDashboard() {
   // Redirect to home page if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      console.log('Admin dashboard: Not authenticated, redirecting to home');
       setLocation('/');
     }
   }, [isAuthenticated, isLoading, setLocation]);
+
+  // Don't render anything while redirecting
+  if (!isLoading && !isAuthenticated) {
+    return null;
+  }
 
   // Fetch admin stats
   const { data: stats, isLoading: statsLoading } = useQuery({

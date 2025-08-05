@@ -124,6 +124,158 @@ export default function AdminDashboard() {
   const [showDeleteUserDialog, setShowDeleteUserDialog] = useState(false);
   const [showPauseUserDialog, setShowPauseUserDialog] = useState(false);
   const [newParentId, setNewParentId] = useState<string | null>(null);
+  const [showDemoMode, setShowDemoMode] = useState(false);
+
+  // Demo data
+  const demoStats = {
+    totalUsers: 2847,
+    activeSubscriptions: 1523,
+    monthlyRevenue: 22845.50,
+    newUsersThisMonth: 312,
+    churnRate: 4.2
+  };
+
+  const demoUsers = [
+    {
+      id: "demo-1",
+      username: "sarah_martinez",
+      email: "sarah.martinez@email.com", 
+      name: "Sarah Martinez",
+      role: "user",
+      subscriptionStatus: "active",
+      subscriptionEndDate: "2025-12-15",
+      freeAccessGrantedUntil: null,
+      createdAt: "2024-08-15T14:30:00Z",
+      lastLoginAt: "2025-08-05T09:15:00Z",
+      totalEntries: 156,
+      adminNotes: "Premium user since launch, very engaged with daily journaling"
+    },
+    {
+      id: "demo-2", 
+      username: "michael_chen",
+      email: "m.chen@gmail.com",
+      name: "Michael Chen",
+      role: "user",
+      subscriptionStatus: "free",
+      subscriptionEndDate: null,
+      freeAccessGrantedUntil: "2025-10-01",
+      createdAt: "2024-11-20T16:45:00Z",
+      lastLoginAt: "2025-08-04T18:22:00Z",
+      totalEntries: 42,
+      adminNotes: "Granted free access during Black Friday promotion"
+    },
+    {
+      id: "demo-3",
+      username: "jessica_thompson",
+      email: "jess.thompson@yahoo.com",
+      name: "Jessica Thompson", 
+      role: "user",
+      subscriptionStatus: "cancelled",
+      subscriptionEndDate: "2025-06-30",
+      freeAccessGrantedUntil: null,
+      createdAt: "2024-03-10T11:20:00Z",
+      lastLoginAt: "2025-06-28T14:10:00Z",
+      totalEntries: 89,
+      adminNotes: "Cancelled due to pricing concerns, potential re-engagement candidate"
+    },
+    {
+      id: "demo-4",
+      username: "david_rodriguez", 
+      email: "david.rodriguez@outlook.com",
+      name: "David Rodriguez",
+      role: "user",
+      subscriptionStatus: "active",
+      subscriptionEndDate: "2025-09-22",
+      freeAccessGrantedUntil: null,
+      createdAt: "2024-09-22T13:15:00Z",
+      lastLoginAt: "2025-08-05T20:45:00Z",
+      totalEntries: 203,
+      adminNotes: "Power user, frequently shares feedback and feature requests"
+    },
+    {
+      id: "demo-5",
+      username: "emily_wilson",
+      email: "emily.wilson@email.com",
+      name: "Emily Wilson",
+      role: "user", 
+      subscriptionStatus: "paused",
+      subscriptionEndDate: "2025-08-15",
+      freeAccessGrantedUntil: null,
+      createdAt: "2024-07-05T09:30:00Z",
+      lastLoginAt: "2025-07-20T16:30:00Z",
+      totalEntries: 78,
+      adminNotes: "Temporarily paused subscription during maternity leave"
+    },
+    {
+      id: "demo-6",
+      username: "alex_johnson",
+      email: "alex.johnson@gmail.com",
+      name: "Alex Johnson",
+      role: "moderator",
+      subscriptionStatus: "active",
+      subscriptionEndDate: "2026-01-01",
+      freeAccessGrantedUntil: null,
+      createdAt: "2024-01-15T10:00:00Z",
+      lastLoginAt: "2025-08-05T22:15:00Z", 
+      totalEntries: 312,
+      adminNotes: "Community moderator, helps with user support and content moderation"
+    },
+    {
+      id: "demo-7",
+      username: "lisa_anderson",
+      email: "lisa.anderson@hotmail.com",
+      name: "Lisa Anderson",
+      role: "user",
+      subscriptionStatus: "trial",
+      subscriptionEndDate: "2025-08-15",
+      freeAccessGrantedUntil: null,
+      createdAt: "2025-08-01T12:00:00Z",
+      lastLoginAt: "2025-08-05T08:30:00Z",
+      totalEntries: 8,
+      adminNotes: "New trial user, showing high engagement in first week"
+    },
+    {
+      id: "demo-8",
+      username: "robert_taylor",
+      email: "r.taylor@email.com", 
+      name: "Robert Taylor",
+      role: "user",
+      subscriptionStatus: "expired",
+      subscriptionEndDate: "2025-07-01",
+      freeAccessGrantedUntil: null,
+      createdAt: "2024-06-01T15:45:00Z",
+      lastLoginAt: "2025-07-01T10:15:00Z",
+      totalEntries: 67,
+      adminNotes: "Subscription expired, hasn't renewed yet but was previously active"
+    }
+  ];
+
+  const demoFamilies = [
+    {
+      id: "demo-family-1",
+      name: "The Martinez Family",
+      parentCount: 2,
+      childCount: 3,
+      userCount: 2,
+      createdAt: "2024-08-15T14:30:00Z"
+    },
+    {
+      id: "demo-family-2", 
+      name: "The Chen Family",
+      parentCount: 1,
+      childCount: 1,
+      userCount: 1,
+      createdAt: "2024-11-20T16:45:00Z"
+    },
+    {
+      id: "demo-family-3",
+      name: "The Thompson Family",
+      parentCount: 2,
+      childCount: 2,
+      userCount: 1,
+      createdAt: "2024-03-10T11:20:00Z"
+    }
+  ];
 
   // Check if user has admin access
   if (!user || (user.username !== 'esanjosechicano')) {
@@ -149,22 +301,90 @@ export default function AdminDashboard() {
     );
   }
 
-  // Fetch admin statistics
+  // Fetch admin statistics (use demo data when in demo mode)
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
     queryKey: ["/api/admin/stats"],
-    refetchInterval: 30000, // Refresh every 30 seconds
+    queryFn: () => showDemoMode ? Promise.resolve(demoStats) : apiRequest("/api/admin/stats"),
+    refetchInterval: showDemoMode ? false : 30000, // Don't refresh in demo mode
   });
 
-  // Fetch all users with filters
+  // Function to filter demo users based on current filters
+  const getFilteredDemoUsers = () => {
+    let filteredUsers = [...demoUsers];
+    
+    // Apply search filter
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filteredUsers = filteredUsers.filter(user => 
+        user.name.toLowerCase().includes(term) ||
+        user.email.toLowerCase().includes(term) ||
+        user.username.toLowerCase().includes(term)
+      );
+    }
+    
+    // Apply status filter
+    if (filterStatus && filterStatus !== "all") {
+      filteredUsers = filteredUsers.filter(user => {
+        if (filterStatus === "active") {
+          return user.subscriptionStatus === "active" || 
+                 (user.freeAccessGrantedUntil && new Date(user.freeAccessGrantedUntil) > new Date());
+        }
+        return user.subscriptionStatus === filterStatus;
+      });
+    }
+    
+    // Apply role filter
+    if (filterRole && filterRole !== "all") {
+      filteredUsers = filteredUsers.filter(user => user.role === filterRole);
+    }
+    
+    // Apply sorting
+    filteredUsers.sort((a, b) => {
+      let aValue: any = a[sortBy as keyof typeof a];
+      let bValue: any = b[sortBy as keyof typeof b];
+      
+      if (sortBy === "createdAt" || sortBy === "lastLoginAt") {
+        aValue = new Date(aValue || 0).getTime();
+        bValue = new Date(bValue || 0).getTime();
+      }
+      
+      if (typeof aValue === "string") {
+        aValue = aValue.toLowerCase();
+        bValue = bValue?.toLowerCase() || "";
+      }
+      
+      if (sortOrder === "desc") {
+        return bValue > aValue ? 1 : -1;
+      }
+      return aValue > bValue ? 1 : -1;
+    });
+    
+    return filteredUsers;
+  };
+
+  // Fetch all users with filters (use demo data when in demo mode)
   const { data: users = [], isLoading: usersLoading, refetch: refetchUsers } = useQuery({
-    queryKey: ["/api/admin/users", searchTerm, filterStatus, filterRole, sortBy, sortOrder],
-    queryFn: () => apiRequest(`/api/admin/users?search=${encodeURIComponent(searchTerm)}&status=${filterStatus}&role=${filterRole}&sortBy=${sortBy}&sortOrder=${sortOrder}`),
+    queryKey: ["/api/admin/users", searchTerm, filterStatus, filterRole, sortBy, sortOrder, showDemoMode],
+    queryFn: () => {
+      if (showDemoMode) {
+        return Promise.resolve(getFilteredDemoUsers());
+      }
+      return apiRequest(`/api/admin/users?search=${encodeURIComponent(searchTerm)}&status=${filterStatus}&role=${filterRole}&sortBy=${sortBy}&sortOrder=${sortOrder}`);
+    },
   });
 
-  // Fetch all families
+  // Fetch all families (use demo data when in demo mode)
   const { data: families = [], isLoading: familiesLoading, refetch: refetchFamilies } = useQuery({
-    queryKey: ["/api/admin/families", searchTerm],
-    queryFn: () => apiRequest(`/api/admin/families?search=${encodeURIComponent(searchTerm)}`),
+    queryKey: ["/api/admin/families", searchTerm, showDemoMode],
+    queryFn: () => {
+      if (showDemoMode) {
+        const filteredFamilies = searchTerm 
+          ? demoFamilies.filter(family => family.name.toLowerCase().includes(searchTerm.toLowerCase()))
+          : demoFamilies;
+        return Promise.resolve(filteredFamilies);
+      }
+      return apiRequest(`/api/admin/families?search=${encodeURIComponent(searchTerm)}`);
+    },
   });
 
   // Grant free access mutation
@@ -422,16 +642,35 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <Shield className="h-8 w-8 text-orange-500" />
                 Admin Dashboard
+                {showDemoMode && (
+                  <Badge variant="default" className="bg-blue-600 text-white">
+                    Demo Mode
+                  </Badge>
+                )}
               </h1>
               <p className="text-neutral-600 dark:text-neutral-400">
-                Manage users, families, and subscriptions
+                {showDemoMode 
+                  ? "Viewing demonstration data with fictional users and families"
+                  : "Manage users, families, and subscriptions"
+                }
               </p>
             </div>
           </div>
-          <Badge variant="secondary" className="px-3 py-1">
-            <Crown className="mr-2 h-4 w-4" />
-            Administrator
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => setShowDemoMode(!showDemoMode)}
+              variant={showDemoMode ? "default" : "outline"}
+              className={showDemoMode ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
+              data-testid="button-demo-mode"
+            >
+              <Users className="mr-2 h-4 w-4" />
+              {showDemoMode ? "Exit Demo" : "Demo"}
+            </Button>
+            <Badge variant="secondary" className="px-3 py-1">
+              <Crown className="mr-2 h-4 w-4" />
+              Administrator
+            </Badge>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -616,86 +855,94 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setShowDeleteUserDialog(true);
-                            }}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            data-testid={`button-delete-user-${user.id}`}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            Delete
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setShowPauseUserDialog(true);
-                            }}
-                            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-                            data-testid={`button-pause-user-${user.id}`}
-                          >
-                            <Pause className="h-4 w-4 mr-1" />
-                            Pause
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setShowGrantAccessDialog(true);
-                            }}
-                            data-testid={`button-grant-access-${user.id}`}
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Grant Access
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setShowAddNoteDialog(true);
-                            }}
-                            data-testid={`button-add-note-${user.id}`}
-                          >
-                            <Edit className="h-4 w-4 mr-1" />
-                            Add Note
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              updateRoleForm.setValue("role", user.role as any);
-                              setShowUpdateRoleDialog(true);
-                            }}
-                            data-testid={`button-update-role-${user.id}`}
-                          >
-                            <Shield className="h-4 w-4 mr-1" />
-                            Update Role
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              updateSubscriptionForm.setValue("subscriptionStatus", user.subscriptionStatus as any);
-                              updateSubscriptionForm.setValue(
-                                "subscriptionEndDate",
-                                user.subscriptionEndDate ? new Date(user.subscriptionEndDate).toISOString().split('T')[0] : ""
-                              );
-                              setShowUpdateSubscriptionDialog(true);
-                            }}
-                            data-testid={`button-update-subscription-${user.id}`}
-                          >
-                            <Calendar className="h-4 w-4 mr-1" />
-                            Update Subscription
-                          </Button>
+                          {showDemoMode ? (
+                            <div className="text-sm text-neutral-500 italic bg-neutral-100 dark:bg-neutral-800 px-3 py-1 rounded">
+                              Demo Mode - Actions Disabled
+                            </div>
+                          ) : (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setShowDeleteUserDialog(true);
+                                }}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                data-testid={`button-delete-user-${user.id}`}
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Delete
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setShowPauseUserDialog(true);
+                                }}
+                                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                                data-testid={`button-pause-user-${user.id}`}
+                              >
+                                <Pause className="h-4 w-4 mr-1" />
+                                Pause
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setShowGrantAccessDialog(true);
+                                }}
+                                data-testid={`button-grant-access-${user.id}`}
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Grant Access
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setShowAddNoteDialog(true);
+                                }}
+                                data-testid={`button-add-note-${user.id}`}
+                              >
+                                <Edit className="h-4 w-4 mr-1" />
+                                Add Note
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  updateRoleForm.setValue("role", user.role as any);
+                                  setShowUpdateRoleDialog(true);
+                                }}
+                                data-testid={`button-update-role-${user.id}`}
+                              >
+                                <Shield className="h-4 w-4 mr-1" />
+                                Update Role
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  updateSubscriptionForm.setValue("subscriptionStatus", user.subscriptionStatus as any);
+                                  updateSubscriptionForm.setValue(
+                                    "subscriptionEndDate",
+                                    user.subscriptionEndDate ? new Date(user.subscriptionEndDate).toISOString().split('T')[0] : ""
+                                  );
+                                  setShowUpdateSubscriptionDialog(true);
+                                }}
+                                data-testid={`button-update-subscription-${user.id}`}
+                              >
+                                <Calendar className="h-4 w-4 mr-1" />
+                                Update Subscription
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </div>
                     ))}

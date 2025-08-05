@@ -1,4 +1,4 @@
-import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus, MessageCircle, LogOut, Leaf, Menu } from "lucide-react";
+import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus, MessageCircle, LogOut, Leaf, Menu, HelpCircle } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AuthDialog } from "./auth-dialog";
@@ -6,6 +6,7 @@ import { useAuth, useLogout } from "@/hooks/use-auth";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
+import { OnboardingTrigger } from "./onboarding-trigger";
 
 export function Header() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -220,6 +221,20 @@ export function Header() {
                         <span>Settings</span>
                       </button>
                     </Link>
+                  </div>
+
+                  {/* Help & Tour Section */}
+                  <div className="pt-4 border-t border-neutral-200">
+                    <OnboardingTrigger>
+                      <button 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-lg transition-colors button-press"
+                        data-testid="mobile-help-tour-button"
+                      >
+                        <HelpCircle className="h-5 w-5" />
+                        <span>Help & Tour</span>
+                      </button>
+                    </OnboardingTrigger>
                   </div>
 
                   {/* Authentication Section */}

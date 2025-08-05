@@ -1027,7 +1027,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Parenting chatbot endpoint
+  // Personalized parenting chatbot endpoint with user data integration
   app.post("/api/parenting-chat", async (req, res) => {
     try {
       const { message, conversationHistory } = req.body;
@@ -1044,15 +1044,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Get authenticated user data
+      let userId: string | undefined;
+      let userContext = "";
+      
+      // Try to get user from token or session
+      const token = extractToken(req);
+      if (token) {
+        const authResult = await validateAuthToken(token);
+        if (authResult.success && authResult.user) {
+          userId = authResult.user.id;
+        }
+      }
+      
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+
+      // If authenticated, gather personalized context
+      if (userId) {
+        try {
+          // Set user context for storage operations
+          storage.setCurrentUser(userId);
+          
+          // Get parent profile
+          const parentProfile = await storage.getParentProfile(userId);
+          
+          // Get child profiles  
+          const childProfiles = await storage.getChildProfiles(userId);
+          
+          // Get recent journal entries (last 5 for context)
+          const recentEntries = await storage.getJournalEntries(5);
+          
+          // Get journal stats for streak/progress info
+          const journalStats = await storage.getJournalStats();
+
+          // Build personalized context
+          const parentInfo = parentProfile ? 
+            `Parent: ${parentProfile.parentName || 'User'} (${parentProfile.relationship || 'Parent'})` : 
+            'Parent: User';
+
+          const childInfo = childProfiles.length > 0 ? 
+            childProfiles.map(child => {
+              const age = calculateAgeInMonths(child.dateOfBirth);
+              const ageText = `${Math.floor(age / 12)} years, ${age % 12} months`;
+              const traits = child.personalityTraits?.length ? ` - traits: ${child.personalityTraits.join(', ')}` : '';
+              return `${child.name} (${ageText}${traits})`;
+            }).join('; ') : 
+            'No children profiles yet';
+
+          const recentContext = recentEntries.length > 0 ?
+            recentEntries.slice(0, 3).map(entry => {
+              const entryAge = entry.childProfileId && childProfiles.find(c => c.id === entry.childProfileId) ?
+                calculateAgeInMonths(childProfiles.find(c => c.id === entry.childProfileId)!.dateOfBirth) : null;
+              const mood = entry.aiAnalyzedMood || entry.mood;
+              return `Recent entry: "${entry.content?.substring(0, 150)}${entry.content?.length > 150 ? '...' : ''}" ${mood ? `(mood: ${mood})` : ''}`;
+            }).join('\n') :
+            'No recent journal entries';
+
+          const progressInfo = journalStats ? 
+            `Journal activity: ${journalStats.totalEntries} total entries, ${journalStats.weekEntries} this week, ${journalStats.longestStreak} day streak` :
+            'New to journaling';
+
+          userContext = `
+PERSONALIZED CONTEXT FOR THIS PARENT:
+${parentInfo}
+Children: ${childInfo}
+
+Recent parenting experiences:
+${recentContext}
+
+Parenting journey progress: ${progressInfo}
+
+Use this context to provide personalized, relevant advice. Reference their specific children's ages and situations when helpful.`;
+
+        } catch (error) {
+          console.error("Error gathering user context:", error);
+          // Continue with generic response if user data fetch fails
+        }
+      }
+
       const OpenAI = (await import("openai")).default;
       const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-      // Build conversation context
-      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-        {
-          role: "system",
-          content: `You are a knowledgeable and supportive AI parenting assistant. You specialize in:
+      // Build enhanced conversation context with personalization
+      const systemPrompt = `You are a knowledgeable and supportive AI parenting assistant. You have access to this parent's personal context and should use it to provide personalized advice.
 
+${userContext || 'No personalized context available - provide general parenting guidance.'}
+
+You specialize in:
 - Child development stages and milestones (0-18 years)
 - Behavioral challenges and positive discipline strategies
 - Different parenting styles and techniques
@@ -1066,21 +1146,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 Guidelines for your responses:
 - Be warm, empathetic, and non-judgmental
+- Use the parent's specific context (child ages, recent experiences) to personalize advice
 - Provide practical, evidence-based advice
 - Acknowledge that every child and family is unique
+- Reference their parenting journey progress when encouraging
 - Suggest when professional help might be beneficial
-- Keep responses concise but comprehensive
+- Keep responses concise but comprehensive (aim for 2-4 paragraphs)
 - Use encouraging, supportive language
 - Never provide medical advice - refer to healthcare providers when appropriate
 - Respect different parenting philosophies while prioritizing child well-being
 
-Remember: You're supporting parents who are doing their best. Validate their efforts while providing helpful guidance.`
+Remember: You're supporting a real parent with real children. Use their actual context to provide relevant, personalized guidance.`;
+
+      const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+        {
+          role: "system",
+          content: systemPrompt
         }
       ];
 
-      // Add conversation history for context (last 10 messages)
+      // Add conversation history for context (last 8 messages to leave room for system prompt)
       if (conversationHistory && Array.isArray(conversationHistory)) {
-        conversationHistory.slice(-10).forEach((msg: any) => {
+        conversationHistory.slice(-8).forEach((msg: any) => {
           if (msg.role === 'user' || msg.role === 'assistant') {
             messages.push({
               role: msg.role,
@@ -1099,7 +1186,7 @@ Remember: You're supporting parents who are doing their best. Validate their eff
       const completion = await openai.chat.completions.create({
         model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
         messages,
-        max_tokens: 500,
+        max_tokens: 600, // Increased for more comprehensive personalized responses
         temperature: 0.7,
       });
 

@@ -36,13 +36,15 @@ interface ParentingChatbotProps {
 
 const SUGGESTED_TOPICS = [
   "Sleep training tips",
-  "Toddler tantrums",
+  "Toddler tantrums", 
   "Picky eating",
   "Potty training",
   "Screen time limits",
   "Sibling rivalry",
   "Bedtime routines",
-  "Discipline strategies"
+  "Discipline strategies",
+  "Building confidence",
+  "Managing homework"
 ];
 
 // Custom chat bubble button - the button itself IS the chat bubble shape
@@ -345,8 +347,8 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
 
   return (
     <Card className={cn(
-      "fixed bottom-6 right-6 w-96 h-[500px] shadow-xl z-50 animate-pop-fade bg-white border border-neutral-200",
-      "md:w-96 md:h-[500px]", // Desktop size
+      "fixed bottom-6 right-6 w-96 h-[600px] shadow-xl z-50 animate-pop-fade bg-white border border-neutral-200",
+      "md:w-96 md:h-[600px]", // Desktop size - increased by 20%
       "max-md:fixed max-md:inset-0 max-md:w-full max-md:h-full max-md:bottom-0 max-md:right-0 max-md:rounded-none", // Mobile full screen
       isMinimized && "h-14 max-md:h-14",
       className
@@ -394,7 +396,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
       </CardHeader>
 
       {!isMinimized && (
-        <CardContent className="p-0 flex flex-col h-[calc(500px-80px)] max-md:h-[calc(100vh-80px)]">
+        <CardContent className="p-0 flex flex-col h-[calc(600px-80px)] max-md:h-[calc(100vh-80px)]">
           {/* Messages Area */}
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
@@ -453,12 +455,12 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
           {messages.length <= 1 && (
             <div className="p-4 border-t border-neutral-100">
               <p className="text-xs text-neutral-600 mb-2">Quick topics:</p>
-              <div className="flex flex-wrap gap-1">
-                {SUGGESTED_TOPICS.slice(0, 4).map((topic) => (
+              <div className="flex flex-wrap gap-2">
+                {SUGGESTED_TOPICS.slice(0, 6).map((topic) => (
                   <Badge
                     key={topic}
                     variant="secondary"
-                    className="text-xs cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors"
+                    className="text-xs cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors px-3 py-1.5 min-w-[110px] text-center justify-center"
                     onClick={() => handleSuggestedTopic(topic)}
                   >
                     {topic}

@@ -45,15 +45,18 @@ const SUGGESTED_TOPICS = [
   "Discipline strategies"
 ];
 
-// Custom chat bubble icon - simple large circle with 3 holes like the reference
+// Custom chat bubble icon - proper speech bubble shape with 3 transparent dots
 const ChatBubbleIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 40 40" className={className}>
-    {/* Large solid white circle */}
-    <circle cx="20" cy="20" r="18" fill="white" />
-    {/* Three large transparent holes */}
-    <circle cx="13" cy="20" r="3" fill="currentColor" />
-    <circle cx="20" cy="20" r="3" fill="currentColor" />
-    <circle cx="27" cy="20" r="3" fill="currentColor" />
+  <svg viewBox="0 0 24 24" className={className}>
+    {/* Chat bubble shape with tail - solid white */}
+    <path 
+      d="M12 2C6.48 2 2 6.48 2 12c0 2.85 1.2 5.41 3.11 7.24L4 22l2.76-1.11C8.59 21.8 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" 
+      fill="white" 
+    />
+    {/* Three transparent dots (holes) */}
+    <circle cx="8.5" cy="12" r="1.5" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+    <circle cx="15.5" cy="12" r="1.5" fill="currentColor" />
   </svg>
 );
 

@@ -473,6 +473,70 @@
 .bg-neutral-900 { background-color: var(--neutral-900); }
 
 .border-neutral-200 { border-color: var(--neutral-200); }
+
+/* Chat-specific markdown styling for better readability */
+.prose {
+  color: inherit;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  color: inherit;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose p {
+  margin-bottom: 0.5rem;
+}
+
+.prose ul, .prose ol {
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+}
+
+.prose li {
+  margin-bottom: 0.25rem;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: inherit;
+}
+
+.prose em {
+  font-style: italic;
+  color: inherit;
+}
+
+.prose blockquote {
+  border-left: 2px solid #e5e7eb;
+  padding-left: 0.75rem;
+  margin: 0.5rem 0;
+  font-style: italic;
+  color: inherit;
+}
+
+.prose code {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875em;
+  color: inherit;
+}
+
+.prose pre {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+}
 .border-neutral-300 { border-color: var(--neutral-300); }
 
 /* Gradient utilities */

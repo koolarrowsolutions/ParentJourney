@@ -22,6 +22,8 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -339,8 +341,18 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   };
 
   const handleSuggestedTopic = (topic: string) => {
-    setInputMessage(topic);
-    textareaRef.current?.focus();
+    if (chatMutation.isPending) return;
+    
+    const userMessage: Message = {
+      id: `user-${Date.now()}`,
+      content: topic,
+      role: 'user',
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    chatMutation.mutate(topic);
+    
     // Refresh topics for next time
     setCurrentTopics(getRandomTopics());
   };
@@ -458,8 +470,31 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                         : "bg-neutral-100 text-neutral-800 rounded-bl-sm"
                     )}
                   >
-                    <div className="whitespace-pre-wrap break-words">
-                      {message.content}
+                    <div className="whitespace-pre-wrap break-words prose prose-sm max-w-none prose-p:m-0 prose-p:leading-relaxed prose-headings:my-2 prose-headings:text-inherit prose-ul:my-1 prose-ol:my-1 prose-li:my-0">
+                      {message.role === 'assistant' ? (
+                        <ReactMarkdown 
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            // Customize markdown components for better chat formatting
+                            p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                            ul: ({ children }) => <ul className="mb-2 last:mb-0 ml-4">{children}</ul>,
+                            ol: ({ children }) => <ol className="mb-2 last:mb-0 ml-4">{children}</ol>,
+                            li: ({ children }) => <li className="mb-1">{children}</li>,
+                            strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                            em: ({ children }) => <em className="italic">{children}</em>,
+                            h1: ({ children }) => <h1 className="text-lg font-semibold mb-2">{children}</h1>,
+                            h2: ({ children }) => <h2 className="text-base font-semibold mb-2">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-sm font-semibold mb-1">{children}</h3>,
+                            blockquote: ({ children }) => <blockquote className="border-l-2 border-neutral-300 pl-3 my-2 italic">{children}</blockquote>,
+                            code: ({ children }) => <code className="bg-neutral-100 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                            pre: ({ children }) => <pre className="bg-neutral-100 p-2 rounded text-xs font-mono overflow-x-auto my-2">{children}</pre>,
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      ) : (
+                        message.content
+                      )}
                     </div>
                   </div>
                   {message.role === 'user' && (

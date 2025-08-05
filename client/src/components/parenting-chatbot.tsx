@@ -587,8 +587,8 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
 
   return (
     <Card className={cn(
-      "fixed bottom-6 right-6 w-96 h-[600px] shadow-xl z-50 animate-pop-fade bg-white border border-neutral-200",
-      "md:w-96 md:h-[600px]", // Desktop size - increased by 20%
+      "fixed bottom-6 right-6 w-96 h-[85vh] shadow-xl z-50 animate-pop-fade bg-white border border-neutral-200",
+      "md:w-96 md:h-[85vh]", // Desktop size - 85% of viewport height
       "max-md:fixed max-md:inset-0 max-md:w-full max-md:h-full max-md:bottom-0 max-md:right-0 max-md:rounded-none", // Mobile full screen
       isMinimized && "h-14 max-md:h-14",
       className
@@ -636,7 +636,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
       </CardHeader>
 
       {!isMinimized && (
-        <CardContent className="p-0 flex flex-col h-[calc(600px-80px)] max-md:h-[calc(100vh-80px)]">
+        <CardContent className="p-0 flex flex-col h-[calc(85vh-80px)] max-md:h-[calc(100vh-80px)]">
           {/* Messages Area */}
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-3">
@@ -670,9 +670,9 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                           components={{
                             // Customize markdown components for better chat formatting
                             p: ({ children }) => <p className="mb-0 last:mb-0 leading-tight">{children}</p>,
-                            ul: ({ children }) => <ul className="mb-0 last:mb-0 ml-4 space-y-0 list-disc list-outside">{children}</ul>,
-                            ol: ({ children }) => <ol className="mb-0 last:mb-0 ml-4 space-y-0 list-decimal list-outside">{children}</ol>,
-                            li: ({ children }) => <li className="mb-0 leading-tight">{children}</li>,
+                            ul: ({ children }) => <ul className="mb-0 last:mb-0 pl-4 space-y-0 list-disc" style={{ listStylePosition: 'outside' }}>{children}</ul>,
+                            ol: ({ children }) => <ol className="mb-0 last:mb-0 pl-4 space-y-0 list-decimal" style={{ listStylePosition: 'outside' }}>{children}</ol>,
+                            li: ({ children }) => <li className="mb-0 leading-tight" style={{ display: 'list-item' }}>{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                             em: ({ children }) => <em className="italic">{children}</em>,
                             h1: ({ children }) => <h1 className="text-lg font-semibold mb-1 mt-1">{children}</h1>,

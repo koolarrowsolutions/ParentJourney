@@ -62,7 +62,7 @@ export function Header() {
               </button>
             </Link>
             <Link href="/wellness">
-              <button className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
+              <button className="text-neutral-600 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-primary text-sm button-press hover-scale">
                 <Leaf className="h-4 w-4 mr-1 inline" />
                 Wellness
               </button>
@@ -70,7 +70,7 @@ export function Header() {
             <Link href="/settings">
               <button 
                 data-onboarding="profile-link"
-                className="text-neutral-600 hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-neutral-100 text-sm button-press hover-scale">
+                className="text-neutral-600 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-primary text-sm button-press hover-scale">
                 <Settings className="h-4 w-4 mr-1 inline" />
                 Settings
               </button>
@@ -89,7 +89,7 @@ export function Header() {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className="text-neutral-700 hover:text-primary transition-colors hover-scale button-press"
+                      className="text-neutral-700 hover:text-white hover:bg-primary transition-colors hover-scale button-press"
                     >
                       <User className="h-4 w-4 mr-2" />
                       @{user.username}
@@ -115,7 +115,7 @@ export function Header() {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="text-neutral-700 hover:text-primary transition-colors hover-scale button-press"
+                        className="text-neutral-700 hover:text-white hover:bg-primary transition-colors hover-scale button-press"
                       >
                         <LogIn className="h-4 w-4 mr-2" />
                         Sign In
@@ -169,7 +169,7 @@ export function Header() {
                     <Link href="/journal-history">
                       <button 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-primary hover:bg-neutral-100 rounded-lg transition-colors button-press"
+                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-white hover:bg-primary rounded-lg transition-colors button-press"
                       >
                         <Archive className="h-5 w-5" />
                         <span>History</span>
@@ -178,7 +178,7 @@ export function Header() {
                     <Link href="/analytics">
                       <button 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-primary hover:bg-neutral-100 rounded-lg transition-colors button-press"
+                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-white hover:bg-primary rounded-lg transition-colors button-press"
                       >
                         <BarChart3 className="h-5 w-5" />
                         <span>Analytics</span>
@@ -187,7 +187,7 @@ export function Header() {
                     <Link href="/milestones">
                       <button 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-primary hover:bg-neutral-100 rounded-lg transition-colors button-press"
+                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-white hover:bg-primary rounded-lg transition-colors button-press"
                       >
                         <Trophy className="h-5 w-5" />
                         <span>Goals</span>
@@ -196,7 +196,7 @@ export function Header() {
                     <Link href="/community">
                       <button 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-primary hover:bg-neutral-100 rounded-lg transition-colors button-press"
+                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-white hover:bg-primary rounded-lg transition-colors button-press"
                       >
                         <MessageCircle className="h-5 w-5" />
                         <span>Community</span>
@@ -205,7 +205,7 @@ export function Header() {
                     <Link href="/wellness">
                       <button 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-primary hover:bg-neutral-100 rounded-lg transition-colors button-press"
+                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-white hover:bg-primary rounded-lg transition-colors button-press"
                       >
                         <Leaf className="h-5 w-5" />
                         <span>Wellness</span>
@@ -214,7 +214,7 @@ export function Header() {
                     <Link href="/settings">
                       <button 
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-primary hover:bg-neutral-100 rounded-lg transition-colors button-press"
+                        className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-white hover:bg-primary rounded-lg transition-colors button-press"
                       >
                         <Settings className="h-5 w-5" />
                         <span>Settings</span>
@@ -245,7 +245,7 @@ export function Header() {
                       <div className="space-y-2">
                         <AuthDialog
                           trigger={
-                            <button className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-primary hover:bg-neutral-100 rounded-lg transition-colors button-press">
+                            <button className="w-full flex items-center space-x-3 px-3 py-3 text-left text-neutral-600 hover:text-white hover:bg-primary rounded-lg transition-colors button-press">
                               <LogIn className="h-5 w-5" />
                               <span>Sign In</span>
                             </button>

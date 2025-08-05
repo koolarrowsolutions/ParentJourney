@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { HelpCircle, Sparkles } from "lucide-react";
-import { useOnboarding } from "@/hooks/use-onboarding";
+import { useOnboardingContext } from "@/contexts/onboarding-context";
 
 interface OnboardingTriggerProps {
   variant?: "button" | "help";
@@ -8,10 +8,10 @@ interface OnboardingTriggerProps {
 }
 
 export function OnboardingTrigger({ variant = "button", size = "sm" }: OnboardingTriggerProps) {
-  const onboardingHook = useOnboarding();
-  const { startTourManually, setShowTour } = onboardingHook;
+  const onboardingContext = useOnboardingContext();
+  const { startTourManually, setShowTour } = onboardingContext;
   
-  console.log('OnboardingTrigger: onboardingHook:', onboardingHook);
+  console.log('OnboardingTrigger: onboarding context:', onboardingContext);
   console.log('OnboardingTrigger: startTourManually:', startTourManually);
 
   const handleRestartOnboarding = () => {
@@ -33,22 +33,12 @@ export function OnboardingTrigger({ variant = "button", size = "sm" }: Onboardin
   const handleStartTour = () => {
     console.log('OnboardingTrigger: handleStartTour clicked');
     console.log('startTourManually function:', startTourManually);
-    console.log('setShowTour function:', setShowTour);
     
-    // Try both approaches to trigger the tour
     try {
-      if (startTourManually) {
-        startTourManually();
-        console.log('OnboardingTrigger: startTourManually called successfully');
-      } else if (setShowTour) {
-        console.log('OnboardingTrigger: Using setShowTour directly');
-        setShowTour(true);
-        console.log('OnboardingTrigger: setShowTour(true) called directly');
-      } else {
-        console.error('OnboardingTrigger: No tour functions available');
-      }
+      startTourManually();
+      console.log('OnboardingTrigger: startTourManually called successfully');
     } catch (error) {
-      console.error('OnboardingTrigger: Error calling tour functions:', error);
+      console.error('OnboardingTrigger: Error calling startTourManually:', error);
     }
   };
 

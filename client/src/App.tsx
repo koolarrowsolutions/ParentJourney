@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SignUpPrompt } from "@/components/signup-prompt";
 import { OnboardingTour } from "@/components/onboarding-tour";
 import { OnboardingManager } from "@/components/onboarding-manager";
-import { useOnboarding } from "@/hooks/use-onboarding";
+import { useOnboardingContext, OnboardingProvider } from "@/contexts/onboarding-context";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginConfirmationModal } from "@/components/login-confirmation-modal";
 import Home from "@/pages/home";
@@ -24,7 +24,7 @@ import { Wellness } from "@/pages/wellness";
 import PrivacyPolicy from "@/pages/privacy-policy";
 
 function AppRouter() {
-  const onboardingHookResult = useOnboarding();
+  const onboardingContext = useOnboardingContext();
   const {
     showSignUpPrompt,
     setShowSignUpPrompt,
@@ -33,9 +33,9 @@ function AppRouter() {
     handleSignUp,
     handleTourComplete,
     triggerSignUpPrompt
-  } = onboardingHookResult;
+  } = onboardingContext;
   
-  console.log('AppRouter useOnboarding result:', onboardingHookResult);
+  console.log('AppRouter onboarding context:', onboardingContext);
   console.log('AppRouter showTour:', showTour);
 
   const auth = useAuth();
@@ -153,10 +153,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <OnboardingManager>
-          <Toaster />
-          <AppRouter />
-        </OnboardingManager>
+        <OnboardingProvider>
+          <OnboardingManager>
+            <Toaster />
+            <AppRouter />
+          </OnboardingManager>
+        </OnboardingProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

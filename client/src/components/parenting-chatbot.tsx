@@ -82,7 +82,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
     }
   }, [isOpen, messages.length]);
 
-  // Show welcome notification on every login
+  // Show welcome notification and bounce animation
   useEffect(() => {
     console.log('Chatbot login effect:', { isAuthenticated, hasJustLoggedIn, user: user?.username });
     
@@ -101,15 +101,23 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
         
         console.log('Triggering chatbot welcome animation');
         
-        // Show welcome notification after a short delay
+        // Always show bounce animation on every login
         const timer = setTimeout(() => {
           setIsBouncing(true);
-          setShowWelcomeNotification(true);
           
-          // Auto-hide notification after 4 seconds
-          setTimeout(() => {
-            setShowWelcomeNotification(false);
-          }, 4000);
+          // Check if we should show explainer text (once per day)
+          const today = new Date().toDateString();
+          const lastShownDate = localStorage.getItem('chatbot-explainer-shown');
+          
+          if (lastShownDate !== today) {
+            setShowWelcomeNotification(true);
+            localStorage.setItem('chatbot-explainer-shown', today);
+            
+            // Auto-hide notification after 4 seconds
+            setTimeout(() => {
+              setShowWelcomeNotification(false);
+            }, 4000);
+          }
           
           // Stop bouncing after 2 seconds
           setTimeout(() => {
@@ -274,7 +282,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
             )}
             data-testid="chatbot-button"
           >
-            <MessageCircle className="h-6 w-6 text-white" />
+            <MessageCircle className="h-8 w-8 text-white fill-current" />
           </Button>
         </TooltipWrapper>
       </div>

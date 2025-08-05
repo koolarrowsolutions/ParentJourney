@@ -2033,7 +2033,12 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
         return res.status(400).json({ error: "Message is required" });
       }
 
-      // Get user context data
+      // Get user context for personalized responses
+      const authResult = await authenticateRequest(req);
+      if (authResult.success && authResult.userId) {
+        storage.setCurrentUser(authResult.userId);
+      }
+      
       const parentProfile = await storage.getParentProfile() || null;
       const childProfiles = await storage.getChildProfiles() || [];
       const recentEntries = await storage.getJournalEntries(5) || [];

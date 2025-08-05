@@ -524,6 +524,32 @@
   color: inherit;
 }
 
+/* Aggressive spacing reduction for chat content */
+.chat-content * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  line-height: 1.2 !important;
+}
+
+.chat-content p {
+  margin-bottom: 0.25rem !important;
+}
+
+.chat-content p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.chat-content ol,
+.chat-content ul {
+  margin-bottom: 0.25rem !important;
+  padding-left: 1rem !important;
+}
+
+.chat-content li {
+  margin-bottom: 0 !important;
+  line-height: 1.2 !important;
+}
+
 .prose strong {
   font-weight: 600;
   color: inherit;

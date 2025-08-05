@@ -587,9 +587,10 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
 
   return (
     <Card className={cn(
-      "fixed bottom-6 right-6 w-96 h-[85vh] shadow-xl z-50 animate-pop-fade bg-white border border-neutral-200",
+      "fixed bottom-6 right-6 w-96 h-[85vh] shadow-2xl z-50 animate-pop-fade bg-white border border-neutral-200",
       "md:w-96 md:h-[85vh]", // Desktop size - 85% of viewport height
       "max-md:fixed max-md:inset-0 max-md:w-full max-md:h-full max-md:bottom-0 max-md:right-0 max-md:rounded-none", // Mobile full screen
+      "drop-shadow-2xl shadow-black/20",
       isMinimized && "h-14 max-md:h-14",
       className
     )}>
@@ -663,25 +664,26 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                         : "bg-neutral-100 text-neutral-800 rounded-bl-sm"
                     )}
                   >
-                    <div className="whitespace-pre-wrap break-words prose prose-sm max-w-none prose-p:m-0 prose-p:leading-relaxed prose-headings:my-2 prose-headings:text-inherit prose-ul:my-1 prose-ol:my-1 prose-li:my-0">
+                    <div className="chat-content whitespace-pre-wrap break-words">
                       {message.role === 'assistant' ? (
                         <ReactMarkdown 
                           remarkPlugins={[remarkGfm]}
                           components={{
-                            // Customize markdown components for better chat formatting
-                            p: ({ children }) => <p className="mb-0 last:mb-0 leading-tight">{children}</p>,
-                            ul: ({ children }) => <ul className="mb-0 last:mb-0 pl-4 space-y-0 list-disc" style={{ listStylePosition: 'outside' }}>{children}</ul>,
-                            ol: ({ children }) => <ol className="mb-0 last:mb-0 pl-4 space-y-0 list-decimal" style={{ listStylePosition: 'outside' }}>{children}</ol>,
-                            li: ({ children }) => <li className="mb-0 leading-tight" style={{ display: 'list-item' }}>{children}</li>,
+                            // Ultra-compact markdown components for chat formatting
+                            p: ({ children }) => <p style={{ margin: '0 0 0.2rem 0', lineHeight: '1.2' }}>{children}</p>,
+                            ul: ({ children }) => <ul className="pl-4 list-disc" style={{ listStylePosition: 'outside', margin: '0 0 0.2rem 0', lineHeight: '1.2' }}>{children}</ul>,
+                            ol: ({ children }) => <ol className="pl-4 list-decimal" style={{ listStylePosition: 'outside', margin: '0 0 0.2rem 0', lineHeight: '1.2' }}>{children}</ol>,
+                            li: ({ children }) => <li style={{ display: 'list-item', margin: '0', lineHeight: '1.2' }}>{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                             em: ({ children }) => <em className="italic">{children}</em>,
-                            h1: ({ children }) => <h1 className="text-lg font-semibold mb-1 mt-1">{children}</h1>,
-                            h2: ({ children }) => <h2 className="text-base font-semibold mb-1 mt-1">{children}</h2>,
-                            h3: ({ children }) => <h3 className="text-sm font-semibold mb-0.5 mt-0.5">{children}</h3>,
-                            blockquote: ({ children }) => <blockquote className="border-l-2 border-neutral-300 pl-3 my-2 italic">{children}</blockquote>,
+                            h1: ({ children }) => <h1 className="text-base font-semibold" style={{ margin: '0.2rem 0' }}>{children}</h1>,
+                            h2: ({ children }) => <h2 className="text-sm font-semibold" style={{ margin: '0.2rem 0' }}>{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-sm font-semibold" style={{ margin: '0.2rem 0' }}>{children}</h3>,
+                            blockquote: ({ children }) => <blockquote className="border-l-2 border-neutral-300 pl-3 italic" style={{ margin: '0.2rem 0' }}>{children}</blockquote>,
                             code: ({ children }) => <code className="bg-neutral-100 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
-                            pre: ({ children }) => <pre className="bg-neutral-100 p-2 rounded text-xs font-mono overflow-x-auto my-2">{children}</pre>,
+                            pre: ({ children }) => <pre className="bg-neutral-100 p-2 rounded text-xs font-mono overflow-x-auto" style={{ margin: '0.2rem 0' }}>{children}</pre>,
                           }}
+                          className="prose prose-sm max-w-none"
                         >
                           {message.content}
                         </ReactMarkdown>

@@ -55,18 +55,18 @@ const ChatBubbleButton = ({ onClick, className, isBouncing, children }: {
   <button
     onClick={onClick}
     className={cn(
-      "relative shadow-lg hover-scale transition-all duration-200",
+      "relative bg-transparent border-none p-0 hover-scale transition-all duration-200",
       isBouncing && "animate-bounce",
       className
     )}
     data-testid="chatbot-button"
   >
-    <svg viewBox="0 0 64 64" className="w-14 h-14">
-      {/* Chat bubble shape - blue background */}
+    <svg viewBox="0 0 64 64" className="w-14 h-14 drop-shadow-lg">
+      {/* Chat bubble shape - blue background with shadow */}
       <path 
         d="M48 8H16c-4.4 0-8 3.6-8 8v24c0 4.4 3.6 8 8 8h6l10 12 10-12h6c4.4 0 8-3.6 8-8V16c0-4.4-3.6-8-8-8z" 
-        fill="currentColor" 
-        className="text-primary"
+        fill="#3b82f6" 
+        className="drop-shadow-md"
       />
       {/* Three white dots (holes) */}
       <circle cx="22" cy="28" r="4" fill="white" />

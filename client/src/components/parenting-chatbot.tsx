@@ -683,7 +683,6 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                             code: ({ children }) => <code className="bg-neutral-100 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
                             pre: ({ children }) => <pre className="bg-neutral-100 p-2 rounded text-xs font-mono overflow-x-auto" style={{ margin: '0.2rem 0' }}>{children}</pre>,
                           }}
-                          className="prose prose-sm max-w-none"
                         >
                           {message.content}
                         </ReactMarkdown>

@@ -6,7 +6,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { TooltipWrapper } from "./tooltip-wrapper";
 import { 
-  MessageCircle, 
   Send, 
   X, 
   Bot, 
@@ -45,6 +44,17 @@ const SUGGESTED_TOPICS = [
   "Bedtime routines",
   "Discipline strategies"
 ];
+
+// Custom chat bubble icon with 3 holes
+const ChatBubbleIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z" fill="white" />
+    {/* Three transparent circles (holes) */}
+    <circle cx="8" cy="10" r="1.5" fill="currentColor" />
+    <circle cx="12" cy="10" r="1.5" fill="currentColor" />
+    <circle cx="16" cy="10" r="1.5" fill="currentColor" />
+  </svg>
+);
 
 export function ParentingChatbot({ className }: ParentingChatbotProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -282,7 +292,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
             )}
             data-testid="chatbot-button"
           >
-            <MessageCircle className="h-8 w-8 text-white fill-current" />
+            <ChatBubbleIcon className="h-10 w-10" />
           </Button>
         </TooltipWrapper>
       </div>

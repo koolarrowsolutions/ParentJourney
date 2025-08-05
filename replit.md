@@ -31,7 +31,7 @@ The application employs a modern full-stack architecture with clear separation b
 - **Enhanced UX Flow**: Reordered home page with journal entries first, child-specific views, explanatory text, and color-coding linking entries to child profiles.
 - **Interactive Entry Previews**: Hover-to-expand functionality for journal entries, with clickable entries leading to full history.
 - **Modern Header Design**: Single unified header with logo/name on left, hamburger menu on right, following modern industry standards with responsive navigation.
-- **Enhanced Chat Interface**: 20% larger chat element (600px height), centered quick topics layout with rotating selection from 30 parenting topics, compact button design for optimal space usage, auto-send functionality for instant topic engagement, and comprehensive markdown formatting support.
+- **Enhanced Chat Interface**: 20% larger chat element (600px height), centered quick topics layout with rotating selection from 30 parenting topics, compact button design for optimal space usage, auto-send functionality for instant topic engagement, comprehensive markdown formatting support, and fully personalized AI responses using authenticated user data including parent profile, child profiles, journal entries, and personality traits.
 - **Authentication**: Streamlined username/email + password system with robust session management, production-ready CORS, environment-based cookie settings, and dual authentication (session + token).
 - **Family Support**: Multi-parent family management supporting up to 4 parents with relationship tracking.
 - **Community Forum**: Integrated posting and commenting system.

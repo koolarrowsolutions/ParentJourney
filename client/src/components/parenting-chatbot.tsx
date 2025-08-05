@@ -45,19 +45,36 @@ const SUGGESTED_TOPICS = [
   "Discipline strategies"
 ];
 
-// Custom chat bubble icon - large prominent speech bubble with visible tail
-const ChatBubbleIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 32 32" className={className}>
-    {/* Large chat bubble shape with prominent tail - solid white */}
-    <path 
-      d="M24 4H8C5.8 4 4 5.8 4 8v12c0 2.2 1.8 4 4 4h3l5 6 5-6h3c2.2 0 4-1.8 4-4V8c0-2.2-1.8-4-4-4z" 
-      fill="white" 
-    />
-    {/* Three large transparent dots (holes) */}
-    <circle cx="11" cy="14" r="2.5" fill="currentColor" />
-    <circle cx="16" cy="14" r="2.5" fill="currentColor" />
-    <circle cx="21" cy="14" r="2.5" fill="currentColor" />
-  </svg>
+// Custom chat bubble button - the button itself IS the chat bubble shape
+const ChatBubbleButton = ({ onClick, className, isBouncing, children }: { 
+  onClick: () => void; 
+  className?: string; 
+  isBouncing?: boolean;
+  children?: React.ReactNode;
+}) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      "relative shadow-lg hover-scale transition-all duration-200",
+      isBouncing && "animate-bounce",
+      className
+    )}
+    data-testid="chatbot-button"
+  >
+    <svg viewBox="0 0 64 64" className="w-14 h-14">
+      {/* Chat bubble shape - blue background */}
+      <path 
+        d="M48 8H16c-4.4 0-8 3.6-8 8v24c0 4.4 3.6 8 8 8h6l10 12 10-12h6c4.4 0 8-3.6 8-8V16c0-4.4-3.6-8-8-8z" 
+        fill="currentColor" 
+        className="text-primary"
+      />
+      {/* Three white dots (holes) */}
+      <circle cx="22" cy="28" r="4" fill="white" />
+      <circle cx="32" cy="28" r="4" fill="white" />
+      <circle cx="42" cy="28" r="4" fill="white" />
+    </svg>
+    {children}
+  </button>
 );
 
 export function ParentingChatbot({ className }: ParentingChatbotProps) {
@@ -285,19 +302,16 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
           </div>
         )}
         
-        {/* Chatbot Button */}
+        {/* Chatbot Button - custom chat bubble shape */}
         <TooltipWrapper content="Ask your parenting AI assistant">
-          <Button
+          <ChatBubbleButton
             onClick={() => setIsOpen(true)}
             className={cn(
-              "w-16 h-16 rounded-full shadow-lg bg-primary hover:bg-primary/90 animate-bounce-in hover-scale p-2",
-              isBouncing && "animate-bounce",
+              "animate-bounce-in",
               className
             )}
-            data-testid="chatbot-button"
-          >
-            <ChatBubbleIcon className="w-12 h-12" />
-          </Button>
+            isBouncing={isBouncing}
+          />
         </TooltipWrapper>
       </div>
     );

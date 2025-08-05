@@ -34,7 +34,7 @@ interface ParentingChatbotProps {
   className?: string;
 }
 
-const SUGGESTED_TOPICS = [
+const ALL_SUGGESTED_TOPICS = [
   "Sleep training tips",
   "Toddler tantrums", 
   "Picky eating",
@@ -44,8 +44,34 @@ const SUGGESTED_TOPICS = [
   "Bedtime routines",
   "Discipline strategies",
   "Building confidence",
-  "Managing homework"
+  "Managing homework",
+  "Emotional regulation",
+  "Setting boundaries",
+  "Positive reinforcement",
+  "Morning routines",
+  "Social skills",
+  "Anxiety management",
+  "Reading together",
+  "Playground behavior",
+  "Chore systems",
+  "Self-care for parents",
+  "Family traditions",
+  "Digital wellness",
+  "Gentle parenting",
+  "Independence building",
+  "Conflict resolution",
+  "Gratitude practice",
+  "Active listening",
+  "Stress reduction",
+  "Creative activities",
+  "Healthy eating habits"
 ];
+
+// Function to get 6 random topics
+const getRandomTopics = () => {
+  const shuffled = [...ALL_SUGGESTED_TOPICS].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, 6);
+};
 
 // Custom chat bubble button - the button itself IS the chat bubble shape
 const ChatBubbleButton = ({ onClick, className, isBouncing, children }: { 
@@ -87,6 +113,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   const [showWelcomeNotification, setShowWelcomeNotification] = useState(false);
   const [isBouncing, setIsBouncing] = useState(false);
   const [showDelayedBounce, setShowDelayedBounce] = useState(false);
+  const [currentTopics, setCurrentTopics] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lastActivityRef = useRef<number>(Date.now());
@@ -94,6 +121,13 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   const lastLoginTimeRef = useRef<number>(0);
 
   const { user, isAuthenticated, hasJustLoggedIn } = useAuth();
+
+  // Initialize random topics when component mounts or chat opens
+  useEffect(() => {
+    if (isOpen && currentTopics.length === 0) {
+      setCurrentTopics(getRandomTopics());
+    }
+  }, [isOpen, currentTopics.length]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -307,6 +341,8 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   const handleSuggestedTopic = (topic: string) => {
     setInputMessage(topic);
     textareaRef.current?.focus();
+    // Refresh topics for next time
+    setCurrentTopics(getRandomTopics());
   };
 
   if (!isOpen) {
@@ -455,8 +491,8 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
           {messages.length <= 1 && (
             <div className="p-4 border-t border-neutral-100">
               <p className="text-xs text-neutral-600 mb-2">Quick topics:</p>
-              <div className="flex flex-wrap gap-1.5 max-w-full">
-                {SUGGESTED_TOPICS.slice(0, 6).map((topic) => (
+              <div className="flex flex-wrap gap-1.5 max-w-full justify-center">
+                {currentTopics.map((topic) => (
                   <Badge
                     key={topic}
                     variant="secondary"

@@ -18,7 +18,7 @@ import {
   Minimize2,
   Maximize2
 } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -36,42 +36,206 @@ interface ParentingChatbotProps {
   className?: string;
 }
 
-const ALL_SUGGESTED_TOPICS = [
-  "Sleep training tips",
-  "Toddler tantrums", 
-  "Picky eating",
-  "Potty training",
-  "Screen time limits",
-  "Sibling rivalry",
-  "Bedtime routines",
-  "Discipline strategies",
-  "Building confidence",
-  "Managing homework",
-  "Emotional regulation",
-  "Setting boundaries",
-  "Positive reinforcement",
-  "Morning routines",
-  "Social skills",
-  "Anxiety management",
-  "Reading together",
-  "Playground behavior",
-  "Chore systems",
-  "Self-care for parents",
-  "Family traditions",
-  "Digital wellness",
-  "Gentle parenting",
-  "Independence building",
-  "Conflict resolution",
-  "Gratitude practice",
-  "Active listening",
-  "Stress reduction",
-  "Creative activities",
-  "Healthy eating habits"
-];
+// Age-Appropriate Quick Topics Library
+const QUICK_TOPICS_BY_AGE = {
+  // 0-2 years (Infants & Toddlers)
+  "0-2": [
+    "Sleep training and bedtime routines",
+    "Dealing with toddler tantrums",
+    "Potty training readiness and tips",
+    "First foods and feeding challenges",
+    "Language development milestones",
+    "Safe exploration and childproofing",
+    "Separation anxiety management",
+    "Establishing daily routines",
+    "Teething comfort and care",
+    "Building attachment and bonding",
+    "Managing naptime struggles",
+    "Introducing solid foods safely",
+    "Encouraging first words",
+    "Handling biting and hitting",
+    "Creating a safe play environment"
+  ],
+  
+  // 3-5 years (Preschoolers)
+  "3-5": [
+    "Preschool readiness and preparation",
+    "Teaching sharing and taking turns",
+    "Bedtime resistance solutions",
+    "Picky eating in preschoolers",
+    "Managing big emotions and meltdowns",
+    "Potty training completion",
+    "Building independence skills",
+    "Screen time limits for young children",
+    "Teaching basic manners and politeness",
+    "Encouraging imaginative play",
+    "Handling defiant behavior",
+    "Preparing for kindergarten",
+    "Social skills with peers",
+    "Managing fear and anxiety",
+    "Creating consistent consequences"
+  ],
+  
+  // 6-8 years (Early Elementary)
+  "6-8": [
+    "Homework habits and study skills",
+    "Building self-confidence at school",
+    "Managing after-school activities",
+    "Teaching responsibility with chores",
+    "Handling peer conflicts",
+    "Screen time balance with schoolwork",
+    "Supporting learning differences",
+    "Building healthy friendships",
+    "Managing school stress and anxiety",
+    "Teaching problem-solving skills",
+    "Encouraging reading habits",
+    "Dealing with perfectionism",
+    "Building emotional intelligence",
+    "Teaching money basics",
+    "Supporting creativity and interests"
+  ],
+  
+  // 9-12 years (Late Elementary/Pre-teen)
+  "9-12": [
+    "Navigating pre-teen social dynamics",
+    "Managing increased homework demands",
+    "Teaching digital citizenship",
+    "Handling peer pressure situations",
+    "Supporting identity development",
+    "Managing mood swings and emotions",
+    "Encouraging independence and responsibility",
+    "Discussing body changes and puberty",
+    "Building study and organization skills",
+    "Teaching conflict resolution",
+    "Managing social media introduction",
+    "Supporting academic challenges",
+    "Building self-advocacy skills",
+    "Teaching time management",
+    "Encouraging leadership opportunities"
+  ],
+  
+  // 13-15 years (Early Teens)
+  "13-15": [
+    "Navigating early teenage relationships",
+    "Managing academic pressure and stress",
+    "Teaching healthy social media habits",
+    "Supporting identity and self-expression",
+    "Handling increased independence requests",
+    "Managing teenage mood and hormones",
+    "Discussing dating and relationships",
+    "Supporting extracurricular balance",
+    "Teaching financial responsibility",
+    "Navigating peer pressure and choices",
+    "Building communication and trust",
+    "Managing technology boundaries",
+    "Supporting college preparation thinking",
+    "Teaching driving responsibility",
+    "Encouraging healthy risk-taking"
+  ],
+  
+  // 16-18 years (Late Teens)
+  "16-18": [
+    "College preparation and applications",
+    "Teaching adult life skills",
+    "Managing increased freedom responsibly",
+    "Supporting career exploration",
+    "Navigating serious relationships",
+    "Teaching financial independence",
+    "Managing driving responsibilities",
+    "Supporting mental health and wellness",
+    "Preparing for leaving home",
+    "Teaching decision-making skills",
+    "Managing work-school balance",
+    "Supporting future planning",
+    "Building adult communication skills",
+    "Teaching self-advocacy",
+    "Encouraging healthy independence"
+  ],
+  
+  // General topics for mixed ages or no children
+  "general": [
+    "Building strong family communication",
+    "Creating consistent household routines",
+    "Teaching gratitude and kindness",
+    "Managing family stress and changes",
+    "Encouraging physical activity and health",
+    "Supporting learning and growth mindset",
+    "Building resilience in children",
+    "Teaching empathy and compassion",
+    "Creating positive family traditions",
+    "Managing sibling relationships",
+    "Supporting individual strengths",
+    "Teaching environmental responsibility",
+    "Building family values",
+    "Managing screen time as a family",
+    "Creating meaningful family time"
+  ]
+};
 
-// Function to get 6 random topics
-const getRandomTopics = () => {
-  const shuffled = [...ALL_SUGGESTED_TOPICS].sort(() => 0.5 - Math.random());
+// Function to determine age group from birth date
+const getAgeGroup = (birthDate: string | Date) => {
+  const today = new Date();
+  const birth = new Date(birthDate);
+  const ageInYears = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  
+  let actualAge = ageInYears;
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    actualAge--;
+  }
+  
+  if (actualAge <= 2) return "0-2";
+  if (actualAge <= 5) return "3-5";
+  if (actualAge <= 8) return "6-8";
+  if (actualAge <= 12) return "9-12";
+  if (actualAge <= 15) return "13-15";
+  if (actualAge <= 18) return "16-18";
+  return "general";
+};
+
+// Function to get age-appropriate topics based on user's children
+const getAgeAppropriateTopics = (childProfiles: any[] = []) => {
+  let allTopics: string[] = [];
+  
+  if (!childProfiles || childProfiles.length === 0) {
+    // No children profiles, use general topics
+    allTopics = QUICK_TOPICS_BY_AGE.general;
+  } else {
+    // Get topics for each child's age group
+    const ageGroups = new Set<string>();
+    
+    childProfiles.forEach(child => {
+      if (child.birthDate) {
+        const ageGroup = getAgeGroup(child.birthDate);
+        ageGroups.add(ageGroup);
+      }
+    });
+    
+    // If no valid birth dates, use general
+    if (ageGroups.size === 0) {
+      ageGroups.add("general");
+    }
+    
+    // Combine topics from all relevant age groups
+    ageGroups.forEach(ageGroup => {
+      if (QUICK_TOPICS_BY_AGE[ageGroup as keyof typeof QUICK_TOPICS_BY_AGE]) {
+        allTopics.push(...QUICK_TOPICS_BY_AGE[ageGroup as keyof typeof QUICK_TOPICS_BY_AGE]);
+      }
+    });
+    
+    // If we have mixed ages, add some general topics too
+    if (ageGroups.size > 1) {
+      allTopics.push(...QUICK_TOPICS_BY_AGE.general.slice(0, 5));
+    }
+  }
+  
+  return allTopics;
+};
+
+// Function to get 6 random age-appropriate topics
+const getRandomTopics = (childProfiles: any[] = []) => {
+  const availableTopics = getAgeAppropriateTopics(childProfiles);
+  const shuffled = [...availableTopics].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, 6);
 };
 
@@ -124,12 +288,25 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
 
   const { user, isAuthenticated, hasJustLoggedIn } = useAuth();
 
+  // Fetch child profiles for age-appropriate topics
+  const { data: childProfiles = [] } = useQuery({
+    queryKey: ['/api/child-profiles'],
+    enabled: isAuthenticated,
+  });
+
   // Initialize random topics when component mounts or chat opens
   useEffect(() => {
     if (isOpen && currentTopics.length === 0) {
-      setCurrentTopics(getRandomTopics());
+      setCurrentTopics(getRandomTopics(childProfiles));
     }
-  }, [isOpen, currentTopics.length]);
+  }, [isOpen, currentTopics.length, childProfiles]);
+
+  // Refresh topics when child profiles change (age-appropriate adjustment)
+  useEffect(() => {
+    if (isOpen && childProfiles && childProfiles.length > 0) {
+      setCurrentTopics(getRandomTopics(childProfiles));
+    }
+  }, [childProfiles, isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -369,7 +546,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
     chatMutation.mutate(topic);
     
     // Refresh topics for next time
-    setCurrentTopics(getRandomTopics());
+    setCurrentTopics(getRandomTopics(childProfiles));
   };
 
   if (!isOpen) {
@@ -492,10 +669,10 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                           remarkPlugins={[remarkGfm]}
                           components={{
                             // Customize markdown components for better chat formatting
-                            p: ({ children }) => <p className="mb-0.5 last:mb-0 leading-tight">{children}</p>,
-                            ul: ({ children }) => <ul className="mb-0.5 last:mb-0 ml-4 space-y-0">{children}</ul>,
-                            ol: ({ children }) => <ol className="mb-0.5 last:mb-0 ml-4 space-y-0">{children}</ol>,
-                            li: ({ children }) => <li className="mb-0 leading-tight">{children}</li>,
+                            p: ({ children }) => <p className="mb-0 last:mb-0 leading-tight">{children}</p>,
+                            ul: ({ children }) => <ul className="mb-0 last:mb-0 ml-3 space-y-0">{children}</ul>,
+                            ol: ({ children }) => <ol className="mb-0 last:mb-0 ml-3 space-y-0">{children}</ol>,
+                            li: ({ children }) => <li className="mb-0 leading-tight pl-0">{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                             em: ({ children }) => <em className="italic">{children}</em>,
                             h1: ({ children }) => <h1 className="text-lg font-semibold mb-1 mt-1">{children}</h1>,

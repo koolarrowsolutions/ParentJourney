@@ -2419,18 +2419,33 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
   });
 
   // Admin middleware
-  const requireAdmin = (req: any, res: any, next: any) => {
-    if (!req.session?.userId) {
+  const requireAdmin = async (req: any, res: any, next: any) => {
+    const userId = req.session?.userId || req.user?.id;
+    if (!userId) {
       return res.status(401).json({ message: "Authentication required" });
     }
     
-    // For now, let's make the existing user an admin for testing
-    // In production, you'd check the user's role from the database
-    if (req.session.userId === 'bf67f7b6-1143-4fb3-bbef-662f1fe83d50') {
-      return next();
+    try {
+      // Check user role from database
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (!user.length) {
+        return res.status(401).json({ message: "User not found" });
+      }
+      
+      // Grant admin access to esanjosechicano user and check role
+      if (user[0].username === 'esanjosechicano' || user[0].role === 'admin') {
+        // Ensure the user has admin role set
+        if (user[0].role !== 'admin') {
+          await db.update(users).set({ role: 'admin' }).where(eq(users.id, userId));
+        }
+        return next();
+      }
+      
+      return res.status(403).json({ message: "Admin access required" });
+    } catch (error) {
+      console.error('Admin check error:', error);
+      return res.status(500).json({ message: "Internal server error" });
     }
-    
-    return res.status(403).json({ message: "Admin access required" });
   };
 
   // Admin routes
@@ -2501,6 +2516,86 @@ Wins of the Day: ${checkinData.winsOfTheDay}`;
     } catch (error) {
       console.error("Error adding admin note:", error);
       res.status(500).json({ message: "Failed to add admin note" });
+    }
+  });
+
+  // Family Management Admin Routes
+  app.get("/api/admin/families", requireAdmin, async (req, res) => {
+    try {
+      const searchTerm = req.query.search as string;
+      const families = await storage.getAllFamilies(searchTerm);
+      res.json(families);
+    } catch (error) {
+      console.error("Error fetching families:", error);
+      res.status(500).json({ message: "Failed to fetch families" });
+    }
+  });
+
+  app.post("/api/admin/add-parent", requireAdmin, async (req, res) => {
+    try {
+      const { familyId, parentData } = req.body;
+      if (!familyId || !parentData) {
+        return res.status(400).json({ message: "familyId and parentData are required" });
+      }
+      
+      const newParent = await storage.addParentToFamily(familyId, parentData);
+      res.json({ message: "Parent added successfully", parent: newParent });
+    } catch (error) {
+      console.error("Error adding parent:", error);
+      res.status(500).json({ message: "Failed to add parent" });
+    }
+  });
+
+  app.post("/api/admin/create-user-for-parent", requireAdmin, async (req, res) => {
+    try {
+      const { parentId, userData } = req.body;
+      if (!parentId || !userData) {
+        return res.status(400).json({ message: "parentId and userData are required" });
+      }
+      
+      const newUser = await storage.createUserForParent(parentId, userData);
+      res.json({ message: "User account created successfully", user: newUser });
+    } catch (error) {
+      console.error("Error creating user for parent:", error);
+      res.status(500).json({ message: "Failed to create user account" });
+    }
+  });
+
+  app.put("/api/admin/update-user-role", requireAdmin, async (req, res) => {
+    try {
+      const { userId, role } = req.body;
+      if (!userId || !role) {
+        return res.status(400).json({ message: "userId and role are required" });
+      }
+      
+      const user = await storage.updateUserRole(userId, role);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ message: "User role updated successfully", user });
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      res.status(500).json({ message: "Failed to update user role" });
+    }
+  });
+
+  app.put("/api/admin/update-subscription", requireAdmin, async (req, res) => {
+    try {
+      const { userId, subscriptionStatus, subscriptionEndDate } = req.body;
+      if (!userId || !subscriptionStatus) {
+        return res.status(400).json({ message: "userId and subscriptionStatus are required" });
+      }
+      
+      const user = await storage.updateUserSubscription(userId, subscriptionStatus, subscriptionEndDate);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ message: "Subscription updated successfully", user });
+    } catch (error) {
+      console.error("Error updating subscription:", error);
+      res.status(500).json({ message: "Failed to update subscription" });
     }
   });
 

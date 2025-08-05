@@ -1,42 +1,36 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Users, 
-  CreditCard, 
   DollarSign, 
   TrendingUp, 
-  Search,
-  UserCheck,
-  UserX,
-  Gift,
-  MessageSquare
+  Shield, 
+  Search, 
+  Plus, 
+  Calendar,
+  Mail,
+  Crown,
+  Settings,
+  UserPlus,
+  ArrowLeft,
+  Building
 } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { format } from "date-fns";
-
-interface AdminUser {
-  id: string;
-  username: string;
-  name: string;
-  email: string;
-  createdAt: Date;
-  lastLoginAt?: Date;
-  subscriptionStatus: 'free' | 'active' | 'cancelled' | 'past_due';
-  stripeCustomerId?: string;
-  stripeSubscriptionId?: string;
-  totalEntries: number;
-  adminNotes?: string;
-}
+import { apiRequest } from "@/lib/queryClient";
 
 interface AdminStats {
   totalUsers: number;
@@ -46,359 +40,1030 @@ interface AdminStats {
   churnRate: number;
 }
 
+interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  username: string;
+  role: string;
+  subscriptionStatus: string;
+  subscriptionEndDate: string | null;
+  createdAt: string;
+  lastLoginAt: string | null;
+  adminNotes: string | null;
+  freeAccessGrantedUntil: string | null;
+  totalEntries: number;
+}
+
+interface FamilyData {
+  id: string;
+  name: string;
+  createdAt: string;
+  parentCount: number;
+  childCount: number;
+  userCount: number;
+}
+
+const grantAccessSchema = z.object({
+  months: z.number().min(1, "Must be at least 1 month").max(24, "Maximum 24 months"),
+});
+
+const addNoteSchema = z.object({
+  note: z.string().min(1, "Note cannot be empty").max(500, "Note too long"),
+});
+
+const updateRoleSchema = z.object({
+  role: z.enum(["user", "admin", "support"], { required_error: "Please select a role" }),
+});
+
+const updateSubscriptionSchema = z.object({
+  subscriptionStatus: z.enum(["free", "active", "cancelled", "past_due"], { required_error: "Please select a status" }),
+  subscriptionEndDate: z.string().optional(),
+});
+
+const addParentSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  relationship: z.string().min(1, "Relationship is required"),
+  age: z.string().optional(),
+  parentingStyle: z.string().optional(),
+  parentingPhilosophy: z.string().optional(),
+  parentingGoals: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+const createUserSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Please enter a valid email"),
+  name: z.string().min(1, "Name is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
 export default function AdminDashboard() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isAuthenticated, isLoading } = useAuth();
-  const [, setLocation] = useLocation();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [selectedFamily, setSelectedFamily] = useState<FamilyData | null>(null);
+  const [showGrantAccessDialog, setShowGrantAccessDialog] = useState(false);
+  const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
+  const [showUpdateRoleDialog, setShowUpdateRoleDialog] = useState(false);
+  const [showUpdateSubscriptionDialog, setShowUpdateSubscriptionDialog] = useState(false);
+  const [showAddParentDialog, setShowAddParentDialog] = useState(false);
+  const [showCreateUserDialog, setShowCreateUserDialog] = useState(false);
+  const [newParentId, setNewParentId] = useState<string | null>(null);
 
-  // Redirect to home page if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      setLocation('/');
-    }
-  }, [isAuthenticated, isLoading, setLocation]);
-
-  // Don't render anything while redirecting
-  if (!isLoading && !isAuthenticated) {
-    return null;
+  // Check if user has admin access
+  if (!user || (user.username !== 'esanjosechicano')) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 dark:from-neutral-900 dark:to-neutral-800 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">Access Denied</CardTitle>
+            <CardDescription className="text-center">
+              You don't have permission to access the admin dashboard.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/">
+              <Button variant="outline">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Home
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
-  // Fetch admin stats
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ['/api/admin/stats'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/admin/stats');
-      if (!response.ok) throw new Error('Failed to fetch admin stats');
-      return response.json() as Promise<AdminStats>;
-    },
-    enabled: isAuthenticated // Only fetch when authenticated
+  // Fetch admin statistics
+  const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
+    queryKey: ["/api/admin/stats"],
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  // Fetch users list
-  const { data: users, isLoading: usersLoading } = useQuery({
-    queryKey: ['/api/admin/users', searchTerm],
-    queryFn: async () => {
-      const response = await apiRequest('GET', `/api/admin/users?search=${searchTerm}`);
-      if (!response.ok) throw new Error('Failed to fetch users');
-      return response.json() as Promise<AdminUser[]>;
-    },
-    enabled: isAuthenticated // Only fetch when authenticated
+  // Fetch all users
+  const { data: users = [], isLoading: usersLoading, refetch: refetchUsers } = useQuery({
+    queryKey: ["/api/admin/users", searchTerm],
+    queryFn: () => apiRequest(`/api/admin/users?search=${encodeURIComponent(searchTerm)}`),
+  });
+
+  // Fetch all families
+  const { data: families = [], isLoading: familiesLoading, refetch: refetchFamilies } = useQuery({
+    queryKey: ["/api/admin/families", searchTerm],
+    queryFn: () => apiRequest(`/api/admin/families?search=${encodeURIComponent(searchTerm)}`),
   });
 
   // Grant free access mutation
   const grantAccessMutation = useMutation({
-    mutationFn: async ({ userId, months }: { userId: string; months: number }) => {
-      const response = await apiRequest('POST', '/api/admin/grant-access', { userId, months });
-      if (!response.ok) throw new Error('Failed to grant access');
-      return response.json();
-    },
+    mutationFn: async ({ userId, months }: { userId: string; months: number }) =>
+      apiRequest("/api/admin/grant-access", "POST", { userId, months }),
     onSuccess: () => {
       toast({ title: "Success", description: "Free access granted successfully" });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
-    }
+      setShowGrantAccessDialog(false);
+      refetchUsers();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to grant access", variant: "destructive" });
+    },
   });
 
   // Add admin note mutation
   const addNoteMutation = useMutation({
-    mutationFn: async ({ userId, note }: { userId: string; note: string }) => {
-      const response = await apiRequest('POST', '/api/admin/add-note', { userId, note });
-      if (!response.ok) throw new Error('Failed to add note');
-      return response.json();
-    },
+    mutationFn: async ({ userId, note }: { userId: string; note: string }) =>
+      apiRequest("/api/admin/add-note", "POST", { userId, note }),
     onSuccess: () => {
       toast({ title: "Success", description: "Note added successfully" });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
-    }
+      setShowAddNoteDialog(false);
+      refetchUsers();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to add note", variant: "destructive" });
+    },
   });
 
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      free: "secondary",
-      active: "default",
-      cancelled: "destructive",
-      past_due: "outline"
-    } as const;
-    
-    return (
-      <Badge variant={variants[status as keyof typeof variants] || "secondary"}>
-        {status.replace('_', ' ').toUpperCase()}
-      </Badge>
-    );
+  // Update role mutation
+  const updateRoleMutation = useMutation({
+    mutationFn: async ({ userId, role }: { userId: string; role: string }) =>
+      apiRequest("/api/admin/update-user-role", "PUT", { userId, role }),
+    onSuccess: () => {
+      toast({ title: "Success", description: "User role updated successfully" });
+      setShowUpdateRoleDialog(false);
+      refetchUsers();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to update role", variant: "destructive" });
+    },
+  });
+
+  // Update subscription mutation
+  const updateSubscriptionMutation = useMutation({
+    mutationFn: async ({ userId, subscriptionStatus, subscriptionEndDate }: { 
+      userId: string; 
+      subscriptionStatus: string; 
+      subscriptionEndDate?: string 
+    }) =>
+      apiRequest("/api/admin/update-subscription", "PUT", { userId, subscriptionStatus, subscriptionEndDate }),
+    onSuccess: () => {
+      toast({ title: "Success", description: "Subscription updated successfully" });
+      setShowUpdateSubscriptionDialog(false);
+      refetchUsers();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to update subscription", variant: "destructive" });
+    },
+  });
+
+  // Add parent to family mutation
+  const addParentMutation = useMutation({
+    mutationFn: async ({ familyId, parentData }: { familyId: string; parentData: any }) =>
+      apiRequest("/api/admin/add-parent", "POST", { familyId, parentData }),
+    onSuccess: (data: any) => {
+      toast({ title: "Success", description: "Parent profile added successfully" });
+      setNewParentId(data.parent.id);
+      setShowAddParentDialog(false);
+      setShowCreateUserDialog(true);
+      refetchFamilies();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to add parent", variant: "destructive" });
+    },
+  });
+
+  // Create user for parent mutation
+  const createUserMutation = useMutation({
+    mutationFn: async ({ parentId, userData }: { parentId: string; userData: any }) =>
+      apiRequest("/api/admin/create-user-for-parent", "POST", { parentId, userData }),
+    onSuccess: () => {
+      toast({ title: "Success", description: "User account created successfully" });
+      setShowCreateUserDialog(false);
+      setNewParentId(null);
+      refetchUsers();
+      refetchFamilies();
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to create user account", variant: "destructive" });
+    },
+  });
+
+  // Form configurations
+  const grantAccessForm = useForm({
+    resolver: zodResolver(grantAccessSchema),
+    defaultValues: { months: 1 },
+  });
+
+  const addNoteForm = useForm({
+    resolver: zodResolver(addNoteSchema),
+    defaultValues: { note: "" },
+  });
+
+  const updateRoleForm = useForm({
+    resolver: zodResolver(updateRoleSchema),
+    defaultValues: { role: "user" },
+  });
+
+  const updateSubscriptionForm = useForm({
+    resolver: zodResolver(updateSubscriptionSchema),
+    defaultValues: { subscriptionStatus: "free", subscriptionEndDate: "" },
+  });
+
+  const addParentForm = useForm({
+    resolver: zodResolver(addParentSchema),
+    defaultValues: {
+      name: "",
+      relationship: "",
+      age: "",
+      parentingStyle: "",
+      parentingPhilosophy: "",
+      parentingGoals: "",
+      notes: "",
+    },
+  });
+
+  const createUserForm = useForm({
+    resolver: zodResolver(createUserSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      name: "",
+      password: "",
+    },
+  });
+
+  const handleGrantAccess = (data: z.infer<typeof grantAccessSchema>) => {
+    if (selectedUser) {
+      grantAccessMutation.mutate({ userId: selectedUser.id, months: data.months });
+    }
+  };
+
+  const handleAddNote = (data: z.infer<typeof addNoteSchema>) => {
+    if (selectedUser) {
+      addNoteMutation.mutate({ userId: selectedUser.id, note: data.note });
+    }
+  };
+
+  const handleUpdateRole = (data: z.infer<typeof updateRoleSchema>) => {
+    if (selectedUser) {
+      updateRoleMutation.mutate({ userId: selectedUser.id, role: data.role });
+    }
+  };
+
+  const handleUpdateSubscription = (data: z.infer<typeof updateSubscriptionSchema>) => {
+    if (selectedUser) {
+      updateSubscriptionMutation.mutate({
+        userId: selectedUser.id,
+        subscriptionStatus: data.subscriptionStatus,
+        subscriptionEndDate: data.subscriptionEndDate,
+      });
+    }
+  };
+
+  const handleAddParent = (data: z.infer<typeof addParentSchema>) => {
+    if (selectedFamily) {
+      addParentMutation.mutate({ familyId: selectedFamily.id, parentData: data });
+    }
+  };
+
+  const handleCreateUser = (data: z.infer<typeof createUserSchema>) => {
+    if (newParentId) {
+      createUserMutation.mutate({ parentId: newParentId, userData: data });
+    }
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "Never";
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case "active": return "default";
+      case "cancelled": return "destructive";
+      case "past_due": return "secondary";
+      default: return "outline";
+    }
+  };
+
+  const getRoleBadgeVariant = (role: string) => {
+    switch (role) {
+      case "admin": return "destructive";
+      case "support": return "secondary";
+      default: return "outline";
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-2">Manage users, subscriptions, and monitor platform health</p>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 dark:from-neutral-900 dark:to-neutral-800">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to App
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                <Shield className="h-8 w-8 text-orange-500" />
+                Admin Dashboard
+              </h1>
+              <p className="text-neutral-600 dark:text-neutral-400">
+                Manage users, families, and subscriptions
+              </p>
+            </div>
+          </div>
+          <Badge variant="secondary" className="px-3 py-1">
+            <Crown className="mr-2 h-4 w-4" />
+            Administrator
+          </Badge>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold">{stats?.totalUsers || 0}</p>
-                </div>
-                <Users className="h-8 w-8 text-blue-600" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <Users className="h-4 w-4 text-orange-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {statsLoading ? "..." : stats?.totalUsers || 0}
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Active Subscriptions</p>
-                  <p className="text-2xl font-bold">{stats?.activeSubscriptions || 0}</p>
-                </div>
-                <CreditCard className="h-8 w-8 text-green-600" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
+              <TrendingUp className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {statsLoading ? "..." : stats?.activeSubscriptions || 0}
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-                  <p className="text-2xl font-bold">${stats?.monthlyRevenue || 0}</p>
-                </div>
-                <DollarSign className="h-8 w-8 text-green-600" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+              <DollarSign className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                ${statsLoading ? "..." : stats?.monthlyRevenue?.toFixed(2) || "0.00"}
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">New Users (Month)</p>
-                  <p className="text-2xl font-bold">{stats?.newUsersThisMonth || 0}</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-blue-600" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">New Users This Month</CardTitle>
+              <UserPlus className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {statsLoading ? "..." : stats?.newUsersThisMonth || 0}
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Churn Rate</p>
-                  <p className="text-2xl font-bold">{stats?.churnRate || 0}%</p>
-                </div>
-                <UserX className="h-8 w-8 text-red-600" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Churn Rate</CardTitle>
+              <TrendingUp className="h-4 w-4 text-red-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {statsLoading ? "..." : `${stats?.churnRate || 0}%`}
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="users" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="users">User Management</TabsTrigger>
-            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+        {/* Main Content */}
+        <Tabs defaultValue="users" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="users" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              User Management
+            </TabsTrigger>
+            <TabsTrigger value="families" className="flex items-center gap-2">
+              <Family className="h-4 w-4" />
+              Family Management
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="users" className="space-y-4">
+          {/* Users Tab */}
+          <TabsContent value="users" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>User Management</CardTitle>
-                <div className="flex items-center space-x-2">
-                  <Search className="h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search users by name, email, or username..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="max-w-sm"
-                  />
+                <CardDescription>
+                  Manage user accounts, subscriptions, and permissions
+                </CardDescription>
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-neutral-500" />
+                    <Input
+                      placeholder="Search users by name, email, or username..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
                 {usersLoading ? (
-                  <div>Loading users...</div>
+                  <div className="text-center py-8">Loading users...</div>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>User</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Entries</TableHead>
-                        <TableHead>Joined</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {users?.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell>
-                            <div>
-                              <div className="font-medium">{user.name}</div>
-                              <div className="text-sm text-gray-500">@{user.username}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell>{getStatusBadge(user.subscriptionStatus)}</TableCell>
-                          <TableCell>{user.totalEntries}</TableCell>
-                          <TableCell>{format(new Date(user.createdAt), 'MMM dd, yyyy')}</TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => setSelectedUser(user)}
-                                  >
-                                    <Gift className="h-4 w-4" />
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Grant Free Access</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-4">
-                                    <p>Grant free premium access to {user.name}?</p>
-                                    <div className="flex space-x-2">
-                                      <Button 
-                                        onClick={() => grantAccessMutation.mutate({ userId: user.id, months: 1 })}
-                                        disabled={grantAccessMutation.isPending}
-                                      >
-                                        1 Month
-                                      </Button>
-                                      <Button 
-                                        onClick={() => grantAccessMutation.mutate({ userId: user.id, months: 3 })}
-                                        disabled={grantAccessMutation.isPending}
-                                      >
-                                        3 Months
-                                      </Button>
-                                      <Button 
-                                        onClick={() => grantAccessMutation.mutate({ userId: user.id, months: 12 })}
-                                        disabled={grantAccessMutation.isPending}
-                                      >
-                                        1 Year
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                              
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button variant="outline" size="sm">
-                                    <MessageSquare className="h-4 w-4" />
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Add Admin Note</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-4">
-                                    <Input 
-                                      placeholder="Add a note about this user..."
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                          const note = (e.target as HTMLInputElement).value;
-                                          if (note.trim()) {
-                                            addNoteMutation.mutate({ userId: user.id, note });
-                                            (e.target as HTMLInputElement).value = '';
-                                          }
-                                        }
-                                      }}
-                                    />
-                                    {user.adminNotes && (
-                                      <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-                                        Previous notes: {user.adminNotes}
-                                      </div>
-                                    )}
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                  <div className="space-y-4">
+                    {(users as AdminUser[]).map((user: AdminUser) => (
+                      <div
+                        key={user.id}
+                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-medium">{user.name}</h3>
+                            <Badge variant={getRoleBadgeVariant(user.role)}>{user.role}</Badge>
+                            {user.freeAccessGrantedUntil && new Date(user.freeAccessGrantedUntil) > new Date() && (
+                              <Badge variant="secondary">Free Access</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                            @{user.username} • {user.email}
+                          </p>
+                          <div className="flex items-center gap-4 mt-2 text-sm text-neutral-500">
+                            <span>Joined: {formatDate(user.createdAt)}</span>
+                            <span>Last Login: {formatDate(user.lastLoginAt)}</span>
+                            <span>Entries: {user.totalEntries}</span>
+                            <Badge variant={getStatusBadgeVariant(user.subscriptionStatus)}>
+                              {user.subscriptionStatus}
+                            </Badge>
+                          </div>
+                          {user.adminNotes && (
+                            <p className="text-xs text-neutral-500 mt-1 bg-neutral-100 dark:bg-neutral-800 p-2 rounded">
+                              Admin Notes: {user.adminNotes.split('\n').pop()}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowGrantAccessDialog(true);
+                            }}
+                          >
+                            Grant Access
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowAddNoteDialog(true);
+                            }}
+                          >
+                            Add Note
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              updateRoleForm.setValue("role", user.role as any);
+                              setShowUpdateRoleDialog(true);
+                            }}
+                          >
+                            Update Role
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              updateSubscriptionForm.setValue("subscriptionStatus", user.subscriptionStatus as any);
+                              updateSubscriptionForm.setValue(
+                                "subscriptionEndDate",
+                                user.subscriptionEndDate ? new Date(user.subscriptionEndDate).toISOString().split('T')[0] : ""
+                              );
+                              setShowUpdateSubscriptionDialog(true);
+                            }}
+                          >
+                            Update Subscription
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {(users as AdminUser[]).length === 0 && (
+                      <div className="text-center py-8 text-neutral-500">
+                        No users found matching your search criteria.
+                      </div>
+                    )}
+                  </div>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="subscriptions">
+          {/* Families Tab */}
+          <TabsContent value="families" className="space-y-6">
             <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Subscription Management</h3>
-                <p className="text-gray-600">
-                  Payment integration will be available once Stripe and PayPal API keys are configured.
-                  This section will show:
-                </p>
-                <ul className="list-disc list-inside mt-4 space-y-1 text-gray-600">
-                  <li>Active subscription details</li>
-                  <li>Payment history and transactions</li>
-                  <li>Failed payment recovery</li>
-                  <li>Refund processing</li>
-                  <li>Subscription cancellation management</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="analytics">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Analytics & Insights</h3>
-                <p className="text-gray-600">
-                  Advanced analytics will include:
-                </p>
-                <ul className="list-disc list-inside mt-4 space-y-1 text-gray-600">
-                  <li>Revenue trends and forecasting</li>
-                  <li>User engagement metrics</li>
-                  <li>Feature adoption rates</li>
-                  <li>Churn analysis and predictions</li>
-                  <li>Lifetime value calculations</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Platform Settings</h3>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium">Payment Configuration</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Configure pricing tiers and payment methods when ready.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Feature Flags</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Enable/disable features for different user tiers.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Email Templates</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Customize automated emails for subscriptions and notifications.
-                    </p>
+              <CardHeader>
+                <CardTitle>Family Management</CardTitle>
+                <CardDescription>
+                  Manage family structures and add additional parent profiles
+                </CardDescription>
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-neutral-500" />
+                    <Input
+                      placeholder="Search families by name..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
                   </div>
                 </div>
+              </CardHeader>
+              <CardContent>
+                {familiesLoading ? (
+                  <div className="text-center py-8">Loading families...</div>
+                ) : (
+                  <div className="space-y-4">
+                    {(families as FamilyData[]).map((family: FamilyData) => (
+                      <div
+                        key={family.id}
+                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Building className="h-5 w-5 text-orange-500" />
+                            <h3 className="font-medium">{family.name}</h3>
+                          </div>
+                          <div className="flex items-center gap-4 mt-2 text-sm text-neutral-500">
+                            <span>Created: {formatDate(family.createdAt)}</span>
+                            <span>Parents: {family.parentCount}</span>
+                            <span>Children: {family.childCount}</span>
+                            <span>Users: {family.userCount}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedFamily(family);
+                              addParentForm.reset();
+                              setShowAddParentDialog(true);
+                            }}
+                            disabled={family.parentCount >= 6}
+                          >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Parent {family.parentCount >= 6 && "(Max Reached)"}
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {(families as FamilyData[]).length === 0 && (
+                      <div className="text-center py-8 text-neutral-500">
+                        No families found matching your search criteria.
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Grant Access Dialog */}
+        <Dialog open={showGrantAccessDialog} onOpenChange={setShowGrantAccessDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Grant Free Access</DialogTitle>
+              <DialogDescription>
+                Grant free premium access to {selectedUser?.name} for a specified period.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...grantAccessForm}>
+              <form onSubmit={grantAccessForm.handleSubmit(handleGrantAccess)} className="space-y-4">
+                <FormField
+                  control={grantAccessForm.control}
+                  name="months"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Number of Months</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="24"
+                          {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowGrantAccessDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={grantAccessMutation.isPending}>
+                    {grantAccessMutation.isPending ? "Granting..." : "Grant Access"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Note Dialog */}
+        <Dialog open={showAddNoteDialog} onOpenChange={setShowAddNoteDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Admin Note</DialogTitle>
+              <DialogDescription>
+                Add a note for {selectedUser?.name} that will be visible to administrators.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...addNoteForm}>
+              <form onSubmit={addNoteForm.handleSubmit(handleAddNote)} className="space-y-4">
+                <FormField
+                  control={addNoteForm.control}
+                  name="note"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Note</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter admin note..."
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddNoteDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={addNoteMutation.isPending}>
+                    {addNoteMutation.isPending ? "Adding..." : "Add Note"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Update Role Dialog */}
+        <Dialog open={showUpdateRoleDialog} onOpenChange={setShowUpdateRoleDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Update User Role</DialogTitle>
+              <DialogDescription>
+                Change the role for {selectedUser?.name}.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...updateRoleForm}>
+              <form onSubmit={updateRoleForm.handleSubmit(handleUpdateRole as any)} className="space-y-4">
+                <FormField
+                  control={updateRoleForm.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Role</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="user">User</SelectItem>
+                          <SelectItem value="support">Support</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowUpdateRoleDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={updateRoleMutation.isPending}>
+                    {updateRoleMutation.isPending ? "Updating..." : "Update Role"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Update Subscription Dialog */}
+        <Dialog open={showUpdateSubscriptionDialog} onOpenChange={setShowUpdateSubscriptionDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Update Subscription</DialogTitle>
+              <DialogDescription>
+                Update subscription status for {selectedUser?.name}.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...updateSubscriptionForm}>
+              <form onSubmit={updateSubscriptionForm.handleSubmit(handleUpdateSubscription as any)} className="space-y-4">
+                <FormField
+                  control={updateSubscriptionForm.control}
+                  name="subscriptionStatus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subscription Status</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="free">Free</SelectItem>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                          <SelectItem value="past_due">Past Due</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={updateSubscriptionForm.control}
+                  name="subscriptionEndDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Subscription End Date (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowUpdateSubscriptionDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={updateSubscriptionMutation.isPending}>
+                    {updateSubscriptionMutation.isPending ? "Updating..." : "Update Subscription"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add Parent Dialog */}
+        <Dialog open={showAddParentDialog} onOpenChange={setShowAddParentDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Add Parent to Family</DialogTitle>
+              <DialogDescription>
+                Add a new parent profile to {selectedFamily?.name}. After creating the profile, you'll be able to create a user account for them.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...addParentForm}>
+              <form onSubmit={addParentForm.handleSubmit(handleAddParent)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={addParentForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter parent's name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={addParentForm.control}
+                    name="relationship"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Relationship *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select relationship" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Partner">Partner</SelectItem>
+                            <SelectItem value="Co-parent">Co-parent</SelectItem>
+                            <SelectItem value="Step-parent">Step-parent</SelectItem>
+                            <SelectItem value="Guardian">Guardian</SelectItem>
+                            <SelectItem value="Grandparent">Grandparent</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={addParentForm.control}
+                  name="age"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Age</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter age (optional)" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={addParentForm.control}
+                  name="parentingStyle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Parenting Style</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Authoritative, Permissive, etc." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={addParentForm.control}
+                  name="parentingPhilosophy"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Parenting Philosophy</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Describe their approach to parenting..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={addParentForm.control}
+                  name="parentingGoals"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Parenting Goals</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="What they hope to achieve as a parent..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={addParentForm.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Additional Notes</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Any additional notes..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddParentDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={addParentMutation.isPending}>
+                    {addParentMutation.isPending ? "Adding..." : "Add Parent"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create User Dialog */}
+        <Dialog open={showCreateUserDialog} onOpenChange={setShowCreateUserDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create User Account</DialogTitle>
+              <DialogDescription>
+                Create a user account for the newly added parent profile.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...createUserForm}>
+              <form onSubmit={createUserForm.handleSubmit(handleCreateUser)} className="space-y-4">
+                <FormField
+                  control={createUserForm.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={createUserForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter email address" type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={createUserForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter full name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={createUserForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter password" type="password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowCreateUserDialog(false)}
+                  >
+                    Skip for Now
+                  </Button>
+                  <Button type="submit" disabled={createUserMutation.isPending}>
+                    {createUserMutation.isPending ? "Creating..." : "Create Account"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

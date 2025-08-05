@@ -93,6 +93,12 @@ export interface IStorage {
   updateUserRole(userId: string, role: string): Promise<User | undefined>;
   updateUserSubscriptionStatus(userId: string, status: string, endDate?: Date): Promise<User | undefined>;
   
+  // Admin family management
+  getAllFamilies(searchTerm?: string): Promise<(Family & { parentCount: number; childCount: number; userCount: number })[]>;
+  addParentToFamily(familyId: string, parentData: InsertParentProfile): Promise<ParentProfile>;
+  createUserForParent(parentId: string, userData: { username: string; email: string; name: string; password: string }): Promise<User>;
+  updateUserSubscription(userId: string, subscriptionStatus: string, subscriptionEndDate?: string): Promise<User | undefined>;
+  
   // Notification settings
   getUserNotificationSettings(userId: string): Promise<UserNotificationSettings | undefined>;
   createUserNotificationSettings(settings: InsertUserNotificationSettings): Promise<UserNotificationSettings>;
@@ -748,6 +754,107 @@ export class MemStorage implements IStorage {
     if (user) {
       user.subscriptionStatus = status;
       user.subscriptionEndDate = endDate || null;
+      user.updatedAt = new Date();
+      this.users.set(userId, user);
+      return user;
+    }
+    return undefined;
+  }
+
+  // Admin family management methods
+  async getAllFamilies(searchTerm?: string): Promise<(Family & { parentCount: number; childCount: number; userCount: number })[]> {
+    const families = Array.from(this.families.values());
+    const parents = Array.from(this.parentProfiles.values());
+    const children = Array.from(this.childProfiles.values());
+    const users = Array.from(this.users.values());
+
+    let result = families.map(family => {
+      const parentCount = parents.filter(p => p.familyId === family.id).length;
+      const childCount = children.filter(c => c.familyId === family.id).length;
+      const userCount = users.filter(u => u.familyId === family.id).length;
+      
+      return {
+        ...family,
+        parentCount,
+        childCount,
+        userCount
+      };
+    });
+
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(family => 
+        family.name.toLowerCase().includes(term)
+      );
+    }
+
+    return result;
+  }
+
+  async addParentToFamily(familyId: string, parentData: InsertParentProfile): Promise<ParentProfile> {
+    const family = this.families.get(familyId);
+    if (!family) {
+      throw new Error('Family not found');
+    }
+
+    const newParent: ParentProfile = {
+      id: randomUUID(),
+      familyId,
+      ...parentData,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    this.parentProfiles.set(newParent.id, newParent);
+    return newParent;
+  }
+
+  async createUserForParent(parentId: string, userData: { username: string; email: string; name: string; password: string }): Promise<User> {
+    const parent = this.parentProfiles.get(parentId);
+    if (!parent) {
+      throw new Error('Parent profile not found');
+    }
+
+    // Check if username or email already exists
+    const existingUser = Array.from(this.users.values()).find(u => 
+      u.username === userData.username || u.email === userData.email
+    );
+    if (existingUser) {
+      throw new Error('Username or email already exists');
+    }
+
+    const bcrypt = await import('bcryptjs');
+    const passwordHash = await bcrypt.hash(userData.password, 10);
+
+    const newUser: User = {
+      id: randomUUID(),
+      username: userData.username,
+      name: userData.name,
+      email: userData.email,
+      passwordHash,
+      role: 'user',
+      familyId: parent.familyId,
+      subscriptionStatus: 'free',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastLoginAt: null,
+      subscriptionEndDate: null,
+      stripeCustomerId: null,
+      stripeSubscriptionId: null,
+      paypalSubscriptionId: null,
+      adminNotes: null,
+      freeAccessGrantedUntil: null
+    };
+
+    this.users.set(newUser.id, newUser);
+    return newUser;
+  }
+
+  async updateUserSubscription(userId: string, subscriptionStatus: string, subscriptionEndDate?: string): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.subscriptionStatus = subscriptionStatus;
+      user.subscriptionEndDate = subscriptionEndDate ? new Date(subscriptionEndDate) : null;
       user.updatedAt = new Date();
       this.users.set(userId, user);
       return user;

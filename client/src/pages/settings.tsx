@@ -66,6 +66,7 @@ const changeEmailSchema = z.object({
 });
 
 export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
+  const auth = useAuth();
   const [settings, setSettings] = useState<UserSettings>(getSettings);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
@@ -752,6 +753,32 @@ export default function Settings({ triggerSignUpPrompt }: SettingsProps) {
                   Revisit key features and learn how to make the most of ParentJourney
                 </p>
               </div>
+
+              {auth.user?.username === 'esanjosechicano' ? (
+                <>
+                  <Separator className="dark:bg-neutral-600" />
+                  
+                  {/* Admin Portal */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-red-600 dark:text-red-400 flex items-center gap-2">
+                      <Key className="h-4 w-4" />
+                      Administrator Access
+                    </Label>
+                    <Link href="/admin">
+                      <Button 
+                        variant="outline"
+                        className="w-full border-red-200 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+                      >
+                        <Key className="mr-2 h-4 w-4" />
+                        Open Admin Dashboard
+                      </Button>
+                    </Link>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      Access admin controls, user management, and family administration
+                    </p>
+                  </div>
+                </>
+              ) : null}
 
               <Separator className="dark:bg-neutral-600" />
 

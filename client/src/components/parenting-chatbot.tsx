@@ -462,7 +462,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
         <CardContent className="p-0 flex flex-col h-[calc(600px-80px)] max-md:h-[calc(100vh-80px)]">
           {/* Messages Area */}
           <ScrollArea className="flex-1 p-4">
-            <div className="space-y-4">
+            <div className="space-y-3">
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -479,7 +479,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                   )}
                   <div
                     className={cn(
-                      "max-w-[280px] sm:max-w-[320px] p-3 rounded-lg text-sm leading-relaxed",
+                      "max-w-[280px] sm:max-w-[320px] p-2.5 rounded-lg text-sm leading-tight",
                       "max-md:max-w-[calc(100vw-120px)]", // Better mobile width
                       message.role === 'user'
                         ? "bg-primary text-white rounded-br-sm"
@@ -492,15 +492,15 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                           remarkPlugins={[remarkGfm]}
                           components={{
                             // Customize markdown components for better chat formatting
-                            p: ({ children }) => <p className="mb-1 last:mb-0 leading-snug">{children}</p>,
-                            ul: ({ children }) => <ul className="mb-1 last:mb-0 ml-4 space-y-0">{children}</ul>,
-                            ol: ({ children }) => <ol className="mb-1 last:mb-0 ml-4 space-y-0">{children}</ol>,
-                            li: ({ children }) => <li className="mb-0 leading-snug">{children}</li>,
+                            p: ({ children }) => <p className="mb-0.5 last:mb-0 leading-tight">{children}</p>,
+                            ul: ({ children }) => <ul className="mb-0.5 last:mb-0 ml-4 space-y-0">{children}</ul>,
+                            ol: ({ children }) => <ol className="mb-0.5 last:mb-0 ml-4 space-y-0">{children}</ol>,
+                            li: ({ children }) => <li className="mb-0 leading-tight">{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                             em: ({ children }) => <em className="italic">{children}</em>,
-                            h1: ({ children }) => <h1 className="text-lg font-semibold mb-2">{children}</h1>,
-                            h2: ({ children }) => <h2 className="text-base font-semibold mb-2">{children}</h2>,
-                            h3: ({ children }) => <h3 className="text-sm font-semibold mb-1">{children}</h3>,
+                            h1: ({ children }) => <h1 className="text-lg font-semibold mb-1 mt-1">{children}</h1>,
+                            h2: ({ children }) => <h2 className="text-base font-semibold mb-1 mt-1">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-sm font-semibold mb-0.5 mt-0.5">{children}</h3>,
                             blockquote: ({ children }) => <blockquote className="border-l-2 border-neutral-300 pl-3 my-2 italic">{children}</blockquote>,
                             code: ({ children }) => <code className="bg-neutral-100 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
                             pre: ({ children }) => <pre className="bg-neutral-100 p-2 rounded text-xs font-mono overflow-x-auto my-2">{children}</pre>,

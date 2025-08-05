@@ -45,15 +45,15 @@ const SUGGESTED_TOPICS = [
   "Discipline strategies"
 ];
 
-// Custom chat bubble icon with 3 holes - larger and more prominent
+// Custom chat bubble icon - simple large circle with 3 holes like the reference
 const ChatBubbleIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 32 32" className={className} fill="currentColor">
-    {/* Larger chat bubble shape */}
-    <path d="M26 4H6c-2.2 0-4 1.8-4 4v16c0 2.2 1.8 4 4 4h16l6 6V8c0-2.2-1.8-4-4-4z" fill="white" />
-    {/* Three transparent circles (holes) - larger and better positioned */}
-    <circle cx="10" cy="16" r="2.5" fill="currentColor" />
-    <circle cx="16" cy="16" r="2.5" fill="currentColor" />
-    <circle cx="22" cy="16" r="2.5" fill="currentColor" />
+  <svg viewBox="0 0 40 40" className={className}>
+    {/* Large solid white circle */}
+    <circle cx="20" cy="20" r="18" fill="white" />
+    {/* Three large transparent holes */}
+    <circle cx="13" cy="20" r="3" fill="currentColor" />
+    <circle cx="20" cy="20" r="3" fill="currentColor" />
+    <circle cx="27" cy="20" r="3" fill="currentColor" />
   </svg>
 );
 
@@ -293,7 +293,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
             )}
             data-testid="chatbot-button"
           >
-            <ChatBubbleIcon className="h-12 w-12" />
+            <ChatBubbleIcon className="w-11 h-11" />
           </Button>
         </TooltipWrapper>
       </div>

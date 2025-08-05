@@ -67,7 +67,10 @@ export function OnboardingTour({ isOpen, onClose }: OnboardingTourProps) {
 
   useEffect(() => {
     console.log('OnboardingTour: isOpen changed to', isOpen);
+    console.log('OnboardingTour: Dialog should be', isOpen ? 'OPEN' : 'CLOSED');
   }, [isOpen]);
+
+  console.log('OnboardingTour RENDER: isOpen =', isOpen);
 
   const currentTourStep = TOUR_STEPS[currentStep - 1];
   const isLastStep = currentStep === TOUR_STEPS.length;

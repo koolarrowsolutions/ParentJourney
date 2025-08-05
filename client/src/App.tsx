@@ -128,6 +128,13 @@ function AppRouter() {
         onClose={handleTourComplete}
       />
       
+      {/* Debug info */}
+      {showTour && (
+        <div style={{ position: 'fixed', top: 0, left: 0, background: 'red', color: 'white', padding: '10px', zIndex: 9999 }}>
+          DEBUG: showTour is TRUE
+        </div>
+      )}
+      
       <LoginConfirmationModal
         isVisible={auth.hasJustLoggedIn}
         onClose={auth.clearLoginStatus}

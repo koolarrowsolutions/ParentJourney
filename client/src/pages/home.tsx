@@ -82,8 +82,9 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch stats");
       return response.json();
     },
-    enabled: false, // Disable for now to improve performance
+    enabled: isAuthenticated && !!parentProfile, // Only fetch when fully authenticated
     staleTime: 30000, // Cache for 30 seconds
+    retry: false // Don't retry on auth failures
   });
 
   const { data: childProfiles } = useQuery<ChildProfile[]>({
@@ -93,7 +94,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch profiles");
       return response.json();
     },
-    enabled: false, // Disable for now to improve performance
+    enabled: isAuthenticated && !!parentProfile, // Only fetch when fully authenticated
     staleTime: 60000, // Cache for 1 minute - child profiles change rarely
     retry: false // Don't retry on auth failures
   });
@@ -105,7 +106,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
       if (!response.ok) throw new Error("Failed to fetch entries");
       return response.json();
     },
-    enabled: false, // Disable for now to improve performance
+    enabled: isAuthenticated && !!parentProfile, // Only fetch when fully authenticated
     staleTime: 10000, // Cache for 10 seconds
     retry: false // Don't retry on auth failures
   });

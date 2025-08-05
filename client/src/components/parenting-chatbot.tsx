@@ -136,7 +136,22 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      // Only scroll to bottom for user messages or if it's the first message
+      if (lastMessage.role === 'user' || messages.length === 1) {
+        scrollToBottom();
+      } else {
+        // For assistant messages, scroll to the start of that message
+        setTimeout(() => {
+          const messageElements = document.querySelectorAll('[data-message-id]');
+          const lastMessageElement = messageElements[messageElements.length - 1];
+          if (lastMessageElement) {
+            lastMessageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
+    }
   }, [messages]);
 
   // Add welcome message when chat opens for the first time
@@ -451,6 +466,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
               {messages.map((message) => (
                 <div
                   key={message.id}
+                  data-message-id={message.id}
                   className={cn(
                     "flex gap-2",
                     message.role === 'user' ? "justify-end" : "justify-start"
@@ -476,10 +492,10 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                           remarkPlugins={[remarkGfm]}
                           components={{
                             // Customize markdown components for better chat formatting
-                            p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                            ul: ({ children }) => <ul className="mb-2 last:mb-0 ml-4">{children}</ul>,
-                            ol: ({ children }) => <ol className="mb-2 last:mb-0 ml-4">{children}</ol>,
-                            li: ({ children }) => <li className="mb-1">{children}</li>,
+                            p: ({ children }) => <p className="mb-1 last:mb-0 leading-snug">{children}</p>,
+                            ul: ({ children }) => <ul className="mb-1 last:mb-0 ml-4 space-y-0">{children}</ul>,
+                            ol: ({ children }) => <ol className="mb-1 last:mb-0 ml-4 space-y-0">{children}</ol>,
+                            li: ({ children }) => <li className="mb-0 leading-snug">{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                             em: ({ children }) => <em className="italic">{children}</em>,
                             h1: ({ children }) => <h1 className="text-lg font-semibold mb-2">{children}</h1>,

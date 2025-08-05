@@ -492,10 +492,12 @@
 .prose ul, .prose ol {
   margin-bottom: 0.5rem;
   padding-left: 1rem;
+  line-height: 1.4;
 }
 
 .prose li {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.1rem;
+  line-height: 1.4;
 }
 
 .prose strong {

@@ -65,7 +65,7 @@ const ChatBubbleButton = ({ onClick, className, isBouncing, children }: {
       {/* Chat bubble shape - blue background with shadow */}
       <path 
         d="M48 8H16c-4.4 0-8 3.6-8 8v24c0 4.4 3.6 8 8 8h6l10 12 10-12h6c4.4 0 8-3.6 8-8V16c0-4.4-3.6-8-8-8z" 
-        fill="#3b82f6" 
+        fill="hsl(199, 89%, 48%)" 
         className="drop-shadow-md"
       />
       {/* Three white dots (holes) */}

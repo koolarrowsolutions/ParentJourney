@@ -290,13 +290,13 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
           <Button
             onClick={() => setIsOpen(true)}
             className={cn(
-              "w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 animate-bounce-in hover-scale",
+              "w-16 h-16 rounded-full shadow-lg bg-primary hover:bg-primary/90 animate-bounce-in hover-scale p-2",
               isBouncing && "animate-bounce",
               className
             )}
             data-testid="chatbot-button"
           >
-            <ChatBubbleIcon className="w-16 h-16" />
+            <ChatBubbleIcon className="w-12 h-12" />
           </Button>
         </TooltipWrapper>
       </div>

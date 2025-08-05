@@ -24,6 +24,7 @@ import { Wellness } from "@/pages/wellness";
 import PrivacyPolicy from "@/pages/privacy-policy";
 
 function AppRouter() {
+  const onboardingHookResult = useOnboarding();
   const {
     showSignUpPrompt,
     setShowSignUpPrompt,
@@ -32,7 +33,10 @@ function AppRouter() {
     handleSignUp,
     handleTourComplete,
     triggerSignUpPrompt
-  } = useOnboarding();
+  } = onboardingHookResult;
+  
+  console.log('AppRouter useOnboarding result:', onboardingHookResult);
+  console.log('AppRouter showTour:', showTour);
 
   const auth = useAuth();
   
@@ -129,11 +133,9 @@ function AppRouter() {
       />
       
       {/* Debug info */}
-      {showTour && (
-        <div style={{ position: 'fixed', top: 0, left: 0, background: 'red', color: 'white', padding: '10px', zIndex: 9999 }}>
-          DEBUG: showTour is TRUE
-        </div>
-      )}
+      <div style={{ position: 'fixed', top: 0, left: 0, background: showTour ? 'red' : 'blue', color: 'white', padding: '10px', zIndex: 9999 }}>
+        DEBUG: showTour = {String(showTour)}
+      </div>
       
       <LoginConfirmationModal
         isVisible={auth.hasJustLoggedIn}

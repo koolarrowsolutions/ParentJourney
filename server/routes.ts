@@ -977,6 +977,316 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin routes (require specific admin access)
+  app.get("/api/admin/stats", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const stats = await storage.getAdminStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting admin stats:', error);
+      res.status(500).json({ message: "Failed to get admin stats" });
+    }
+  });
+
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const searchTerm = req.query.search as string;
+      const users = await storage.getAllUsers(searchTerm);
+      res.json(users);
+    } catch (error) {
+      console.error('Error getting users:', error);
+      res.status(500).json({ message: "Failed to get users" });
+    }
+  });
+
+  app.get("/api/admin/families", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const searchTerm = req.query.search as string;
+      const families = await storage.getAllFamilies(searchTerm);
+      res.json(families);
+    } catch (error) {
+      console.error('Error getting families:', error);
+      res.status(500).json({ message: "Failed to get families" });
+    }
+  });
+
+  app.post("/api/admin/grant-access", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { userId: targetUserId, months } = req.body;
+      const targetUser = await storage.grantFreeAccess(targetUserId, months);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(targetUser);
+    } catch (error) {
+      console.error('Error granting access:', error);
+      res.status(500).json({ message: "Failed to grant access" });
+    }
+  });
+
+  app.post("/api/admin/add-note", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { userId: targetUserId, note } = req.body;
+      const targetUser = await storage.addAdminNote(targetUserId, note);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(targetUser);
+    } catch (error) {
+      console.error('Error adding note:', error);
+      res.status(500).json({ message: "Failed to add note" });
+    }
+  });
+
+  app.put("/api/admin/update-user-role", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { userId: targetUserId, role } = req.body;
+      const targetUser = await storage.updateUserRole(targetUserId, role);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(targetUser);
+    } catch (error) {
+      console.error('Error updating role:', error);
+      res.status(500).json({ message: "Failed to update role" });
+    }
+  });
+
+  app.put("/api/admin/update-subscription", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { userId: targetUserId, subscriptionStatus, subscriptionEndDate } = req.body;
+      const endDate = subscriptionEndDate ? new Date(subscriptionEndDate) : undefined;
+      const targetUser = await storage.updateUserSubscriptionStatus(targetUserId, subscriptionStatus, endDate);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(targetUser);
+    } catch (error) {
+      console.error('Error updating subscription:', error);
+      res.status(500).json({ message: "Failed to update subscription" });
+    }
+  });
+
+  app.post("/api/admin/add-parent", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { familyId, parentData } = req.body;
+      const parent = await storage.addParentToFamily(familyId, parentData);
+      res.json({ parent });
+    } catch (error) {
+      console.error('Error adding parent:', error);
+      res.status(500).json({ message: error.message || "Failed to add parent" });
+    }
+  });
+
+  app.post("/api/admin/create-user-for-parent", async (req, res) => {
+    try {
+      // Check admin access via token or session
+      let userId: string | undefined;
+      const token = extractToken(req);
+      if (token) {
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
+        }
+      }
+      if (!userId && req.session?.userId) {
+        userId = req.session.userId;
+      }
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get user to check admin status
+      const user = await storage.getUserById(userId);
+      if (!user || user.username !== 'esanjosechicano') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { parentId, userData } = req.body;
+      const newUser = await storage.createUserForParent(parentId, userData);
+      res.json({ user: newUser });
+    } catch (error) {
+      console.error('Error creating user:', error);
+      res.status(500).json({ message: error.message || "Failed to create user" });
+    }
+  });
+
   // Community routes
   app.get("/api/community/posts", async (req, res) => {
     try {

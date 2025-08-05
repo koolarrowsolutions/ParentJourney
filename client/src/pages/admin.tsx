@@ -452,7 +452,7 @@ export default function AdminDashboard() {
               User Management
             </TabsTrigger>
             <TabsTrigger value="families" className="flex items-center gap-2">
-              <Family className="h-4 w-4" />
+              <Building className="h-4 w-4" />
               Family Management
             </TabsTrigger>
           </TabsList>

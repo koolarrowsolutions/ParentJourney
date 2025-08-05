@@ -27,7 +27,14 @@ export function OnboardingTrigger({ variant = "button", size = "sm" }: Onboardin
   };
 
   const handleStartTour = () => {
-    startTourManually();
+    console.log('OnboardingTrigger: handleStartTour clicked');
+    console.log('startTourManually function:', startTourManually);
+    try {
+      startTourManually();
+      console.log('OnboardingTrigger: startTourManually called successfully');
+    } catch (error) {
+      console.error('OnboardingTrigger: Error calling startTourManually:', error);
+    }
   };
 
   if (variant === "help") {

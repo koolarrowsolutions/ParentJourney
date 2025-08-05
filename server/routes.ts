@@ -1051,9 +1051,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Try to get user from token or session
       const token = extractToken(req);
       if (token) {
-        const authResult = await validateAuthToken(token);
-        if (authResult.success && authResult.user) {
-          userId = authResult.user.id;
+        const tokenData = validateAuthToken(token);
+        if (tokenData) {
+          userId = tokenData.userId;
         }
       }
       
@@ -1068,10 +1068,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           storage.setCurrentUser(userId);
           
           // Get parent profile
-          const parentProfile = await storage.getParentProfile(userId);
+          const parentProfile = await storage.getParentProfile();
           
           // Get child profiles  
-          const childProfiles = await storage.getChildProfiles(userId);
+          const childProfiles = await storage.getChildProfiles();
           
           // Get recent journal entries (last 5 for context)
           const recentEntries = await storage.getJournalEntries(5);
@@ -1081,12 +1081,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           // Build personalized context
           const parentInfo = parentProfile ? 
-            `Parent: ${parentProfile.parentName || 'User'} (${parentProfile.relationship || 'Parent'})` : 
+            `Parent: ${parentProfile.name || 'User'} (${parentProfile.relationship || 'Parent'})` : 
             'Parent: User';
 
           const childInfo = childProfiles.length > 0 ? 
             childProfiles.map(child => {
-              const age = calculateAgeInMonths(child.dateOfBirth);
+              const age = calculateAgeInMonths(new Date(child.dateOfBirth));
               const ageText = `${Math.floor(age / 12)} years, ${age % 12} months`;
               const traits = child.personalityTraits?.length ? ` - traits: ${child.personalityTraits.join(', ')}` : '';
               return `${child.name} (${ageText}${traits})`;
@@ -1096,7 +1096,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const recentContext = recentEntries.length > 0 ?
             recentEntries.slice(0, 3).map(entry => {
               const entryAge = entry.childProfileId && childProfiles.find(c => c.id === entry.childProfileId) ?
-                calculateAgeInMonths(childProfiles.find(c => c.id === entry.childProfileId)!.dateOfBirth) : null;
+                calculateAgeInMonths(new Date(childProfiles.find(c => c.id === entry.childProfileId)!.dateOfBirth)) : null;
               const mood = entry.aiAnalyzedMood || entry.mood;
               return `Recent entry: "${entry.content?.substring(0, 150)}${entry.content?.length > 150 ? '...' : ''}" ${mood ? `(mood: ${mood})` : ''}`;
             }).join('\n') :

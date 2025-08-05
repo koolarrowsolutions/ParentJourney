@@ -45,18 +45,18 @@ const SUGGESTED_TOPICS = [
   "Discipline strategies"
 ];
 
-// Custom chat bubble icon - proper speech bubble shape with 3 transparent dots
+// Custom chat bubble icon - large prominent speech bubble with visible tail
 const ChatBubbleIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" className={className}>
-    {/* Chat bubble shape with tail - solid white */}
+  <svg viewBox="0 0 32 32" className={className}>
+    {/* Large chat bubble shape with prominent tail - solid white */}
     <path 
-      d="M12 2C6.48 2 2 6.48 2 12c0 2.85 1.2 5.41 3.11 7.24L4 22l2.76-1.11C8.59 21.8 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" 
+      d="M24 4H8C5.8 4 4 5.8 4 8v12c0 2.2 1.8 4 4 4h3l5 6 5-6h3c2.2 0 4-1.8 4-4V8c0-2.2-1.8-4-4-4z" 
       fill="white" 
     />
-    {/* Three transparent dots (holes) */}
-    <circle cx="8.5" cy="12" r="1.5" fill="currentColor" />
-    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-    <circle cx="15.5" cy="12" r="1.5" fill="currentColor" />
+    {/* Three large transparent dots (holes) */}
+    <circle cx="11" cy="14" r="2.5" fill="currentColor" />
+    <circle cx="16" cy="14" r="2.5" fill="currentColor" />
+    <circle cx="21" cy="14" r="2.5" fill="currentColor" />
   </svg>
 );
 
@@ -296,7 +296,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
             )}
             data-testid="chatbot-button"
           >
-            <ChatBubbleIcon className="w-11 h-11" />
+            <ChatBubbleIcon className="w-12 h-12" />
           </Button>
         </TooltipWrapper>
       </div>

@@ -84,6 +84,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   const [inputMessage, setInputMessage] = useState("");
   const [showWelcomeNotification, setShowWelcomeNotification] = useState(false);
   const [isBouncing, setIsBouncing] = useState(false);
+  const [showDelayedBounce, setShowDelayedBounce] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lastActivityRef = useRef<number>(Date.now());
@@ -113,51 +114,76 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
     }
   }, [isOpen, messages.length]);
 
-  // Show welcome notification and bounce animation
+  // Show welcome notification and delayed bounce animation
   useEffect(() => {
     console.log('Chatbot login effect:', { isAuthenticated, hasJustLoggedIn, user: user?.username });
     
-    if (isAuthenticated && hasJustLoggedIn && user) {
-      const currentTime = Date.now();
-      
-      console.log('Login detected for chatbot animation:', { 
-        currentTime, 
-        lastLoginTime: lastLoginTimeRef.current, 
-        timeDiff: currentTime - lastLoginTimeRef.current 
-      });
-      
-      // Check if this is a new login session (not just a page refresh)
-      if (currentTime - lastLoginTimeRef.current > 30000) { // 30 second threshold
-        lastLoginTimeRef.current = currentTime;
+    if (isAuthenticated && user) {
+      // Set up 3-second delayed bounce for any page load
+      const delayedBounceTimer = setTimeout(() => {
+        setShowDelayedBounce(true);
+        setIsBouncing(true);
         
-        console.log('Triggering chatbot welcome animation');
+        // Stop bouncing after 2 seconds
+        setTimeout(() => {
+          setIsBouncing(false);
+        }, 2000);
         
-        // Always show bounce animation on every login
-        const timer = setTimeout(() => {
-          setIsBouncing(true);
+        // Reset delayed bounce state after animation
+        setTimeout(() => {
+          setShowDelayedBounce(false);
+        }, 3000);
+      }, 3000);
+      
+      if (hasJustLoggedIn) {
+        const currentTime = Date.now();
+        
+        console.log('Login detected for chatbot animation:', { 
+          currentTime, 
+          lastLoginTime: lastLoginTimeRef.current, 
+          timeDiff: currentTime - lastLoginTimeRef.current 
+        });
+        
+        // Check if this is a new login session (not just a page refresh)
+        if (currentTime - lastLoginTimeRef.current > 30000) { // 30 second threshold
+          lastLoginTimeRef.current = currentTime;
           
-          // Check if we should show explainer text (once per day)
-          const today = new Date().toDateString();
-          const lastShownDate = localStorage.getItem('chatbot-explainer-shown');
+          console.log('Triggering chatbot welcome animation');
           
-          if (lastShownDate !== today) {
-            setShowWelcomeNotification(true);
-            localStorage.setItem('chatbot-explainer-shown', today);
+          // Show welcome notification for new logins
+          const timer = setTimeout(() => {
+            setIsBouncing(true);
             
-            // Auto-hide notification after 4 seconds
+            // Check if we should show explainer text (once per day)
+            const today = new Date().toDateString();
+            const lastShownDate = localStorage.getItem('chatbot-explainer-shown');
+            
+            if (lastShownDate !== today) {
+              setShowWelcomeNotification(true);
+              localStorage.setItem('chatbot-explainer-shown', today);
+              
+              // Auto-hide notification after 4 seconds
+              setTimeout(() => {
+                setShowWelcomeNotification(false);
+              }, 4000);
+            }
+            
+            // Stop bouncing after 2 seconds
             setTimeout(() => {
-              setShowWelcomeNotification(false);
-            }, 4000);
-          }
+              setIsBouncing(false);
+            }, 2000);
+          }, 1000);
           
-          // Stop bouncing after 2 seconds
-          setTimeout(() => {
-            setIsBouncing(false);
-          }, 2000);
-        }, 1000);
-        
-        return () => clearTimeout(timer);
+          return () => clearTimeout(timer);
+        }
       }
+      
+      // Cleanup timer on unmount
+      return () => {
+        if (delayedBounceTimer) {
+          clearTimeout(delayedBounceTimer);
+        }
+      };
     }
   }, [isAuthenticated, hasJustLoggedIn, user]);
 

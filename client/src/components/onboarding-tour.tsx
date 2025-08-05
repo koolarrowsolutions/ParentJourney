@@ -135,7 +135,7 @@ export function OnboardingTour({ isOpen, onClose }: OnboardingTourProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg w-[95vw] sm:w-full max-h-[90vh] overflow-y-auto mx-4 sm:mx-0">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <Badge variant="outline" className="text-xs">

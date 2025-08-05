@@ -289,7 +289,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   const { user, isAuthenticated, hasJustLoggedIn } = useAuth();
 
   // Fetch child profiles for age-appropriate topics
-  const { data: childProfiles = [] } = useQuery({
+  const { data: childProfiles = [] } = useQuery<any[]>({
     queryKey: ['/api/child-profiles'],
     enabled: isAuthenticated,
   });
@@ -297,13 +297,13 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
   // Initialize random topics when component mounts or chat opens
   useEffect(() => {
     if (isOpen && currentTopics.length === 0) {
-      setCurrentTopics(getRandomTopics(childProfiles));
+      setCurrentTopics(getRandomTopics(Array.isArray(childProfiles) ? childProfiles : []));
     }
   }, [isOpen, currentTopics.length, childProfiles]);
 
   // Refresh topics when child profiles change (age-appropriate adjustment)
   useEffect(() => {
-    if (isOpen && childProfiles && childProfiles.length > 0) {
+    if (isOpen && Array.isArray(childProfiles) && childProfiles.length > 0) {
       setCurrentTopics(getRandomTopics(childProfiles));
     }
   }, [childProfiles, isOpen]);
@@ -546,7 +546,7 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
     chatMutation.mutate(topic);
     
     // Refresh topics for next time
-    setCurrentTopics(getRandomTopics(childProfiles));
+    setCurrentTopics(getRandomTopics(Array.isArray(childProfiles) ? childProfiles : []));
   };
 
   if (!isOpen) {
@@ -670,9 +670,9 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
                           components={{
                             // Customize markdown components for better chat formatting
                             p: ({ children }) => <p className="mb-0 last:mb-0 leading-tight">{children}</p>,
-                            ul: ({ children }) => <ul className="mb-0 last:mb-0 ml-3 space-y-0">{children}</ul>,
-                            ol: ({ children }) => <ol className="mb-0 last:mb-0 ml-3 space-y-0">{children}</ol>,
-                            li: ({ children }) => <li className="mb-0 leading-tight pl-0">{children}</li>,
+                            ul: ({ children }) => <ul className="mb-0 last:mb-0 ml-4 space-y-0 list-disc list-outside">{children}</ul>,
+                            ol: ({ children }) => <ol className="mb-0 last:mb-0 ml-4 space-y-0 list-decimal list-outside">{children}</ol>,
+                            li: ({ children }) => <li className="mb-0 leading-tight">{children}</li>,
                             strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                             em: ({ children }) => <em className="italic">{children}</em>,
                             h1: ({ children }) => <h1 className="text-lg font-semibold mb-1 mt-1">{children}</h1>,
@@ -719,12 +719,12 @@ export function ParentingChatbot({ className }: ParentingChatbotProps) {
           {messages.length <= 1 && (
             <div className="p-4 border-t border-neutral-100">
               <p className="text-xs text-neutral-600 mb-2">Quick topics:</p>
-              <div className="flex flex-wrap gap-1.5 max-w-full justify-center">
+              <div className="grid grid-cols-2 gap-1.5 max-w-sm mx-auto">
                 {currentTopics.map((topic) => (
                   <Badge
                     key={topic}
                     variant="secondary"
-                    className="text-[10px] cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors px-2 py-1 min-w-[100px] text-center justify-center flex-shrink-0"
+                    className="text-[10px] cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors px-2 py-1 text-center justify-center"
                     onClick={() => handleSuggestedTopic(topic)}
                   >
                     {topic}

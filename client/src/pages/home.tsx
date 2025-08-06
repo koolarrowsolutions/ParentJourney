@@ -243,18 +243,53 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                   </div>
                   Daily Mood & Journal Check-in
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-                    <p className="text-sm font-medium text-blue-800 mb-2">How are you feeling today?</p>
-                    <div className="flex space-x-2">
-                      <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center text-sm">😊</div>
-                      <div className="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center text-sm">😌</div>
-                      <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center text-sm">😔</div>
+                    <p className="text-sm font-medium text-blue-800 mb-3">How are you feeling today?</p>
+                    <div className="flex space-x-2 mb-4">
+                      <div className="w-10 h-10 bg-yellow-200 rounded-full flex items-center justify-center text-lg">😊</div>
+                      <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center text-lg">😌</div>
+                      <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-lg">😔</div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3 border">
-                    <p className="text-xs text-gray-600 mb-1">Today's reflection:</p>
-                    <p className="text-sm text-gray-700">"Had a wonderful morning routine with Emma. She helped make breakfast and was so proud..."</p>
+                  
+                  <div className="bg-gray-50 rounded-lg p-4 border">
+                    <p className="text-xs text-gray-600 mb-2">Today's reflection:</p>
+                    <p className="text-sm text-gray-700 mb-4">"Had a wonderful morning routine with Emma. She helped make breakfast and was so proud..."</p>
+                  </div>
+                  
+                  {/* Progress Visual */}
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                    <p className="text-xs text-green-600 mb-2">Your Journey Progress</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-green-800">5-day streak</span>
+                      <span className="text-sm text-green-600">🔥</span>
+                    </div>
+                    <div className="w-full bg-green-200 rounded-full h-2 mb-3">
+                      <div className="bg-green-600 h-2 rounded-full" style={{width: '60%'}}></div>
+                    </div>
+                    <div className="grid grid-cols-5 gap-1">
+                      <div className="w-full h-4 bg-green-400 rounded"></div>
+                      <div className="w-full h-4 bg-green-400 rounded"></div>
+                      <div className="w-full h-4 bg-green-400 rounded"></div>
+                      <div className="w-full h-4 bg-green-400 rounded"></div>
+                      <div className="w-full h-4 bg-green-400 rounded"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Mood Trend Visual */}
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
+                    <p className="text-xs text-purple-600 mb-2">Weekly Mood Trend</p>
+                    <div className="flex items-end space-x-1 h-16">
+                      <div className="w-6 bg-purple-300 rounded-t" style={{height: '40%'}}></div>
+                      <div className="w-6 bg-purple-400 rounded-t" style={{height: '60%'}}></div>
+                      <div className="w-6 bg-purple-500 rounded-t" style={{height: '75%'}}></div>
+                      <div className="w-6 bg-purple-600 rounded-t" style={{height: '85%'}}></div>
+                      <div className="w-6 bg-purple-700 rounded-t" style={{height: '90%'}}></div>
+                      <div className="w-6 bg-green-500 rounded-t" style={{height: '95%'}}></div>
+                      <div className="w-6 bg-green-600 rounded-t" style={{height: '100%'}}></div>
+                    </div>
+                    <p className="text-xs text-purple-700 mt-2">↗️ Trending upward this week</p>
                   </div>
                 </div>
               </div>

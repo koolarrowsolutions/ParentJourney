@@ -306,6 +306,7 @@ export default function AdminDashboard() {
     queryKey: showDemoMode ? ["demo", "stats"] : ["/api/admin/stats"],
     queryFn: showDemoMode ? () => Promise.resolve(demoStats) : undefined,
     refetchInterval: showDemoMode ? false : 30000, // Don't refresh in demo mode
+    enabled: true, // Ensure query is always enabled
   });
 
   // Function to filter demo users based on current filters
@@ -368,6 +369,7 @@ export default function AdminDashboard() {
       ? ["demo", "users", searchTerm, filterStatus, filterRole, sortBy, sortOrder] 
       : [`/api/admin/users?search=${encodeURIComponent(searchTerm)}&status=${filterStatus}&role=${filterRole}&sortBy=${sortBy}&sortOrder=${sortOrder}`],
     queryFn: showDemoMode ? () => Promise.resolve(getFilteredDemoUsers()) : undefined,
+    enabled: true, // Ensure query is always enabled
   });
 
   // Fetch all families (use demo data when in demo mode)
@@ -381,6 +383,7 @@ export default function AdminDashboard() {
         : demoFamilies;
       return Promise.resolve(filteredFamilies);
     } : undefined,
+    enabled: true, // Ensure query is always enabled
   });
 
   // Grant free access mutation

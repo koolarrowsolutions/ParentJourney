@@ -51,6 +51,7 @@ The application employs a modern full-stack architecture with clear separation b
 - **Payment Processing**: Dual payment system supporting Stripe and PayPal Express with flexible pricing and subscription management.
 - **Admin Dashboard**: Full administrative interface with live PostgreSQL database integration, displaying real user management (10 current users), family management (3 families), subscription handling, accurate statistics calculation, and customer support tools with real-time data refresh.
 - **Production Deployment**: Fully configured for Vercel serverless deployment with GitHub integration, including proper build scripts, environment variable templates, and comprehensive deployment documentation. Final routing fix implemented to prevent JavaScript MIME type issues (January 2025).
+- **Landing Page & User Onboarding**: Complete landing page for unauthenticated users with proper "Get Started" functionality, feature showcase, and clear call-to-action buttons leading to account creation (August 2025).
 - **Privacy & Terms**: Dedicated Privacy Policy and Terms of Use pages covering data collection, usage, third-party services, and user rights.
 
 **System Design Choices:**

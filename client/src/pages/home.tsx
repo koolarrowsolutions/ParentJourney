@@ -171,8 +171,8 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     parentProfile: parentProfile?.name 
   });
 
-  // Show landing page for truly unauthenticated users only
-  if (!isAuthenticated && !user) {
+  // Show landing page for unauthenticated users or when API is failing
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
         <Header />

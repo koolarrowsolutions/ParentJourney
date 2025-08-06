@@ -50,6 +50,7 @@ The application employs a modern full-stack architecture with clear separation b
 - **Welcome System**: Three-tier welcome messaging system with static explanatory text, rotating daily insights, and per-login rotating messages.
 - **Payment Processing**: Dual payment system supporting Stripe and PayPal Express with flexible pricing and subscription management.
 - **Admin Dashboard**: Full administrative interface with live PostgreSQL database integration, displaying real user management (10 current users), family management (3 families), subscription handling, accurate statistics calculation, and customer support tools with real-time data refresh.
+- **Production Deployment**: Fully configured for Vercel serverless deployment with GitHub integration, including proper build scripts, environment variable templates, and comprehensive deployment documentation (August 2025).
 - **Privacy & Terms**: Dedicated Privacy Policy and Terms of Use pages covering data collection, usage, third-party services, and user rights.
 
 **System Design Choices:**

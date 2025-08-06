@@ -1,1 +1,6 @@
-/*    /index.html   200
+# API routes to serverless function
+/api/* /.vercel/functions/api 200
+/auth/* /.vercel/functions/api 200
+
+# SPA fallback
+/* /index.html 200

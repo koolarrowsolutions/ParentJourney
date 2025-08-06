@@ -304,7 +304,21 @@ export default function AdminDashboard() {
   // Fetch admin statistics (use demo data when in demo mode)
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
     queryKey: showDemoMode ? ["demo", "stats"] : ["/api/admin/stats"],
-    queryFn: showDemoMode ? () => Promise.resolve(demoStats) : undefined,
+    queryFn: showDemoMode 
+      ? () => Promise.resolve(demoStats) 
+      : async ({ queryKey }) => {
+          const url = queryKey[0] as string;
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        },
     refetchInterval: showDemoMode ? false : 30000, // Don't refresh in demo mode
     enabled: true, // Ensure query is always enabled
   });
@@ -368,7 +382,21 @@ export default function AdminDashboard() {
     queryKey: showDemoMode 
       ? ["demo", "users", searchTerm, filterStatus, filterRole, sortBy, sortOrder] 
       : [`/api/admin/users?search=${encodeURIComponent(searchTerm)}&status=${filterStatus}&role=${filterRole}&sortBy=${sortBy}&sortOrder=${sortOrder}`],
-    queryFn: showDemoMode ? () => Promise.resolve(getFilteredDemoUsers()) : undefined,
+    queryFn: showDemoMode 
+      ? () => Promise.resolve(getFilteredDemoUsers()) 
+      : async ({ queryKey }) => {
+          const url = queryKey[0] as string;
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        },
     enabled: true, // Ensure query is always enabled
   });
 
@@ -395,7 +423,19 @@ export default function AdminDashboard() {
         ? demoFamilies.filter(family => family.name.toLowerCase().includes(searchTerm.toLowerCase()))
         : demoFamilies;
       return Promise.resolve(filteredFamilies);
-    } : undefined,
+    } : async ({ queryKey }) => {
+        const url = queryKey[0] as string;
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      },
     enabled: true, // Ensure query is always enabled
   });
 

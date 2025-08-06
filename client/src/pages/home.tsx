@@ -162,8 +162,25 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     );
   }
 
-  // Show landing page for unauthenticated users
-  if (!isAuthenticated) {
+  // Show loading state while authentication is being checked
+  if (profileLoading && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
+        <Header />
+        <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Checking your login status...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Show landing page for unauthenticated users (only after auth check is complete)
+  if (!isAuthenticated && !profileLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
         <Header />

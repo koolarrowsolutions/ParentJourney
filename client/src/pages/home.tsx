@@ -179,12 +179,17 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
         <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
           {/* Hero Landing Section */}
           <div className="text-center mb-8 sm:mb-12">
-            <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-6 sm:p-8 md:p-12">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-800 mb-4">
+            <div className="bg-gradient-to-br from-white via-blue-50/30 to-green-50/40 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-6 sm:p-8 md:p-12 relative overflow-hidden">
+              {/* Decorative elements matching logo colors */}
+              <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400 to-green-400 rounded-full opacity-10"></div>
+              <div className="absolute bottom-6 left-6 w-8 h-8 bg-green-400 rounded-full opacity-15"></div>
+              <div className="absolute top-1/2 right-1/4 w-6 h-6 bg-white rounded-full opacity-40"></div>
+              
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-neutral-800 via-blue-700 to-green-700 bg-clip-text text-transparent mb-4">
                 Every parent is different. Your support should be too.
               </h1>
               <p className="text-lg sm:text-xl text-neutral-600 mb-6 max-w-4xl mx-auto">
-                With just a few journal entries and mood check-ins, ParentJourney coaches you with real-time AI-personalized reflections and insights — all shaped around your child, your style, and your journey.
+                With just a few journal entries and mood check-ins, ParentJourney's AI coaches you with real-time personalized reflections and insights — all specifically shaped around your child, your style, and your journey.
               </p>
               
               {/* Get Started Button */}

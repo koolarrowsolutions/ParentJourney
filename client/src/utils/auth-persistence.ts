@@ -71,7 +71,9 @@ export function getStoredAuthData(): AuthData | null {
 export function clearAuthData(): void {
   localStorage.removeItem('parentjourney_auth');
   localStorage.removeItem('parentjourney_token');
-  console.log('Cleared auth data');
+  localStorage.removeItem('authState'); // Also clear the older auth state key
+  localStorage.removeItem('parentjourney_just_logged_in');
+  console.log('Cleared all auth data');
 }
 
 // Perform login with mobile browser compatibility

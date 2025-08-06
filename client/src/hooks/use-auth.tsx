@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { checkAuthStatus, getStoredAuthData, checkLoginFlag, clearLoginFlag } from '@/utils/auth-persistence';
+import { checkAuthStatus, getStoredAuthData, checkLoginFlag, clearLoginFlag, storeAuthData } from '@/utils/auth-persistence';
 
 interface AuthUser {
   id: string;
@@ -53,8 +53,10 @@ export function useAuth(): AuthState & { clearLoginStatus: () => void } {
         isLoading: false,
       };
       setAuthState(newState);
-      // Clear saved auth state on error
+      // Clear saved auth state on error  
       localStorage.removeItem('authState');
+      localStorage.removeItem('parentjourney_auth');
+      localStorage.removeItem('parentjourney_token');
     } else if (data) {
       const wasAuthenticated = authState.isAuthenticated;
       const isNowAuthenticated = data.success || false;
@@ -82,9 +84,14 @@ export function useAuth(): AuthState & { clearLoginStatus: () => void } {
         isLoading: false,
       };
       setAuthState(newState);
-      // Save successful auth state to localStorage
-      if (newState.isAuthenticated) {
+      // Save successful auth state to localStorage (both formats for compatibility)
+      if (newState.isAuthenticated && data.user) {
         localStorage.setItem('authState', JSON.stringify(newState));
+        storeAuthData({
+          user: data.user,
+          isAuthenticated: true,
+          hasJustSignedUp: data.hasJustSignedUp || false
+        });
       }
     }
   }, [data, isLoading, error, authState.isAuthenticated]);

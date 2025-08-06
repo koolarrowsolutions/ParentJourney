@@ -24,6 +24,7 @@ import { AuthDialog } from "@/components/auth-dialog";
 
 import { authenticatedFetch } from "@/utils/api-client";
 import { useAuth } from "@/hooks/use-auth";
+import analyticsImagePath from "@assets/image_1754459613578.png";
 
 import type { ChildProfile, JournalEntry } from "@shared/schema";
 
@@ -280,13 +281,65 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
               </div>
             </div>
 
-            {/* Analytics Preview */}
+            {/* Analytics Showcase */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+              <h2 className="text-2xl font-bold text-neutral-800 mb-6 text-center">
+                Powerful Analytics to Track Your Family's Journey
+              </h2>
+              
+              {/* Analytics Image */}
+              <div className="mb-6 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                <img 
+                  src={analyticsImagePath}
+                  alt="Mood Timeline and Distribution Analytics"
+                  className="w-full h-auto"
+                />
+              </div>
+              
+              {/* Analytics Features Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Mood Timeline */}
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                  <div className="flex items-center mb-3">
+                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm">📈</span>
+                    </div>
+                    <h3 className="font-semibold text-blue-800">Mood Timeline Tracking</h3>
+                  </div>
+                  <p className="text-sm text-blue-700 mb-3">
+                    Visualize daily mood patterns over time to identify trends and understand emotional cycles.
+                  </p>
+                  <div className="flex items-center text-xs text-blue-600">
+                    <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+                    Track progress from "Very Low" to "Excellent"
+                  </div>
+                </div>
+
+                {/* Mood Distribution */}
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                  <div className="flex items-center mb-3">
+                    <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center mr-3">
+                      <span className="text-white text-sm">📊</span>
+                    </div>
+                    <h3 className="font-semibold text-green-800">AI Mood Analysis</h3>
+                  </div>
+                  <p className="text-sm text-green-700 mb-3">
+                    Automated detection of emotions from your journal entries creates detailed mood insights.
+                  </p>
+                  <div className="flex items-center text-xs text-green-600">
+                    <span className="w-2 h-2 bg-green-600 rounded-full mr-2"></span>
+                    Categorizes 7 different emotional states
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Tracking Preview */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* Progress Tracking Preview */}
               <div className="bg-white rounded-xl p-6 shadow-lg border border-green-200">
                 <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
                   <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                    <span className="text-green-600">📈</span>
+                    <span className="text-green-600">🎯</span>
                   </div>
                   Track Your Progress
                 </h3>
@@ -319,7 +372,7 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                   <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
                     <span className="text-orange-600">💡</span>
                   </div>
-                  Personalized Tips & Insights
+                  AI-Powered Pattern Recognition
                 </h3>
                 <div className="space-y-3">
                   <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-200">
@@ -328,14 +381,14 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                         <span className="text-white text-xs">✨</span>
                       </div>
                       <div>
-                        <p className="text-sm text-orange-800 font-medium mb-1">AI Parenting Insight:</p>
-                        <p className="text-sm text-orange-700">"Based on your recent entries about bedtime struggles, try implementing a 15-minute wind-down routine with soft music and dim lighting."</p>
+                        <p className="text-sm text-orange-800 font-medium mb-1">Insight Detected:</p>
+                        <p className="text-sm text-orange-700">"You feel most 'Content' during morning activities. Consider scheduling important conversations then for better outcomes."</p>
                       </div>
                     </div>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-3 border">
-                    <p className="text-xs text-gray-600 mb-1">Pattern Recognition:</p>
-                    <p className="text-sm text-gray-700">"I notice you feel most confident during morning activities. Consider scheduling important conversations then."</p>
+                    <p className="text-xs text-gray-600 mb-1">Frequency Analysis:</p>
+                    <p className="text-sm text-gray-700">Your top emotion this month is "Neutral" (9 occurrences), followed by "Content" (5 occurrences)</p>
                   </div>
                 </div>
               </div>

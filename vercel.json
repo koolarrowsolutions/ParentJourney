@@ -1,23 +1,34 @@
 {
-  "buildCommand": "npm run build && cp -r dist/public/* ./",
-  "outputDirectory": "./",
+  "version": 2,
   "functions": {
     "api/index.js": {
       "runtime": "@vercel/node@20.17.0"
     }
   },
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/public"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "source": "/auth/(.*)",
-      "destination": "/api/index.js"
+      "src": "/auth/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "source": "/((?!api)(?!auth)(?!assets).*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }

@@ -162,6 +162,118 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     );
   }
 
+  // Show landing page for unauthenticated users
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
+        <Header />
+        
+        <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          {/* Hero Landing Section */}
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-6 sm:p-8 md:p-12">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-800 mb-4">
+                Welcome to ParentJourney
+              </h1>
+              <p className="text-lg sm:text-xl text-neutral-600 mb-6 max-w-3xl mx-auto">
+                A digital parenting journal that helps you document experiences, track milestones, 
+                and receive AI-powered insights for your family's journey.
+              </p>
+              
+              {/* Get Started Button */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <AuthDialog 
+                  mode="signup"
+                  trigger={
+                    <button 
+                      className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg text-lg font-semibold shadow-lg transition-all duration-200 hover:scale-105"
+                      data-testid="button-get-started"
+                    >
+                      Get Started
+                    </button>
+                  }
+                />
+                <AuthDialog 
+                  mode="login"
+                  trigger={
+                    <button 
+                      className="border border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200"
+                      data-testid="button-sign-in"
+                    >
+                      Sign In
+                    </button>
+                  }
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Features Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-blue-200">
+              <div className="text-3xl mb-4">📝</div>
+              <h3 className="text-xl font-semibold text-neutral-800 mb-2">Journal Your Journey</h3>
+              <p className="text-neutral-600">
+                Document parenting experiences, milestones, and daily moments with our intuitive journaling tools.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-purple-200">
+              <div className="text-3xl mb-4">🤖</div>
+              <h3 className="text-xl font-semibold text-neutral-800 mb-2">AI-Powered Insights</h3>
+              <p className="text-neutral-600">
+                Get personalized feedback and developmental insights powered by advanced AI technology.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-green-200">
+              <div className="text-3xl mb-4">📊</div>
+              <h3 className="text-xl font-semibold text-neutral-800 mb-2">Track Progress</h3>
+              <p className="text-neutral-600">
+                Monitor your family's growth with analytics, mood tracking, and milestone celebrations.
+              </p>
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 sm:p-8 border border-purple-200">
+            <h2 className="text-2xl sm:text-3xl font-bold text-neutral-800 mb-4">
+              Start Your Parenting Journey Today
+            </h2>
+            <p className="text-lg text-neutral-600 mb-6 max-w-2xl mx-auto">
+              Join thousands of parents who are building stronger connections with their children 
+              through mindful reflection and AI-guided insights.
+            </p>
+            <AuthDialog 
+              mode="signup"
+              trigger={
+                <button 
+                  className="bg-primary hover:bg-primary/90 text-white px-10 py-4 rounded-lg text-xl font-semibold shadow-lg transition-all duration-200 hover:scale-105"
+                  data-testid="button-get-started-cta"
+                >
+                  Get Started Free
+                </button>
+              }
+            />
+          </div>
+        </main>
+        
+        {/* Footer */}
+        <footer className="mt-16 py-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="text-center">
+            <Link 
+              href="/privacy-policy" 
+              className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              data-testid="link-privacy-policy"
+            >
+              Privacy Policy & Terms of Use
+            </Link>
+          </div>
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
       <Header />

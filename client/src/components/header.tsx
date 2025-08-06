@@ -1,4 +1,4 @@
-import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus, MessageCircle, LogOut, Leaf, Menu, HelpCircle } from "lucide-react";
+import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus, MessageCircle, LogOut, Leaf, Menu, HelpCircle, MapPin } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AuthDialog } from "./auth-dialog";
@@ -21,7 +21,7 @@ export function Header() {
           <div className="flex items-center space-x-3">
             <Link href="/">
               <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-primary/90 transition-colors hover-scale button-press">
-                <Heart className="text-white h-5 w-5" />
+                <MapPin className="text-white h-5 w-5" />
               </div>
             </Link>
             <div>

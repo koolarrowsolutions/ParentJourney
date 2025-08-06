@@ -162,25 +162,16 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
     );
   }
 
-  // Show loading state while authentication is being checked
-  if (profileLoading && !isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
-        <Header />
-        <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Checking your login status...</p>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
+  // Debug authentication state
+  console.log('Home component auth state:', { 
+    isAuthenticated, 
+    profileLoading, 
+    user: user?.username,
+    parentProfile: parentProfile?.name 
+  });
 
-  // Show landing page for unauthenticated users (only after auth check is complete)
-  if (!isAuthenticated && !profileLoading) {
+  // Show landing page for truly unauthenticated users only
+  if (!isAuthenticated && !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
         <Header />
@@ -190,11 +181,10 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
           <div className="text-center mb-8 sm:mb-12">
             <div className="bg-gradient-to-r from-white to-blue-50/50 rounded-xl sm:rounded-2xl border border-primary/20 shadow-lg p-6 sm:p-8 md:p-12">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-800 mb-4">
-                Welcome to ParentJourney
+                Every parent is different. Your support should be too.
               </h1>
-              <p className="text-lg sm:text-xl text-neutral-600 mb-6 max-w-3xl mx-auto">
-                A digital parenting journal that helps you document experiences, track milestones, 
-                and receive AI-powered insights for your family's journey.
+              <p className="text-lg sm:text-xl text-neutral-600 mb-6 max-w-4xl mx-auto">
+                With just a few journal entries and mood check-ins, ParentJourney coaches you with real-time AI-personalized reflections and insights — all shaped around your child, your style, and your journey.
               </p>
               
               {/* Get Started Button */}
@@ -225,30 +215,83 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
             </div>
           </div>
 
-          {/* Features Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-blue-200">
-              <div className="text-3xl mb-4">📝</div>
-              <h3 className="text-xl font-semibold text-neutral-800 mb-2">Journal Your Journey</h3>
-              <p className="text-neutral-600">
-                Document parenting experiences, milestones, and daily moments with our intuitive journaling tools.
-              </p>
-            </div>
+          {/* Features Preview Section */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-center text-neutral-800 mb-6">See How ParentJourney Works</h2>
             
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-purple-200">
-              <div className="text-3xl mb-4">🤖</div>
-              <h3 className="text-xl font-semibold text-neutral-800 mb-2">AI-Powered Insights</h3>
-              <p className="text-neutral-600">
-                Get personalized feedback and developmental insights powered by advanced AI technology.
-              </p>
+            {/* Interface Preview Mock-ups */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Daily Check-in Preview */}
+              <div className="bg-white rounded-xl p-6 shadow-lg border border-blue-200">
+                <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-blue-600">📝</span>
+                  </div>
+                  Daily Mood & Journal Check-in
+                </h3>
+                <div className="space-y-3">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                    <p className="text-sm font-medium text-blue-800 mb-2">How are you feeling today?</p>
+                    <div className="flex space-x-2">
+                      <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center text-sm">😊</div>
+                      <div className="w-8 h-8 bg-green-200 rounded-full flex items-center justify-center text-sm">😌</div>
+                      <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center text-sm">😔</div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3 border">
+                    <p className="text-xs text-gray-600 mb-1">Today's reflection:</p>
+                    <p className="text-sm text-gray-700">"Had a wonderful morning routine with Emma. She helped make breakfast and was so proud..."</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Insights Preview */}
+              <div className="bg-white rounded-xl p-6 shadow-lg border border-purple-200">
+                <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-purple-600">🤖</span>
+                  </div>
+                  Personalized AI Coaching
+                </h3>
+                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-white text-xs">AI</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-purple-800 font-medium mb-1">Your Insight for Emma (Age 4):</p>
+                      <p className="text-sm text-purple-700">"I notice you've mentioned morning routines three times this week! This consistency is building security for Emma. Consider adding a simple choice (red cup or blue cup?) to boost her autonomy..."</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-green-200">
-              <div className="text-3xl mb-4">📊</div>
-              <h3 className="text-xl font-semibold text-neutral-800 mb-2">Track Progress</h3>
-              <p className="text-neutral-600">
-                Monitor your family's growth with analytics, mood tracking, and milestone celebrations.
-              </p>
+
+            {/* Feature Benefits Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center p-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <span className="text-2xl">📊</span>
+                </div>
+                <h3 className="font-semibold text-neutral-800 mb-2">Track Patterns</h3>
+                <p className="text-sm text-neutral-600">Visualize your family's emotional patterns and growth trends over time</p>
+              </div>
+              
+              <div className="text-center p-4">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <h3 className="font-semibold text-neutral-800 mb-2">Child-Specific Insights</h3>
+                <p className="text-sm text-neutral-600">Get tailored advice based on each child's age, personality, and development</p>
+              </div>
+              
+              <div className="text-center p-4">
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <span className="text-2xl">💝</span>
+                </div>
+                <h3 className="font-semibold text-neutral-800 mb-2">Build Connection</h3>
+                <p className="text-sm text-neutral-600">Strengthen your bond through mindful reflection and self-awareness</p>
+              </div>
             </div>
           </div>
 

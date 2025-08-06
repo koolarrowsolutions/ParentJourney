@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -364,13 +364,26 @@ export default function AdminDashboard() {
   };
 
   // Fetch all users with filters (use demo data when in demo mode)
-  const { data: users = [], isLoading: usersLoading, refetch: refetchUsers } = useQuery({
+  const { data: users = [], isLoading: usersLoading, refetch: refetchUsers, error: usersError } = useQuery({
     queryKey: showDemoMode 
       ? ["demo", "users", searchTerm, filterStatus, filterRole, sortBy, sortOrder] 
       : [`/api/admin/users?search=${encodeURIComponent(searchTerm)}&status=${filterStatus}&role=${filterRole}&sortBy=${sortBy}&sortOrder=${sortOrder}`],
     queryFn: showDemoMode ? () => Promise.resolve(getFilteredDemoUsers()) : undefined,
     enabled: true, // Ensure query is always enabled
   });
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log("Admin Dashboard Debug:", {
+      showDemoMode,
+      usersLoading,
+      usersLength: users?.length,
+      usersError,
+      queryKey: showDemoMode 
+        ? ["demo", "users", searchTerm, filterStatus, filterRole, sortBy, sortOrder] 
+        : [`/api/admin/users?search=${encodeURIComponent(searchTerm)}&status=${filterStatus}&role=${filterRole}&sortBy=${sortBy}&sortOrder=${sortOrder}`]
+    });
+  }, [showDemoMode, usersLoading, users, usersError, searchTerm, filterStatus, filterRole, sortBy, sortOrder]);
 
   // Fetch all families (use demo data when in demo mode)
   const { data: families = [], isLoading: familiesLoading, refetch: refetchFamilies } = useQuery({

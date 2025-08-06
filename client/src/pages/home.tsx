@@ -267,6 +267,67 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
               </div>
             </div>
 
+            {/* Analytics Preview */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Progress Tracking Preview */}
+              <div className="bg-white rounded-xl p-6 shadow-lg border border-green-200">
+                <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-green-600">📈</span>
+                  </div>
+                  Track Your Progress
+                </h3>
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-green-800">Journal Streak</span>
+                      <span className="text-lg font-bold text-green-700">12 days 🔥</span>
+                    </div>
+                    <div className="w-full bg-green-200 rounded-full h-2">
+                      <div className="bg-green-600 h-2 rounded-full" style={{width: '80%'}}></div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                      <p className="text-xs text-blue-600 mb-1">This Week</p>
+                      <p className="text-lg font-bold text-blue-800">7 entries</p>
+                    </div>
+                    <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                      <p className="text-xs text-purple-600 mb-1">Mood Trend</p>
+                      <p className="text-lg font-bold text-purple-800">↗️ Improving</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Personalized Tips Preview */}
+              <div className="bg-white rounded-xl p-6 shadow-lg border border-orange-200">
+                <h3 className="text-lg font-semibold text-neutral-800 mb-4 flex items-center">
+                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-orange-600">💡</span>
+                  </div>
+                  Personalized Tips & Insights
+                </h3>
+                <div className="space-y-3">
+                  <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-200">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <span className="text-white text-xs">✨</span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-orange-800 font-medium mb-1">AI Parenting Insight:</p>
+                        <p className="text-sm text-orange-700">"Based on your recent entries about bedtime struggles, try implementing a 15-minute wind-down routine with soft music and dim lighting."</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3 border">
+                    <p className="text-xs text-gray-600 mb-1">Pattern Recognition:</p>
+                    <p className="text-sm text-gray-700">"I notice you feel most confident during morning activities. Consider scheduling important conversations then."</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Feature Benefits Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-4">

@@ -27,10 +27,10 @@ export function Header() {
             <div>
               <Link href="/">
                 <h1 className="text-xl font-semibold text-neutral-800 cursor-pointer hover:text-primary transition-colors">
-                  ParentJourney 🌱
+                  ParentJourney
                 </h1>
               </Link>
-              <p className="text-xs text-neutral-500 truncate pr-2">✨ Reflect. Grow. Thrive. ✨</p>
+              <p className="text-xs text-neutral-500 truncate pr-2">✨ Your parenting path forward ✨</p>
             </div>
           </div>
 

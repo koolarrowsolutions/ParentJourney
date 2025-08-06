@@ -1,4 +1,4 @@
-import { Heart, Settings, User, BarChart3, Trophy, Archive, LogIn, UserPlus, MessageCircle, LogOut, Leaf, Menu, HelpCircle, MapPin } from "lucide-react";
+import { Settings, User, BarChart3, Trophy, Archive, LogOut, Menu, Users, MessageCircle, Leaf, LogIn, UserPlus, Heart, HelpCircle } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AuthDialog } from "./auth-dialog";
@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 import { OnboardingTrigger } from "./onboarding-trigger";
+import { Logo } from "./logo";
 
 export function Header() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -20,8 +21,8 @@ export function Header() {
           {/* Left side - Logo and Brand */}
           <div className="flex items-center space-x-3">
             <Link href="/">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-primary/90 transition-colors hover-scale button-press">
-                <MapPin className="text-white h-5 w-5" />
+              <div className="cursor-pointer hover:scale-105 transition-transform button-press">
+                <Logo size={40} />
               </div>
             </Link>
             <div>

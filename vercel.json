@@ -24,10 +24,16 @@
       "dest": "/api/index.js"
     },
     {
+      "src": "/assets/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "handle": "filesystem"
     },
     {
-      "src": "/(.*)",
+      "src": "^(?!/assets/).*",
       "dest": "/index.html"
     }
   ]

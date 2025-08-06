@@ -267,14 +267,52 @@ export default function Home({ triggerSignUpPrompt }: HomeProps) {
                   </div>
                   Personalized AI Coaching
                 </h3>
-                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <span className="text-white text-xs">AI</span>
+                <div className="space-y-3">
+                  <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <span className="text-white text-xs">👶</span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-purple-800 font-medium mb-1">Child-Specific Insight:</p>
+                        <p className="text-sm text-purple-700">"I notice you've mentioned morning routines three times this week! This consistency is building security for Emma. Consider adding a simple choice (red cup or blue cup?) to boost her autonomy..."</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-purple-800 font-medium mb-1">Your Insight for Emma (Age 4):</p>
-                      <p className="text-sm text-purple-700">"I notice you've mentioned morning routines three times this week! This consistency is building security for Emma. Consider adding a simple choice (red cup or blue cup?) to boost her autonomy..."</p>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <span className="text-white text-xs">🧠</span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-blue-800 font-medium mb-1">Pattern Recognition:</p>
+                        <p className="text-sm text-blue-700">"Your mood drops on Wednesdays when Jake has soccer practice. Try preparing the night before to reduce morning stress."</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <span className="text-white text-xs">💡</span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-green-800 font-medium mb-1">Developmental Tip:</p>
+                        <p className="text-sm text-green-700">"At 7 years old, Emma is developing independence. Your entries show she responds well to choices. Try 'Would you like to brush teeth first or put on pajamas first?'"</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-200">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <span className="text-white text-xs">❤️</span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-orange-800 font-medium mb-1">Self-Care Reminder:</p>
+                        <p className="text-sm text-orange-700">"You've been 'stressed' 4 times this week. Remember: taking 10 minutes for yourself isn't selfish—it's necessary. A calm parent creates a calm home."</p>
+                      </div>
                     </div>
                   </div>
                 </div>

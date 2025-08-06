@@ -1,4 +1,5 @@
 # 🚀 One-Click GitHub to Vercel Deployment Guide
+<!-- Deployment fix timestamp: 2025-01-06 04:04 UTC -->
 
 ## ✅ Pre-configured for You
 - All build scripts ready

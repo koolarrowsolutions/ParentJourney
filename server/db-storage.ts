@@ -18,7 +18,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import * as schema from "@shared/schema";
-import { eq, desc, asc, and, gte, lte, sql, or } from "drizzle-orm";
+import { eq, desc, asc, and, gte, lte, sql, or, like } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -360,6 +360,30 @@ export class DatabaseStorage implements IStorage {
   async getFamily(id: string): Promise<Family | undefined> {
     const result = await db.select().from(schema.families).where(eq(schema.families.id, id));
     return result[0];
+  }
+
+  async getAllFamilies(searchTerm?: string): Promise<Array<Family & { parentCount: number; childCount: number; userCount: number }>> {
+    let familiesQuery = db.select({
+      id: schema.families.id,
+      name: schema.families.name,
+      createdAt: schema.families.createdAt,
+      parentCount: sql<number>`count(distinct ${schema.parentProfiles.id})`.as('parentCount'),
+      childCount: sql<number>`count(distinct ${schema.childProfiles.id})`.as('childCount'),
+      userCount: sql<number>`count(distinct ${schema.users.id})`.as('userCount')
+    })
+    .from(schema.families)
+    .leftJoin(schema.parentProfiles, eq(schema.families.id, schema.parentProfiles.familyId))
+    .leftJoin(schema.childProfiles, eq(schema.families.id, schema.childProfiles.familyId))
+    .leftJoin(schema.users, eq(schema.families.id, schema.users.familyId))
+    .groupBy(schema.families.id, schema.families.name, schema.families.createdAt);
+
+    if (searchTerm) {
+      familiesQuery = familiesQuery.where(
+        like(schema.families.name, `%${searchTerm}%`)
+      );
+    }
+
+    return await familiesQuery.orderBy(desc(schema.families.createdAt));
   }
 
   // Parent profiles

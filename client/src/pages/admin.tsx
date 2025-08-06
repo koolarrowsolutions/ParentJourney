@@ -303,8 +303,8 @@ export default function AdminDashboard() {
 
   // Fetch admin statistics (use demo data when in demo mode)
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
-    queryKey: ["/api/admin/stats", showDemoMode],
-    queryFn: () => showDemoMode ? Promise.resolve(demoStats) : apiRequest("/api/admin/stats"),
+    queryKey: showDemoMode ? ["demo", "stats"] : ["/api/admin/stats"],
+    queryFn: showDemoMode ? () => Promise.resolve(demoStats) : undefined,
     refetchInterval: showDemoMode ? false : 30000, // Don't refresh in demo mode
   });
 
@@ -364,27 +364,23 @@ export default function AdminDashboard() {
 
   // Fetch all users with filters (use demo data when in demo mode)
   const { data: users = [], isLoading: usersLoading, refetch: refetchUsers } = useQuery({
-    queryKey: ["/api/admin/users", searchTerm, filterStatus, filterRole, sortBy, sortOrder, showDemoMode],
-    queryFn: () => {
-      if (showDemoMode) {
-        return Promise.resolve(getFilteredDemoUsers());
-      }
-      return apiRequest(`/api/admin/users?search=${encodeURIComponent(searchTerm)}&status=${filterStatus}&role=${filterRole}&sortBy=${sortBy}&sortOrder=${sortOrder}`);
-    },
+    queryKey: showDemoMode 
+      ? ["demo", "users", searchTerm, filterStatus, filterRole, sortBy, sortOrder] 
+      : [`/api/admin/users?search=${encodeURIComponent(searchTerm)}&status=${filterStatus}&role=${filterRole}&sortBy=${sortBy}&sortOrder=${sortOrder}`],
+    queryFn: showDemoMode ? () => Promise.resolve(getFilteredDemoUsers()) : undefined,
   });
 
   // Fetch all families (use demo data when in demo mode)
   const { data: families = [], isLoading: familiesLoading, refetch: refetchFamilies } = useQuery({
-    queryKey: ["/api/admin/families", searchTerm, showDemoMode],
-    queryFn: () => {
-      if (showDemoMode) {
-        const filteredFamilies = searchTerm 
-          ? demoFamilies.filter(family => family.name.toLowerCase().includes(searchTerm.toLowerCase()))
-          : demoFamilies;
-        return Promise.resolve(filteredFamilies);
-      }
-      return apiRequest(`/api/admin/families?search=${encodeURIComponent(searchTerm)}`);
-    },
+    queryKey: showDemoMode 
+      ? ["demo", "families", searchTerm] 
+      : [`/api/admin/families?search=${encodeURIComponent(searchTerm)}`],
+    queryFn: showDemoMode ? () => {
+      const filteredFamilies = searchTerm 
+        ? demoFamilies.filter(family => family.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        : demoFamilies;
+      return Promise.resolve(filteredFamilies);
+    } : undefined,
   });
 
   // Grant free access mutation
